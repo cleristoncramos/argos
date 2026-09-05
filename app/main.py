@@ -2,29 +2,47 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from datetime import datetime, timedelta
+from datetime import datetime
 import sys
 import os
 
-# Adicionar o diretório raiz ao path para importar o core
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# Importar módulos do core
-from core.config import config
-from core.data_loader import download_active_data, validate_data
-from core.data_processor import prepare_dataframe, aggregate_by_frequency, select_primary_variable
-from core.analyzer import calculate_statistics, calculate_percentage_change, create_year_month_matrix
-
-# Configuração da página
-st.set_page_config(
-    page_title="Análise de Mercado Financeiro",
-    page_icon="📈",
-    layout="wide"
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..")
+    )
 )
 
-# Título
-st.title("📈 Análise de Dados para Apoio à Tomada de Decisão em Investimentos")
-st.markdown("**Projeto PIBITI UFPI 2026–2027** | Orientador: Arlino Henrique Magalhães de Araújo")
+from core.config import config
+from core.data_loader import download_active_data, validate_data
+from core.data_processor import (
+    prepare_dataframe,
+    aggregate_by_frequency,
+    select_primary_variable,
+)
+from core.analyzer import (
+    calculate_statistics,
+    calculate_percentage_change,
+    create_year_month_matrix,
+)
+
+st.set_page_config(
+    page_title="Argos DataLab",
+    page_icon="📊",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+st.title("📊 Argos DataLab")
+
+st.markdown(
+    "### Inteligência de Dados para Apoio à Decisão no Mercado Financeiro"
+)
+
+st.caption(
+    "Projeto PIBITI UFPI 2026–2027 · "
+    "Orientador: Arlino Henrique Magalhães de Araújo"
+)
 
 # Sidebar com controles
 st.sidebar.header("⚙️ Configurações")
@@ -113,7 +131,7 @@ stats = st.session_state['stats']
 # =====================
 # Seção 1: Resumo
 # =====================
-st.header("📊 Resumo")
+st.header("📊 Visão Geral do Ativo")
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -145,14 +163,14 @@ with col4:
 # =====================
 # Seção 2: Evolução Temporal
 # =====================
-st.header("📈 Evolução Temporal")
+st.header("📈 Evolução Temporal do Ativo")
 
 # Gráfico de linha
 fig_line = px.line(
     df,
     x='Date',
     y='Value',
-    title=f"Evolução do Preço - {symbol}",
+    title=f"Evolução do Preço de Fechamento — {symbol}",
     labels={'Date': 'Data', 'Value': 'Preço'},
     template='plotly_white'
 )
@@ -182,7 +200,7 @@ st.plotly_chart(fig_bar, use_container_width=True)
 # =====================
 # Seção 4: Matriz Anual x Mensal
 # =====================
-st.header("🗓️ Análise de Sazonalidade")
+st.header("🗓️ Padrões Sazonais")
 
 # Criar matriz
 df_matrix = create_year_month_matrix(df, "Pct_Change")
@@ -198,7 +216,7 @@ fig_heatmap = go.Figure(data=go.Heatmap(
 ))
 
 fig_heatmap.update_layout(
-    title="Variação Média por Ano e Mês (%)",
+    title="Variação Média por Ano e Mês",
     xaxis_title="Mês",
     yaxis_title="Ano",
     template='plotly_white'
@@ -209,7 +227,7 @@ st.plotly_chart(fig_heatmap, use_container_width=True)
 # =====================
 # Seção 5: Tabela de Dados
 # =====================
-st.header("📋 Dados Tratados")
+st.header("📋 Dados Processados")
 
 # Mostrar amostra
 st.dataframe(
@@ -230,7 +248,7 @@ st.download_button(
 # =====================
 # Seção 6: Validação
 # =====================
-st.header("🔍 Validação dos Dados")
+st.header("🔍 Qualidade e Validação dos Dados")
 
 validation = st.session_state['validation']
 
