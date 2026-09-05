@@ -1,8 +1,9 @@
 import yfinance as yf
 import pandas as pd
-from datetime import datetime
+import streamlit as st
 from typing import Optional
 
+@st.cache_data(ttl=3600, show_spinner=False)
 
 def download_active_data(
     symbol: str,
@@ -11,60 +12,106 @@ def download_active_data(
     interval: str = "1d"
 ) -> Optional[pd.DataFrame]:
     """
-    Baixa dados históricos de um ativo usando yfinance.
-    
-    Parâmetros:
-    - symbol: Símbolo do ativo (ex: BTC-USD, AAPL, USD=BRL)
-    - start_date: Data inicial no formato YYYY-MM-DD
-    - end_date: Data final no formato YYYY-MM-DD
-    - interval: Intervalo dos dados (1d, 1wk, 1mo)
-    
-    Retorna:
-    - DataFrame com os dados ou None em caso de erro
+    Baixa dados históricos e valida se o símbolo representa
+    um ativo reconhecido pelo Yahoo Finance.
     """
     try:
-        # Criar ticker do ativo
+        symbol = symbol.strip().upper()
+
+        if not symbol:
+            return None
+
         ticker = yf.Ticker(symbol)
-        
-        # Baixar histórico
+
+        # Verifica se o ativo possui informações cadastrais.
+        # Alguns ativos podem não fornecer todos os campos.
+        try:
+            info = ticker.info
+        except Exception:
+            info = {}
+
+        # Indicadores mínimos de que o símbolo foi reconhecido.
+        has_identity = any(
+            info.get(field)
+            for field in [
+                "shortName",
+                "longName",
+                "symbol",
+                "exchange",
+                "quoteType",
+            ]
+        )
+
+        # Se o Yahoo não conseguir identificar o ativo,
+        # não prossegue com o download.
+        if not has_identity:
+            return None
+
         df = ticker.history(
             start=start_date,
             end=end_date,
-            interval=interval
+            interval=interval,
+            auto_adjust=False,
         )
-        
-        # Verificar se há dados
-        if df.empty:
-            print(f"Nenhum dado encontrado para {symbol} no período especificado.")
-            return None
-        
-        # Resetar índice para ter 'Date' como coluna
-        df = df.reset_index()
-        
-        # Garantir que Date seja datetime
-        df['Date'] = pd.to_datetime(df['Date'])
-        
-        return df
-        
-    except Exception as e:
-        print(f"Erro ao baixar dados: {e}")
-        return None
 
+        required_columns = {
+            "Open",
+            "High",
+            "Low",
+            "Close",
+            "Volume",
+        }
+
+        if df.empty or not required_columns.issubset(df.columns):
+            return None
+
+        df = df.reset_index()
+
+        if "Date" in df.columns:
+            date_column = "Date"
+        elif "Datetime" in df.columns:
+            date_column = "Datetime"
+        else:
+            return None
+
+        df = df.rename(columns={date_column: "Date"})
+        df["Date"] = pd.to_datetime(df["Date"])
+
+        if getattr(df["Date"].dt, "tz", None) is not None:
+            df["Date"] = df["Date"].dt.tz_localize(None)
+
+        df = df.sort_values("Date").reset_index(drop=True)
+
+        return df
+
+    except Exception:
+        return None
 
 def validate_data(df: pd.DataFrame) -> dict:
     """
-    Valida a qualidade dos dados.
-    
-    Retorna um dicionário com informações sobre:
-    - Valores ausentes
-    - Datas duplicadas
-    - Valores negativos ou anômalos
+    Gera indicadores básicos de qualidade do DataFrame baixado.
     """
-    validation = {
-        'total_rows': len(df),
-        'missing_values': df.isnull().sum().to_dict(),
-        'duplicate_dates': df['Date'].duplicated().sum(),
-        'negative_close': (df['Close'] < 0).sum() if 'Close' in df.columns else 0,
-        'has_data': len(df) > 0
+    if df is None or df.empty:
+        return {
+            "total_rows": 0,
+            "missing_values": {},
+            "duplicate_dates": 0,
+            "negative_close": 0,
+            "has_data": False,
+        }
+
+    return {
+        "total_rows": len(df),
+        "missing_values": df.isnull().sum().to_dict(),
+        "duplicate_dates": (
+            df["Date"].duplicated().sum()
+            if "Date" in df.columns
+            else 0
+        ),
+        "negative_close": (
+            (df["Close"] < 0).sum()
+            if "Close" in df.columns
+            else 0
+        ),
+        "has_data": len(df) > 0,
     }
-    return validation

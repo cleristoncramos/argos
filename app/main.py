@@ -73,7 +73,16 @@ frequency = st.sidebar.selectbox(
 )
 
 # Botão de carregar
-if st.sidebar.button("🔄 Carregar Dados", type="primary"):
+if start_date >= end_date:
+    st.sidebar.error("A data inicial deve ser anterior à data final.")
+
+load_data = st.sidebar.button(
+    "🔄 Carregar Dados",
+    type="primary",
+    disabled=start_date >= end_date
+)
+
+if load_data:
     with st.spinner("Baixando dados..."):
         # 1. Baixar dados
         df_raw = download_active_data(
@@ -84,7 +93,10 @@ if st.sidebar.button("🔄 Carregar Dados", type="primary"):
         )
         
         if df_raw is None or df_raw.empty:
-            st.error("❌ Nenhum dado encontrado. Verifique o símbolo e o período.")
+            st.error(
+                 f"Não foi possível carregar dados para o ativo '{symbol}'. "
+                "Verifique o símbolo e o período informado."
+            )
             st.stop()
         
         # 2. Validar dados
@@ -117,6 +129,9 @@ if st.sidebar.button("🔄 Carregar Dados", type="primary"):
         st.session_state['symbol'] = symbol
         st.session_state['stats'] = stats
         st.session_state['validation'] = validation
+        st.session_state['frequency'] = frequency
+        st.session_state['start_date'] = start_date
+        st.session_state['end_date'] = end_date
 
 # Verificar se há dados carregados
 if 'df' not in st.session_state:
@@ -127,6 +142,16 @@ if 'df' not in st.session_state:
 df = st.session_state['df']
 symbol = st.session_state['symbol']
 stats = st.session_state['stats']
+frequency = st.session_state['frequency']
+start_date = st.session_state['start_date']
+end_date = st.session_state['end_date']
+
+st.info(
+    f"Ativo analisado: **{symbol}** · "
+    f"Período: **{start_date.strftime('%d/%m/%Y')}** a "
+    f"**{end_date.strftime('%d/%m/%Y')}** · "
+    f"Frequência: **{frequency}**"
+)
 
 # =====================
 # Seção 1: Resumo
@@ -138,13 +163,13 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric(
         label="Primeiro Valor",
-        value=f"R$ {stats['first_value']:,.2f}" if stats['first_value'] else "N/A"
+        value=f"{stats['first_value']:,.2f}" if stats['first_value'] else "N/A"
     )
 
 with col2:
     st.metric(
         label="Último Valor",
-        value=f"R$ {stats['last_value']:,.2f}" if stats['last_value'] else "N/A"
+        value=f"{stats['last_value']:,.2f}" if stats['last_value'] else "N/A"
     )
 
 with col3:
