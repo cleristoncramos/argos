@@ -1,8 +1,13 @@
+import numpy as np
 import pandas as pd
 import pytest
 
 from core.risk_metrics import (
+    annual_to_periodic_rate,
+    build_risk_summary,
     calculate_drawdown,
+    calculate_positive_percentage,
+    calculate_sharpe_ratio,
     get_max_drawdown,
 )
 
@@ -155,3 +160,21 @@ def test_get_max_drawdown_returns_none_for_empty_dataframe():
     result = calculate_drawdown(df, "Value")
 
     assert get_max_drawdown(result) is None
+
+
+def test_calculate_positive_percentage_returns_decimal():
+    returns = pd.Series(
+        [-0.10, 0.05, 0.03, -0.02, 0.01]
+    )
+
+    result = calculate_positive_percentage(returns)
+
+    assert result == pytest.approx(0.60)
+
+
+def test_calculate_positive_percentage_returns_zero_for_empty_series():
+    returns = pd.Series(dtype="float64")
+
+    result = calculate_positive_percentage(returns)
+
+    assert result == pytest.approx(0.0)
