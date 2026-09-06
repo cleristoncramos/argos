@@ -69,3 +69,12 @@ data/
 # =====================
 .DS_Store
 Thumbs.db
+
+
+venv/
+__pycache__/
+.pytest_cache/
+.env
+backup_tests_2026-09-05/
+backup_layout_2026-09-06/
+backup_encoding_*/

@@ -241,7 +241,7 @@ cumulative_return_figure = create_cumulative_return_chart(
 
 st.plotly_chart(
     cumulative_return_figure,
-    use_container_width=True,
+    width="stretch",
 )
 
 st.header("📉 Drawdown")
@@ -255,7 +255,7 @@ drawdown_figure = create_drawdown_chart(
 
 st.plotly_chart(
     drawdown_figure,
-    use_container_width=True,
+    width="stretch",
 )
 
 st.header("📊 Distribuição de Retornos")
@@ -269,7 +269,7 @@ histogram_figure = create_returns_histogram(
 
 st.plotly_chart(
     histogram_figure,
-    use_container_width=True,
+    width="stretch",
 )
 
 st.header("📋 Detalhamento das Métricas")
@@ -341,7 +341,7 @@ details = pd.DataFrame(
 
 st.dataframe(
     details,
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
 )
 
@@ -358,7 +358,7 @@ st.dataframe(
             "Drawdown",
         ]
     ],
-    use_container_width=True,
+    width="stretch",
     height=320,
 )
 

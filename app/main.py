@@ -13,6 +13,7 @@ sys.path.insert(
     )
 )
 
+from core.formatters import format_brl, format_return_pct
 from core.config import config
 from core.data_loader import download_active_data, validate_data
 from core.data_processor import (
@@ -162,15 +163,15 @@ col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.metric(
-        label="Primeiro Valor",
-        value=f"{stats['first_value']:,.2f}" if stats['first_value'] else "N/A"
-    )
+    "Primeiro Valor",
+    format_brl(stats["first_value"]),
+)
 
 with col2:
     st.metric(
-        label="Último Valor",
-        value=f"{stats['last_value']:,.2f}" if stats['last_value'] else "N/A"
-    )
+    "Último Valor",
+    format_brl(stats["last_value"]),
+)
 
 with col3:
     st.metric(
@@ -200,7 +201,7 @@ fig_line = px.line(
     template='plotly_white'
 )
 fig_line.update_traces(line=dict(width=2))
-st.plotly_chart(fig_line, use_container_width=True)
+st.plotly_chart(fig_line, width="stretch")
 
 # =====================
 # Seção 3: Variação Percentual
@@ -220,7 +221,7 @@ fig_bar = px.bar(
     color_continuous_scale='RdYlGn',
     template='plotly_white'
 )
-st.plotly_chart(fig_bar, use_container_width=True)
+st.plotly_chart(fig_bar, width="stretch")
 
 # =====================
 # Seção 4: Matriz Anual x Mensal
@@ -230,24 +231,51 @@ st.header("🗓️ Padrões Sazonais")
 # Criar matriz
 df_matrix = create_year_month_matrix(df, "Pct_Change")
 
-# Heatmap com Plotly
-fig_heatmap = go.Figure(data=go.Heatmap(
-    z=df_matrix.values,
-    x=df_matrix.columns,
-    y=df_matrix.index,
-    colorscale='RdYlGn',
-    hoverongaps=False,
-    hovertemplate='Ano: %{y}<br>Mês: %{x}<br>Variação: %{z:.2f}%<extra></extra>'
-))
+# Matriz textual para exibir os valores dentro das células
+text_matrix = df_matrix.apply(
+    lambda column: column.map(
+        lambda value: f"{value:.2f}%".replace(".", ",")
+        if pd.notna(value)
+        else ""
+    )
+)
+
+# Heatmap com Plotly e rótulos fixos
+fig_heatmap = go.Figure(
+    data=go.Heatmap(
+        z=df_matrix.values,
+        x=df_matrix.columns,
+        y=df_matrix.index,
+        colorscale="RdYlGn",
+        text=text_matrix.values,
+        texttemplate="%{text}",
+        textfont={
+            "size": 11,
+            "color": "black",
+        },
+        customdata=text_matrix.values,
+        hoverongaps=False,
+        hovertemplate=(
+            "Ano: %{y}<br>"
+            "Mês: %{x}<br>"
+            "Variação: %{customdata}"
+            "<extra></extra>"
+        ),
+    )
+)
 
 fig_heatmap.update_layout(
     title="Variação Média por Ano e Mês",
     xaxis_title="Mês",
     yaxis_title="Ano",
-    template='plotly_white'
+    template="plotly_white",
 )
 
-st.plotly_chart(fig_heatmap, use_container_width=True)
+fig_heatmap.update_yaxes(
+    autorange="reversed",
+)
+
+st.plotly_chart(fig_heatmap, width="stretch")
 
 # =====================
 # Seção 5: Tabela de Dados
@@ -255,10 +283,85 @@ st.plotly_chart(fig_heatmap, use_container_width=True)
 st.header("📋 Dados Processados")
 
 # Mostrar amostra
+display_columns = [
+    "Date",
+    "Open",
+    "High",
+    "Low",
+    "Value",
+    "Pct_Change",
+]
+
+available_columns = [
+    column for column in display_columns
+    if column in df.columns
+]
+
+df_display = df[available_columns].copy()
+
+df_display = df_display.rename(
+    columns={
+        "Value": "Close",
+    }
+)
+
+df_display["Date"] = pd.to_datetime(
+    df_display["Date"],
+    errors="coerce",
+).dt.strftime("%d/%m/%Y")
+
+monetary_columns = [
+    column
+    for column in ["Open", "High", "Low", "Close"]
+    if column in df_display.columns
+]
+
+for column in monetary_columns:
+    df_display[column] = df_display[column].map(format_brl)
+
+if "Pct_Change" in df_display.columns:
+    df_display["Pct_Change"] = df_display["Pct_Change"].map(
+    lambda value: (
+        "—"
+        if pd.isna(value)
+        else f"{float(value):.2f}%".replace(".", ",")
+    )
+)
+
+def color_pct_change(value):
+    if pd.isna(value):
+        return ""
+
+    try:
+        numeric_value = float(
+            str(value)
+            .replace("%", "")
+            .replace(".", "")
+            .replace(",", ".")
+        )
+    except ValueError:
+        return ""
+
+    if numeric_value > 0:
+        return "color: green; font-weight: 600;"
+
+    if numeric_value < 0:
+        return "color: red; font-weight: 600;"
+
+    return ""
+
+styled_df = df_display.style
+
+if "Pct_Change" in df_display.columns:
+    styled_df = styled_df.map(
+        color_pct_change,
+        subset=["Pct_Change"],
+    )
+
 st.dataframe(
-    df[['Date', 'Value', 'Pct_Change', 'Year', 'Month']].head(100),
-    use_container_width=True,
-    height=300
+    styled_df,
+    width="stretch",
+    hide_index=True,
 )
 
 # Botão para download

@@ -418,7 +418,7 @@ if not base_100_table.empty:
 
     st.plotly_chart(
         fig_base_100,
-        use_container_width=True,
+        width="stretch",
     )
 
 st.caption(
@@ -434,7 +434,7 @@ st.header("📊 Resumo Comparativo")
 
 st.dataframe(
     summary_display,
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
 )
 
@@ -479,14 +479,14 @@ else:
 
     st.plotly_chart(
         fig_correlation,
-        use_container_width=True,
+        width="stretch",
     )
 
     correlation_display = correlation_matrix.copy().round(2)
 
     st.dataframe(
         correlation_display,
-        use_container_width=True,
+        width="stretch",
     )
 
 st.caption(
@@ -565,7 +565,7 @@ st.header("📋 Dados Normalizados")
 
 st.dataframe(
     base_100_table,
-    use_container_width=True,
+    width="stretch",
     height=300,
 )
 

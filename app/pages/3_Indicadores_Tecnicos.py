@@ -351,7 +351,7 @@ if chart_type == "Candles":
 
     st.plotly_chart(
         candle_figure,
-        use_container_width=True,
+        width="stretch",
     )
 
     st.caption(
@@ -378,7 +378,7 @@ price_figure = create_price_indicator_chart(
 
 st.plotly_chart(
     price_figure,
-    use_container_width=True,
+    width="stretch",
 )
 
 st.caption(
@@ -397,7 +397,7 @@ if show_volume and "Volume" in df.columns:
 
     st.plotly_chart(
         volume_figure,
-        use_container_width=True,
+        width="stretch",
     )
 
 if show_rsi:
@@ -414,7 +414,7 @@ if show_rsi:
 
     st.plotly_chart(
         rsi_figure,
-        use_container_width=True,
+        width="stretch",
     )
 
     st.caption(
@@ -434,7 +434,7 @@ if show_macd:
 
     st.plotly_chart(
         macd_figure,
-        use_container_width=True,
+        width="stretch",
     )
 
 st.header("📋 Dados com Indicadores")
@@ -465,7 +465,7 @@ display_columns = [
 
 st.dataframe(
     df[display_columns],
-    use_container_width=True,
+    width="stretch",
     height=350,
 )
 
