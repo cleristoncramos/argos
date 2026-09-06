@@ -80,3 +80,26 @@ Cenários cobertos:
 - Rejeição de preços iguais a zero ou negativos.
 - Rejeição de coluna inexistente.
 - DataFrame vazio.
+
+## Validação automatizada — Fase 2
+
+**Data:** 05/09/2026  
+**Comando executado:**
+
+```powershell
+pytest -v
+```
+
+**Resultado:**
+
+```text
+56 passed in 5.08s
+```
+
+**Ambiente:**
+
+```text
+Python 3.13.15
+pytest 9.1.1
+Windows
+```
