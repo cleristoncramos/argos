@@ -81,3 +81,6 @@ backup_encoding_*/
 *.py[cod]
 .coverage
 htmlcov/
+
+# Evidências visuais locais de validação acadêmica
+/docs/evidencias/**/*.png
