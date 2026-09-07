@@ -78,3 +78,6 @@ __pycache__/
 backup_tests_2026-09-05/
 backup_layout_2026-09-06/
 backup_encoding_*/
+*.py[cod]
+.coverage
+htmlcov/

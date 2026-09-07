@@ -209,15 +209,6 @@ def build_risk_summary(
         "Sharpe": sharpe,
     }
 
-    return {
-    "Retorno total": total_return,
-    "Retorno médio": mean_return,
-    "Volatilidade": volatility,
-    "Drawdown máximo": max_drawdown,
-    "Percentual positivo": positive_percentage,
-    "Sharpe": sharpe,
-}
-
 
 def calculate_drawdown(
     df: pd.DataFrame,
