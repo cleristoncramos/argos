@@ -118,3 +118,32 @@ def create_year_month_matrix(
     ]
 
     return df_matrix[existing_months]
+
+def calculate_returns(
+    df: pd.DataFrame,
+    value_col: str = "Value"
+) -> pd.DataFrame:
+    """
+    Calcula retornos simples e logarítmicos entre períodos consecutivos.
+    """
+    result = df.copy()
+
+    result["Simple_Return"] = result[value_col].pct_change()
+    result["Log_Return"] = np.log(
+        result[value_col] / result[value_col].shift(1)
+    )
+
+    return result
+
+def calculate_cumulative_return(
+    df: pd.DataFrame,
+    return_col: str = "Simple_Return"
+) -> pd.DataFrame:
+    """
+    Calcula o retorno acumulado da série de retornos simples.
+    """
+    result = df.copy()
+    result["Cumulative_Return"] = (
+        (1 + result[return_col].fillna(0)).cumprod() - 1
+    )
+    return result

@@ -11,3 +11,13 @@ class AppConfig:
 
 # Instância única de configuração
 config = AppConfig()
+
+# Fator de anualização usado como simplificação para mercados tradicionais.
+# Em ações, 252 dias úteis/ano é uma aproximação comum. Em criptoativos,
+# que operam todos os dias, uma configuração futura pode usar 365.
+# O valor deve ser configurável por mercado/frequência e não aplicado sem ressalva.
+ANNUALIZATION_FACTORS = {
+    "Diário": 252,
+    "Semanal": 52,
+    "Mensal": 12,
+}

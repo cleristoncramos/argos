@@ -1,36 +1,60 @@
-import yfinance as yf
-import pandas as pd
-import streamlit as st
 from typing import Optional
 
-@st.cache_data(ttl=3600, show_spinner=False)
+import pandas as pd
+import streamlit as st
+import yfinance as yf
+
 
 def download_active_data(
     symbol: str,
     start_date: str,
     end_date: str,
-    interval: str = "1d"
+    interval: str = "1d",
 ) -> Optional[pd.DataFrame]:
     """
-    Baixa dados históricos e valida se o símbolo representa
-    um ativo reconhecido pelo Yahoo Finance.
+    Normaliza os parâmetros públicos e delega o download à função cacheada.
+    """
+    normalized_symbol = str(symbol).strip().upper()
+    normalized_start_date = str(start_date).strip()
+    normalized_end_date = str(end_date).strip()
+    normalized_interval = str(interval).strip().lower()
+
+    if not normalized_symbol:
+        return None
+
+    return _download_active_data_cached(
+        symbol=normalized_symbol,
+        start_date=normalized_start_date,
+        end_date=normalized_end_date,
+        interval=normalized_interval,
+    )
+
+
+@st.cache_data(
+    ttl=3600,
+    show_spinner=False,
+)
+def _download_active_data_cached(
+    symbol: str,
+    start_date: str,
+    end_date: str,
+    interval: str = "1d",
+) -> Optional[pd.DataFrame]:
+    """
+    Baixa dados históricos do Yahoo Finance para parâmetros já normalizados.
+
+    Esta função é interna e cacheada. Seus parâmetros devem chegar
+    normalizados para que chamadas equivalentes reutilizem a mesma entrada
+    do cache.
     """
     try:
-        symbol = symbol.strip().upper()
-
-        if not symbol:
-            return None
-
         ticker = yf.Ticker(symbol)
 
-        # Verifica se o ativo possui informações cadastrais.
-        # Alguns ativos podem não fornecer todos os campos.
         try:
             info = ticker.info
         except Exception:
             info = {}
 
-        # Indicadores mínimos de que o símbolo foi reconhecido.
         has_identity = any(
             info.get(field)
             for field in [
@@ -42,8 +66,6 @@ def download_active_data(
             ]
         )
 
-        # Se o Yahoo não conseguir identificar o ativo,
-        # não prossegue com o download.
         if not has_identity:
             return None
 
@@ -74,15 +96,26 @@ def download_active_data(
         else:
             return None
 
-        df = df.rename(columns={date_column: "Date"})
-        df["Date"] = pd.to_datetime(df["Date"])
+        df = df.rename(
+            columns={
+                date_column: "Date",
+            }
+        )
+
+        df["Date"] = pd.to_datetime(
+            df["Date"],
+        )
 
         if getattr(df["Date"].dt, "tz", None) is not None:
-            df["Date"] = df["Date"].dt.tz_localize(None)
+            df["Date"] = df["Date"].dt.tz_localize(
+                None,
+            )
 
-        df = df.sort_values("Date").reset_index(drop=True)
-
-        return df
+        return df.sort_values(
+            "Date",
+        ).reset_index(
+            drop=True,
+        )
 
     except Exception:
         return None
