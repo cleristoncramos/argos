@@ -1,17 +1,26 @@
 import os
 import sys
-from datetime import datetime
-
-import streamlit as st
 
 
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "../..")
-    ),
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        "../..",
+    )
 )
 
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(
+        0,
+        PROJECT_ROOT,
+    )
+
+
+import pandas as pd
+import streamlit as st
+
+from app.ui.sidebar import render_asset_controls
+from app.ui.state import initialize_asset_state
 from core.data_loader import download_active_data
 from core.data_processor import prepare_dataframe
 from core.indicators import (
@@ -37,14 +46,18 @@ st.set_page_config(
     layout="wide",
 )
 
+
+initialize_asset_state()
+
+
 st.title("📈 Indicadores Técnicos")
 
 st.markdown(
     """
-    Explore indicadores técnicos calculados sobre dados históricos.
-    Médias móveis, RSI, MACD e Bandas de Bollinger ajudam a descrever
-    tendência, momentum e dispersão de preços.
-    """
+Explore indicadores técnicos calculados sobre dados históricos.
+Médias móveis, RSI, MACD e Bandas de Bollinger ajudam a descrever
+tendência, momentum e dispersão de preços.
+"""
 )
 
 st.warning(
@@ -52,158 +65,171 @@ st.warning(
     "sinal automático de compra, venda ou recomendação de investimento."
 )
 
-st.sidebar.header("⚙️ Parâmetros da Análise")
 
-symbol = st.sidebar.text_input(
-    "Símbolo do ativo",
-    value="BTC-USD",
-    help="Exemplos: BTC-USD, AAPL, SPY, BRL=X",
+# =====================
+# Controles compartilhados
+# =====================
+asset_params = render_asset_controls(
+    title="⚙️ Parâmetros da Análise",
+    button_label="📊 Gerar análise técnica",
+    button_key="indicators_load_button",
 )
 
-start_date = st.sidebar.date_input(
-    "Data inicial",
-    value=datetime(2024, 1, 1),
-)
+symbol = asset_params["symbol"]
+start_date = asset_params["start_date"]
+end_date = asset_params["end_date"]
+frequency = asset_params["frequency"]
+load_analysis = asset_params["submitted"]
 
-end_date = st.sidebar.date_input(
-    "Data final",
-    value=datetime(2025, 12, 31),
-)
 
-frequency = st.sidebar.selectbox(
-    "Frequência",
-    options=["Diário", "Semanal", "Mensal"],
-    index=0,
-)
+# =====================
+# Controles específicos
+# =====================
+with st.sidebar:
+    st.divider()
 
-chart_type = st.sidebar.radio(
-    "Tipo de gráfico principal",
-    options=["Linha de fechamento", "Candles"],
-)
-
-st.sidebar.subheader("Médias móveis simples")
-
-show_sma_short = st.sidebar.checkbox(
-    "Exibir SMA curta",
-    value=True,
-)
-
-sma_short_window = st.sidebar.slider(
-    "Período da SMA curta",
-    min_value=2,
-    max_value=100,
-    value=20,
-)
-
-show_sma_long = st.sidebar.checkbox(
-    "Exibir SMA longa",
-    value=True,
-)
-
-sma_long_window = st.sidebar.slider(
-    "Período da SMA longa",
-    min_value=2,
-    max_value=250,
-    value=50,
-)
-
-st.sidebar.subheader("Médias móveis exponenciais")
-
-show_ema_short = st.sidebar.checkbox(
-    "Exibir EMA curta",
-    value=False,
-)
-
-ema_short_window = st.sidebar.slider(
-    "Período da EMA curta",
-    min_value=2,
-    max_value=100,
-    value=12,
-)
-
-show_ema_long = st.sidebar.checkbox(
-    "Exibir EMA longa",
-    value=False,
-)
-
-ema_long_window = st.sidebar.slider(
-    "Período da EMA longa",
-    min_value=2,
-    max_value=250,
-    value=26,
-)
-
-st.sidebar.subheader("Bandas de Bollinger")
-
-show_bollinger = st.sidebar.checkbox(
-    "Exibir Bandas de Bollinger",
-    value=False,
-)
-
-bollinger_window = st.sidebar.slider(
-    "Período das Bandas de Bollinger",
-    min_value=2,
-    max_value=100,
-    value=20,
-)
-
-bollinger_std = st.sidebar.slider(
-    "Desvios-padrão das Bandas",
-    min_value=1.0,
-    max_value=4.0,
-    value=2.0,
-    step=0.5,
-)
-
-st.sidebar.subheader("RSI")
-
-show_rsi = st.sidebar.checkbox(
-    "Exibir RSI",
-    value=True,
-)
-
-rsi_window = st.sidebar.slider(
-    "Período do RSI",
-    min_value=2,
-    max_value=100,
-    value=14,
-)
-
-rsi_upper = st.sidebar.slider(
-    "Nível superior do RSI",
-    min_value=50,
-    max_value=95,
-    value=70,
-)
-
-rsi_lower = st.sidebar.slider(
-    "Nível inferior do RSI",
-    min_value=5,
-    max_value=50,
-    value=30,
-)
-
-show_macd = st.sidebar.checkbox(
-    "Exibir MACD",
-    value=True,
-)
-
-show_volume = st.sidebar.checkbox(
-    "Exibir volume",
-    value=True,
-)
-
-load_analysis = st.sidebar.button(
-    "📊 Gerar análise técnica",
-    type="primary",
-)
-
-if start_date >= end_date:
-    st.sidebar.error(
-        "A data inicial deve ser anterior à data final."
+    chart_type = st.radio(
+        "Tipo de gráfico principal",
+        options=[
+            "Linha de fechamento",
+            "Candles",
+        ],
+        key="indicators_chart_type",
     )
-    st.stop()
 
+    st.subheader("Médias móveis simples")
+
+    show_sma_short = st.checkbox(
+        "Exibir SMA curta",
+        value=True,
+        key="indicators_show_sma_short",
+    )
+
+    sma_short_window = st.slider(
+        "Período da SMA curta",
+        min_value=2,
+        max_value=100,
+        value=20,
+        key="indicators_sma_short_window",
+    )
+
+    show_sma_long = st.checkbox(
+        "Exibir SMA longa",
+        value=True,
+        key="indicators_show_sma_long",
+    )
+
+    sma_long_window = st.slider(
+        "Período da SMA longa",
+        min_value=2,
+        max_value=250,
+        value=50,
+        key="indicators_sma_long_window",
+    )
+
+    st.subheader("Médias móveis exponenciais")
+
+    show_ema_short = st.checkbox(
+        "Exibir EMA curta",
+        value=False,
+        key="indicators_show_ema_short",
+    )
+
+    ema_short_window = st.slider(
+        "Período da EMA curta",
+        min_value=2,
+        max_value=100,
+        value=12,
+        key="indicators_ema_short_window",
+    )
+
+    show_ema_long = st.checkbox(
+        "Exibir EMA longa",
+        value=False,
+        key="indicators_show_ema_long",
+    )
+
+    ema_long_window = st.slider(
+        "Período da EMA longa",
+        min_value=2,
+        max_value=250,
+        value=26,
+        key="indicators_ema_long_window",
+    )
+
+    st.subheader("Bandas de Bollinger")
+
+    show_bollinger = st.checkbox(
+        "Exibir Bandas de Bollinger",
+        value=False,
+        key="indicators_show_bollinger",
+    )
+
+    bollinger_window = st.slider(
+        "Período das Bandas de Bollinger",
+        min_value=2,
+        max_value=100,
+        value=20,
+        key="indicators_bollinger_window",
+    )
+
+    bollinger_std = st.slider(
+        "Desvios-padrão das Bandas",
+        min_value=1.0,
+        max_value=4.0,
+        value=2.0,
+        step=0.5,
+        key="indicators_bollinger_std",
+    )
+
+    st.subheader("RSI")
+
+    show_rsi = st.checkbox(
+        "Exibir RSI",
+        value=True,
+        key="indicators_show_rsi",
+    )
+
+    rsi_window = st.slider(
+        "Período do RSI",
+        min_value=2,
+        max_value=100,
+        value=14,
+        key="indicators_rsi_window",
+    )
+
+    rsi_upper = st.slider(
+        "Nível superior do RSI",
+        min_value=50,
+        max_value=95,
+        value=70,
+        key="indicators_rsi_upper",
+    )
+
+    rsi_lower = st.slider(
+        "Nível inferior do RSI",
+        min_value=5,
+        max_value=50,
+        value=30,
+        key="indicators_rsi_lower",
+    )
+
+    show_macd = st.checkbox(
+        "Exibir MACD",
+        value=True,
+        key="indicators_show_macd",
+    )
+
+    show_volume = st.checkbox(
+        "Exibir volume",
+        value=True,
+        key="indicators_show_volume",
+    )
+
+
+# =====================
+# Validação de parâmetros
+# =====================
 if sma_short_window >= sma_long_window:
     st.sidebar.warning(
         "A SMA curta normalmente deve ter período menor que a SMA longa."
@@ -220,110 +246,192 @@ if rsi_lower >= rsi_upper:
     )
     st.stop()
 
-if not load_analysis:
+
+# =====================
+# Processamento da análise
+# =====================
+if load_analysis:
+    if not symbol:
+        st.sidebar.error(
+            "Informe um símbolo de ativo antes de gerar a análise."
+        )
+        st.stop()
+
+    effective_chart_type = chart_type
+
+    if chart_type == "Candles" and frequency == "Mensal":
+        effective_chart_type = "Linha de fechamento"
+
+        st.sidebar.warning(
+            "O gráfico candle não é exibido para frequência mensal. "
+            "A análise utilizará linha de fechamento."
+        )
+
+    st.session_state["indicators_loaded"] = True
+    st.session_state["indicators_query"] = {
+        "symbol": symbol,
+        "start_date": start_date,
+        "end_date": end_date,
+        "frequency": frequency,
+        "chart_type": effective_chart_type,
+        "show_sma_short": show_sma_short,
+        "sma_short_window": sma_short_window,
+        "show_sma_long": show_sma_long,
+        "sma_long_window": sma_long_window,
+        "show_ema_short": show_ema_short,
+        "ema_short_window": ema_short_window,
+        "show_ema_long": show_ema_long,
+        "ema_long_window": ema_long_window,
+        "show_bollinger": show_bollinger,
+        "bollinger_window": bollinger_window,
+        "bollinger_std": bollinger_std,
+        "show_rsi": show_rsi,
+        "rsi_window": rsi_window,
+        "rsi_upper": rsi_upper,
+        "rsi_lower": rsi_lower,
+        "show_macd": show_macd,
+        "show_volume": show_volume,
+    }
+
+    with st.spinner("Carregando e calculando indicadores..."):
+        df_raw = download_active_data(
+            symbol=symbol,
+            start_date=start_date.strftime("%Y-%m-%d"),
+            end_date=end_date.strftime("%Y-%m-%d"),
+            interval="1d",
+        )
+
+        if df_raw is None or df_raw.empty:
+            st.session_state["indicators_loaded"] = False
+            st.session_state["indicators_query"] = None
+
+            st.error(
+                f"Não foi possível carregar dados para '{symbol}'. "
+                "Verifique o símbolo e o período."
+            )
+            st.stop()
+
+        df = prepare_dataframe(df_raw)
+
+        if frequency == "Semanal":
+            df = (
+                df
+                .set_index("Date")
+                .resample("W")
+                .agg(
+                    {
+                        "Open": "first",
+                        "High": "max",
+                        "Low": "min",
+                        "Close": "last",
+                        "Volume": "sum",
+                    }
+                )
+                .dropna()
+                .reset_index()
+            )
+
+        elif frequency == "Mensal":
+            df = (
+                df
+                .set_index("Date")
+                .resample("ME")
+                .agg(
+                    {
+                        "Open": "first",
+                        "High": "max",
+                        "Low": "min",
+                        "Close": "last",
+                        "Volume": "sum",
+                    }
+                )
+                .dropna()
+                .reset_index()
+            )
+
+        df["Value"] = df["Close"]
+
+        df = add_moving_averages(
+            df,
+            value_col="Value",
+            short_window=sma_short_window,
+            long_window=sma_long_window,
+        )
+
+        df = add_exponential_moving_averages(
+            df,
+            value_col="Value",
+            short_window=ema_short_window,
+            long_window=ema_long_window,
+        )
+
+        df = add_bollinger_bands(
+            df,
+            value_col="Value",
+            window=bollinger_window,
+            num_std=bollinger_std,
+        )
+
+        df = add_rsi(
+            df,
+            value_col="Value",
+            window=rsi_window,
+        )
+
+        df = add_macd(
+            df,
+            value_col="Value",
+            short_span=ema_short_window,
+            long_span=ema_long_window,
+            signal_span=9,
+        )
+
+        st.session_state["indicators_df"] = df
+
+
+# =====================
+# Consulta confirmada
+# =====================
+query = st.session_state.get("indicators_query")
+
+if (
+    not st.session_state.get("indicators_loaded")
+    or query is None
+    or "indicators_df" not in st.session_state
+):
     st.info(
         "Configure os parâmetros na barra lateral e clique em "
         "**Gerar análise técnica**."
     )
     st.stop()
 
-with st.spinner("Carregando e calculando indicadores..."):
-    df_raw = download_active_data(
-        symbol=symbol,
-        start_date=start_date.strftime("%Y-%m-%d"),
-        end_date=end_date.strftime("%Y-%m-%d"),
-        interval="1d",
-    )
 
-if df_raw is None or df_raw.empty:
-    st.error(
-        f"Não foi possível carregar dados para '{symbol}'. "
-        "Verifique o símbolo e o período."
-    )
-    st.stop()
+df = st.session_state["indicators_df"]
 
-if chart_type == "Candles" and frequency == "Mensal":
-    st.warning(
-        "O gráfico candle não é exibido para frequência mensal, pois a "
-        "agregação mensal pode ocultar a dinâmica interna do período. "
-        "Será exibido o gráfico de linha de fechamento."
-    )
-    chart_type = "Linha de fechamento"
+symbol = query["symbol"]
+start_date = query["start_date"]
+end_date = query["end_date"]
+frequency = query["frequency"]
+chart_type = query["chart_type"]
 
-df = prepare_dataframe(df_raw)
+show_sma_short = query["show_sma_short"]
+sma_short_window = query["sma_short_window"]
+show_sma_long = query["show_sma_long"]
+sma_long_window = query["sma_long_window"]
 
-if frequency == "Semanal":
-    df = (
-        df
-        .set_index("Date")
-        .resample("W")
-        .agg(
-            {
-                "Open": "first",
-                "High": "max",
-                "Low": "min",
-                "Close": "last",
-                "Volume": "sum",
-            }
-        )
-        .dropna()
-        .reset_index()
-    )
+show_ema_short = query["show_ema_short"]
+ema_short_window = query["ema_short_window"]
+show_ema_long = query["show_ema_long"]
+ema_long_window = query["ema_long_window"]
 
-elif frequency == "Mensal":
-    df = (
-        df
-        .set_index("Date")
-        .resample("ME")
-        .agg(
-            {
-                "Open": "first",
-                "High": "max",
-                "Low": "min",
-                "Close": "last",
-                "Volume": "sum",
-            }
-        )
-        .dropna()
-        .reset_index()
-    )
+show_bollinger = query["show_bollinger"]
+show_rsi = query["show_rsi"]
+rsi_window = query["rsi_window"]
+rsi_upper = query["rsi_upper"]
+rsi_lower = query["rsi_lower"]
+show_macd = query["show_macd"]
+show_volume = query["show_volume"]
 
-df["Value"] = df["Close"]
-
-df = add_moving_averages(
-    df,
-    value_col="Value",
-    short_window=sma_short_window,
-    long_window=sma_long_window,
-)
-
-df = add_exponential_moving_averages(
-    df,
-    value_col="Value",
-    short_window=ema_short_window,
-    long_window=ema_long_window,
-)
-
-df = add_bollinger_bands(
-    df,
-    value_col="Value",
-    window=bollinger_window,
-    num_std=bollinger_std,
-)
-
-df = add_rsi(
-    df,
-    value_col="Value",
-    window=rsi_window,
-)
-
-df = add_macd(
-    df,
-    value_col="Value",
-    short_span=ema_short_window,
-    long_span=ema_long_window,
-    signal_span=9,
-)
 
 context = format_context(
     symbol=symbol.upper(),
@@ -331,6 +439,7 @@ context = format_context(
     end_date=end_date,
     frequency=frequency,
 )
+
 
 st.info(
     f"Ativo: **{symbol.upper()}** · "
@@ -340,6 +449,10 @@ st.info(
     f"Observações: **{len(df)}**"
 )
 
+
+# =====================
+# Preço e indicadores
+# =====================
 st.header("📊 Preço e Indicadores")
 
 if chart_type == "Candles":
@@ -386,6 +499,10 @@ st.caption(
     "As médias móveis e bandas são calculadas a partir do fechamento."
 )
 
+
+# =====================
+# Volume
+# =====================
 if show_volume and "Volume" in df.columns:
     st.header("📦 Volume")
 
@@ -400,6 +517,10 @@ if show_volume and "Volume" in df.columns:
         width="stretch",
     )
 
+
+# =====================
+# RSI
+# =====================
 if show_rsi:
     st.header("📉 RSI")
 
@@ -423,6 +544,10 @@ if show_rsi:
         "isoladamente como recomendação de investimento."
     )
 
+
+# =====================
+# MACD
+# =====================
 if show_macd:
     st.header("📊 MACD")
 
@@ -437,6 +562,10 @@ if show_macd:
         width="stretch",
     )
 
+
+# =====================
+# Tabela e download
+# =====================
 st.header("📋 Dados com Indicadores")
 
 display_columns = [
@@ -469,7 +598,11 @@ st.dataframe(
     height=350,
 )
 
-csv_data = df.to_csv(index=False).encode("utf-8")
+csv_data = df.to_csv(
+    index=False,
+).encode(
+    "utf-8"
+)
 
 st.download_button(
     label="⬇️ Baixar dados com indicadores em CSV",
@@ -478,6 +611,10 @@ st.download_button(
     mime="text/csv",
 )
 
+
+# =====================
+# Rodapé
+# =====================
 st.markdown("---")
 
 st.caption(

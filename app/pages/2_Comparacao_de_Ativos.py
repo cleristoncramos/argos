@@ -2,21 +2,28 @@ import os
 import sys
 from datetime import datetime
 
+
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        "../..",
+    )
+)
+
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(
+        0,
+        PROJECT_ROOT,
+    )
+
+
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-
-# Adiciona a raiz do projeto ao caminho de importação.
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "../..")
-    ),
-)
-
+from app.ui.state import initialize_asset_state
 from core.analyzer import calculate_returns
 from core.comparison import (
     build_base_100_table,
@@ -40,20 +47,135 @@ from core.risk_metrics import (
 )
 
 
+COMPARISON_SYMBOLS_STATE_KEY = "comparison_symbols_input"
+COMPARISON_START_DATE_STATE_KEY = "comparison_start_date"
+COMPARISON_END_DATE_STATE_KEY = "comparison_end_date"
+COMPARISON_FREQUENCY_STATE_KEY = "comparison_frequency"
+COMPARISON_RISK_FREE_RATE_STATE_KEY = "comparison_risk_free_rate_pct"
+
+COMPARISON_SYMBOLS_WIDGET_KEY = "comparison_symbols_input_widget"
+COMPARISON_START_DATE_WIDGET_KEY = "comparison_start_date_widget"
+COMPARISON_END_DATE_WIDGET_KEY = "comparison_end_date_widget"
+COMPARISON_FREQUENCY_WIDGET_KEY = "comparison_frequency_widget"
+COMPARISON_RISK_FREE_RATE_WIDGET_KEY = (
+    "comparison_risk_free_rate_pct_widget"
+)
+
+
+def sync_comparison_symbols() -> None:
+    """Sincroniza a lista de símbolos informada no widget."""
+    st.session_state[COMPARISON_SYMBOLS_STATE_KEY] = (
+        st.session_state[COMPARISON_SYMBOLS_WIDGET_KEY]
+    )
+
+
+def sync_comparison_start_date() -> None:
+    """Sincroniza a data inicial informada no widget."""
+    st.session_state[COMPARISON_START_DATE_STATE_KEY] = (
+        st.session_state[COMPARISON_START_DATE_WIDGET_KEY]
+    )
+
+
+def sync_comparison_end_date() -> None:
+    """Sincroniza a data final informada no widget."""
+    st.session_state[COMPARISON_END_DATE_STATE_KEY] = (
+        st.session_state[COMPARISON_END_DATE_WIDGET_KEY]
+    )
+
+
+def sync_comparison_frequency() -> None:
+    """Sincroniza a frequência informada no widget."""
+    st.session_state[COMPARISON_FREQUENCY_STATE_KEY] = (
+        st.session_state[COMPARISON_FREQUENCY_WIDGET_KEY]
+    )
+
+
+def sync_comparison_risk_free_rate() -> None:
+    """Sincroniza a taxa livre de risco informada no widget."""
+    st.session_state[COMPARISON_RISK_FREE_RATE_STATE_KEY] = float(
+        st.session_state[COMPARISON_RISK_FREE_RATE_WIDGET_KEY]
+    )
+
+
+def initialize_comparison_state() -> None:
+    """Inicializa os estados persistentes e temporários da comparação."""
+    asset_start_date = st.session_state.get(
+        "asset_start_date",
+        datetime(2020, 1, 1),
+    )
+
+    asset_end_date = st.session_state.get(
+        "asset_end_date",
+        datetime(2025, 12, 31),
+    )
+
+    asset_frequency = st.session_state.get(
+        "asset_frequency",
+        "Mensal",
+    )
+
+    default_symbols = "BTC-USD,AAPL,USDBRL=X,SPY"
+
+    if COMPARISON_SYMBOLS_STATE_KEY not in st.session_state:
+        st.session_state[COMPARISON_SYMBOLS_STATE_KEY] = default_symbols
+
+    if COMPARISON_START_DATE_STATE_KEY not in st.session_state:
+        st.session_state[COMPARISON_START_DATE_STATE_KEY] = asset_start_date
+
+    if COMPARISON_END_DATE_STATE_KEY not in st.session_state:
+        st.session_state[COMPARISON_END_DATE_STATE_KEY] = asset_end_date
+
+    if COMPARISON_FREQUENCY_STATE_KEY not in st.session_state:
+        st.session_state[COMPARISON_FREQUENCY_STATE_KEY] = asset_frequency
+
+    if COMPARISON_RISK_FREE_RATE_STATE_KEY not in st.session_state:
+        st.session_state[COMPARISON_RISK_FREE_RATE_STATE_KEY] = 0.0
+
+    if COMPARISON_SYMBOLS_WIDGET_KEY not in st.session_state:
+        st.session_state[COMPARISON_SYMBOLS_WIDGET_KEY] = (
+            st.session_state[COMPARISON_SYMBOLS_STATE_KEY]
+        )
+
+    if COMPARISON_START_DATE_WIDGET_KEY not in st.session_state:
+        st.session_state[COMPARISON_START_DATE_WIDGET_KEY] = (
+            st.session_state[COMPARISON_START_DATE_STATE_KEY]
+        )
+
+    if COMPARISON_END_DATE_WIDGET_KEY not in st.session_state:
+        st.session_state[COMPARISON_END_DATE_WIDGET_KEY] = (
+            st.session_state[COMPARISON_END_DATE_STATE_KEY]
+        )
+
+    if COMPARISON_FREQUENCY_WIDGET_KEY not in st.session_state:
+        st.session_state[COMPARISON_FREQUENCY_WIDGET_KEY] = (
+            st.session_state[COMPARISON_FREQUENCY_STATE_KEY]
+        )
+
+    if COMPARISON_RISK_FREE_RATE_WIDGET_KEY not in st.session_state:
+        st.session_state[COMPARISON_RISK_FREE_RATE_WIDGET_KEY] = float(
+            st.session_state[COMPARISON_RISK_FREE_RATE_STATE_KEY]
+        )
+
+
 st.set_page_config(
     page_title="Comparação de Ativos | Argos DataLab",
     page_icon="⚖️",
     layout="wide",
 )
 
+
+initialize_asset_state()
+initialize_comparison_state()
+
+
 st.title("⚖️ Comparação de Ativos")
 
 st.markdown(
     """
-    Compare o comportamento histórico de diferentes ativos por meio de
-    retorno acumulado, normalização base 100, volatilidade, drawdown,
-    índice de Sharpe e correlação de retornos.
-    """
+Compare o comportamento histórico de diferentes ativos por meio de
+retorno acumulado, normalização base 100, volatilidade, drawdown,
+índice de Sharpe e correlação de retornos.
+"""
 )
 
 st.info(
@@ -61,136 +183,254 @@ st.info(
     "Ela não constitui recomendação de investimento."
 )
 
+
 # ==========================================================
-# PARÂMETROS DA COMPARAÇÃO
+# Parâmetros da comparação
 # ==========================================================
+with st.sidebar:
+    st.header("⚙️ Parâmetros da Comparação")
 
-st.sidebar.header("⚙️ Parâmetros da Comparação")
+    symbols_input = st.text_input(
+        "Símbolos dos ativos",
+        key=COMPARISON_SYMBOLS_WIDGET_KEY,
+        on_change=sync_comparison_symbols,
+        help=(
+            "Informe de 2 a 5 símbolos separados por vírgula. "
+            "Exemplo: BTC-USD,AAPL,USDBRL=X,SPY"
+        ),
+    )
 
-symbols_input = st.sidebar.text_input(
-    "Símbolos dos ativos",
-    value="BTC-USD,AAPL,USD=BRL,SPY",
-    help=(
-        "Informe de 2 a 5 símbolos separados por vírgula. "
-        "Exemplo: BTC-USD,AAPL,USD=BRL,SPY"
-    ),
-)
+    start_date = st.date_input(
+        "Data inicial",
+        key=COMPARISON_START_DATE_WIDGET_KEY,
+        on_change=sync_comparison_start_date,
+    )
 
-start_date = st.sidebar.date_input(
-    "Data inicial",
-    value=datetime(2020, 1, 1),
-)
+    end_date = st.date_input(
+        "Data final",
+        key=COMPARISON_END_DATE_WIDGET_KEY,
+        on_change=sync_comparison_end_date,
+    )
 
-end_date = st.sidebar.date_input(
-    "Data final",
-    value=datetime(2025, 12, 31),
-)
+    frequency = st.selectbox(
+        "Frequência",
+        options=config.FREQUENCIES,
+        key=COMPARISON_FREQUENCY_WIDGET_KEY,
+        on_change=sync_comparison_frequency,
+    )
 
-frequency = st.sidebar.selectbox(
-    "Frequência",
-    options=config.FREQUENCIES,
-    index=config.FREQUENCIES.index("Mensal"),
-)
+    risk_free_rate_pct = st.number_input(
+        "Taxa livre de risco anual (%)",
+        min_value=0.0,
+        max_value=100.0,
+        step=0.25,
+        key=COMPARISON_RISK_FREE_RATE_WIDGET_KEY,
+        on_change=sync_comparison_risk_free_rate,
+        help=(
+            "Informe uma taxa anual em percentual. "
+            "Exemplo: 10,00 representa 10% ao ano."
+        ),
+    )
 
-risk_free_rate_pct = st.sidebar.number_input(
-    "Taxa livre de risco anual (%)",
-    min_value=0.0,
-    max_value=100.0,
-    value=0.0,
-    step=0.25,
-    help=(
-        "Informe uma taxa anual em percentual. "
-        "Exemplo: 10,00 representa 10% ao ano."
-    ),
+    load_comparison = st.button(
+        "📊 Comparar ativos",
+        type="primary",
+        key="comparison_load_button",
+    )
+
+
+symbols_input = st.session_state[COMPARISON_SYMBOLS_STATE_KEY]
+start_date = st.session_state[COMPARISON_START_DATE_STATE_KEY]
+end_date = st.session_state[COMPARISON_END_DATE_STATE_KEY]
+frequency = st.session_state[COMPARISON_FREQUENCY_STATE_KEY]
+risk_free_rate_pct = float(
+    st.session_state[COMPARISON_RISK_FREE_RATE_STATE_KEY]
 )
 
 annual_risk_free_rate = risk_free_rate_pct / 100
 
-load_comparison = st.sidebar.button(
-    "📊 Comparar ativos",
-    type="primary",
-)
 
 # ==========================================================
-# VALIDAÇÃO DAS ENTRADAS
+# Processamento da comparação
 # ==========================================================
+if load_comparison:
+    if start_date >= end_date:
+        st.sidebar.error(
+            "A data inicial deve ser anterior à data final."
+        )
+        st.stop()
 
-if start_date >= end_date:
-    st.sidebar.error(
-        "A data inicial deve ser anterior à data final."
+    try:
+        symbols = parse_symbols(symbols_input)
+    except ValueError as error:
+        st.sidebar.error(str(error))
+        st.stop()
+
+    asset_data = {}
+    failed_symbols = []
+
+    with st.spinner("Carregando e processando os ativos..."):
+        for symbol in symbols:
+            df_raw = download_active_data(
+                symbol=symbol,
+                start_date=start_date.strftime("%Y-%m-%d"),
+                end_date=end_date.strftime("%Y-%m-%d"),
+                interval="1d",
+            )
+
+            if df_raw is None or df_raw.empty:
+                failed_symbols.append(symbol)
+                continue
+
+            df_prepared = prepare_dataframe(df_raw)
+
+            df_aggregated = aggregate_by_frequency(
+                df_prepared,
+                frequency,
+            )
+
+            df_primary = select_primary_variable(
+                df_aggregated,
+                "Close",
+            )
+
+            df_returns = calculate_returns(
+                df_primary,
+                "Value",
+            )
+
+            df_risk = calculate_drawdown(
+                df_returns,
+                "Value",
+            )
+
+            asset_data[symbol] = df_risk
+
+    if len(asset_data) < 2:
+        st.session_state["comparison_loaded"] = False
+        st.session_state["comparison_query"] = None
+        st.session_state.pop("comparison_asset_data", None)
+        st.session_state.pop("comparison_failed_symbols", None)
+
+        st.error(
+            "Não foi possível obter dados válidos para pelo menos dois ativos."
+        )
+
+        if failed_symbols:
+            st.warning(
+                "Símbolos sem dados válidos: "
+                + ", ".join(failed_symbols)
+            )
+
+        st.stop()
+
+    base_100_table = build_base_100_table(asset_data)
+
+    price_table = build_price_table(asset_data)
+
+    returns_table = calculate_returns_table(price_table)
+
+    correlation_matrix = calculate_correlation_matrix(
+        returns_table
     )
-    st.stop()
 
-if not load_comparison:
+    summary = create_comparison_summary(asset_data)
+
+    annualization_factor = ANNUALIZATION_FACTORS.get(
+        frequency,
+        252,
+    )
+
+    risk_rows = []
+
+    for symbol, df in asset_data.items():
+        metrics = build_risk_summary(
+            df=df,
+            value_col="Value",
+            annualization_factor=float(annualization_factor),
+            annual_risk_free_rate=annual_risk_free_rate,
+        )
+
+        risk_rows.append(
+            {
+                "Ativo": symbol,
+                "Volatilidade": metrics.get("Volatilidade"),
+                "Drawdown máximo": metrics.get("Drawdown máximo"),
+                "Percentual positivo": metrics.get(
+                    "Percentual positivo"
+                ),
+                "Sharpe": metrics.get("Sharpe"),
+            }
+        )
+
+    risk_table = pd.DataFrame(risk_rows)
+
+    summary = summary.merge(
+        risk_table,
+        on="Ativo",
+        how="left",
+    )
+
+    st.session_state["comparison_loaded"] = True
+    st.session_state["comparison_query"] = {
+        "symbols_input": symbols_input,
+        "start_date": start_date,
+        "end_date": end_date,
+        "frequency": frequency,
+        "risk_free_rate_pct": risk_free_rate_pct,
+    }
+    st.session_state["comparison_asset_data"] = asset_data
+    st.session_state["comparison_failed_symbols"] = failed_symbols
+    st.session_state["comparison_base_100_table"] = base_100_table
+    st.session_state["comparison_price_table"] = price_table
+    st.session_state["comparison_returns_table"] = returns_table
+    st.session_state["comparison_correlation_matrix"] = correlation_matrix
+    st.session_state["comparison_summary"] = summary
+
+
+# ==========================================================
+# Consulta confirmada
+# ==========================================================
+query = st.session_state.get("comparison_query")
+
+if (
+    not st.session_state.get("comparison_loaded")
+    or query is None
+    or "comparison_base_100_table" not in st.session_state
+    or "comparison_correlation_matrix" not in st.session_state
+    or "comparison_summary" not in st.session_state
+):
     st.info(
         "Informe os símbolos, selecione o período e clique em "
         "**Comparar ativos**."
     )
     st.stop()
 
-try:
-    symbols = parse_symbols(symbols_input)
-except ValueError as error:
-    st.error(str(error))
-    st.stop()
+
+asset_data = st.session_state["comparison_asset_data"]
+failed_symbols = st.session_state["comparison_failed_symbols"]
+base_100_table = st.session_state["comparison_base_100_table"]
+price_table = st.session_state["comparison_price_table"]
+returns_table = st.session_state["comparison_returns_table"]
+correlation_matrix = st.session_state["comparison_correlation_matrix"]
+summary = st.session_state["comparison_summary"]
+
+symbols_input = query["symbols_input"]
+start_date = query["start_date"]
+end_date = query["end_date"]
+frequency = query["frequency"]
+risk_free_rate_pct = float(query["risk_free_rate_pct"])
+annual_risk_free_rate = risk_free_rate_pct / 100
+
+annualization_factor = ANNUALIZATION_FACTORS.get(
+    frequency,
+    252,
+)
+
 
 # ==========================================================
-# COLETA E PROCESSAMENTO DOS ATIVOS
+# Mensagens da consulta confirmada
 # ==========================================================
-
-asset_data = {}
-failed_symbols = []
-
-with st.spinner("Carregando e processando os ativos..."):
-    for symbol in symbols:
-        df_raw = download_active_data(
-            symbol=symbol,
-            start_date=start_date.strftime("%Y-%m-%d"),
-            end_date=end_date.strftime("%Y-%m-%d"),
-            interval="1d",
-        )
-
-        if df_raw is None or df_raw.empty:
-            failed_symbols.append(symbol)
-            continue
-
-        df_prepared = prepare_dataframe(df_raw)
-
-        df_aggregated = aggregate_by_frequency(
-            df_prepared,
-            frequency,
-        )
-
-        df_primary = select_primary_variable(
-            df_aggregated,
-            "Close",
-        )
-
-        df_returns = calculate_returns(
-            df_primary,
-            "Value",
-        )
-
-        df_risk = calculate_drawdown(
-            df_returns,
-            "Value",
-        )
-
-        asset_data[symbol] = df_risk
-
-if len(asset_data) < 2:
-    st.error(
-        "Não foi possível obter dados válidos para pelo menos dois ativos."
-    )
-
-    if failed_symbols:
-        st.warning(
-            "Símbolos sem dados válidos: "
-            + ", ".join(failed_symbols)
-        )
-
-    st.stop()
-
 if failed_symbols:
     st.warning(
         "Os seguintes símbolos não retornaram dados válidos: "
@@ -208,61 +448,10 @@ st.info(
     "retornos válidos e coincidentes."
 )
 
-# ==========================================================
-# PREPARAÇÃO DE DADOS COMPARATIVOS
-# ==========================================================
-
-base_100_table = build_base_100_table(asset_data)
-
-price_table = build_price_table(asset_data)
-
-returns_table = calculate_returns_table(price_table)
-
-correlation_matrix = calculate_correlation_matrix(
-    returns_table
-)
-
-summary = create_comparison_summary(asset_data)
-
-annualization_factor = ANNUALIZATION_FACTORS.get(
-    frequency,
-    252,
-)
-
-risk_rows = []
-
-for symbol, df in asset_data.items():
-    metrics = build_risk_summary(
-        df=df,
-        value_col="Value",
-        annualization_factor=float(annualization_factor),
-        annual_risk_free_rate=annual_risk_free_rate,
-    )
-
-    risk_rows.append(
-        {
-            "Ativo": symbol,
-            "Volatilidade": metrics.get("Volatilidade"),
-            "Drawdown máximo": metrics.get("Drawdown máximo"),
-            "Percentual positivo": metrics.get(
-                "Percentual positivo"
-            ),
-            "Sharpe": metrics.get("Sharpe"),
-        }
-    )
-
-risk_table = pd.DataFrame(risk_rows)
-
-summary = summary.merge(
-    risk_table,
-    on="Ativo",
-    how="left",
-)
 
 # ==========================================================
-# FORMATAÇÃO PARA EXIBIÇÃO
+# Formatação para exibição
 # ==========================================================
-
 summary_numeric = summary.copy()
 
 summary_display = summary_numeric.sort_values(
@@ -281,9 +470,8 @@ percentage_columns = [
 
 for column in percentage_columns:
     if column in summary_display.columns:
-        summary_display[column] = (
-            summary_display[column]
-            .map(format_return_pct)
+        summary_display[column] = summary_display[column].map(
+            format_return_pct
         )
 
 for column in ["Primeiro valor", "Último valor"]:
@@ -308,10 +496,11 @@ if "Sharpe" in summary_display.columns:
         )
     )
 
+
 color_map = {
     "BTC-USD": "#F59E0B",
     "AAPL": "#3B82F6",
-    "USD=BRL": "#10B981",
+    "USDBRL=X": "#10B981",
     "SPY": "#8B5CF6",
 }
 
@@ -319,20 +508,20 @@ for symbol in summary_numeric["Ativo"].tolist():
     if symbol not in color_map:
         color_map[symbol] = "#64748B"
 
-# ==========================================================
-# METODOLOGIA DO SHARPE
-# ==========================================================
 
+# ==========================================================
+# Metodologia do Sharpe
+# ==========================================================
 st.caption(
     f"Índice de Sharpe anualizado calculado com taxa livre de risco de "
     f"{risk_free_rate_pct:.2f}% ao ano e fator de anualização "
     f"{annualization_factor} para frequência {frequency}."
 )
 
-# ==========================================================
-# DESTAQUES DA COMPARAÇÃO
-# ==========================================================
 
+# ==========================================================
+# Destaques
+# ==========================================================
 st.header("📌 Destaques da Comparação")
 
 if not summary_numeric.empty:
@@ -377,10 +566,10 @@ if not summary_numeric.empty:
             ),
         )
 
-# ==========================================================
-# GRÁFICO BASE 100
-# ==========================================================
 
+# ==========================================================
+# Gráfico base 100
+# ==========================================================
 st.header("📈 Evolução Normalizada — Base 100")
 
 if not base_100_table.empty:
@@ -426,10 +615,10 @@ st.caption(
     "Por exemplo, valor 120 representa valorização acumulada de 20%."
 )
 
-# ==========================================================
-# TABELA RESUMO
-# ==========================================================
 
+# ==========================================================
+# Tabela resumo
+# ==========================================================
 st.header("📊 Resumo Comparativo")
 
 st.dataframe(
@@ -438,10 +627,10 @@ st.dataframe(
     hide_index=True,
 )
 
-# ==========================================================
-# CORRELAÇÃO
-# ==========================================================
 
+# ==========================================================
+# Correlação
+# ==========================================================
 st.header("🔗 Correlação entre Retornos")
 
 if correlation_matrix.empty:
@@ -494,10 +683,10 @@ st.caption(
     "Ela não representa causalidade nem garante comportamento futuro."
 )
 
-# ==========================================================
-# MÉTRICAS POR ATIVO
-# ==========================================================
 
+# ==========================================================
+# Métricas por ativo
+# ==========================================================
 st.header("🧮 Métricas por Ativo")
 
 for _, row in summary_numeric.iterrows():
@@ -557,10 +746,10 @@ for _, row in summary_numeric.iterrows():
         "intermediária, não apenas a valorização final."
     )
 
-# ==========================================================
-# DADOS E EXPORTAÇÃO
-# ==========================================================
 
+# ==========================================================
+# Dados e exportação
+# ==========================================================
 st.header("📋 Dados Normalizados")
 
 st.dataframe(
@@ -569,7 +758,11 @@ st.dataframe(
     height=300,
 )
 
-csv_data = base_100_table.to_csv(index=False).encode("utf-8")
+csv_data = base_100_table.to_csv(
+    index=False,
+).encode(
+    "utf-8"
+)
 
 st.download_button(
     label="⬇️ Baixar comparação em CSV",
@@ -578,6 +771,10 @@ st.download_button(
     mime="text/csv",
 )
 
+
+# ==========================================================
+# Rodapé
+# ==========================================================
 st.markdown("---")
 
 st.caption(
