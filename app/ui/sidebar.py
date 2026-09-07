@@ -1,12 +1,7 @@
-from datetime import date
+from typing import Any
 
 import streamlit as st
 
-
-DEFAULT_SYMBOL = "BTC-USD"
-DEFAULT_START_DATE = date(2020, 1, 1)
-DEFAULT_END_DATE = date.today()
-DEFAULT_FREQUENCY = "Mensal"
 
 FREQUENCY_OPTIONS = [
     "Diário",
@@ -15,11 +10,15 @@ FREQUENCY_OPTIONS = [
 ]
 
 
-def render_asset_sidebar(title="⚙️ Configurações"):
+def render_asset_controls(
+    title: str = "⚙️ Configurações",
+    button_label: str = "🔄 Carregar Dados",
+    button_key: str = "asset_load_button",
+) -> dict[str, Any]:
     """
-    Renderiza controles compartilhados de análise individual.
+    Renderiza os controles compartilhados para análise de um ativo.
 
-    Retorna os parâmetros escolhidos pelo usuário.
+    A função pressupõe que initialize_asset_state() foi chamada antes.
     """
     with st.sidebar:
         st.header(title)
@@ -45,9 +44,9 @@ def render_asset_sidebar(title="⚙️ Configurações"):
             key="asset_frequency",
         )
 
-        load_data = st.button(
-            "🔄 Carregar Dados",
-            key="asset_load_button",
+        submitted = st.button(
+            button_label,
+            key=button_key,
         )
 
     return {
@@ -55,12 +54,13 @@ def render_asset_sidebar(title="⚙️ Configurações"):
         "start_date": start_date,
         "end_date": end_date,
         "frequency": frequency,
-        "load_data": load_data,
+        "submitted": submitted,
     }
 
-def render_comparison_sidebar():
+
+def render_comparison_controls() -> dict[str, Any]:
     """
-    Renderiza os controles exclusivos da comparação de ativos.
+    Renderiza os controles exclusivos da página de comparação.
     """
     with st.sidebar:
         st.header("⚖️ Parâmetros da Comparação")
@@ -69,7 +69,7 @@ def render_comparison_sidebar():
             "Símbolos dos ativos",
             key="comparison_symbols_text",
             help=(
-                "Informe entre 2 e 5 símbolos separados por vírgula. "
+                "Informe de 2 a 5 símbolos separados por vírgula. "
                 "Exemplo: BTC-USD,AAPL,SPY"
             ),
         )
@@ -90,15 +90,14 @@ def render_comparison_sidebar():
             key="comparison_frequency",
         )
 
-        risk_free_rate = st.number_input(
+        risk_free_rate_pct = st.number_input(
             "Taxa livre de risco anual (%)",
             min_value=0.0,
-            value=0.0,
             step=0.25,
             key="comparison_risk_free_rate_pct",
         )
 
-        compare_assets = st.button(
+        submitted = st.button(
             "⚖️ Comparar ativos",
             key="comparison_run_button",
         )
@@ -108,6 +107,6 @@ def render_comparison_sidebar():
         "start_date": start_date,
         "end_date": end_date,
         "frequency": frequency,
-        "risk_free_rate_pct": risk_free_rate,
-        "compare_assets": compare_assets,
+        "risk_free_rate_pct": risk_free_rate_pct,
+        "submitted": submitted,
     }
