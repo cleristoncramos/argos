@@ -104,15 +104,7 @@ if load_data:
         "end_date": st.session_state["asset_end_date"],
         "frequency": st.session_state["asset_frequency"],
     }
-
-    st.session_state["asset_loaded"] = True
-    st.session_state["asset_query"] = {
-        "symbol": symbol,
-        "start_date": start_date,
-        "end_date": end_date,
-        "frequency": frequency,
-    }
-
+    
     with st.spinner("Baixando e processando dados..."):
         df_raw = download_active_data(
             symbol=symbol,
