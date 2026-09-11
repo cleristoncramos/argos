@@ -1,5 +1,7 @@
 import os
 import sys
+from datetime import datetime
+from html import escape
 
 
 PROJECT_ROOT = os.path.abspath(
@@ -45,7 +47,11 @@ RISK_FREE_RATE_STATE_KEY = "risk_return_risk_free_rate_pct"
 RISK_FREE_RATE_WIDGET_KEY = "risk_return_risk_free_rate_pct_widget"
 
 
+# ==========================================================
+# Funções de Formatação e Tabelas Customizadas
+# ==========================================================
 def format_percentage(value) -> str:
+    """Formata em porcentagem no padrão brasileiro."""
     if value is None or pd.isna(value):
         return "N/A"
 
@@ -57,6 +63,171 @@ def format_percentage(value) -> str:
     )
 
 
+def format_brazilian_number(value) -> str:
+    """Formata um número com duas casas decimais no padrão brasileiro."""
+    if value is None or pd.isna(value):
+        return "—"
+
+    try:
+        numeric_value = float(value)
+    except (TypeError, ValueError):
+        return str(value)
+
+    return (
+        f"{numeric_value:,.2f}"
+        .replace(",", "X")
+        .replace(".", ",")
+        .replace("X", ".")
+    )
+
+
+def build_table_styles(prefix: str) -> str:
+    """Gera os estilos CSS comuns das tabelas HTML da página."""
+    return (
+        "<style>"
+        f".{prefix}-wrapper {{"
+        "width:100%;"
+        "overflow-x:auto;"
+        "border:1px solid #D9E2EC;"
+        "border-radius:10px;"
+        "background:#FFFFFF;"
+        "}"
+        f".{prefix}-table {{"
+        "width:100%;"
+        "border-collapse:separate;"
+        "border-spacing:0;"
+        "table-layout:auto;"
+        "font-size:14px;"
+        "color:#26364A;"
+        "}"
+        f".{prefix}-table th {{"
+        "background:#E8EEF7;"
+        "color:#26364A;"
+        "text-align:center;"
+        "vertical-align:middle;"
+        "font-weight:700;"
+        "white-space:nowrap;"
+        "border-right:1px solid #D9E2EC;"
+        "border-bottom:2px solid #B7C7D9;"
+        "padding:12px 16px;"
+        "}"
+        f".{prefix}-table th:last-child {{"
+        "border-right:none;"
+        "}"
+        f".{prefix}-table td {{"
+        "vertical-align:middle;"
+        "border-right:1px solid #E7EDF3;"
+        "border-bottom:1px solid #E7EDF3;"
+        "padding:10px 16px;"
+        "}"
+        f".{prefix}-table td:last-child {{"
+        "border-right:none;"
+        "}"
+        f".{prefix}-table tbody tr:last-child td {{"
+        "border-bottom:none;"
+        "}"
+        f".{prefix}-row-even {{"
+        "background:#FFFFFF;"
+        "}"
+        f".{prefix}-row-odd {{"
+        "background:#F8FAFC;"
+        "}"
+        f".{prefix}-table tbody tr:hover {{"
+        "background:#EEF5FF;"
+        "}"
+        "</style>"
+    )
+
+
+def render_html_table(dataframe: pd.DataFrame, columns: list, prefix: str, is_details: bool = False) -> None:
+    """Renderiza um DataFrame como tabela HTML customizada."""
+    if dataframe is None or dataframe.empty:
+        st.info("Não há dados disponíveis para exibição.")
+        return
+
+    display_df = dataframe[columns].copy()
+    records = display_df.to_dict(orient="records")
+
+    header_html = "".join(f"<th>{escape(str(c))}</th>" for c in columns)
+
+    rows_html = []
+    for position, record in enumerate(records):
+        cells_html = []
+        for column in columns:
+            raw_val = record.get(column)
+
+            if is_details:
+                # Na tabela de detalhes, a formatação já foi feita, basta alinhar.
+                formatted_val = raw_val
+                if column in ["Métrica", "Descrição"]:
+                    cell_style = "text-align:left;white-space:normal;font-family:inherit;"
+                else:
+                    cell_style = "text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;"
+            else:
+                # Na tabela de dados crus, precisamos formatar em tempo de execução.
+                if column == "Date":
+                    date_val = pd.to_datetime(raw_val, errors="coerce")
+                    formatted_val = "—" if pd.isna(date_val) else date_val.strftime("%d/%m/%Y")
+                    cell_style = "text-align:center;white-space:nowrap;"
+                elif column in ["Value", "Running_Peak"]:
+                    formatted_val = format_brazilian_number(raw_val)
+                    cell_style = "text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;"
+                elif column in ["Simple_Return", "Log_Return", "Drawdown"]:
+                    formatted_val = format_percentage(raw_val)
+                    cell_style = "text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;"
+                else:
+                    formatted_val = str(raw_val) if pd.notna(raw_val) else "—"
+                    cell_style = "text-align:right;white-space:nowrap;"
+
+            cells_html.append(f'<td style="{cell_style}">{escape(str(formatted_val))}</td>')
+
+        row_class = f"{prefix}-row-even" if position % 2 == 0 else f"{prefix}-row-odd"
+        rows_html.append(f'<tr class="{row_class}">{"".join(cells_html)}</tr>')
+
+    table_height = 280 if is_details else 350
+    table_html = (
+        build_table_styles(prefix)
+        + f'<div class="{prefix}-wrapper">'
+        + f'<table class="{prefix}-table">'
+        + f"<thead><tr>{header_html}</tr></thead>"
+        + f"<tbody>{''.join(rows_html)}</tbody>"
+        + "</table>"
+        + "</div>"
+    )
+    
+    st.components.v1.html(table_html, height=table_height, scrolling=True)
+
+
+def render_metric_card(title: str, value: str) -> None:
+    """Renderiza um card estizado via HTML simulando aparência de dashboards modernos."""
+    html = f"""
+    <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 100%;">
+        <div style="color: #64748b; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+            {title}
+        </div>
+        <div style="color: #0f172a; font-size: 1.8rem; font-weight: 700;">
+            {value}
+        </div>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
+
+
+def apply_custom_layout(fig):
+    """Limpa o fundo, corrige as sobreposições de título e ajusta o layout base do gráfico Plotly."""
+    fig.update_layout(
+        title="",  # Limpa o título interno gerado automaticamente para evitar sobreposição
+        showlegend=False, # Oculta legendas redundantes neste contexto
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(l=10, r=20, t=20, b=20), # Margem superior ajustada para não engolir o gráfico
+        xaxis=dict(showgrid=False, zeroline=False),
+        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", zeroline=False),
+        font=dict(family="Inter, Arial, sans-serif", color="#334155")
+    )
+    return fig
+
+
 def sync_risk_free_rate() -> None:
     """Copia o valor do widget para o estado persistente da página."""
     st.session_state[RISK_FREE_RATE_STATE_KEY] = float(
@@ -64,15 +235,16 @@ def sync_risk_free_rate() -> None:
     )
 
 
+# ==========================================================
+# Configuração da página
+# ==========================================================
 st.set_page_config(
     page_title="Risco e Retorno | Argos DataLab",
     page_icon="🛡️",
     layout="wide",
 )
 
-
 initialize_asset_state()
-
 
 if RISK_FREE_RATE_STATE_KEY not in st.session_state:
     st.session_state[RISK_FREE_RATE_STATE_KEY] = 0.0
@@ -82,22 +254,15 @@ if RISK_FREE_RATE_WIDGET_KEY not in st.session_state:
         st.session_state[RISK_FREE_RATE_STATE_KEY]
     )
 
-
 st.title("🛡️ Risco e Retorno")
 
 st.markdown(
-    """
-Analise retorno acumulado, volatilidade anualizada, drawdown máximo,
-percentual de períodos positivos e índice de Sharpe.
-"""
+    "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 2rem;'>"
+    "Analise retorno acumulado, volatilidade anualizada, drawdown máximo, "
+    "percentual de períodos positivos e índice de Sharpe."
+    "</p>",
+    unsafe_allow_html=True
 )
-
-st.warning(
-    "As métricas são calculadas com dados históricos e dependem do período, "
-    "da frequência e da taxa livre de risco informados. Elas não constituem "
-    "recomendação de investimento."
-)
-
 
 # =====================
 # Controles compartilhados
@@ -132,7 +297,6 @@ with st.sidebar:
             "Exemplo: 10,00 representa taxa livre de risco de 10% ao ano."
         ),
     )
-
 
 # O valor vem do estado persistente, e não diretamente da chave do widget.
 risk_free_rate_pct = float(
@@ -267,18 +431,15 @@ context = format_context(
 )
 
 
-st.info(
-    f"Ativo: **{symbol.upper()}** · "
-    f"Período: **{start_date.strftime('%d/%m/%Y')} a "
-    f"{end_date.strftime('%d/%m/%Y')}** · "
-    f"Frequência: **{frequency}** · "
-    f"Observações: **{len(df_risk)}**"
-)
-
-st.caption(
-    f"Volatilidade e Sharpe anualizados com fator {annualization_factor}. "
-    f"Taxa livre de risco anual adotada: {risk_free_rate_pct:.2f}%."
-)
+# Expander para informações de contexto e processamento
+with st.expander(f"✅ Análise gerada para {symbol.upper()}. Clique para visualizar os detalhes do processamento.", expanded=False):
+    st.markdown(f"**Ativo Analisado:** {symbol.upper()}")
+    st.markdown(f"**Período Selecionado:** {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}")
+    st.markdown(f"**Observações Processadas:** {len(df_risk)} períodos.")
+    st.markdown(
+        f"**Metodologia Matemática:** A volatilidade e o Índice de Sharpe foram anualizados usando o fator multiplicador **{annualization_factor}**. "
+        f"A taxa livre de risco anual considerada no cálculo foi de **{risk_free_rate_pct:.2f}%**."
+    )
 
 
 # =====================
@@ -289,40 +450,32 @@ st.header("📊 Métricas Principais")
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.metric(
-        "Retorno acumulado",
-        format_percentage(
-            metrics["Retorno total"]
-        ),
+    render_metric_card(
+        "Retorno acumulado", 
+        format_percentage(metrics["Retorno total"])
     )
 
 with col2:
-    st.metric(
-        "Volatilidade anualizada",
-        format_percentage(
-            metrics["Volatilidade"]
-        ),
+    render_metric_card(
+        "Volatilidade anualizada", 
+        format_percentage(metrics["Volatilidade"])
     )
 
 with col3:
-    st.metric(
-        "Drawdown máximo",
-        format_percentage(
-            metrics["Drawdown máximo"]
-        ),
+    render_metric_card(
+        "Drawdown máximo", 
+        format_percentage(metrics["Drawdown máximo"])
     )
 
 with col4:
     sharpe_value = metrics["Sharpe"]
-
-    st.metric(
-        "Índice de Sharpe",
-        (
-            "N/A"
-            if pd.isna(sharpe_value)
-            else f"{sharpe_value:.2f}"
-        ),
+    str_sharpe = "N/A" if pd.isna(sharpe_value) else f"{sharpe_value:.2f}"
+    render_metric_card(
+        "Índice de Sharpe", 
+        str_sharpe
     )
+    
+st.markdown("<br>", unsafe_allow_html=True)
 
 
 # =====================
@@ -337,10 +490,18 @@ cumulative_return_figure = create_cumulative_return_chart(
     return_col="Simple_Return",
 )
 
-st.plotly_chart(
-    cumulative_return_figure,
-    width="stretch",
+cumulative_return_figure = apply_custom_layout(cumulative_return_figure)
+# Limpeza profissional do Tooltip
+cumulative_return_figure.update_traces(
+    hovertemplate="<b>Data:</b> %{x|%d/%m/%Y}<br><b>Retorno:</b> %{y:.2f}%<extra></extra>"
 )
+
+with st.container(border=True):
+    st.plotly_chart(
+        cumulative_return_figure,
+        use_container_width=True,
+        config={"displayModeBar": False},
+    )
 
 
 # =====================
@@ -355,10 +516,18 @@ drawdown_figure = create_drawdown_chart(
     drawdown_col="Drawdown",
 )
 
-st.plotly_chart(
-    drawdown_figure,
-    width="stretch",
+drawdown_figure = apply_custom_layout(drawdown_figure)
+# Limpeza profissional do Tooltip
+drawdown_figure.update_traces(
+    hovertemplate="<b>Data:</b> %{x|%d/%m/%Y}<br><b>Queda:</b> %{y:.2f}%<extra></extra>"
 )
+
+with st.container(border=True):
+    st.plotly_chart(
+        drawdown_figure,
+        use_container_width=True,
+        config={"displayModeBar": False},
+    )
 
 
 # =====================
@@ -373,10 +542,20 @@ histogram_figure = create_returns_histogram(
     return_col="Simple_Return",
 )
 
-st.plotly_chart(
-    histogram_figure,
-    width="stretch",
+histogram_figure = apply_custom_layout(histogram_figure)
+# Limpeza profissional do Tooltip e adição de bordas para separar as barras do histograma
+histogram_figure.update_traces(
+    hovertemplate="<b>Intervalo:</b> %{x}%<br><b>Ocorrências:</b> %{y}<extra></extra>",
+    marker_line_width=1,
+    marker_line_color="#FFFFFF"
 )
+
+with st.container(border=True):
+    st.plotly_chart(
+        histogram_figure,
+        use_container_width=True,
+        config={"displayModeBar": False},
+    )
 
 
 # =====================
@@ -449,10 +628,11 @@ details = pd.DataFrame(
     ]
 )
 
-st.dataframe(
-    details,
-    width="stretch",
-    hide_index=True,
+render_html_table(
+    dataframe=details,
+    columns=["Métrica", "Valor", "Descrição"],
+    prefix="argos-details",
+    is_details=True
 )
 
 
@@ -461,19 +641,20 @@ st.dataframe(
 # =====================
 st.header("📄 Dados de Risco e Retorno")
 
-st.dataframe(
-    df_risk[
-        [
-            "Date",
-            "Value",
-            "Simple_Return",
-            "Log_Return",
-            "Running_Peak",
-            "Drawdown",
-        ]
-    ],
-    width="stretch",
-    height=320,
+display_columns = [
+    "Date",
+    "Value",
+    "Simple_Return",
+    "Log_Return",
+    "Running_Peak",
+    "Drawdown",
+]
+
+render_html_table(
+    dataframe=df_risk,
+    columns=display_columns,
+    prefix="argos-risk",
+    is_details=False
 )
 
 csv_data = df_risk.to_csv(

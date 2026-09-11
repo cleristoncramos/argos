@@ -1,5 +1,7 @@
 import os
 import sys
+from datetime import datetime
+from html import escape
 
 
 PROJECT_ROOT = os.path.abspath(
@@ -53,17 +55,175 @@ initialize_asset_state()
 st.title("📈 Indicadores Técnicos")
 
 st.markdown(
-    """
-Explore indicadores técnicos calculados sobre dados históricos.
-Médias móveis, RSI, MACD e Bandas de Bollinger ajudam a descrever
-tendência, momentum e dispersão de preços.
-"""
+    "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 2rem;'>"
+    "Explore indicadores técnicos calculados sobre dados históricos. "
+    "Médias móveis, RSI, MACD e Bandas de Bollinger ajudam a descrever "
+    "tendência, momentum e dispersão de preços."
+    "</p>",
+    unsafe_allow_html=True
 )
 
-st.warning(
-    "Indicadores técnicos descrevem dados históricos. Eles não constituem "
-    "sinal automático de compra, venda ou recomendação de investimento."
-)
+# Removido o st.warning redundante sobre recomendação de investimento (já existe no rodapé)
+
+
+# ==========================================================
+# Funções de Formatação e Tabela Customizada
+# ==========================================================
+def format_brazilian_number(value) -> str:
+    """Formata um número com duas casas decimais no padrão brasileiro."""
+    if value is None or pd.isna(value):
+        return "—"
+
+    try:
+        numeric_value = float(value)
+    except (TypeError, ValueError):
+        return str(value)
+
+    return (
+        f"{numeric_value:,.2f}"
+        .replace(",", "X")
+        .replace(".", ",")
+        .replace("X", ".")
+    )
+
+
+def format_indicator_value(value, column: str) -> str:
+    """Formata os valores da tabela de indicadores."""
+    if value is None or pd.isna(value) or str(value).strip().lower() == "none":
+        return "—"
+
+    if column == "Date":
+        date_value = pd.to_datetime(value, errors="coerce")
+        if pd.isna(date_value):
+            return "—"
+        return date_value.strftime("%d/%m/%Y")
+
+    # Demais colunas numéricas
+    return format_brazilian_number(value)
+
+
+def build_table_styles(prefix: str) -> str:
+    """Gera os estilos CSS comuns das tabelas HTML da página."""
+    return (
+        "<style>"
+        f".{prefix}-wrapper {{"
+        "width:100%;"
+        "overflow-x:auto;"
+        "border:1px solid #D9E2EC;"
+        "border-radius:10px;"
+        "background:#FFFFFF;"
+        "}"
+        f".{prefix}-table {{"
+        "width:100%;"
+        "border-collapse:separate;"
+        "border-spacing:0;"
+        "table-layout:auto;"
+        "font-size:14px;"
+        "color:#26364A;"
+        "}"
+        f".{prefix}-table th {{"
+        "background:#E8EEF7;"
+        "color:#26364A;"
+        "text-align:center;"
+        "vertical-align:middle;"
+        "font-weight:700;"
+        "white-space:nowrap;"
+        "border-right:1px solid #D9E2EC;"
+        "border-bottom:2px solid #B7C7D9;"
+        "padding:12px 16px;"
+        "}"
+        f".{prefix}-table th:last-child {{"
+        "border-right:none;"
+        "}"
+        f".{prefix}-table td {{"
+        "vertical-align:middle;"
+        "border-right:1px solid #E7EDF3;"
+        "border-bottom:1px solid #E7EDF3;"
+        "padding:10px 16px;"
+        "}"
+        f".{prefix}-table td:last-child {{"
+        "border-right:none;"
+        "}"
+        f".{prefix}-table tbody tr:last-child td {{"
+        "border-bottom:none;"
+        "}"
+        f".{prefix}-row-even {{"
+        "background:#FFFFFF;"
+        "}"
+        f".{prefix}-row-odd {{"
+        "background:#F8FAFC;"
+        "}"
+        f".{prefix}-table tbody tr:hover {{"
+        "background:#EEF5FF;"
+        "}"
+        "</style>"
+    )
+
+
+def render_indicators_table(dataframe: pd.DataFrame, columns: list) -> None:
+    """Renderiza a tabela de indicadores em HTML puro."""
+    if dataframe is None or dataframe.empty:
+        st.info("Não há dados disponíveis para exibição.")
+        return
+
+    display_df = dataframe[columns].copy()
+    records = display_df.to_dict(orient="records")
+
+    header_html = "".join(
+        "<th>" + escape(str(column)) + "</th>"
+        for column in columns
+    )
+
+    rows_html = []
+    for position, record in enumerate(records):
+        cells_html = []
+        for column in columns:
+            formatted_value = format_indicator_value(record.get(column), column)
+
+            if column == "Date":
+                cell_style = (
+                    "text-align:center;"
+                    "white-space:nowrap;"
+                    "font-family:inherit;"
+                )
+            else:
+                cell_style = (
+                    "text-align:right;"
+                    "white-space:nowrap;"
+                    "font-variant-numeric:tabular-nums;"
+                    "font-family:ui-monospace,SFMono-Regular,Menlo,"
+                    "Monaco,Consolas,'Liberation Mono',monospace;"
+                )
+
+            cells_html.append(
+                f'<td style="{cell_style}">{escape(str(formatted_value))}</td>'
+            )
+
+        row_class = (
+            "argos-indicators-row-even"
+            if position % 2 == 0
+            else "argos-indicators-row-odd"
+        )
+
+        rows_html.append(
+            f'<tr class="{row_class}">{"".join(cells_html)}</tr>'
+        )
+
+    table_html = (
+        build_table_styles("argos-indicators")
+        + '<div class="argos-indicators-wrapper">'
+        + '<table class="argos-indicators-table">'
+        + f"<thead><tr>{header_html}</tr></thead>"
+        + f"<tbody>{''.join(rows_html)}</tbody>"
+        + "</table>"
+        + "</div>"
+    )
+
+    st.components.v1.html(
+        table_html,
+        height=400,
+        scrolling=True,
+    )
 
 
 # =====================
@@ -441,13 +601,14 @@ context = format_context(
 )
 
 
-st.info(
-    f"Ativo: **{symbol.upper()}** · "
-    f"Período: **{start_date.strftime('%d/%m/%Y')} a "
-    f"{end_date.strftime('%d/%m/%Y')}** · "
-    f"Frequência: **{frequency}** · "
-    f"Observações: **{len(df)}**"
-)
+# Expander em substituição ao antigo st.info (Caixa azul)
+with st.expander(f"✅ Análise gerada para {symbol.upper()}. Clique para visualizar os detalhes do processamento.", expanded=False):
+    st.markdown(f"**Ativo Analisado:** {symbol.upper()}")
+    st.markdown(f"**Período Selecionado:** {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}")
+    st.markdown(f"**Observações Processadas:** {len(df)} períodos válidos calculados com sucesso.")
+    st.markdown(
+        "**Tratamento:** As médias móveis, RSI, MACD e Bandas de Bollinger são sempre calculadas sobre a coluna de preço de **fechamento**."
+    )
 
 
 # =====================
@@ -504,7 +665,7 @@ st.caption(
 # Volume
 # =====================
 if show_volume and "Volume" in df.columns:
-    st.header("📦 Volume")
+    st.markdown("### 📦 Volume")
 
     volume_figure = create_volume_chart(
         df=df,
@@ -512,10 +673,36 @@ if show_volume and "Volume" in df.columns:
         context=context,
     )
 
-    st.plotly_chart(
-        volume_figure,
-        width="stretch",
+    # Criação de um array formatado em padrão brasileiro para uso no tooltip
+    formatted_volume = df["Volume"].apply(
+        lambda x: format_brazilian_number(x) if pd.notnull(x) else "—"
     )
+
+    # Injetando as formatações e cores no gráfico gerado pelo core
+    volume_figure.update_traces(
+        customdata=formatted_volume,
+        hovertemplate="<b>%{x|%d/%m/%Y}</b><br>Volume: <b>%{customdata}</b><extra></extra>",
+        marker_color="#64748B",
+    )
+
+    # Limpando o fundo e ajustando margens para acomodar o container de borda
+    volume_figure.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        xaxis=dict(showgrid=False, zeroline=False),
+        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", zeroline=False),
+        font=dict(family="Inter, Arial, sans-serif", color="#334155")
+    )
+
+    # Renderiza o gráfico dentro da caixa demarcada
+    with st.container(border=True):
+        st.plotly_chart(
+            volume_figure,
+            use_container_width=True,
+            config={
+                "displayModeBar": False,
+            },
+        )
 
 
 # =====================
@@ -592,11 +779,9 @@ display_columns = [
     if column in df.columns
 ]
 
-st.dataframe(
-    df[display_columns],
-    width="stretch",
-    height=350,
-)
+# Substituído st.dataframe() pela renderização HTML
+render_indicators_table(df, display_columns)
+
 
 csv_data = df.to_csv(
     index=False,

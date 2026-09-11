@@ -3,6 +3,7 @@ import sys
 from datetime import datetime
 from html import escape
 
+
 PROJECT_ROOT = os.path.abspath(
     os.path.join(
         os.path.dirname(__file__),
@@ -10,17 +11,20 @@ PROJECT_ROOT = os.path.abspath(
     )
 )
 
+
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(
         0,
         PROJECT_ROOT,
     )
 
+
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+
 
 from app.ui.state import initialize_asset_state
 from core.analyzer import calculate_returns
@@ -56,6 +60,7 @@ COMPARISON_FREQUENCY_STATE_KEY = "comparison_frequency"
 COMPARISON_RISK_FREE_RATE_STATE_KEY = (
     "comparison_risk_free_rate_pct"
 )
+
 
 COMPARISON_SYMBOLS_WIDGET_KEY = "comparison_symbols_input_widget"
 COMPARISON_START_DATE_WIDGET_KEY = "comparison_start_date_widget"
@@ -243,9 +248,7 @@ def format_correlation_value(value) -> str:
 def build_table_styles(
     prefix: str,
 ) -> str:
-    """
-    Gera os estilos CSS comuns das tabelas HTML da página.
-    """
+    """Gera os estilos CSS comuns das tabelas HTML da página."""
     return (
         "<style>"
         f".{prefix}-wrapper {{"
@@ -437,11 +440,8 @@ def render_correlation_table(
         return
 
     display_df = correlation_matrix.copy()
-
     display_df.index.name = "Ativo"
-
     display_df = display_df.reset_index()
-
     columns = display_df.columns.tolist()
 
     asset_columns = [
@@ -451,7 +451,6 @@ def render_correlation_table(
     ]
 
     label_width = "20%"
-
     asset_width = (
         f"{80 / len(asset_columns):.2f}%"
         if asset_columns
@@ -738,7 +737,6 @@ def render_normalized_data_table(
     ]
 
     date_width = "20%"
-
     asset_width = (
         f"{80 / len(asset_columns):.2f}%"
         if asset_columns
@@ -837,6 +835,211 @@ def render_normalized_data_table(
 
 
 # ==========================================================
+# Heatmap: Correlação entre Retornos
+# ==========================================================
+def render_correlation_heatmap(
+    correlation_matrix: pd.DataFrame,
+) -> None:
+    """
+    Renderiza o heatmap de correlação em formato quadrado.
+
+    O gráfico exibe somente o triângulo inferior da matriz e oculta
+    a diagonal principal para eliminar a duplicidade visual.
+    """
+    if correlation_matrix is None or correlation_matrix.empty:
+        st.info(
+            "Não há dados coincidentes suficientes para calcular a correlação."
+        )
+        return
+
+    correlation_plot = correlation_matrix.astype(float).copy()
+
+    asset_order = correlation_plot.columns.tolist()
+
+    correlation_plot = correlation_plot.reindex(
+        index=asset_order,
+        columns=asset_order,
+    )
+
+    values = correlation_plot.to_numpy(dtype=float)
+
+    triangular_values = values.copy()
+
+    triangular_values[
+        np.triu_indices_from(
+            triangular_values,
+            k=0,
+        )
+    ] = np.nan
+
+    text_values = np.empty(
+        triangular_values.shape,
+        dtype=object,
+    )
+
+    customdata = np.empty(
+        triangular_values.shape,
+        dtype=object,
+    )
+
+    for row_index in range(
+        triangular_values.shape[0]
+    ):
+        for column_index in range(
+            triangular_values.shape[1]
+        ):
+            value = triangular_values[
+                row_index,
+                column_index,
+            ]
+
+            if np.isnan(value):
+                text_values[
+                    row_index,
+                    column_index,
+                ] = ""
+
+                customdata[
+                    row_index,
+                    column_index,
+                ] = None
+            else:
+                text_values[
+                    row_index,
+                    column_index,
+                ] = f"{value:.2f}".replace(
+                    ".",
+                    ",",
+                )
+
+                customdata[
+                    row_index,
+                    column_index,
+                ] = float(value)
+
+    heatmap = go.Heatmap(
+        z=triangular_values,
+        x=asset_order,
+        y=asset_order,
+        zmin=-1,
+        zmax=1,
+        colorscale=[
+            [0.00, "#4575B4"],
+            [0.25, "#91BFDB"],
+            [0.50, "#F7F7F7"],
+            [0.75, "#FC8D59"],
+            [1.00, "#D73027"],
+        ],
+        xgap=2,
+        ygap=2,
+        customdata=customdata,
+        text=text_values,
+        texttemplate="%{text}",
+        textfont={
+            "family": "Inter, Arial, sans-serif",
+            "size": 14,
+        },
+        hovertemplate=(
+            "<b>%{y}</b> × <b>%{x}</b><br>"
+            "Correlação: %{customdata:.2f}"
+            "<extra></extra>"
+        ),
+        colorbar={
+            "title": {
+                "text": "Correlação",
+                "side": "right",
+            },
+            "tickvals": [
+                -1,
+                -0.5,
+                0,
+                0.5,
+                1,
+            ],
+            "ticktext": [
+                "-1,00",
+                "-0,50",
+                "0,00",
+                "0,50",
+                "1,00",
+            ],
+            "thickness": 14,
+            "len": 0.78,
+            "outlinewidth": 0,
+        },
+    )
+
+    figure_height = max(
+        420,
+        min(
+            720,
+            100 * len(asset_order) + 150,
+        ),
+    )
+
+    fig_correlation = go.Figure(
+        data=[heatmap]
+    )
+
+    fig_correlation.update_layout(
+        title="",
+        template="plotly_white",
+        height=figure_height,
+        margin={
+            "l": 70,
+            "r": 85,
+            "t": 30,
+            "b": 70,
+        },
+        paper_bgcolor="#F8FAFC",
+        plot_bgcolor="#FFFFFF",
+        font={
+            "family": "Inter, Arial, sans-serif",
+            "color": "#334155",
+        },
+        xaxis={
+            "title": None,
+            "showgrid": False,
+            "zeroline": False,
+            "showline": False,
+            "constrain": "domain",
+            "categoryorder": "array",
+            "categoryarray": asset_order,
+            "tickfont": {
+                "size": 12,
+                "color": "#475569",
+            },
+            "fixedrange": True,
+        },
+        yaxis={
+            "title": None,
+            "showgrid": False,
+            "zeroline": False,
+            "showline": False,
+            "autorange": "reversed",
+            "scaleanchor": "x",
+            "scaleratio": 1,
+            "categoryorder": "array",
+            "categoryarray": asset_order,
+            "tickfont": {
+                "size": 12,
+                "color": "#475569",
+            },
+            "fixedrange": True,
+        },
+    )
+
+    st.plotly_chart(
+        fig_correlation,
+        width="stretch",
+        config={
+            "displayModeBar": False,
+            "responsive": True,
+        },
+    )
+
+
+# ==========================================================
 # Configuração da página
 # ==========================================================
 st.set_page_config(
@@ -845,23 +1048,24 @@ st.set_page_config(
     layout="wide",
 )
 
+
 initialize_asset_state()
 initialize_comparison_state()
 
+
 st.title("⚖️ Comparação de Ativos")
 
+
 st.markdown(
-    """
-Compare o comportamento histórico de diferentes ativos por meio de
-retorno acumulado, normalização base 100, volatilidade, drawdown,
-índice de Sharpe e correlação de retornos.
-"""
+    "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 2rem;'>"
+    "Compare o comportamento histórico de diferentes ativos através de métricas de retorno, "
+    "volatilidade, drawdown e correlação."
+    "</p>",
+    unsafe_allow_html=True
 )
 
-st.info(
-    "Esta comparação possui finalidade histórica, educacional e exploratória. "
-    "Ela não constitui recomendação de investimento."
-)
+# Removida a mensagem informativa duplicada no topo sobre "finalidade histórica"
+# (já presente no rodapé do dashboard de forma mais elegante).
 
 
 # ==========================================================
@@ -869,6 +1073,7 @@ st.info(
 # ==========================================================
 with st.sidebar:
     st.header("⚙️ Parâmetros da Comparação")
+
 
     st.text_input(
         "Símbolos dos ativos",
@@ -880,11 +1085,13 @@ with st.sidebar:
         ),
     )
 
+
     st.date_input(
         "Data inicial",
         key=COMPARISON_START_DATE_WIDGET_KEY,
         on_change=sync_comparison_start_date,
     )
+
 
     st.date_input(
         "Data final",
@@ -892,12 +1099,14 @@ with st.sidebar:
         on_change=sync_comparison_end_date,
     )
 
+
     st.selectbox(
         "Frequência",
         options=config.FREQUENCIES,
         key=COMPARISON_FREQUENCY_WIDGET_KEY,
         on_change=sync_comparison_frequency,
     )
+
 
     st.number_input(
         "Taxa livre de risco anual (%)",
@@ -908,6 +1117,7 @@ with st.sidebar:
         on_change=sync_comparison_risk_free_rate,
         help="Exemplo: 10,00 representa 10% ao ano.",
     )
+
 
     load_comparison = st.button(
         "📊 Comparar ativos",
@@ -920,23 +1130,28 @@ symbols_input = st.session_state[
     COMPARISON_SYMBOLS_STATE_KEY
 ]
 
+
 start_date = st.session_state[
     COMPARISON_START_DATE_STATE_KEY
 ]
+
 
 end_date = st.session_state[
     COMPARISON_END_DATE_STATE_KEY
 ]
 
+
 frequency = st.session_state[
     COMPARISON_FREQUENCY_STATE_KEY
 ]
+
 
 risk_free_rate_pct = float(
     st.session_state[
         COMPARISON_RISK_FREE_RATE_STATE_KEY
     ]
 )
+
 
 annual_risk_free_rate = risk_free_rate_pct / 100
 
@@ -951,14 +1166,17 @@ if load_comparison:
         )
         st.stop()
 
+
     try:
         symbols = parse_symbols(symbols_input)
     except ValueError as error:
         st.sidebar.error(str(error))
         st.stop()
 
+
     asset_data = {}
     failed_symbols = []
+
 
     with st.spinner("Carregando e processando os ativos..."):
         for symbol in symbols:
@@ -969,51 +1187,63 @@ if load_comparison:
                 interval="1d",
             )
 
+
             if df_raw is None or df_raw.empty:
                 failed_symbols.append(symbol)
                 continue
 
+
             df_prepared = prepare_dataframe(df_raw)
+
 
             df_aggregated = aggregate_by_frequency(
                 df_prepared,
                 frequency,
             )
 
+
             df_primary = select_primary_variable(
                 df_aggregated,
                 "Close",
             )
+
 
             df_returns = calculate_returns(
                 df_primary,
                 "Value",
             )
 
+
             df_risk = calculate_drawdown(
                 df_returns,
                 "Value",
             )
 
+
             asset_data[symbol] = df_risk
+
 
     if len(asset_data) < 2:
         st.session_state["comparison_loaded"] = False
         st.session_state["comparison_query"] = None
+
 
         st.session_state.pop(
             "comparison_asset_data",
             None,
         )
 
+
         st.session_state.pop(
             "comparison_failed_symbols",
             None,
         )
 
+
         st.error(
             "Não foi possível obter dados válidos para pelo menos dois ativos."
         )
+
 
         if failed_symbols:
             st.warning(
@@ -1021,30 +1251,39 @@ if load_comparison:
                 + ", ".join(failed_symbols)
             )
 
+
         st.stop()
+
 
     base_100_table = build_base_100_table(asset_data)
 
+
     price_table = build_price_table(asset_data)
+
 
     returns_table = calculate_returns_table(
         price_table
     )
 
+
     correlation_matrix = calculate_correlation_matrix(
         returns_table
     )
 
+
     summary = create_comparison_summary(
         asset_data
     )
+
 
     annualization_factor = ANNUALIZATION_FACTORS.get(
         frequency,
         252,
     )
 
+
     risk_rows = []
+
 
     for symbol, df in asset_data.items():
         metrics = build_risk_summary(
@@ -1055,6 +1294,7 @@ if load_comparison:
             ),
             annual_risk_free_rate=annual_risk_free_rate,
         )
+
 
         risk_rows.append(
             {
@@ -1072,7 +1312,9 @@ if load_comparison:
             }
         )
 
+
     risk_table = pd.DataFrame(risk_rows)
+
 
     summary = summary.merge(
         risk_table,
@@ -1080,7 +1322,9 @@ if load_comparison:
         how="left",
     )
 
+
     st.session_state["comparison_loaded"] = True
+
 
     st.session_state["comparison_query"] = {
         "symbols_input": symbols_input,
@@ -1090,25 +1334,32 @@ if load_comparison:
         "risk_free_rate_pct": risk_free_rate_pct,
     }
 
+
     st.session_state["comparison_asset_data"] = asset_data
+
 
     st.session_state["comparison_failed_symbols"] = (
         failed_symbols
     )
 
+
     st.session_state["comparison_base_100_table"] = (
         base_100_table
     )
 
+
     st.session_state["comparison_price_table"] = price_table
+
 
     st.session_state["comparison_returns_table"] = (
         returns_table
     )
 
+
     st.session_state["comparison_correlation_matrix"] = (
         correlation_matrix
     )
+
 
     st.session_state["comparison_summary"] = summary
 
@@ -1117,6 +1368,7 @@ if load_comparison:
 # Consulta confirmada
 # ==========================================================
 query = st.session_state.get("comparison_query")
+
 
 if (
     not st.session_state.get("comparison_loaded")
@@ -1134,29 +1386,38 @@ if (
 
 asset_data = st.session_state["comparison_asset_data"]
 
+
 failed_symbols = st.session_state[
     "comparison_failed_symbols"
 ]
+
 
 base_100_table = st.session_state[
     "comparison_base_100_table"
 ]
 
+
 correlation_matrix = st.session_state[
     "comparison_correlation_matrix"
 ]
 
+
 summary = st.session_state["comparison_summary"]
+
 
 start_date = query["start_date"]
 
+
 end_date = query["end_date"]
 
+
 frequency = query["frequency"]
+
 
 risk_free_rate_pct = float(
     query["risk_free_rate_pct"]
 )
+
 
 annualization_factor = ANNUALIZATION_FACTORS.get(
     frequency,
@@ -1165,7 +1426,7 @@ annualization_factor = ANNUALIZATION_FACTORS.get(
 
 
 # ==========================================================
-# Mensagens da consulta confirmada
+# Metadados e Mensagens da consulta confirmada
 # ==========================================================
 if failed_symbols:
     st.warning(
@@ -1173,22 +1434,25 @@ if failed_symbols:
         + ", ".join(failed_symbols)
     )
 
-st.success(
-    f"Comparação gerada para {len(asset_data)} ativos: "
-    + ", ".join(asset_data.keys())
-)
-
-st.info(
-    "A união das séries usa alinhamento completo por data e preserva "
-    "dias sem negociação. As correlações consideram apenas pares de "
-    "retornos válidos e coincidentes."
-)
+# Agrupando as mensagens de sucesso, avisos técnicos e metodologia em um expander limpo
+with st.expander(f"✅ Análise gerada para {len(asset_data)} ativos. Clique para visualizar a metodologia e parâmetros.", expanded=False):
+    st.markdown(f"**Ativos Analisados:** {', '.join(asset_data.keys())}")
+    st.markdown(f"**Período:** {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}")
+    st.markdown(
+        f"**Metodologia Matemática:** O Índice de Sharpe foi anualizado com uma taxa livre de risco de **{risk_free_rate_pct:.2f}% ao ano** "
+        f"e fator de anualização **{annualization_factor}**. "
+    )
+    st.markdown(
+        "**Tratamento de Dados:** A união das séries utiliza alinhamento completo por data, preservando dias sem negociação. "
+        "As correlações consideram apenas pares de retornos válidos e coincidentes."
+    )
 
 
 # ==========================================================
 # Dados numéricos e ordenação
 # ==========================================================
 summary_numeric = summary.copy()
+
 
 summary_display = summary_numeric.sort_values(
     by="Retorno total",
@@ -1207,25 +1471,44 @@ color_map = {
     "SPY": "#8B5CF6",
 }
 
+
 for symbol in summary_numeric["Ativo"].tolist():
     if symbol not in color_map:
         color_map[symbol] = "#64748B"
 
 
 # ==========================================================
-# Metodologia do Sharpe
+# Helper de Renderização dos Cartões Customizados
 # ==========================================================
-st.caption(
-    f"Índice de Sharpe anualizado calculado com taxa livre de risco de "
-    f"{risk_free_rate_pct:.2f}% ao ano e fator de anualização "
-    f"{annualization_factor} para frequência {frequency}."
-)
+def render_custom_metric_card(title: str, asset: str, raw_value: float, formatted_str: str) -> None:
+    """Renderiza um card estizado via HTML simulando aparência de dashboards modernos."""
+    icon = "▲" if raw_value > 0 else "▼" if raw_value < 0 else "−"
+    color_bg = "#dcfce7" if raw_value > 0 else "#fee2e2" if raw_value < 0 else "#f1f5f9"
+    color_fg = "#166534" if raw_value > 0 else "#991b1b" if raw_value < 0 else "#475569"
+
+    html = f"""
+    <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 100%;">
+        <div style="color: #64748b; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+            {title}
+        </div>
+        <div style="color: #0f172a; font-size: 1.8rem; font-weight: 700; margin-bottom: 12px;">
+            {asset}
+        </div>
+        <div>
+            <span style="font-size: 0.85rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; display: inline-block; background-color: {color_bg}; color: {color_fg};">
+                {icon} {formatted_str}
+            </span>
+        </div>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
 
 
 # ==========================================================
 # Destaques
 # ==========================================================
 st.header("📌 Destaques da Comparação")
+
 
 if not summary_numeric.empty:
     best_row = summary_numeric.loc[
@@ -1243,37 +1526,43 @@ if not summary_numeric.empty:
     highlight_cols = st.columns(3)
 
     with highlight_cols[0]:
-        st.metric(
-            "Melhor retorno",
-            best_row["Ativo"],
-            format_return_pct(
-                best_row["Retorno total"]
-            ),
+        render_custom_metric_card(
+            title="Melhor retorno",
+            asset=best_row["Ativo"],
+            raw_value=best_row["Retorno total"],
+            formatted_str=format_return_pct(best_row["Retorno total"]),
         )
 
     with highlight_cols[1]:
-        st.metric(
-            "Menor retorno",
-            worst_row["Ativo"],
-            format_return_pct(
-                worst_row["Retorno total"]
-            ),
+        render_custom_metric_card(
+            title="Menor retorno",
+            asset=worst_row["Ativo"],
+            raw_value=worst_row["Retorno total"],
+            formatted_str=format_return_pct(worst_row["Retorno total"]),
         )
 
     with highlight_cols[2]:
-        st.metric(
-            "Menor perda máxima",
-            lowest_drawdown_row["Ativo"],
-            format_return_pct(
-                lowest_drawdown_row["Drawdown máximo"]
-            ),
+        render_custom_metric_card(
+            title="Menor perda máxima",
+            asset=lowest_drawdown_row["Ativo"],
+            raw_value=lowest_drawdown_row["Drawdown máximo"],
+            formatted_str=format_return_pct(lowest_drawdown_row["Drawdown máximo"]),
         )
+    
+    st.markdown("<br>", unsafe_allow_html=True) # Espaçamento inferior
 
 
 # ==========================================================
 # Gráfico Base 100
 # ==========================================================
-st.header("📈 Evolução Normalizada — Base 100")
+st.markdown("### 📈 Evolução de Desempenho Histórico")
+st.markdown(
+    "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
+    "Comparação de trajetória normalizada em <b>Base 100</b> no período inicial (ex: índice 120 = +20% de ganho)."
+    "</p>",
+    unsafe_allow_html=True
+)
+
 
 if not base_100_table.empty:
     base_100_melted = base_100_table.melt(
@@ -1288,41 +1577,52 @@ if not base_100_table.empty:
         y="Índice base 100",
         color="Ativo",
         color_discrete_map=color_map,
-        title="Comparação de Desempenho Relativo",
         labels={
             "Date": "Data",
-            "Índice base 100": "Índice base 100",
+            "Índice base 100": "Índice",
             "Ativo": "Ativo",
         },
         template="plotly_white",
-        markers=True,
     )
 
     fig_base_100.update_layout(
         hovermode="x unified",
-        legend_title_text="Ativo",
-        paper_bgcolor="#F8FAFC",
+        legend=dict(
+            title="",
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
+        margin=dict(l=10, r=20, t=40, b=20),
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#FFFFFF",
+        xaxis=dict(showgrid=False, zeroline=False),
+        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", zeroline=False),
+        font=dict(family="Inter, Arial, sans-serif", color="#334155")
     )
 
     fig_base_100.update_traces(
-        connectgaps=False
+        connectgaps=True,
+        line=dict(width=2.5),
     )
 
-    st.plotly_chart(
-        fig_base_100,
-        width="stretch",
-    )
-
-st.caption(
-    "Cada ativo inicia em 100 no seu primeiro período válido. "
-    "Por exemplo, valor 120 representa valorização acumulada de 20%."
-)
+    with st.container(border=True):
+        st.plotly_chart(
+            fig_base_100,
+            use_container_width=True,
+            config={
+                "displayModeBar": False,
+            },
+        )
 
 
 # ==========================================================
 # Resumo Comparativo
 # ==========================================================
 st.header("📊 Resumo Comparativo")
+
 
 render_summary_table(
     summary_display
@@ -1334,52 +1634,23 @@ render_summary_table(
 # ==========================================================
 st.header("🔗 Correlação entre Retornos")
 
-if correlation_matrix.empty:
-    st.info(
-        "Não há dados coincidentes suficientes para calcular a correlação."
-    )
-else:
-    fig_correlation = go.Figure(
-        data=go.Heatmap(
-            z=correlation_matrix.values,
-            x=correlation_matrix.columns,
-            y=correlation_matrix.index,
-            zmin=-1,
-            zmax=1,
-            colorscale="RdBu_r",
-            colorbar=dict(
-                title="Correlação"
-            ),
-            text=np.round(
-                correlation_matrix.values,
-                2,
-            ),
-            texttemplate="%{text}",
-            hovertemplate=(
-                "Ativo X: %{x}<br>"
-                "Ativo Y: %{y}<br>"
-                "Correlação: %{z:.2f}"
-                "<extra></extra>"
-            ),
-        )
-    )
 
-    fig_correlation.update_layout(
-        title="Correlação entre Retornos dos Ativos",
-        xaxis_title="Ativo",
-        yaxis_title="Ativo",
-        template="plotly_white",
-        paper_bgcolor="#F8FAFC",
-    )
+render_correlation_heatmap(
+    correlation_matrix
+)
 
-    st.plotly_chart(
-        fig_correlation,
-        width="stretch",
-    )
 
-    render_correlation_table(
-        correlation_matrix
-    )
+st.caption(
+    "A matriz exibe apenas a metade inferior para evitar duplicidade. "
+    "A diagonal, que representa a correlação do ativo consigo mesmo, "
+    "também foi ocultada."
+)
+
+
+render_correlation_table(
+    correlation_matrix
+)
+
 
 st.caption(
     "A correlação é calculada com retornos históricos coincidentes. "
@@ -1392,11 +1663,13 @@ st.caption(
 # ==========================================================
 st.header("🧮 Métricas por Ativo")
 
+
 st.caption(
     "A tabela consolida retorno, volatilidade, drawdown e Sharpe para "
     "facilitar a comparação entre os ativos. A análise considera risco "
     "e perda máxima intermediária, não apenas a valorização final."
 )
+
 
 render_asset_metrics_table(
     summary_numeric
@@ -1407,6 +1680,7 @@ render_asset_metrics_table(
 # Dados Normalizados
 # ==========================================================
 st.header("📋 Dados Normalizados")
+
 
 render_normalized_data_table(
     base_100_table
@@ -1420,6 +1694,7 @@ csv_data = base_100_table.to_csv(
     index=False,
 ).encode("utf-8")
 
+
 st.download_button(
     label="⬇️ Baixar comparação em CSV",
     data=csv_data,
@@ -1432,6 +1707,7 @@ st.download_button(
 # Rodapé
 # ==========================================================
 st.markdown("---")
+
 
 st.caption(
     "⚠️ Esta ferramenta possui finalidade educacional e de pesquisa. "
