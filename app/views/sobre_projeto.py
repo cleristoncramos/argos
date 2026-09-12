@@ -10,7 +10,7 @@ if PROJECT_ROOT not in sys.path:
 import streamlit as st
 
 st.set_page_config(
-    page_title="Sobre o Projeto | Argos DataLab",
+    page_title="Argos DataLab",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -67,7 +67,7 @@ st.markdown(
 # ==========================================================
 # Cabeçalho Principal
 # ==========================================================
-st.title("📊 Argos DataLab")
+st.title('📊 Sobre o Projeto "Argos DataLab"')
 st.markdown(
     "<p style='font-size:1.2rem; opacity: 0.8; margin-bottom:1.5rem;'>"
     "Plataforma inteligente de análise exploratória, modelagem de risco e "

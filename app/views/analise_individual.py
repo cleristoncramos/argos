@@ -53,12 +53,11 @@ st.set_page_config(
 initialize_asset_state()
 
 
-st.title("📊 Argos DataLab")
+st.title("📊 Análise Individual")
 
 st.markdown(
     "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 2rem;'>"
-    "Inteligência de Dados para Apoio à Decisão no Mercado Financeiro.<br>"
-    "<b>Projeto PIBITI UFPI 2026–2027</b> · Orientador: Prof. Arlino Henrique Magalhães de Araújo"
+    "Explore para entender a fundo o comportamento histórico e estatístico de um único ativo selecionado no sistema.<br>"
     "</p>",
     unsafe_allow_html=True
 )
