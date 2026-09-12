@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
@@ -48,41 +48,25 @@ def valid_history_dataframe() -> pd.DataFrame:
 
 
 def build_ticker(
-    info: dict | None = None,
-    history: pd.DataFrame | None = None,
-    info_error: Exception | None = None,
-    history_error: Exception | None = None,
+    history_return: pd.DataFrame | None = None,
+    history_side_effect: list | Exception | None = None,
 ) -> Mock:
     """Cria um ticker simulado com comportamento configurável."""
     ticker = Mock()
 
-    if info_error is not None:
-        type(ticker).info = property(
-            lambda _instance: (_ for _ in ()).throw(info_error)
-        )
-    else:
-        type(ticker).info = property(
-            lambda _instance: info or {}
-        )
-
-    if history_error is not None:
-        ticker.history.side_effect = history_error
+    if history_side_effect is not None:
+        ticker.history.side_effect = history_side_effect
     else:
         ticker.history.return_value = (
-            history
-            if history is not None
-            else pd.DataFrame()
+            history_return if history_return is not None else pd.DataFrame()
         )
 
     return ticker
 
 
-def test_download_normalizes_arguments_before_cached_call(
-    monkeypatch,
-):
-    cached_download = Mock(
-        return_value="resultado-simulado",
-    )
+def test_download_normalizes_arguments_before_cached_call(monkeypatch):
+    """Garante que a função pública de download ajusta a data final e normaliza os dados."""
+    cached_download = Mock(return_value="resultado-simulado")
 
     monkeypatch.setattr(
         data_loader,
@@ -99,17 +83,17 @@ def test_download_normalizes_arguments_before_cached_call(
 
     assert result == "resultado-simulado"
 
+    # A data_end deve ter somado 1 dia automaticamente (2024-02-01)
     cached_download.assert_called_once_with(
         symbol="AAPL",
         start_date="2024-01-01",
-        end_date="2024-01-31",
+        end_date="2024-02-01",
         interval="1d",
     )
 
 
-def test_download_returns_none_for_empty_symbol(
-    monkeypatch,
-):
+def test_download_returns_none_for_empty_symbol(monkeypatch):
+    """Testa se rejeita símbolos vazios imediatamente."""
     cached_download = Mock()
 
     monkeypatch.setattr(
@@ -133,20 +117,11 @@ def test_cached_download_returns_valid_dataframe(
     uncached_download,
     valid_history_dataframe,
 ):
-    ticker = build_ticker(
-        info={"symbol": "AAPL"},
-        history=valid_history_dataframe,
-    )
+    """Testa o caminho feliz onde o download histórico ocorre com sucesso."""
+    ticker = build_ticker(history_return=valid_history_dataframe)
+    ticker_factory = Mock(return_value=ticker)
 
-    ticker_factory = Mock(
-        return_value=ticker,
-    )
-
-    monkeypatch.setattr(
-        data_loader.yf,
-        "Ticker",
-        ticker_factory,
-    )
+    monkeypatch.setattr(data_loader.yf, "Ticker", ticker_factory)
 
     result = uncached_download(
         symbol="AAPL",
@@ -168,15 +143,9 @@ def test_cached_download_returns_valid_dataframe(
         "Close",
         "Volume",
     }
+    assert expected_columns.issubset(result.columns)
 
-    assert expected_columns.issubset(
-        result.columns
-    )
-
-    ticker_factory.assert_called_once_with(
-        "AAPL"
-    )
-
+    ticker_factory.assert_called_once_with("AAPL")
     ticker.history.assert_called_once_with(
         start="2024-01-01",
         end="2024-01-31",
@@ -185,60 +154,58 @@ def test_cached_download_returns_valid_dataframe(
     )
 
 
-def test_cached_download_returns_none_when_ticker_has_no_identity(
+@patch("core.data_loader.time.sleep")
+def test_cached_download_retries_and_returns_none_when_history_raises_exception(
+    mock_sleep,
     monkeypatch,
     uncached_download,
-    valid_history_dataframe,
 ):
+    """Testa o retry da API se houver falha de rede/exceção. Deve retornar None após exceder tentativas."""
     ticker = build_ticker(
-        info={},
-        history=valid_history_dataframe,
+        history_side_effect=RuntimeError("Falha de rede simulada")
     )
+    monkeypatch.setattr(data_loader.yf, "Ticker", Mock(return_value=ticker))
 
-    monkeypatch.setattr(
-        data_loader.yf,
-        "Ticker",
-        Mock(return_value=ticker),
-    )
-
+    # Passamos max_retries=2 explícito para testar o limite
     result = uncached_download(
-        symbol="INVALID",
+        symbol="AAPL",
         start_date="2024-01-01",
         end_date="2024-01-31",
+        max_retries=2
     )
 
     assert result is None
-    ticker.history.assert_not_called()
+    assert ticker.history.call_count == 2
+    mock_sleep.assert_called_once()  # Dorme apenas 1 vez (entre as 2 tentativas)
 
 
-def test_cached_download_returns_none_when_info_access_fails(
+@patch("core.data_loader.time.sleep")
+def test_cached_download_recovers_after_exception(
+    mock_sleep,
     monkeypatch,
     uncached_download,
-    valid_history_dataframe,
+    valid_history_dataframe
 ):
+    """Garante que a função consegue se recuperar e entregar o DataFrame se falhar na primeira vez."""
+    # Retorna Erro na 1ª chamada, DataFrame válido na 2ª chamada
     ticker = build_ticker(
-        history=valid_history_dataframe,
-        info_error=RuntimeError(
-            "Falha ao obter informações",
-        ),
+        history_side_effect=[RuntimeError("Erro intermitente"), valid_history_dataframe]
     )
-
-    monkeypatch.setattr(
-        data_loader.yf,
-        "Ticker",
-        Mock(return_value=ticker),
-    )
+    monkeypatch.setattr(data_loader.yf, "Ticker", Mock(return_value=ticker))
 
     result = uncached_download(
         symbol="AAPL",
         start_date="2024-01-01",
         end_date="2024-01-31",
+        max_retries=3
     )
 
-    assert result is None
-    ticker.history.assert_not_called()
+    assert result is not None
+    assert len(result) == 3
+    assert ticker.history.call_count == 2
 
 
+@patch("core.data_loader.time.sleep")
 @pytest.mark.parametrize(
     "history",
     [
@@ -251,45 +218,40 @@ def test_cached_download_returns_none_when_info_access_fails(
                 "Close": [100.5],
             },
             index=pd.DatetimeIndex(
-                pd.to_datetime(
-                    [
-                        "2024-01-01",
-                    ]
-                ),
+                pd.to_datetime(["2024-01-01"]),
                 name="Date",
             ),
         ),
     ],
 )
 def test_cached_download_returns_none_for_empty_or_incomplete_history(
+    mock_sleep,
     monkeypatch,
     uncached_download,
     history,
 ):
-    ticker = build_ticker(
-        info={"symbol": "AAPL"},
-        history=history,
-    )
-
-    monkeypatch.setattr(
-        data_loader.yf,
-        "Ticker",
-        Mock(return_value=ticker),
-    )
+    """Testa se rejeita DataFrames vazios ou faltando colunas e gasta as tentativas."""
+    ticker = build_ticker(history_return=history)
+    monkeypatch.setattr(data_loader.yf, "Ticker", Mock(return_value=ticker))
 
     result = uncached_download(
         symbol="AAPL",
         start_date="2024-01-01",
         end_date="2024-01-31",
+        max_retries=2
     )
 
     assert result is None
+    assert ticker.history.call_count == 2
 
 
+@patch("core.data_loader.time.sleep")
 def test_cached_download_returns_none_without_date_or_datetime_column(
+    mock_sleep,
     monkeypatch,
     uncached_download,
 ):
+    """Garante rejeição quando não há coluna de índice temporal detectável."""
     history = pd.DataFrame(
         {
             "Open": [100.0],
@@ -299,48 +261,14 @@ def test_cached_download_returns_none_without_date_or_datetime_column(
             "Volume": [1000],
         }
     )
-
-    ticker = build_ticker(
-        info={"symbol": "AAPL"},
-        history=history,
-    )
-
-    monkeypatch.setattr(
-        data_loader.yf,
-        "Ticker",
-        Mock(return_value=ticker),
-    )
+    ticker = build_ticker(history_return=history)
+    monkeypatch.setattr(data_loader.yf, "Ticker", Mock(return_value=ticker))
 
     result = uncached_download(
         symbol="AAPL",
         start_date="2024-01-01",
         end_date="2024-01-31",
-    )
-
-    assert result is None
-
-
-def test_cached_download_returns_none_when_history_raises_exception(
-    monkeypatch,
-    uncached_download,
-):
-    ticker = build_ticker(
-        info={"symbol": "AAPL"},
-        history_error=RuntimeError(
-            "Falha de rede simulada",
-        ),
-    )
-
-    monkeypatch.setattr(
-        data_loader.yf,
-        "Ticker",
-        Mock(return_value=ticker),
-    )
-
-    result = uncached_download(
-        symbol="AAPL",
-        start_date="2024-01-01",
-        end_date="2024-01-31",
+        max_retries=1
     )
 
     assert result is None
@@ -369,9 +297,7 @@ def test_validate_data_returns_expected_indicators():
         }
     )
 
-    result = validate_data(
-        df
-    )
+    result = validate_data(df)
 
     assert result == {
         "total_rows": 3,
@@ -393,12 +319,8 @@ def test_validate_data_returns_expected_indicators():
         pd.DataFrame(),
     ],
 )
-def test_validate_data_handles_none_or_empty_dataframe(
-    df,
-):
-    result = validate_data(
-        df
-    )
+def test_validate_data_handles_none_or_empty_dataframe(df):
+    result = validate_data(df)
 
     assert result == {
         "total_rows": 0,
@@ -419,9 +341,7 @@ def test_validate_data_handles_missing_date_and_close_columns():
         }
     )
 
-    result = validate_data(
-        df
-    )
+    result = validate_data(df)
 
     assert result["total_rows"] == 2
     assert result["duplicate_dates"] == 0

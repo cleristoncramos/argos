@@ -1,0 +1,172 @@
+[1mdiff --git a/docs/etapa_6_integracao_interface.md b/docs/etapa_6_integracao_interface.md[m
+[1mdeleted file mode 100644[m
+[1mindex 05281d4..0000000[m
+[1m--- a/docs/etapa_6_integracao_interface.md[m
+[1m+++ /dev/null[m
+[36m@@ -1,18 +0,0 @@[m
+[31m-# Etapa 6 — Integração com a Interface[m
+[31m-[m
+[31m-## Objetivos[m
+[31m-[m
+[31m-- [ ] Eliminar duplicação de sidebars.[m
+[31m-- [ ] Padronizar chaves de `st.session_state`.[m
+[31m-- [ ] Aplicar cache para coleta e processamento de dados.[m
+[31m-- [ ] Preservar o comportamento das páginas existentes.[m
+[31m-- [ ] Executar testes automatizados e validação manual.[m
+[31m-[m
+[31m-## Critérios de aceite[m
+[31m-[m
+[31m-- [ ] Cada página usa uma sidebar intencional e sem controles duplicados.[m
+[31m-- [ ] O ativo, período e frequência persistem entre páginas quando aplicável.[m
+[31m-- [ ] A comparação possui estado próprio, sem conflitar com a análise individual.[m
+[31m-- [ ] A coleta não é repetida sem necessidade.[m
+[31m-- [ ] Mudanças de símbolo, período ou frequência invalidam corretamente o cache.[m
+[31m-- [ ] `pytest -v` termina sem falhas.[m
+\ No newline at end of file[m
+[1mdiff --git a/docs/etapa_8_validacao_academica.md b/docs/etapa_8_validacao_academica.md[m
+[1mdeleted file mode 100644[m
+[1mindex a626d30..0000000[m
+[1m--- a/docs/etapa_8_validacao_academica.md[m
+[1m+++ /dev/null[m
+[36m@@ -1,303 +0,0 @@[m
+[31m-# Etapa 8 — Validação Acadêmica e Publicação[m
+[31m-[m
+[31m-## Contexto[m
+[31m-[m
+[31m-Este documento define o protocolo de validação acadêmica do Argos DataLab, desenvolvido no contexto do PIBITI UFPI 2026–2027, no plano de trabalho **Análise de Dados para Apoio à Tomada de Decisão em Investimentos no Mercado Financeiro**.[m
+[31m-[m
+[31m-O objetivo é avaliar se a aplicação produz resultados historicamente coerentes, reproduzíveis e adequadamente comunicados para fins educacionais e de pesquisa. O sistema não fornece recomendação de investimento.[m
+[31m-[m
+[31m-## Objetivos da validação[m
+[31m-[m
+[31m-- Verificar a consistência dos dados históricos carregados.[m
+[31m-- Confirmar a coerência dos cálculos de retorno, risco e indicadores técnicos.[m
+[31m-- Comparar ativos de classes distintas em uma mesma janela temporal.[m
+[31m-- Avaliar a interpretação dos resultados em conjunto com as limitações metodológicas.[m
+[31m-- Registrar evidências reproduzíveis para discussão com a orientação acadêmica.[m
+[31m-- Validar a aplicação publicada no Streamlit Community Cloud.[m
+[31m-[m
+[31m-## Ambiente e versão[m
+[31m-[m
+[31m-| Item | Registro |[m
+[31m-|---|---|[m
+[31m-| Aplicação | Argos DataLab |[m
+[31m-| URL pública | https://argos-datalab.streamlit.app |[m
+[31m-| Repositório | https://github.com/cleristoncramos/argos |[m
+[31m-| Branch de publicação | `main` |[m
+[31m-| Arquivo de entrada | `app/main.py` |[m
+[31m-| Fonte de dados | Yahoo Finance, via `yfinance` |[m
+[31m-| Frequências disponíveis | Diário, Semanal e Mensal |[m
+[31m-| Validação automatizada | 110 testes aprovados |[m
+[31m-| Cobertura de `core/` | 93,75% |[m
+[31m-| Cobertura mínima exigida | 80% |[m
+[31m-[m
+[31m-## Procedimento geral[m
+[31m-[m
+[31m-Para cada cenário:[m
+[31m-[m
+[31m-1. Registrar os parâmetros utilizados: ativos, datas, frequência e taxa livre de risco.[m
+[31m-2. Executar a análise na aplicação publicada.[m
+[31m-3. Registrar o total de observações retornadas.[m
+[31m-4. Salvar capturas de tela dos gráficos, métricas e tabelas relevantes.[m
+[31m-5. Exportar o CSV quando aplicável.[m
+[31m-6. Verificar se os resultados apresentados são coerentes com a evolução histórica conhecida do período.[m
+[31m-7. Registrar limitações, dados ausentes, diferenças de calendário e observações metodológicas.[m
+[31m-8. Repetir o cenário em caso de alteração de código, fonte de dados ou dependências.[m
+[31m-[m
+[31m-## Cenários de validação[m
+[31m-[m
+[31m-### Cenário A — Ação individual: AAPL[m
+[31m-[m
+[31m-| Parâmetro | Valor |[m
+[31m-|---|---|[m
+[31m-| Ativo | `AAPL` |[m
+[31m-| Data inicial | 01/01/2022 |[m
+[31m-| Data final | 31/12/2024 |[m
+[31m-| Frequência | Semanal |[m
+[31m-[m
+[31m-**Objetivo:** validar uma ação norte-americana com histórico amplo, liquidez elevada e presença de dados em dias úteis.[m
+[31m-[m
+[31m-**Verificações:**[m
+[31m-[m
+[31m-- A série possui datas em ordem crescente.[m
+[31m-- A agregação semanal produz valores OHLC e volume coerentes.[m
+[31m-- O retorno acumulado é consistente com o primeiro e último fechamento do período.[m
+[31m-- O gráfico de preço não apresenta lacunas artificiais além de feriados ou períodos sem negociação.[m
+[31m-- O download CSV contém as colunas esperadas.[m
+[31m-[m
+[31m-### Cenário B — Criptoativo: BTC-USD[m
+[31m-[m
+[31m-| Parâmetro | Valor |[m
+[31m-|---|---|[m
+[31m-| Ativo | `BTC-USD` |[m
+[31m-| Data inicial | 01/01/2022 |[m
+[31m-| Data final | 31/12/2024 |[m
+[31m-| Frequência | Semanal |[m
+[31m-[m
+[31m-**Objetivo:** contrastar um ativo negociado continuamente com uma ação tradicional.[m
+[31m-[m
+[31m-**Verificações:**[m
+[31m-[m
+[31m-- A série possui maior continuidade de datas do que ativos negociados apenas em dias úteis.[m
+[31m-- A volatilidade anualizada tende a refletir maior dispersão de retornos em relação a ativos tradicionais, dependendo da janela escolhida.[m
+[31m-- Drawdown e retorno acumulado são calculados corretamente.[m
+[31m-- Indicadores técnicos são renderizados sem erro.[m
+[31m-- Candles são exibidos apenas em frequências diária ou semanal.[m
+[31m-[m
+[31m-### Cenário C — Câmbio: USDBRL=X[m
+[31m-[m
+[31m-| Parâmetro | Valor |[m
+[31m-|---|---|[m
+[31m-| Ativo | `USDBRL=X` |[m
+[31m-| Data inicial | 01/01/2022 |[m
+[31m-| Data final | 31/12/2024 |[m
+[31m-| Frequência | Semanal |[m
+[31m-[m
+[31m-**Objetivo:** validar uma série cambial e confirmar o símbolo correto do par USD/BRL no provedor de dados.[m
+[31m-[m
+[31m-**Verificações:**[m
+[31m-[m
+[31m-- O símbolo retorna dados válidos.[m
+[31m-- A escala de preços é compatível com cotação de dólar por real.[m
+[31m-- Datas e frequência são processadas sem erro.[m
+[31m-- A série pode ser comparada com AAPL, BTC-USD e SPY.[m
+[31m-[m
+[31m-### Cenário D — Comparação multiclasse[m
+[31m-[m
+[31m-| Parâmetro | Valor |[m
+[31m-|---|---|[m
+[31m-| Símbolos | `BTC-USD,AAPL,USDBRL=X,SPY` |[m
+[31m-| Data inicial | 01/01/2022 |[m
+[31m-| Data final | 31/12/2024 |[m
+[31m-| Frequência | Semanal |[m
+[31m-| Taxa livre de risco anual | 0,00% e 10,00% |[m
+[31m-[m
+[31m-**Objetivo:** comparar desempenho, volatilidade, drawdown, Sharpe e correlação entre classes de ativos distintas.[m
+[31m-[m
+[31m-**Verificações:**[m
+[31m-[m
+[31m-- A comparação contém pelo menos dois ativos válidos.[m
+[31m-- A série Base 100 inicia cada ativo em 100 no primeiro período válido.[m
+[31m-- A matriz de correlação é simétrica.[m
+[31m-- A diagonal da matriz de correlação é igual a 1 quando houver dados suficientes.[m
+[31m-- A alteração da taxa livre de risco altera os Sharpes após novo cálculo.[m
+[31m-- Alterar a taxa sem clicar em **Comparar ativos** não altera os resultados confirmados.[m
+[31m-- O CSV exportado corresponde à tabela Base 100 exibida.[m
+[31m-[m
+[31m-### Cenário E — Risco e retorno com taxa livre de risco[m
+[31m-[m
+[31m-| Parâmetro | Valor |[m
+[31m-|---|---|[m
+[31m-| Ativo | `AAPL` |[m
+[31m-| Data inicial | 01/01/2022 |[m
+[31m-| Data final | 31/12/2024 |[m
+[31m-| Frequência | Semanal |[m
+[31m-| Taxa livre de risco | 0,00% e 10,00% |[m
+[31m-[m
+[31m-**Objetivo:** validar a sensibilidade do índice de Sharpe à taxa livre de risco anual.[m
+[31m-[m
+[31m-**Verificações:**[m
+[31m-[m
+[31m-- Com taxa maior, o Sharpe tende a diminuir quando os demais parâmetros permanecem iguais.[m
+[31m-- A legenda apresenta a mesma taxa usada 

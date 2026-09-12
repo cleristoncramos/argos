@@ -3,21 +3,12 @@ import sys
 from datetime import datetime
 from html import escape
 
-
 PROJECT_ROOT = os.path.abspath(
-    os.path.join(
-        os.path.dirname(__file__),
-        "../..",
-    )
+    os.path.join(os.path.dirname(__file__), "../..")
 )
 
-
 if PROJECT_ROOT not in sys.path:
-    sys.path.insert(
-        0,
-        PROJECT_ROOT,
-    )
-
+    sys.path.insert(0, PROJECT_ROOT)
 
 import numpy as np
 import pandas as pd
@@ -25,9 +16,19 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-
 from app.ui.state import initialize_asset_state
+
+try:
+    from app.ui.assets_selector import render_multi_asset_selector
+except ModuleNotFoundError:
+    try:
+        from app.ui.asset_selector import render_multi_asset_selector
+    except ModuleNotFoundError:
+        st.error("❌ O arquivo 'assets_selector.py' (ou 'asset_selector.py') não foi encontrado na pasta 'app/ui/'. Verifique se você salvou o arquivo corretamente.")
+        st.stop()
+
 from core.analyzer import calculate_returns
+from core.assets import ASSETS, get_assets
 from core.comparison import (
     build_base_100_table,
     build_price_table,
@@ -35,7 +36,6 @@ from core.comparison import (
     calculate_returns_table,
     create_comparison_summary,
     format_return_pct,
-    parse_symbols,
 )
 from core.config import ANNUALIZATION_FACTORS, config
 from core.data_loader import download_active_data
@@ -44,103 +44,93 @@ from core.data_processor import (
     prepare_dataframe,
     select_primary_variable,
 )
-from core.risk_metrics import (
-    build_risk_summary,
-    calculate_drawdown,
-)
+from core.risk_metrics import build_risk_summary, calculate_drawdown
 
 
 # ==========================================================
 # Chaves de estado
 # ==========================================================
-COMPARISON_SYMBOLS_STATE_KEY = "comparison_symbols_input"
+COMPARISON_PERIOD_STATE_KEY = "comparison_period"
 COMPARISON_START_DATE_STATE_KEY = "comparison_start_date"
 COMPARISON_END_DATE_STATE_KEY = "comparison_end_date"
 COMPARISON_FREQUENCY_STATE_KEY = "comparison_frequency"
-COMPARISON_RISK_FREE_RATE_STATE_KEY = (
-    "comparison_risk_free_rate_pct"
-)
+COMPARISON_RISK_FREE_RATE_STATE_KEY = "comparison_risk_free_rate_pct"
+COMPARISON_SYMBOLS_STATE_KEY = "comparison_symbols_input"
 
-
-COMPARISON_SYMBOLS_WIDGET_KEY = "comparison_symbols_input_widget"
+COMPARISON_PERIOD_WIDGET_KEY = "comparison_period_widget"
 COMPARISON_START_DATE_WIDGET_KEY = "comparison_start_date_widget"
 COMPARISON_END_DATE_WIDGET_KEY = "comparison_end_date_widget"
 COMPARISON_FREQUENCY_WIDGET_KEY = "comparison_frequency_widget"
-COMPARISON_RISK_FREE_RATE_WIDGET_KEY = (
-    "comparison_risk_free_rate_pct_widget"
-)
+COMPARISON_RISK_FREE_RATE_WIDGET_KEY = "comparison_risk_free_rate_pct_widget"
 
 
 # ==========================================================
 # Sincronização de widgets
 # ==========================================================
 def sync_comparison_symbols() -> None:
-    """Sincroniza a lista de símbolos com o estado persistente."""
-    st.session_state[COMPARISON_SYMBOLS_STATE_KEY] = (
-        st.session_state[COMPARISON_SYMBOLS_WIDGET_KEY]
-    )
+    selected_list = st.session_state.get(COMPARISON_SYMBOLS_WIDGET_KEY, [])
+    st.session_state[COMPARISON_SYMBOLS_STATE_KEY] = ",".join(selected_list)
 
+def sync_comparison_period() -> None:
+    st.session_state[COMPARISON_PERIOD_STATE_KEY] = st.session_state[
+        COMPARISON_PERIOD_WIDGET_KEY
+    ]
 
 def sync_comparison_start_date() -> None:
-    """Sincroniza a data inicial com o estado persistente."""
-    st.session_state[COMPARISON_START_DATE_STATE_KEY] = (
-        st.session_state[COMPARISON_START_DATE_WIDGET_KEY]
-    )
-
+    st.session_state[COMPARISON_START_DATE_STATE_KEY] = st.session_state[
+        COMPARISON_START_DATE_WIDGET_KEY
+    ]
 
 def sync_comparison_end_date() -> None:
-    """Sincroniza a data final com o estado persistente."""
-    st.session_state[COMPARISON_END_DATE_STATE_KEY] = (
-        st.session_state[COMPARISON_END_DATE_WIDGET_KEY]
-    )
-
+    st.session_state[COMPARISON_END_DATE_STATE_KEY] = st.session_state[
+        COMPARISON_END_DATE_WIDGET_KEY
+    ]
 
 def sync_comparison_frequency() -> None:
-    """Sincroniza a frequência com o estado persistente."""
-    st.session_state[COMPARISON_FREQUENCY_STATE_KEY] = (
-        st.session_state[COMPARISON_FREQUENCY_WIDGET_KEY]
-    )
-
+    st.session_state[COMPARISON_FREQUENCY_STATE_KEY] = st.session_state[
+        COMPARISON_FREQUENCY_WIDGET_KEY
+    ]
 
 def sync_comparison_risk_free_rate() -> None:
-    """Sincroniza a taxa livre de risco com o estado persistente."""
     st.session_state[COMPARISON_RISK_FREE_RATE_STATE_KEY] = float(
         st.session_state[COMPARISON_RISK_FREE_RATE_WIDGET_KEY]
     )
 
 
 # ==========================================================
-# Inicialização de estado
+# Estado inicial
 # ==========================================================
 def initialize_comparison_state() -> None:
-    """
-    Inicializa estado persistente e temporário da comparação.
-
-    Quando disponíveis, período e frequência da análise individual
-    são utilizados como valores iniciais.
-    """
+    today = datetime.now().date()
+    asset_period = st.session_state.get("comparison_period", "5 anos")
+    
+    target_year_init = today.year - 5
+    target_month_init = today.month + 1
+    if target_month_init > 12:
+        target_month_init = 1
+        target_year_init += 1
+        
     asset_start_date = st.session_state.get(
-        "asset_start_date",
-        datetime(2020, 1, 1),
+        "comparison_start_date",
+        datetime(target_year_init, target_month_init, 1).date(),
     )
-
     asset_end_date = st.session_state.get(
-        "asset_end_date",
-        datetime(2025, 12, 31),
+        "comparison_end_date",
+        today,
     )
-
     asset_frequency = st.session_state.get(
-        "asset_frequency",
+        "comparison_frequency",
         "Mensal",
     )
 
     defaults = {
-        COMPARISON_SYMBOLS_STATE_KEY: "BTC-USD,AAPL,USDBRL=X,SPY",
+        COMPARISON_PERIOD_STATE_KEY: asset_period,
         COMPARISON_START_DATE_STATE_KEY: asset_start_date,
         COMPARISON_END_DATE_STATE_KEY: asset_end_date,
         COMPARISON_FREQUENCY_STATE_KEY: asset_frequency,
         COMPARISON_RISK_FREE_RATE_STATE_KEY: 0.0,
-        COMPARISON_SYMBOLS_WIDGET_KEY: "BTC-USD,AAPL,USDBRL=X,SPY",
+        COMPARISON_SYMBOLS_STATE_KEY: "", 
+        COMPARISON_PERIOD_WIDGET_KEY: asset_period,
         COMPARISON_START_DATE_WIDGET_KEY: asset_start_date,
         COMPARISON_END_DATE_WIDGET_KEY: asset_end_date,
         COMPARISON_FREQUENCY_WIDGET_KEY: asset_frequency,
@@ -153,18 +143,27 @@ def initialize_comparison_state() -> None:
 
 
 # ==========================================================
-# Formatação
+# Utilitários e Formatação
 # ==========================================================
+def get_asset_full_name(ticker: str) -> str:
+    asset = next((a for a in ASSETS if a["ticker"] == ticker), None)
+    if asset:
+        return f"{asset['name']} ({ticker})"
+    return ticker
+
+def get_asset_multiline_name(ticker: str) -> str:
+    asset = next((a for a in ASSETS if a["ticker"] == ticker), None)
+    if asset:
+        return f"{asset['name']}<br>({ticker})"
+    return ticker
+
 def format_brazilian_number(value) -> str:
-    """Formata um número com duas casas decimais no padrão brasileiro."""
     if value is None or pd.isna(value):
         return "—"
-
     try:
         numeric_value = float(value)
     except (TypeError, ValueError):
         return str(value)
-
     return (
         f"{numeric_value:,.2f}"
         .replace(",", "X")
@@ -173,14 +172,9 @@ def format_brazilian_number(value) -> str:
     )
 
 
-def format_summary_value(
-    value,
-    column: str,
-) -> str:
-    """Formata valores usados no resumo e na tabela de métricas."""
+def format_summary_value(value, column: str) -> str:
     if value is None or pd.isna(value):
         return "N/A"
-
     if column in {
         "Retorno total",
         "Retorno médio",
@@ -189,738 +183,368 @@ def format_summary_value(
         "Percentual positivo",
     }:
         return format_return_pct(value)
-
-    if column in {
-        "Primeiro valor",
-        "Último valor",
-    }:
+    if column in {"Primeiro valor", "Último valor"}:
         return format_brazilian_number(value)
-
     if column == "Sharpe":
         return f"{float(value):.2f}"
-
     if column == "Observações":
         return f"{int(value)}"
-
     return str(value)
 
 
-def format_normalized_value(
-    value,
-    column: str,
-) -> str:
-    """
-    Formata valores dos Dados Normalizados.
-
-    Date é exibida como dd/mm/aaaa e os ativos com duas casas decimais.
-    """
+def format_normalized_value(value, column: str) -> str:
     if value is None or pd.isna(value):
         return "—"
-
     if column == "Date":
-        date_value = pd.to_datetime(
-            value,
-            errors="coerce",
-        )
-
+        date_value = pd.to_datetime(value, errors="coerce")
         if pd.isna(date_value):
             return "—"
-
         return date_value.strftime("%d/%m/%Y")
-
     return format_brazilian_number(value)
 
 
 def format_correlation_value(value) -> str:
-    """Formata coeficientes de correlação com duas casas decimais."""
     if value is None or pd.isna(value):
         return "—"
-
     try:
         return f"{float(value):.2f}".replace(".", ",")
     except (TypeError, ValueError):
         return str(value)
 
 
+def apply_custom_layout(fig):
+    fig.update_layout(
+        title="",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(l=10, r=20, t=20, b=20),
+        xaxis=dict(showgrid=False, zeroline=False),
+        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", zeroline=False),
+        font=dict(family="Inter, Arial, sans-serif", color="#334155")
+    )
+    return fig
+
+
+def render_custom_metric_card(title: str, asset: str, raw_value: float, formatted_str: str) -> None:
+    icon = "▲" if raw_value > 0 else "▼" if raw_value < 0 else "−"
+    color_bg = "#dcfce7" if raw_value > 0 else "#fee2e2" if raw_value < 0 else "#f1f5f9"
+    color_fg = "#166534" if raw_value > 0 else "#991b1b" if raw_value < 0 else "#475569"
+
+    html = f"""
+    <div style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 100%;">
+        <div style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+            {title}
+        </div>
+        <div style="color: #0f172a; font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; line-height: 1.2;">
+            {asset}
+        </div>
+        <div>
+            <span style="font-size: 0.85rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; display: inline-block; background-color: {color_bg}; color: {color_fg};">
+                {icon} {formatted_str}
+            </span>
+        </div>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
+
+
 # ==========================================================
-# Estilos reutilizáveis para tabelas
+# Tabelas HTML Premium
 # ==========================================================
-def build_table_styles(
-    prefix: str,
-) -> str:
-    """Gera os estilos CSS comuns das tabelas HTML da página."""
+def build_table_styles(prefix: str) -> str:
     return (
-        "<style>"
-        f".{prefix}-wrapper {{"
-        "width:100%;"
-        "overflow-x:auto;"
-        "border:1px solid #D9E2EC;"
-        "border-radius:10px;"
-        "background:#FFFFFF;"
-        "}"
-        f".{prefix}-table {{"
-        "width:100%;"
-        "border-collapse:separate;"
-        "border-spacing:0;"
-        "table-layout:fixed;"
-        "font-size:14px;"
-        "color:#26364A;"
-        "}"
-        f".{prefix}-table th {{"
-        "background:#E8EEF7;"
-        "color:#26364A;"
-        "text-align:center;"
-        "vertical-align:middle;"
-        "font-weight:700;"
-        "white-space:normal;"
-        "border-right:1px solid #D9E2EC;"
-        "border-bottom:2px solid #B7C7D9;"
-        "padding:10px 8px;"
-        "}"
-        f".{prefix}-table th:last-child {{"
-        "border-right:none;"
-        "}"
-        f".{prefix}-table td {{"
-        "vertical-align:middle;"
-        "border-right:1px solid #E7EDF3;"
-        "border-bottom:1px solid #E7EDF3;"
-        "padding:10px 8px;"
-        "}"
-        f".{prefix}-table td:last-child {{"
-        "border-right:none;"
-        "}"
-        f".{prefix}-table tbody tr:last-child td {{"
-        "border-bottom:none;"
-        "}"
-        f".{prefix}-row-even {{"
-        "background:#FFFFFF;"
-        "}"
-        f".{prefix}-row-odd {{"
-        "background:#F8FAFC;"
-        "}"
-        f".{prefix}-table tbody tr:hover {{"
-        "background:#EEF5FF;"
-        "}"
-        "</style>"
+        f"""
+        <style>
+        .{prefix}-wrapper {{
+            width: 100%;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            background: #FFFFFF;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
+        }}
+        .{prefix}-table {{
+            width: 100%;
+            min-width: 800px;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            color: #334155;
+            font-family: 'Inter', Arial, sans-serif;
+        }}
+        .{prefix}-table th {{
+            background-color: #F8FAFC;
+            color: #1E293B;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: 700;
+            padding: 14px 16px;
+            border-bottom: 3px solid #97B7C4;
+            border-right: 1px solid #E2E8F0;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }}
+        .{prefix}-table th:last-child {{ border-right: none; }}
+        .{prefix}-table td {{
+            vertical-align: middle;
+            padding: 12px 16px;
+            border-bottom: 1px solid #E2E8F0;
+            border-right: 1px solid #E2E8F0;
+        }}
+        .{prefix}-table td:last-child {{ border-right: none; }}
+        .{prefix}-table tr:last-child td {{ border-bottom: none; }}
+        .{prefix}-row-even {{ background-color: #FFFFFF; }}
+        .{prefix}-row-odd {{ background-color: #F1F5F9; }}
+        .{prefix}-table tr:hover {{ background-color: #E2E8F0; transition: background-color 0.2s; }}
+        </style>
+        """
     )
 
 
-# ==========================================================
-# Tabela: Resumo Comparativo
-# ==========================================================
-def render_summary_table(
-    dataframe: pd.DataFrame,
-) -> None:
-    """
-    Renderiza o resumo comparativo sem índice Pandas.
-
-    A tabela utiliza apenas colunas explicitamente definidas e uma
-    linha por ativo, sem incluir o índice 0, 1, 2, 3.
-    """
-    summary_columns = [
-        "Ativo",
-        "Observações",
-        "Primeiro valor",
-        "Último valor",
-        "Retorno total",
-        "Retorno médio",
-        "Volatilidade",
-        "Drawdown máximo",
-        "Percentual positivo",
-        "Sharpe",
+def render_summary_table(dataframe: pd.DataFrame) -> None:
+    columns = [
+        "Ativo", "Observações", "Primeiro valor", "Último valor",
+        "Retorno total", "Retorno médio", "Volatilidade",
+        "Drawdown máximo", "Percentual positivo", "Sharpe",
     ]
+    columns = [column for column in columns if column in dataframe.columns]
+    
+    display_df = dataframe[columns].copy()
+    if "Ativo" in display_df.columns:
+        display_df["Ativo"] = display_df["Ativo"].apply(get_asset_full_name)
+    records = display_df.to_dict(orient="records")
 
-    available_columns = [
-        column
-        for column in summary_columns
-        if column in dataframe.columns
-    ]
-
-    display_df = dataframe[
-        available_columns
-    ].copy()
-
-    records = display_df.to_dict(
-        orient="records",
-    )
-
-    header_html = "".join(
-        "<th>" + escape(str(column)) + "</th>"
-        for column in available_columns
-    )
-
-    rows_html = []
+    header = "".join(f"<th>{escape(str(column))}</th>" for column in columns)
+    rows = []
 
     for position, record in enumerate(records):
-        cells_html = []
-
-        for column in available_columns:
-            formatted_value = format_summary_value(
-                record.get(column),
-                column,
+        cells = []
+        for column in columns:
+            value = format_summary_value(record.get(column), column)
+            alignment = "left" if column == "Ativo" else "right"
+            font_family = "inherit" if column == "Ativo" else "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+            cells.append(
+                f'<td style="text-align:{alignment}; white-space:nowrap; font-variant-numeric:tabular-nums; font-family:{font_family}">'
+                f"{escape(str(value))}</td>"
             )
+        row_class = "argos-summary-row-even" if position % 2 == 0 else "argos-summary-row-odd"
+        rows.append(f'<tr class="{row_class}">{"".join(cells)}</tr>')
 
-            if column == "Ativo":
-                cell_style = (
-                    "text-align:left;"
-                    "white-space:nowrap;"
-                    "font-family:inherit;"
-                )
-            else:
-                cell_style = (
-                    "text-align:right;"
-                    "white-space:nowrap;"
-                    "font-variant-numeric:tabular-nums;"
-                    "font-family:ui-monospace,SFMono-Regular,Menlo,"
-                    "Monaco,Consolas,'Liberation Mono',monospace;"
-                )
-
-            cells_html.append(
-                '<td style="'
-                + cell_style
-                + '">'
-                + escape(str(formatted_value))
-                + "</td>"
-            )
-
-        row_class = (
-            "argos-summary-row-even"
-            if position % 2 == 0
-            else "argos-summary-row-odd"
-        )
-
-        rows_html.append(
-            '<tr class="'
-            + row_class
-            + '">'
-            + "".join(cells_html)
-            + "</tr>"
-        )
-
-    table_html = (
+    html = (
         build_table_styles("argos-summary")
-        + '<div class="argos-summary-wrapper">'
-        + '<table class="argos-summary-table" '
-        + 'style="min-width:1120px;">'
-        + "<thead><tr>"
-        + header_html
-        + "</tr></thead>"
-        + "<tbody>"
-        + "".join(rows_html)
-        + "</tbody>"
-        + "</table>"
-        + "</div>"
+        + '<div class="argos-summary-wrapper" style="overflow-x: auto;">'
+        + '<table class="argos-summary-table">'
+        + f"<thead><tr>{header}</tr></thead>"
+        + f'<tbody>{"".join(rows)}</tbody></table></div>'
     )
-
-    st.components.v1.html(
-        table_html,
-        height=260,
-        scrolling=True,
-    )
+    st.markdown(html, unsafe_allow_html=True)
 
 
-# ==========================================================
-# Tabela: Correlação entre Retornos
-# ==========================================================
-def render_correlation_table(
-    correlation_matrix: pd.DataFrame,
-) -> None:
-    """
-    Renderiza a matriz de correlação com o padrão visual da página.
-
-    O índice original é transformado explicitamente na coluna Ativo.
-    Com quatro ativos, a coluna Ativo e as quatro colunas de ativos
-    ocupam 20% cada e ficam centralizadas.
-    """
+def render_correlation_table(correlation_matrix: pd.DataFrame) -> None:
     if correlation_matrix is None or correlation_matrix.empty:
-        st.info(
-            "Não há dados coincidentes suficientes para exibir a tabela "
-            "de correlação."
-        )
+        st.info("Não há dados suficientes para exibir a correlação.")
         return
 
     display_df = correlation_matrix.copy()
+    
+    display_df.index = display_df.index.map(get_asset_full_name)
+    display_df.columns = display_df.columns.map(get_asset_full_name)
+    
     display_df.index.name = "Ativo"
     display_df = display_df.reset_index()
     columns = display_df.columns.tolist()
+    
+    widths = {column: f"{80 / (len(columns)-1):.2f}%" for column in columns if column != "Ativo"}
+    widths["Ativo"] = "20%" 
+    records = display_df.to_dict(orient="records")
 
-    asset_columns = [
-        column
-        for column in columns
-        if column != "Ativo"
-    ]
-
-    label_width = "20%"
-    asset_width = (
-        f"{80 / len(asset_columns):.2f}%"
-        if asset_columns
-        else "100%"
-    )
-
-    records = display_df.to_dict(
-        orient="records",
-    )
-
-    header_html = "".join(
-        (
-            '<th style="width:'
-            + (
-                label_width
-                if column == "Ativo"
-                else asset_width
-            )
-            + ';">'
-            + escape(str(column))
-            + "</th>"
-        )
+    header = "".join(
+        f'<th style="width:{widths[column]};">{escape(str(column))}</th>'
         for column in columns
     )
-
-    rows_html = []
+    rows = []
 
     for position, record in enumerate(records):
-        cells_html = []
-
+        cells = []
         for column in columns:
             value = record.get(column)
-
-            if column == "Ativo":
-                formatted_value = (
-                    "—"
-                    if pd.isna(value)
-                    else str(value)
-                )
-                cell_width = label_width
-            else:
-                formatted_value = format_correlation_value(
-                    value
-                )
-                cell_width = asset_width
-
-            cell_style = (
-                "width:"
-                + cell_width
-                + ";"
-                + "text-align:center;"
-                + "white-space:nowrap;"
-                + "font-variant-numeric:tabular-nums;"
-                + "font-family:ui-monospace,SFMono-Regular,Menlo,"
-                + "Monaco,Consolas,'Liberation Mono',monospace;"
+            formatted = (
+                "—" if column == "Ativo" and pd.isna(value)
+                else str(value) if column == "Ativo"
+                else format_correlation_value(value)
             )
-
-            cells_html.append(
-                '<td style="'
-                + cell_style
-                + '">'
-                + escape(str(formatted_value))
-                + "</td>"
+            cells.append(
+                f'<td style="width:{widths[column]}; text-align:center; white-space:nowrap; font-variant-numeric:tabular-nums; font-family:ui-monospace, SFMono-Regular, Menlo, monospace;">'
+                f"{escape(formatted)}</td>"
             )
+        row_class = "argos-correlation-row-even" if position % 2 == 0 else "argos-correlation-row-odd"
+        rows.append(f'<tr class="{row_class}">{"".join(cells)}</tr>')
 
-        row_class = (
-            "argos-correlation-row-even"
-            if position % 2 == 0
-            else "argos-correlation-row-odd"
-        )
-
-        rows_html.append(
-            '<tr class="'
-            + row_class
-            + '">'
-            + "".join(cells_html)
-            + "</tr>"
-        )
-
-    table_html = (
+    html = (
         build_table_styles("argos-correlation")
-        + '<div class="argos-correlation-wrapper">'
-        + '<table class="argos-correlation-table" '
-        + 'style="min-width:720px;">'
-        + "<thead><tr>"
-        + header_html
-        + "</tr></thead>"
-        + "<tbody>"
-        + "".join(rows_html)
-        + "</tbody>"
-        + "</table>"
-        + "</div>"
+        + '<div class="argos-correlation-wrapper" style="overflow-x: auto;">'
+        + '<table class="argos-correlation-table">'
+        + f"<thead><tr>{header}</tr></thead>"
+        + f'<tbody>{"".join(rows)}</tbody></table></div>'
     )
-
-    st.components.v1.html(
-        table_html,
-        height=280,
-        scrolling=True,
-    )
+    st.markdown(html, unsafe_allow_html=True)
 
 
-# ==========================================================
-# Tabela: Métricas por Ativo
-# ==========================================================
-def render_asset_metrics_table(
-    dataframe: pd.DataFrame,
-) -> None:
-    """
-    Renderiza uma tabela consolidada de métricas por ativo.
-
-    Substitui os cartões individuais e permite comparar todos os
-    ativos em uma única estrutura visual organizada.
-    """
-    metric_columns = [
-        "Ativo",
-        "Retorno total",
-        "Retorno médio",
-        "Volatilidade",
-        "Drawdown máximo",
-        "Percentual positivo",
-        "Sharpe",
+def render_asset_metrics_table(dataframe: pd.DataFrame) -> None:
+    columns = [
+        "Ativo", "Retorno total", "Retorno médio", "Volatilidade",
+        "Drawdown máximo", "Percentual positivo", "Sharpe",
     ]
-
-    available_columns = [
-        column
-        for column in metric_columns
-        if column in dataframe.columns
-    ]
-
-    display_df = dataframe[
-        available_columns
-    ].copy()
-
-    if "Retorno total" in display_df.columns:
-        display_df = display_df.sort_values(
-            by="Retorno total",
-            ascending=False,
-            na_position="last",
-        )
-
-    header_labels = {
-        "Ativo": "Ativo",
-        "Retorno total": "Retorno total",
-        "Retorno médio": "Retorno médio",
-        "Volatilidade": "Volatilidade",
-        "Drawdown máximo": "Drawdown máximo",
-        "Percentual positivo": "Períodos positivos",
-        "Sharpe": "Sharpe",
-    }
-
-    records = display_df.to_dict(
-        orient="records",
+    columns = [column for column in columns if column in dataframe.columns]
+    
+    display_df = dataframe[columns].sort_values(
+        by="Retorno total",
+        ascending=False,
+        na_position="last",
     )
+    if "Ativo" in display_df.columns:
+        display_df["Ativo"] = display_df["Ativo"].apply(get_asset_full_name)
+        
+    records = display_df.to_dict(orient="records")
 
-    header_html = "".join(
-        (
-            "<th>"
-            + escape(
-                header_labels.get(
-                    column,
-                    column,
-                )
-            )
-            + "</th>"
-        )
-        for column in available_columns
+    labels = {"Percentual positivo": "Períodos positivos"}
+    header = "".join(
+        f"<th>{escape(labels.get(column, column))}</th>"
+        for column in columns
     )
-
-    rows_html = []
+    rows = []
 
     for position, record in enumerate(records):
-        cells_html = []
-
-        for column in available_columns:
+        cells = []
+        for column in columns:
             value = record.get(column)
-
-            if column == "Ativo":
-                formatted_value = (
-                    "—"
-                    if value is None or pd.isna(value)
-                    else str(value)
-                )
-
-                cell_style = (
-                    "text-align:left;"
-                    "white-space:nowrap;"
-                    "font-family:inherit;"
-                )
-            else:
-                formatted_value = format_summary_value(
-                    value,
-                    column,
-                )
-
-                cell_style = (
-                    "text-align:right;"
-                    "white-space:nowrap;"
-                    "font-variant-numeric:tabular-nums;"
-                    "font-family:ui-monospace,SFMono-Regular,Menlo,"
-                    "Monaco,Consolas,'Liberation Mono',monospace;"
-                )
-
-            cells_html.append(
-                '<td style="'
-                + cell_style
-                + '">'
-                + escape(str(formatted_value))
-                + "</td>"
+            formatted = (
+                "—" if column == "Ativo" and pd.isna(value)
+                else str(value) if column == "Ativo"
+                else format_summary_value(value, column)
             )
+            alignment = "left" if column == "Ativo" else "right"
+            font_family = "inherit" if column == "Ativo" else "ui-monospace, SFMono-Regular, Menlo, monospace"
+            cells.append(
+                f'<td style="text-align:{alignment}; white-space:nowrap; font-variant-numeric:tabular-nums; font-family:{font_family}">'
+                f"{escape(formatted)}</td>"
+            )
+        row_class = "argos-metrics-row-even" if position % 2 == 0 else "argos-metrics-row-odd"
+        rows.append(f'<tr class="{row_class}">{"".join(cells)}</tr>')
 
-        row_class = (
-            "argos-metrics-row-even"
-            if position % 2 == 0
-            else "argos-metrics-row-odd"
-        )
-
-        rows_html.append(
-            '<tr class="'
-            + row_class
-            + '">'
-            + "".join(cells_html)
-            + "</tr>"
-        )
-
-    table_html = (
+    html = (
         build_table_styles("argos-metrics")
-        + '<div class="argos-metrics-wrapper">'
-        + '<table class="argos-metrics-table" '
-        + 'style="min-width:900px;">'
-        + "<thead><tr>"
-        + header_html
-        + "</tr></thead>"
-        + "<tbody>"
-        + "".join(rows_html)
-        + "</tbody>"
-        + "</table>"
-        + "</div>"
+        + '<div class="argos-metrics-wrapper" style="overflow-x: auto;">'
+        + '<table class="argos-metrics-table">'
+        + f"<thead><tr>{header}</tr></thead>"
+        + f'<tbody>{"".join(rows)}</tbody></table></div>'
     )
-
-    st.components.v1.html(
-        table_html,
-        height=260,
-        scrolling=True,
-    )
+    st.markdown(html, unsafe_allow_html=True)
 
 
-# ==========================================================
-# Tabela: Dados Normalizados
-# ==========================================================
-def render_normalized_data_table(
-    dataframe: pd.DataFrame,
-) -> None:
-    """
-    Renderiza Dados Normalizados sem índice Pandas.
-
-    Com quatro ativos:
-    - Date ocupa 20%.
-    - Cada ativo ocupa 20%.
-    - Todos os valores ficam centralizados.
-    """
+def render_normalized_data_table(dataframe: pd.DataFrame) -> None:
     if dataframe is None or dataframe.empty:
-        st.info(
-            "Não há dados normalizados disponíveis para exibição."
-        )
+        st.info("Não há dados normalizados disponíveis para exibição.")
         return
 
     columns = dataframe.columns.tolist()
-
     if "Date" in columns:
-        columns = ["Date"] + [
-            column
-            for column in columns
-            if column != "Date"
-        ]
+        columns = ["Date"] + [column for column in columns if column != "Date"]
+        
+    display_df = dataframe[columns].copy()
+    
+    rename_dict = {col: get_asset_full_name(col) for col in columns if col != "Date"}
+    display_df = display_df.rename(columns=rename_dict)
+    
+    columns = display_df.columns.tolist()
+    records = display_df.to_dict(orient="records")
+    
+    widths = {column: f"{80 / (len(columns)-1):.2f}%" for column in columns if column != "Date"}
+    widths["Date"] = "20%" 
 
-    display_df = dataframe[
-        columns
-    ].copy()
-
-    asset_columns = [
-        column
-        for column in columns
-        if column != "Date"
-    ]
-
-    date_width = "20%"
-    asset_width = (
-        f"{80 / len(asset_columns):.2f}%"
-        if asset_columns
-        else "100%"
-    )
-
-    records = display_df.to_dict(
-        orient="records",
-    )
-
-    header_html = "".join(
-        (
-            '<th style="width:'
-            + (
-                date_width
-                if column == "Date"
-                else asset_width
-            )
-            + ';">'
-            + escape(str(column))
-            + "</th>"
-        )
+    header = "".join(
+        f'<th style="width:{widths[column]};">{escape(str(column))}</th>'
         for column in columns
     )
-
-    rows_html = []
+    rows = []
 
     for position, record in enumerate(records):
-        cells_html = []
-
+        cells = []
         for column in columns:
-            formatted_value = format_normalized_value(
-                record.get(column),
-                column,
+            value = format_normalized_value(record.get(column), column)
+            cells.append(
+                f'<td style="width:{widths[column]}; text-align:center; white-space:nowrap; font-variant-numeric:tabular-nums; font-family:ui-monospace, SFMono-Regular, Menlo, monospace;">'
+                f"{escape(str(value))}</td>"
             )
+        row_class = "argos-normalized-row-even" if position % 2 == 0 else "argos-normalized-row-odd"
+        rows.append(f'<tr class="{row_class}">{"".join(cells)}</tr>')
 
-            cell_width = (
-                date_width
-                if column == "Date"
-                else asset_width
-            )
-
-            cell_style = (
-                "width:"
-                + cell_width
-                + ";"
-                + "text-align:center;"
-                + "white-space:nowrap;"
-                + "font-variant-numeric:tabular-nums;"
-                + "font-family:ui-monospace,SFMono-Regular,Menlo,"
-                + "Monaco,Consolas,'Liberation Mono',monospace;"
-            )
-
-            cells_html.append(
-                '<td style="'
-                + cell_style
-                + '">'
-                + escape(str(formatted_value))
-                + "</td>"
-            )
-
-        row_class = (
-            "argos-normalized-row-even"
-            if position % 2 == 0
-            else "argos-normalized-row-odd"
-        )
-
-        rows_html.append(
-            '<tr class="'
-            + row_class
-            + '">'
-            + "".join(cells_html)
-            + "</tr>"
-        )
-
-    table_html = (
+    html = (
         build_table_styles("argos-normalized")
-        + '<div class="argos-normalized-wrapper">'
-        + '<table class="argos-normalized-table" '
-        + 'style="min-width:760px;">'
-        + "<thead><tr>"
-        + header_html
-        + "</tr></thead>"
-        + "<tbody>"
-        + "".join(rows_html)
-        + "</tbody>"
-        + "</table>"
-        + "</div>"
+        + '<div class="argos-normalized-wrapper" style="max-height: 450px; overflow-y: auto; overflow-x: auto;">'
+        + '<table class="argos-normalized-table">'
+        + f"<thead><tr>{header}</tr></thead>"
+        + f'<tbody>{"".join(rows)}</tbody></table></div>'
     )
-
-    st.components.v1.html(
-        table_html,
-        height=360,
-        scrolling=True,
-    )
+    st.markdown(html, unsafe_allow_html=True)
 
 
 # ==========================================================
-# Heatmap: Correlação entre Retornos
+# Heatmap de correlação
 # ==========================================================
-def render_correlation_heatmap(
-    correlation_matrix: pd.DataFrame,
-) -> None:
-    """
-    Renderiza o heatmap de correlação em formato quadrado.
-
-    O gráfico exibe somente o triângulo inferior da matriz e oculta
-    a diagonal principal para eliminar a duplicidade visual.
-    """
+def render_correlation_heatmap(correlation_matrix: pd.DataFrame) -> None:
     if correlation_matrix is None or correlation_matrix.empty:
-        st.info(
-            "Não há dados coincidentes suficientes para calcular a correlação."
-        )
+        st.info("Não há dados suficientes para calcular a correlação.")
         return
 
     correlation_plot = correlation_matrix.astype(float).copy()
-
     asset_order = correlation_plot.columns.tolist()
+
+    if len(asset_order) < 2:
+        st.info("São necessários pelo menos dois ativos.")
+        return
 
     correlation_plot = correlation_plot.reindex(
         index=asset_order,
         columns=asset_order,
     )
 
-    values = correlation_plot.to_numpy(dtype=float)
-
-    triangular_values = values.copy()
-
-    triangular_values[
-        np.triu_indices_from(
-            triangular_values,
-            k=0,
-        )
-    ] = np.nan
-
-    text_values = np.empty(
-        triangular_values.shape,
-        dtype=object,
+    x_assets = asset_order[:-1]
+    y_assets = asset_order[1:]
+    
+    x_names = [get_asset_multiline_name(t) for t in x_assets]
+    y_names = [get_asset_multiline_name(t) for t in y_assets]
+    
+    triangular_values = np.full(
+        (len(y_assets), len(x_assets)),
+        np.nan,
+        dtype=float,
     )
+    text_values = np.empty(triangular_values.shape, dtype=object)
+    customdata = np.empty(triangular_values.shape, dtype=object)
 
-    customdata = np.empty(
-        triangular_values.shape,
-        dtype=object,
-    )
+    for row_index, y_asset in enumerate(y_assets):
+        for column_index, x_asset in enumerate(x_assets):
+            orig_x_idx = asset_order.index(x_asset)
+            orig_y_idx = asset_order.index(y_asset)
+            
+            if orig_x_idx >= orig_y_idx:
+                text_values[row_index, column_index] = ""
+                customdata[row_index, column_index] = None
+                continue
 
-    for row_index in range(
-        triangular_values.shape[0]
-    ):
-        for column_index in range(
-            triangular_values.shape[1]
-        ):
-            value = triangular_values[
-                row_index,
-                column_index,
-            ]
-
-            if np.isnan(value):
-                text_values[
-                    row_index,
-                    column_index,
-                ] = ""
-
-                customdata[
-                    row_index,
-                    column_index,
-                ] = None
-            else:
-                text_values[
-                    row_index,
-                    column_index,
-                ] = f"{value:.2f}".replace(
-                    ".",
-                    ",",
-                )
-
-                customdata[
-                    row_index,
-                    column_index,
-                ] = float(value)
+            value = correlation_plot.loc[y_asset, x_asset]
+            triangular_values[row_index, column_index] = value
+            text_values[row_index, column_index] = (
+                f"{value:.2f}".replace(".", ",")
+            )
+            customdata[row_index, column_index] = float(value)
 
     heatmap = go.Heatmap(
         z=triangular_values,
-        x=asset_order,
-        y=asset_order,
+        x=x_names,
+        y=y_names,
         zmin=-1,
         zmax=1,
         colorscale=[
@@ -938,65 +562,27 @@ def render_correlation_heatmap(
         textfont={
             "family": "Inter, Arial, sans-serif",
             "size": 14,
+            "color": "#334155",
         },
         hovertemplate=(
             "<b>%{y}</b> × <b>%{x}</b><br>"
-            "Correlação: %{customdata:.2f}"
-            "<extra></extra>"
+            "Correlação: %{customdata:.2f}<extra></extra>"
         ),
         colorbar={
-            "title": {
-                "text": "Correlação",
-                "side": "right",
-            },
-            "tickvals": [
-                -1,
-                -0.5,
-                0,
-                0.5,
-                1,
-            ],
-            "ticktext": [
-                "-1,00",
-                "-0,50",
-                "0,00",
-                "0,50",
-                "1,00",
-            ],
+            "title": {"text": "Correlação", "side": "right"},
+            "tickvals": [-1, -0.5, 0, 0.5, 1],
+            "ticktext": ["-1,00", "-0,50", "0,00", "0,50", "1,00"],
             "thickness": 14,
             "len": 0.78,
             "outlinewidth": 0,
         },
     )
 
-    figure_height = max(
-        420,
-        min(
-            720,
-            100 * len(asset_order) + 150,
-        ),
-    )
-
-    fig_correlation = go.Figure(
-        data=[heatmap]
-    )
-
-    fig_correlation.update_layout(
-        title="",
-        template="plotly_white",
-        height=figure_height,
-        margin={
-            "l": 70,
-            "r": 85,
-            "t": 30,
-            "b": 70,
-        },
-        paper_bgcolor="#F8FAFC",
-        plot_bgcolor="#FFFFFF",
-        font={
-            "family": "Inter, Arial, sans-serif",
-            "color": "#334155",
-        },
+    figure_size = max(420, min(720, 100 * len(x_assets) + 150))
+    figure = go.Figure(data=[heatmap])
+    figure = apply_custom_layout(figure)
+    figure.update_layout(
+        height=figure_size,
         xaxis={
             "title": None,
             "showgrid": False,
@@ -1004,11 +590,8 @@ def render_correlation_heatmap(
             "showline": False,
             "constrain": "domain",
             "categoryorder": "array",
-            "categoryarray": asset_order,
-            "tickfont": {
-                "size": 12,
-                "color": "#475569",
-            },
+            "categoryarray": x_names,
+            "tickfont": {"size": 12, "color": "#475569"},
             "fixedrange": True,
         },
         yaxis={
@@ -1020,23 +603,18 @@ def render_correlation_heatmap(
             "scaleanchor": "x",
             "scaleratio": 1,
             "categoryorder": "array",
-            "categoryarray": asset_order,
-            "tickfont": {
-                "size": 12,
-                "color": "#475569",
-            },
+            "categoryarray": y_names,
+            "tickfont": {"size": 12, "color": "#475569"},
             "fixedrange": True,
         },
     )
 
-    st.plotly_chart(
-        fig_correlation,
-        width="stretch",
-        config={
-            "displayModeBar": False,
-            "responsive": True,
-        },
-    )
+    with st.container(border=True):
+        st.plotly_chart(
+            figure,
+            use_container_width=True,
+            config={"displayModeBar": False, "responsive": True},
+        )
 
 
 # ==========================================================
@@ -1048,24 +626,16 @@ st.set_page_config(
     layout="wide",
 )
 
-
 initialize_asset_state()
 initialize_comparison_state()
 
-
 st.title("⚖️ Comparação de Ativos")
-
-
 st.markdown(
-    "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 2rem;'>"
+    "<p style='font-size:1.1rem;color:#475569;margin-bottom:2rem;'>"
     "Compare o comportamento histórico de diferentes ativos através de métricas de retorno, "
-    "volatilidade, drawdown e correlação."
-    "</p>",
-    unsafe_allow_html=True
+    "volatilidade, drawdown e correlação.</p>",
+    unsafe_allow_html=True,
 )
-
-# Removida a mensagem informativa duplicada no topo sobre "finalidade histórica"
-# (já presente no rodapé do dashboard de forma mais elegante).
 
 
 # ==========================================================
@@ -1074,31 +644,59 @@ st.markdown(
 with st.sidebar:
     st.header("⚙️ Parâmetros da Comparação")
 
+    default_str = st.session_state.get(COMPARISON_SYMBOLS_STATE_KEY, "")
+    default_list = [s.strip() for s in default_str.split(",") if s.strip()]
 
-    st.text_input(
-        "Símbolos dos ativos",
-        key=COMPARISON_SYMBOLS_WIDGET_KEY,
-        on_change=sync_comparison_symbols,
-        help=(
-            "Informe de 2 a 5 símbolos separados por vírgula. "
-            "Exemplo: BTC-USD,AAPL,USDBRL=X,SPY"
-        ),
+    selected_tickers = render_multi_asset_selector(
+        key_prefix="comparison",
+        default_tickers=default_list,
+        max_selections=5
     )
 
+    st.session_state[COMPARISON_SYMBOLS_STATE_KEY] = ",".join(selected_tickers)
+    symbols_input = st.session_state[COMPARISON_SYMBOLS_STATE_KEY]
 
-    st.date_input(
-        "Data inicial",
-        key=COMPARISON_START_DATE_WIDGET_KEY,
-        on_change=sync_comparison_start_date,
+    st.divider()
+
+    period_options = ["1 ano", "3 anos", "5 anos", "10 anos", "Personalizado"]
+    
+    st.selectbox(
+        "Período",
+        options=period_options,
+        key=COMPARISON_PERIOD_WIDGET_KEY,
+        on_change=sync_comparison_period,
     )
+    
+    selected_period = st.session_state[COMPARISON_PERIOD_STATE_KEY]
+    today = datetime.now().date()
+    
+    if selected_period == "Personalizado":
+        st.date_input(
+            "Data inicial",
+            key=COMPARISON_START_DATE_WIDGET_KEY,
+            on_change=sync_comparison_start_date,
+        )
 
-
-    st.date_input(
-        "Data final",
-        key=COMPARISON_END_DATE_WIDGET_KEY,
-        on_change=sync_comparison_end_date,
-    )
-
+        st.date_input(
+            "Data final",
+            key=COMPARISON_END_DATE_WIDGET_KEY,
+            on_change=sync_comparison_end_date,
+        )
+    else:
+        end_date = today
+        years_to_subtract = int(selected_period.split()[0])
+        
+        target_year = today.year - years_to_subtract
+        target_month = today.month + 1
+        
+        if target_month > 12:
+            target_month = 1
+            target_year += 1
+            
+        start_date = datetime(target_year, target_month, 1).date()
+        
+        st.session_state[COMPARISON_START_DATE_STATE_KEY] = start_date
+        st.session_state[COMPARISON_END_DATE_STATE_KEY] = end_date
 
     st.selectbox(
         "Frequência",
@@ -1106,7 +704,6 @@ with st.sidebar:
         key=COMPARISON_FREQUENCY_WIDGET_KEY,
         on_change=sync_comparison_frequency,
     )
-
 
     st.number_input(
         "Taxa livre de risco anual (%)",
@@ -1118,41 +715,19 @@ with st.sidebar:
         help="Exemplo: 10,00 representa 10% ao ano.",
     )
 
-
     load_comparison = st.button(
         "📊 Comparar ativos",
         type="primary",
         key="comparison_load_button",
+        use_container_width=True
     )
 
-
-symbols_input = st.session_state[
-    COMPARISON_SYMBOLS_STATE_KEY
-]
-
-
-start_date = st.session_state[
-    COMPARISON_START_DATE_STATE_KEY
-]
-
-
-end_date = st.session_state[
-    COMPARISON_END_DATE_STATE_KEY
-]
-
-
-frequency = st.session_state[
-    COMPARISON_FREQUENCY_STATE_KEY
-]
-
-
+start_date = st.session_state[COMPARISON_START_DATE_STATE_KEY]
+end_date = st.session_state[COMPARISON_END_DATE_STATE_KEY]
+frequency = st.session_state[COMPARISON_FREQUENCY_STATE_KEY]
 risk_free_rate_pct = float(
-    st.session_state[
-        COMPARISON_RISK_FREE_RATE_STATE_KEY
-    ]
+    st.session_state[COMPARISON_RISK_FREE_RATE_STATE_KEY]
 )
-
-
 annual_risk_free_rate = risk_free_rate_pct / 100
 
 
@@ -1160,23 +735,22 @@ annual_risk_free_rate = risk_free_rate_pct / 100
 # Processamento da comparação
 # ==========================================================
 if load_comparison:
-    if start_date >= end_date:
-        st.sidebar.error(
-            "A data inicial deve ser anterior à data final."
-        )
-        st.stop()
-
-
     try:
-        symbols = parse_symbols(symbols_input)
+        symbols = [s.strip() for s in symbols_input.split(",") if s.strip()]
     except ValueError as error:
         st.sidebar.error(str(error))
         st.stop()
 
+    if len(symbols) < 2:
+        st.sidebar.error("Selecione pelo menos dois ativos para comparar.")
+        st.stop()
+
+    if start_date >= end_date:
+        st.sidebar.error("A data inicial deve ser anterior à data final.")
+        st.stop()
 
     asset_data = {}
     failed_symbols = []
-
 
     with st.spinner("Carregando e processando os ativos..."):
         for symbol in symbols:
@@ -1187,145 +761,74 @@ if load_comparison:
                 interval="1d",
             )
 
-
             if df_raw is None or df_raw.empty:
                 failed_symbols.append(symbol)
                 continue
 
-
             df_prepared = prepare_dataframe(df_raw)
-
-
             df_aggregated = aggregate_by_frequency(
                 df_prepared,
                 frequency,
             )
-
-
             df_primary = select_primary_variable(
                 df_aggregated,
                 "Close",
             )
-
-
-            df_returns = calculate_returns(
-                df_primary,
-                "Value",
-            )
-
-
-            df_risk = calculate_drawdown(
+            df_returns = calculate_returns(df_primary, "Value")
+            asset_data[symbol] = calculate_drawdown(
                 df_returns,
                 "Value",
             )
 
-
-            asset_data[symbol] = df_risk
-
-
     if len(asset_data) < 2:
         st.session_state["comparison_loaded"] = False
         st.session_state["comparison_query"] = None
-
-
-        st.session_state.pop(
-            "comparison_asset_data",
-            None,
-        )
-
-
-        st.session_state.pop(
-            "comparison_failed_symbols",
-            None,
-        )
-
-
         st.error(
             "Não foi possível obter dados válidos para pelo menos dois ativos."
         )
-
-
         if failed_symbols:
             st.warning(
                 "Símbolos sem dados válidos: "
                 + ", ".join(failed_symbols)
             )
-
-
         st.stop()
 
-
     base_100_table = build_base_100_table(asset_data)
-
-
     price_table = build_price_table(asset_data)
-
-
-    returns_table = calculate_returns_table(
-        price_table
-    )
-
-
-    correlation_matrix = calculate_correlation_matrix(
-        returns_table
-    )
-
-
-    summary = create_comparison_summary(
-        asset_data
-    )
-
+    returns_table = calculate_returns_table(price_table)
+    correlation_matrix = calculate_correlation_matrix(returns_table)
+    summary = create_comparison_summary(asset_data)
 
     annualization_factor = ANNUALIZATION_FACTORS.get(
         frequency,
         252,
     )
 
-
     risk_rows = []
-
-
-    for symbol, df in asset_data.items():
+    for symbol, dataframe in asset_data.items():
         metrics = build_risk_summary(
-            df=df,
+            df=dataframe,
             value_col="Value",
-            annualization_factor=float(
-                annualization_factor
-            ),
+            annualization_factor=float(annualization_factor),
             annual_risk_free_rate=annual_risk_free_rate,
         )
-
-
         risk_rows.append(
             {
                 "Ativo": symbol,
-                "Volatilidade": metrics.get(
-                    "Volatilidade"
-                ),
-                "Drawdown máximo": metrics.get(
-                    "Drawdown máximo"
-                ),
-                "Percentual positivo": metrics.get(
-                    "Percentual positivo"
-                ),
+                "Volatilidade": metrics.get("Volatilidade"),
+                "Drawdown máximo": metrics.get("Drawdown máximo"),
+                "Percentual positivo": metrics.get("Percentual positivo"),
                 "Sharpe": metrics.get("Sharpe"),
             }
         )
 
-
-    risk_table = pd.DataFrame(risk_rows)
-
-
     summary = summary.merge(
-        risk_table,
+        pd.DataFrame(risk_rows),
         on="Ativo",
         how="left",
     )
 
-
     st.session_state["comparison_loaded"] = True
-
-
     st.session_state["comparison_query"] = {
         "symbols_input": symbols_input,
         "start_date": start_date,
@@ -1333,34 +836,12 @@ if load_comparison:
         "frequency": frequency,
         "risk_free_rate_pct": risk_free_rate_pct,
     }
-
-
     st.session_state["comparison_asset_data"] = asset_data
-
-
-    st.session_state["comparison_failed_symbols"] = (
-        failed_symbols
-    )
-
-
-    st.session_state["comparison_base_100_table"] = (
-        base_100_table
-    )
-
-
+    st.session_state["comparison_failed_symbols"] = failed_symbols
+    st.session_state["comparison_base_100_table"] = base_100_table
     st.session_state["comparison_price_table"] = price_table
-
-
-    st.session_state["comparison_returns_table"] = (
-        returns_table
-    )
-
-
-    st.session_state["comparison_correlation_matrix"] = (
-        correlation_matrix
-    )
-
-
+    st.session_state["comparison_returns_table"] = returns_table
+    st.session_state["comparison_correlation_matrix"] = correlation_matrix
     st.session_state["comparison_summary"] = summary
 
 
@@ -1368,7 +849,6 @@ if load_comparison:
 # Consulta confirmada
 # ==========================================================
 query = st.session_state.get("comparison_query")
-
 
 if (
     not st.session_state.get("comparison_loaded")
@@ -1378,82 +858,52 @@ if (
     or "comparison_summary" not in st.session_state
 ):
     st.info(
-        "Informe os símbolos, selecione o período e clique em "
-        "**Comparar ativos**."
+        "Selecione de 2 a 5 ativos no menu lateral; "
+        "depois clique em **Comparar ativos**."
     )
     st.stop()
 
-
 asset_data = st.session_state["comparison_asset_data"]
-
-
-failed_symbols = st.session_state[
-    "comparison_failed_symbols"
-]
-
-
-base_100_table = st.session_state[
-    "comparison_base_100_table"
-]
-
-
-correlation_matrix = st.session_state[
-    "comparison_correlation_matrix"
-]
-
-
+failed_symbols = st.session_state["comparison_failed_symbols"]
+base_100_table = st.session_state["comparison_base_100_table"]
+correlation_matrix = st.session_state["comparison_correlation_matrix"]
 summary = st.session_state["comparison_summary"]
-
-
 start_date = query["start_date"]
-
-
 end_date = query["end_date"]
-
-
 frequency = query["frequency"]
+risk_free_rate_pct = float(query["risk_free_rate_pct"])
+annualization_factor = ANNUALIZATION_FACTORS.get(frequency, 252)
 
-
-risk_free_rate_pct = float(
-    query["risk_free_rate_pct"]
-)
-
-
-annualization_factor = ANNUALIZATION_FACTORS.get(
-    frequency,
-    252,
-)
-
-
-# ==========================================================
-# Metadados e Mensagens da consulta confirmada
-# ==========================================================
 if failed_symbols:
     st.warning(
         "Os seguintes símbolos não retornaram dados válidos: "
         + ", ".join(failed_symbols)
     )
 
-# Agrupando as mensagens de sucesso, avisos técnicos e metodologia em um expander limpo
-with st.expander(f"✅ Análise gerada para {len(asset_data)} ativos. Clique para visualizar a metodologia e parâmetros.", expanded=False):
-    st.markdown(f"**Ativos Analisados:** {', '.join(asset_data.keys())}")
-    st.markdown(f"**Período:** {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}")
+with st.expander(
+    f"✅ Análise gerada para {len(asset_data)} ativos. "
+    "Clique para visualizar a metodologia e parâmetros.",
+    expanded=False,
+):
     st.markdown(
-        f"**Metodologia Matemática:** O Índice de Sharpe foi anualizado com uma taxa livre de risco de **{risk_free_rate_pct:.2f}% ao ano** "
-        f"e fator de anualização **{annualization_factor}**. "
+        "**Ativos analisados:** "
+        + ", ".join(asset_data.keys())
     )
     st.markdown(
-        "**Tratamento de Dados:** A união das séries utiliza alinhamento completo por data, preservando dias sem negociação. "
-        "As correlações consideram apenas pares de retornos válidos e coincidentes."
+        f"**Período:** {start_date.strftime('%d/%m/%Y')} a "
+        f"{end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}"
+    )
+    st.markdown(
+        f"**Índice de Sharpe:** taxa livre de risco de "
+        f"**{risk_free_rate_pct:.2f}% ao ano** e fator de anualização "
+        f"**{annualization_factor}**."
+    )
+    st.markdown(
+        "**Tratamento de dados:** alinhamento completo por data, com "
+        "correlações calculadas somente entre retornos válidos e coincidentes."
     )
 
-
-# ==========================================================
-# Dados numéricos e ordenação
-# ==========================================================
 summary_numeric = summary.copy()
-
-
 summary_display = summary_numeric.sort_values(
     by="Retorno total",
     ascending=False,
@@ -1462,94 +912,58 @@ summary_display = summary_numeric.sort_values(
 
 
 # ==========================================================
-# Cores dos ativos
+# Paleta de Cores Dinâmica (Multi-linha)
 # ==========================================================
-color_map = {
-    "BTC-USD": "#F59E0B",
-    "AAPL": "#3B82F6",
-    "USDBRL=X": "#10B981",
-    "SPY": "#8B5CF6",
-}
-
-
-for symbol in summary_numeric["Ativo"].tolist():
-    if symbol not in color_map:
-        color_map[symbol] = "#64748B"
+color_palette = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"]
+color_map = {}
+for i, symbol in enumerate(summary_numeric["Ativo"].tolist()):
+    color_map[symbol] = color_palette[i % len(color_palette)]
 
 
 # ==========================================================
-# Helper de Renderização dos Cartões Customizados
-# ==========================================================
-def render_custom_metric_card(title: str, asset: str, raw_value: float, formatted_str: str) -> None:
-    """Renderiza um card estizado via HTML simulando aparência de dashboards modernos."""
-    icon = "▲" if raw_value > 0 else "▼" if raw_value < 0 else "−"
-    color_bg = "#dcfce7" if raw_value > 0 else "#fee2e2" if raw_value < 0 else "#f1f5f9"
-    color_fg = "#166534" if raw_value > 0 else "#991b1b" if raw_value < 0 else "#475569"
-
-    html = f"""
-    <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 100%;">
-        <div style="color: #64748b; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-            {title}
-        </div>
-        <div style="color: #0f172a; font-size: 1.8rem; font-weight: 700; margin-bottom: 12px;">
-            {asset}
-        </div>
-        <div>
-            <span style="font-size: 0.85rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; display: inline-block; background-color: {color_bg}; color: {color_fg};">
-                {icon} {formatted_str}
-            </span>
-        </div>
-    </div>
-    """
-    st.markdown(html, unsafe_allow_html=True)
-
-
-# ==========================================================
-# Destaques
+# Destaques (4 Cards Analíticos)
 # ==========================================================
 st.header("📌 Destaques da Comparação")
 
-
 if not summary_numeric.empty:
-    best_row = summary_numeric.loc[
-        summary_numeric["Retorno total"].idxmax()
-    ]
+    best_row = summary_numeric.loc[summary_numeric["Retorno total"].idxmax()]
+    worst_row = summary_numeric.loc[summary_numeric["Retorno total"].idxmin()]
+    lowest_drawdown_row = summary_numeric.loc[summary_numeric["Drawdown máximo"].idxmax()]
+    best_sharpe_row = summary_numeric.loc[summary_numeric["Sharpe"].idxmax()]
 
-    worst_row = summary_numeric.loc[
-        summary_numeric["Retorno total"].idxmin()
-    ]
-
-    lowest_drawdown_row = summary_numeric.loc[
-        summary_numeric["Drawdown máximo"].idxmax()
-    ]
-
-    highlight_cols = st.columns(3)
-
+    highlight_cols = st.columns(4)
     with highlight_cols[0]:
         render_custom_metric_card(
-            title="Melhor retorno",
-            asset=best_row["Ativo"],
-            raw_value=best_row["Retorno total"],
-            formatted_str=format_return_pct(best_row["Retorno total"]),
+            "Melhor retorno", 
+            get_asset_full_name(best_row["Ativo"]), 
+            best_row["Retorno total"], 
+            format_return_pct(best_row["Retorno total"])
         )
-
     with highlight_cols[1]:
         render_custom_metric_card(
-            title="Menor retorno",
-            asset=worst_row["Ativo"],
-            raw_value=worst_row["Retorno total"],
-            formatted_str=format_return_pct(worst_row["Retorno total"]),
+            "Menor retorno", 
+            get_asset_full_name(worst_row["Ativo"]), 
+            worst_row["Retorno total"], 
+            format_return_pct(worst_row["Retorno total"])
         )
-
     with highlight_cols[2]:
         render_custom_metric_card(
-            title="Menor perda máxima",
-            asset=lowest_drawdown_row["Ativo"],
-            raw_value=lowest_drawdown_row["Drawdown máximo"],
-            formatted_str=format_return_pct(lowest_drawdown_row["Drawdown máximo"]),
+            "Menor perda máxima", 
+            get_asset_full_name(lowest_drawdown_row["Ativo"]), 
+            lowest_drawdown_row["Drawdown máximo"], 
+            format_return_pct(lowest_drawdown_row["Drawdown máximo"])
+        )
+    with highlight_cols[3]:
+        sharpe_val = best_sharpe_row["Sharpe"]
+        sharpe_str = "N/A" if pd.isna(sharpe_val) else f"{sharpe_val:.2f}"
+        render_custom_metric_card(
+            "Melhor Risco-Retorno", 
+            get_asset_full_name(best_sharpe_row["Ativo"]), 
+            sharpe_val if not pd.isna(sharpe_val) else 0, 
+            f"Sharpe: {sharpe_str}"
         )
     
-    st.markdown("<br>", unsafe_allow_html=True) # Espaçamento inferior
+    st.markdown("<br>", unsafe_allow_html=True)
 
 
 # ==========================================================
@@ -1557,12 +971,11 @@ if not summary_numeric.empty:
 # ==========================================================
 st.markdown("### 📈 Evolução de Desempenho Histórico")
 st.markdown(
-    "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
-    "Comparação de trajetória normalizada em <b>Base 100</b> no período inicial (ex: índice 120 = +20% de ganho)."
-    "</p>",
-    unsafe_allow_html=True
+    "<p style='color:#64748b;font-size:0.95rem;margin-top:-12px;"
+    "margin-bottom:24px;'>Comparação de trajetória normalizada em "
+    "<b>Base 100</b> no período inicial.</p>",
+    unsafe_allow_html=True,
 )
-
 
 if not base_100_table.empty:
     base_100_melted = base_100_table.melt(
@@ -1570,51 +983,48 @@ if not base_100_table.empty:
         var_name="Ativo",
         value_name="Índice base 100",
     )
+    
+    base_100_melted["Nome Ativo"] = base_100_melted["Ativo"].apply(get_asset_full_name)
+    color_map_names = {get_asset_full_name(ticker): color for ticker, color in color_map.items()}
+    base_100_melted["Tooltip_Value"] = base_100_melted["Índice base 100"].apply(format_brazilian_number)
 
     fig_base_100 = px.line(
         base_100_melted,
         x="Date",
         y="Índice base 100",
-        color="Ativo",
-        color_discrete_map=color_map,
-        labels={
-            "Date": "Data",
-            "Índice base 100": "Índice",
-            "Ativo": "Ativo",
-        },
-        template="plotly_white",
+        color="Nome Ativo",
+        color_discrete_map=color_map_names,
+        custom_data=["Tooltip_Value"]
     )
-
+    
+    fig_base_100 = apply_custom_layout(fig_base_100)
+    
     fig_base_100.update_layout(
         hovermode="x unified",
-        legend=dict(
-            title="",
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
-        ),
-        margin=dict(l=10, r=20, t=40, b=20),
-        paper_bgcolor="#FFFFFF",
-        plot_bgcolor="#FFFFFF",
-        xaxis=dict(showgrid=False, zeroline=False),
-        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", zeroline=False),
-        font=dict(family="Inter, Arial, sans-serif", color="#334155")
+        legend={
+            "title": "",
+            "orientation": "h",
+            "yanchor": "bottom",
+            "y": 1.02,
+            "xanchor": "right",
+            "x": 1,
+        },
     )
-
+    
+    fig_base_100.update_xaxes(title_text="")
+    fig_base_100.update_yaxes(title_text="")
+    
     fig_base_100.update_traces(
-        connectgaps=True,
-        line=dict(width=2.5),
+        connectgaps=True, 
+        line={"width": 2.5},
+        hovertemplate="%{customdata}<extra></extra>"
     )
-
+    
     with st.container(border=True):
         st.plotly_chart(
             fig_base_100,
             use_container_width=True,
-            config={
-                "displayModeBar": False,
-            },
+            config={"displayModeBar": False},
         )
 
 
@@ -1622,36 +1032,20 @@ if not base_100_table.empty:
 # Resumo Comparativo
 # ==========================================================
 st.header("📊 Resumo Comparativo")
-
-
-render_summary_table(
-    summary_display
-)
+render_summary_table(summary_display)
 
 
 # ==========================================================
 # Correlação entre Retornos
 # ==========================================================
 st.header("🔗 Correlação entre Retornos")
-
-
-render_correlation_heatmap(
-    correlation_matrix
-)
-
-
+render_correlation_heatmap(correlation_matrix)
 st.caption(
-    "A matriz exibe apenas a metade inferior para evitar duplicidade. "
-    "A diagonal, que representa a correlação do ativo consigo mesmo, "
-    "também foi ocultada."
+    "A matriz exibe apenas as correlações únicas entre pares de ativos. "
+    "A diagonal e os valores duplicados foram ocultados para reduzir "
+    "a redundância visual."
 )
-
-
-render_correlation_table(
-    correlation_matrix
-)
-
-
+render_correlation_table(correlation_matrix)
 st.caption(
     "A correlação é calculada com retornos históricos coincidentes. "
     "Ela não representa causalidade nem garante comportamento futuro."
@@ -1662,39 +1056,24 @@ st.caption(
 # Métricas por Ativo
 # ==========================================================
 st.header("🧮 Métricas por Ativo")
-
-
 st.caption(
     "A tabela consolida retorno, volatilidade, drawdown e Sharpe para "
-    "facilitar a comparação entre os ativos. A análise considera risco "
-    "e perda máxima intermediária, não apenas a valorização final."
+    "facilitar a comparação entre os ativos."
 )
-
-
-render_asset_metrics_table(
-    summary_numeric
-)
+render_asset_metrics_table(summary_numeric)
 
 
 # ==========================================================
 # Dados Normalizados
 # ==========================================================
 st.header("📋 Dados Normalizados")
-
-
-render_normalized_data_table(
-    base_100_table
-)
+render_normalized_data_table(base_100_table)
 
 
 # ==========================================================
-# Download
+# Download e rodapé
 # ==========================================================
-csv_data = base_100_table.to_csv(
-    index=False,
-).encode("utf-8")
-
-
+csv_data = base_100_table.to_csv(index=False).encode("utf-8")
 st.download_button(
     label="⬇️ Baixar comparação em CSV",
     data=csv_data,
@@ -1702,15 +1081,9 @@ st.download_button(
     mime="text/csv",
 )
 
-
-# ==========================================================
-# Rodapé
-# ==========================================================
 st.markdown("---")
-
-
 st.caption(
     "⚠️ Esta ferramenta possui finalidade educacional e de pesquisa. "
-    "Dados históricos, indicadores e métricas de risco não garantem "
-    "resultados futuros e não constituem recomendação de investimento."
+    "Dados históricos, indicadores de risco e resultados passados não "
+    "garantem resultados futuros e não constituem recomendação de investimento."
 )

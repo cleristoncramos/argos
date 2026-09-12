@@ -1,4 +1,6 @@
 from typing import Optional
+import time
+from datetime import datetime, timedelta
 
 import pandas as pd
 import streamlit as st
@@ -12,11 +14,18 @@ def download_active_data(
     interval: str = "1d",
 ) -> Optional[pd.DataFrame]:
     """
-    Normaliza os parâmetros públicos e delega o download à função cacheada.
+    Normaliza os parâmetros públicos, ajusta a data final e delega o download à função cacheada.
     """
     normalized_symbol = str(symbol).strip().upper()
     normalized_start_date = str(start_date).strip()
-    normalized_end_date = str(end_date).strip()
+    
+    # Adiciona 1 dia à data final para garantir que o Yahoo Finance inclua o último pregão
+    try:
+        end_dt = datetime.strptime(str(end_date).strip(), "%Y-%m-%d")
+        normalized_end_date = (end_dt + timedelta(days=1)).strftime("%Y-%m-%d")
+    except ValueError:
+        normalized_end_date = str(end_date).strip()
+
     normalized_interval = str(interval).strip().lower()
 
     if not normalized_symbol:
@@ -39,86 +48,90 @@ def _download_active_data_cached(
     start_date: str,
     end_date: str,
     interval: str = "1d",
+    max_retries: int = 3,
 ) -> Optional[pd.DataFrame]:
     """
     Baixa dados históricos do Yahoo Finance para parâmetros já normalizados.
-
-    Esta função é interna e cacheada. Seus parâmetros devem chegar
-    normalizados para que chamadas equivalentes reutilizem a mesma entrada
-    do cache.
+    Implementa retries automáticos e limpeza de colunas MultiIndex.
     """
-    try:
-        ticker = yf.Ticker(symbol)
-
+    for attempt in range(max_retries):
         try:
-            info = ticker.info
-        except Exception:
-            info = {}
+            ticker = yf.Ticker(symbol)
 
-        has_identity = any(
-            info.get(field)
-            for field in [
-                "shortName",
-                "longName",
-                "symbol",
-                "exchange",
-                "quoteType",
-            ]
-        )
-
-        if not has_identity:
-            return None
-
-        df = ticker.history(
-            start=start_date,
-            end=end_date,
-            interval=interval,
-            auto_adjust=False,
-        )
-
-        required_columns = {
-            "Open",
-            "High",
-            "Low",
-            "Close",
-            "Volume",
-        }
-
-        if df.empty or not required_columns.issubset(df.columns):
-            return None
-
-        df = df.reset_index()
-
-        if "Date" in df.columns:
-            date_column = "Date"
-        elif "Datetime" in df.columns:
-            date_column = "Datetime"
-        else:
-            return None
-
-        df = df.rename(
-            columns={
-                date_column: "Date",
-            }
-        )
-
-        df["Date"] = pd.to_datetime(
-            df["Date"],
-        )
-
-        if getattr(df["Date"].dt, "tz", None) is not None:
-            df["Date"] = df["Date"].dt.tz_localize(
-                None,
+            # O download direto de history é mais estável que chamar .info() antes
+            df = ticker.history(
+                start=start_date,
+                end=end_date,
+                interval=interval,
+                auto_adjust=False,
             )
 
-        return df.sort_values(
-            "Date",
-        ).reset_index(
-            drop=True,
-        )
+            # Se vier vazio, aguarda e tenta novamente (evita bloqueios temporários)
+            if df is None or df.empty:
+                if attempt < max_retries - 1:
+                    time.sleep(1.5)
+                    continue
+                else:
+                    return None
 
-    except Exception:
-        return None
+            # Corrige bug do yfinance que retorna MultiIndex em versões recentes
+            if isinstance(df.columns, pd.MultiIndex):
+                df.columns = [col[0] for col in df.columns]
+
+            required_columns = {
+                "Open",
+                "High",
+                "Low",
+                "Close",
+                "Volume",
+            }
+
+            if not required_columns.issubset(df.columns):
+                if attempt < max_retries - 1:
+                    time.sleep(1.5)
+                    continue
+                else:
+                    return None
+
+            df = df.reset_index()
+
+            if "Date" in df.columns:
+                date_column = "Date"
+            elif "Datetime" in df.columns:
+                date_column = "Datetime"
+            else:
+                return None
+
+            df = df.rename(
+                columns={
+                    date_column: "Date",
+                }
+            )
+
+            df["Date"] = pd.to_datetime(
+                df["Date"],
+            )
+
+            if getattr(df["Date"].dt, "tz", None) is not None:
+                df["Date"] = df["Date"].dt.tz_localize(
+                    None,
+                )
+
+            return df.sort_values(
+                "Date",
+            ).reset_index(
+                drop=True,
+            )
+
+        except Exception:
+            if attempt < max_retries - 1:
+                time.sleep(1.5)
+                continue
+            else:
+                return None
+                
+    return None
+
 
 def validate_data(df: pd.DataFrame) -> dict:
     """
