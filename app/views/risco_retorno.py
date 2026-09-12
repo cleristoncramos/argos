@@ -199,12 +199,13 @@ def render_html_table(dataframe: pd.DataFrame, columns: list, prefix: str, is_de
     st.markdown(table_html, unsafe_allow_html=True)
 
 
-def render_metric_card(title: str, value: str) -> None:
-    """Renderiza um card estizado via HTML simulando aparência de dashboards modernos."""
+def render_metric_card(title: str, value: str, tooltip: str = "") -> None:
+    """Renderiza um card estizado via HTML simulando aparência de dashboards modernos, com tooltip de info."""
+    tooltip_html = f"""<span title="{escape(tooltip)}" style="cursor: help; color: #94a3b8; margin-left: 6px; font-size: 0.95rem;">&#9432;</span>""" if tooltip else ""
     html = f"""
     <div style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 100%;">
-        <div style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-            {title}
+        <div style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center;">
+            {title} {tooltip_html}
         </div>
         <div style="color: #0f172a; font-size: 1.8rem; font-weight: 700; margin-bottom: 0px; font-family: 'Inter', sans-serif; letter-spacing: -0.5px;">
             {value}
@@ -240,7 +241,7 @@ def sync_risk_free_rate() -> None:
 # Configuração da página
 # ==========================================================
 st.set_page_config(
-    page_title="Risco e Retorno | Argos DataLab",
+    page_title="Argos DataLab",
     page_icon="🛡️",
     layout="wide",
 )
@@ -455,31 +456,63 @@ worst_period_val = df_risk["Simple_Return"].min()
 sharpe_value = metrics["Sharpe"]
 str_sharpe = "N/A" if pd.isna(sharpe_value) else f"{sharpe_value:.2f}"
 
-# Primeira Linha de Cards
+# Primeira Linha de Cards com Tooltips embutidos
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    render_metric_card("Retorno Acumulado", format_colored_pct(metrics["Retorno total"]))
+    render_metric_card(
+        title="Retorno Acumulado", 
+        value=format_colored_pct(metrics["Retorno total"]),
+        tooltip="Variação acumulada entre o primeiro e o último valor do período."
+    )
 with col2:
-    render_metric_card("Retorno Médio / Período", format_colored_pct(metrics["Retorno médio"]))
+    render_metric_card(
+        title="Retorno Médio / Período", 
+        value=format_colored_pct(metrics["Retorno médio"]),
+        tooltip="Média aritmética dos retornos simples na frequência selecionada."
+    )
 with col3:
-    render_metric_card("Volatilidade Anualizada", f"<span style='color: #475569;'>{format_percentage(metrics['Volatilidade'])}</span>")
+    render_metric_card(
+        title="Volatilidade Anualizada", 
+        value=f"<span style='color: #475569;'>{format_percentage(metrics['Volatilidade'])}</span>",
+        tooltip="Dispersão anualizada dos retornos; valores maiores indicam maior variação histórica e risco."
+    )
 with col4:
-    render_metric_card("Índice de Sharpe", f"<span style='color: #0f172a;'>{str_sharpe}</span>")
+    render_metric_card(
+        title="Índice de Sharpe", 
+        value=f"<span style='color: #0f172a;'>{str_sharpe}</span>",
+        tooltip="Relação anualizada entre o retorno excedente (acima da taxa livre de risco) e a volatilidade."
+    )
 
 st.markdown("<div style='margin-top: 1rem;'></div>", unsafe_allow_html=True)
 
-# Segunda Linha de Cards
+# Segunda Linha de Cards com Tooltips embutidos
 col5, col6, col7, col8 = st.columns(4)
 
 with col5:
-    render_metric_card("Melhor Período", format_colored_pct(best_period_val))
+    render_metric_card(
+        title="Melhor Período", 
+        value=format_colored_pct(best_period_val),
+        tooltip="O maior ganho registrado em um único período."
+    )
 with col6:
-    render_metric_card("Pior Período", format_colored_pct(worst_period_val))
+    render_metric_card(
+        title="Pior Período", 
+        value=format_colored_pct(worst_period_val),
+        tooltip="A maior perda registrada em um único período."
+    )
 with col7:
-    render_metric_card("Períodos Positivos", f"<span style='color: #166534;'>{format_percentage(metrics['Percentual positivo'])}</span>")
+    render_metric_card(
+        title="Períodos Positivos", 
+        value=f"<span style='color: #166534;'>{format_percentage(metrics['Percentual positivo'])}</span>",
+        tooltip="Proporção de períodos que registraram ganho (retorno simples superior a zero)."
+    )
 with col8:
-    render_metric_card("Drawdown Máximo", format_colored_pct(metrics["Drawdown máximo"]))
+    render_metric_card(
+        title="Drawdown Máximo", 
+        value=format_colored_pct(metrics["Drawdown máximo"]),
+        tooltip="A maior queda percentual registrada a partir de um topo histórico anterior no período analisado."
+    )
     
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -621,64 +654,6 @@ if not rets.empty:
             use_container_width=True,
             config={"displayModeBar": False},
         )
-
-
-# =====================
-# Detalhamento
-# =====================
-st.header("📋 Detalhamento das Métricas")
-
-details = pd.DataFrame(
-    [
-        {
-            "Métrica": "Retorno total",
-            "Valor": format_percentage(metrics["Retorno total"]),
-            "Descrição": "Variação acumulada entre o primeiro e o último valor do período.",
-        },
-        {
-            "Métrica": "Retorno médio por período",
-            "Valor": format_percentage(metrics["Retorno médio"]),
-            "Descrição": "Média aritmética dos retornos simples na frequência selecionada.",
-        },
-        {
-            "Métrica": "Melhor período",
-            "Valor": format_percentage(best_period_val),
-            "Descrição": "O maior ganho registrado em um único período.",
-        },
-        {
-            "Métrica": "Pior período",
-            "Valor": format_percentage(worst_period_val),
-            "Descrição": "A maior perda registrada em um único período.",
-        },
-        {
-            "Métrica": "Volatilidade anualizada",
-            "Valor": format_percentage(metrics["Volatilidade"]),
-            "Descrição": "Dispersão anualizada dos retornos; valores maiores indicam maior variação histórica e risco.",
-        },
-        {
-            "Métrica": "Drawdown máximo",
-            "Valor": format_percentage(metrics["Drawdown máximo"]),
-            "Descrição": "A maior queda percentual registrada a partir de um topo histórico anterior no período analisado.",
-        },
-        {
-            "Métrica": "Períodos positivos",
-            "Valor": format_percentage(metrics["Percentual positivo"]),
-            "Descrição": "Proporção de períodos que registraram ganho (retorno simples superior a zero).",
-        },
-        {
-            "Métrica": "Índice de Sharpe",
-            "Valor": str_sharpe,
-            "Descrição": "Relação anualizada entre o retorno excedente (acima da taxa livre de risco) e a volatilidade.",
-        },
-    ]
-)
-
-render_html_table(
-    dataframe=details,
-    columns=["Métrica", "Valor", "Descrição"],
-    prefix="argos-details",
-    is_details=True
-)
 
 
 # =====================

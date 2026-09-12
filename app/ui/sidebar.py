@@ -1,12 +1,11 @@
 from datetime import datetime
+
 import streamlit as st
 
-# Importa o catálogo construído
 from core.assets import ASSETS
 from core.config import config
 
 
-# Dicionário robusto abrangendo as 13 classes exatas do seu catálogo de ativos
 GROUP_MAPPING = {
     "crypto": "₿ Criptomoedas",
     "br_stocks": "🇧🇷 Ações Brasil",
@@ -23,136 +22,284 @@ GROUP_MAPPING = {
     "forex": "💱 Forex (Moedas)",
     "commodities": "🛢️ Commodities",
     "rates": "💵 Taxas de Juros / Treasuries",
-    "treasury": "💵 Taxas de Juros / Treasuries"
+    "treasury": "💵 Taxas de Juros / Treasuries",
 }
 
 
-def render_asset_controls(title: str, button_label: str, button_key: str) -> dict:
-    """
-    Renderiza os controles padrão da barra lateral com seleção hierárquica e período inteligente.
-    """
-    
+# ==========================================================
+# CSS global do sidebar
+# ==========================================================
+def inject_compact_sidebar_css() -> None:
+    """Aplica compactação global aos widgets do sidebar."""
     st.markdown(
         """
         <style>
-        /* Reduz o padding e a altura mínima das opções dentro das listas de seleção */
-        ul[role="listbox"] li[role="option"] {
-            padding-top: 4px !important;
-            padding-bottom: 4px !important;
-            min-height: 32px !important;
-            font-size: 0.9rem !important;
+        /* Selectbox fechado */
+        section[data-testid="stSidebar"] [data-baseweb="select"] > div {
+            min-height: 34px !important;
+            height: 34px !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
         }
-        /* Ajusta o espaçamento interno do container da lista para ficar mais denso */
-        ul[role="listbox"] {
-            padding-top: 4px !important;
-            padding-bottom: 4px !important;
+
+        /* Popover aberto: o menu pode ser filho do body, portanto não é
+           limitado por section[data-testid='stSidebar']. */
+        div[data-baseweb="popover"] {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        div[data-baseweb="popover"] [role="listbox"] {
+            padding: 0 !important;
+            margin: 0 !important;
+            border-spacing: 0 !important;
+        }
+
+        div[data-baseweb="popover"] [role="option"] {
+            box-sizing: border-box !important;
+            display: flex !important;
+            align-items: center !important;
+            min-height: 24px !important;
+            height: 24px !important;
+            max-height: 24px !important;
+            padding: 2px 8px !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+            font-size: 0.80rem !important;
+        }
+
+        div[data-baseweb="popover"] [role="option"] > *,
+        div[data-baseweb="popover"] [role="option"] p,
+        div[data-baseweb="popover"] [role="option"] span,
+        div[data-baseweb="popover"] [role="option"] div {
+            box-sizing: border-box !important;
+            min-height: 0 !important;
+            height: auto !important;
+            max-height: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+            font-size: 0.80rem !important;
+        }
+
+        /* BaseWeb frequentemente adiciona esta camada interna. */
+        div[data-baseweb="popover"] [data-baseweb="menu"] {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        div[data-baseweb="popover"] [data-baseweb="menu"] li,
+        div[data-baseweb="popover"] [data-baseweb="menu"] [role="option"] {
+            min-height: 24px !important;
+            height: 24px !important;
+            padding-top: 2px !important;
+            padding-bottom: 2px !important;
+        }
+
+        /* Labels compactos no sidebar. */
+        section[data-testid="stSidebar"] label {
+            margin-bottom: 1px !important;
+        }
+
+        /* Espaçamento geral entre os widgets. */
+        section[data-testid="stSidebar"]
+        div[data-testid="stVerticalBlock"] {
+            gap: 0.25rem !important;
         }
         </style>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
+
+
+# ==========================================================
+# Controles
+# ==========================================================
+def render_asset_controls(
+    title: str,
+    button_label: str,
+    button_key: str,
+) -> dict:
+    """Renderiza os controles compactos da barra lateral."""
+    inject_compact_sidebar_css()
 
     with st.sidebar:
         st.header(title)
 
-        # 1. Obter a lista de classes/grupos únicos preservando a ordem original
-        grupos_unicos = []
+        groups = []
         for asset in ASSETS:
-            grupo = asset.get("group", asset.get("class", "Outros"))
-            if grupo not in grupos_unicos:
-                grupos_unicos.append(grupo)
+            group = asset.get(
+                "group",
+                asset.get("class", "Outros"),
+            )
+            if group not in groups:
+                groups.append(group)
 
-        # 2. Identificar a qual grupo o ativo atual pertence para inicializar os seletores
-        current_symbol = st.session_state.get("asset_symbol", "BTC-USD")
-        current_group = grupos_unicos[0]
-        for asset in ASSETS:
-            if asset["ticker"] == current_symbol:
-                current_group = asset.get("group", asset.get("class", "Outros"))
-                break
+        if not groups:
+            st.error("Nenhuma classe de ativo foi encontrada.")
+            return {
+                "symbol": None,
+                "period": None,
+                "start_date": None,
+                "end_date": None,
+                "frequency": None,
+                "submitted": False,
+            }
 
-        # 3. Selectbox Hierárquico: Classe de Ativos
-        grupo_selecionado = st.selectbox(
-            "Classe do Ativo",
-            options=grupos_unicos,
-            index=grupos_unicos.index(current_group) if current_group in grupos_unicos else 0,
-            format_func=lambda g: GROUP_MAPPING.get(str(g).lower(), str(g).replace("_", " ").title()),
-            key=f"{button_key}_group_select"
+        current_symbol = st.session_state.get(
+            "asset_symbol",
+            "BTC-USD",
         )
 
-        # 4. Filtrar a lista de ativos com base na classe selecionada
-        ativos_filtrados = [
-            a for a in ASSETS 
-            if a.get("group", a.get("class", "Outros")) == grupo_selecionado
+        current_group = groups[0]
+        for asset in ASSETS:
+            if asset.get("ticker") == current_symbol:
+                current_group = asset.get(
+                    "group",
+                    asset.get("class", "Outros"),
+                )
+                break
+
+        selected_group = st.selectbox(
+            "Classe do Ativo",
+            options=groups,
+            index=(
+                groups.index(current_group)
+                if current_group in groups
+                else 0
+            ),
+            format_func=lambda value: GROUP_MAPPING.get(
+                str(value).lower(),
+                str(value).replace("_", " ").title(),
+            ),
+            key=f"{button_key}_group_select",
+            width="stretch",
+        )
+
+        filtered_assets = [
+            asset
+            for asset in ASSETS
+            if asset.get(
+                "group",
+                asset.get("class", "Outros"),
+            ) == selected_group
         ]
 
         asset_index = 0
-        for i, a in enumerate(ativos_filtrados):
-            if a["ticker"] == current_symbol:
-                asset_index = i
+        for index, asset in enumerate(filtered_assets):
+            if asset.get("ticker") == current_symbol:
+                asset_index = index
                 break
 
-        # 5. Selectbox Hierárquico: Ativo Específico
-        ativo_selecionado = st.selectbox(
+        selected_asset = st.selectbox(
             "Símbolo do Ativo",
-            options=ativos_filtrados,
-            format_func=lambda x: f"{x['ticker']} — {x['name']}",
+            options=filtered_assets,
+            format_func=lambda asset: (
+                f"{asset['ticker']} — {asset['name']}"
+            ),
             index=asset_index,
-            key=f"{button_key}_asset_select"
+            key=f"{button_key}_asset_select",
+            width="stretch",
         )
 
-        symbol = ativo_selecionado["ticker"] if ativo_selecionado else current_symbol
+        symbol = (
+            selected_asset["ticker"]
+            if selected_asset
+            else current_symbol
+        )
 
         st.divider()
 
-        # ==========================================
-        # Seleção de Período Inteligente
-        # ==========================================
-        period_options = ["1 ano", "3 anos", "5 anos", "10 anos", "Personalizado"]
-        current_period = st.session_state.get("asset_period", "5 anos")
-        
+        period_options = [
+            "1 ano",
+            "3 anos",
+            "5 anos",
+            "10 anos",
+            "Personalizado",
+        ]
+
+        current_period = st.session_state.get(
+            "asset_period",
+            "5 anos",
+        )
+
         selected_period = st.selectbox(
             "Período",
             options=period_options,
-            index=period_options.index(current_period) if current_period in period_options else 2,
-            key=f"{button_key}_period_select"
+            index=(
+                period_options.index(current_period)
+                if current_period in period_options
+                else 2
+            ),
+            key=f"{button_key}_period_select",
+            width="stretch",
         )
-        
+
         today = datetime.now().date()
-        
+
         if selected_period == "Personalizado":
             start_date = st.date_input(
                 "Data inicial",
-                value=st.session_state.get("asset_start_date", today.replace(year=today.year - 5)),
+                value=st.session_state.get(
+                    "asset_start_date",
+                    today.replace(year=today.year - 5),
+                ),
+                key=f"{button_key}_start_date",
             )
+
             end_date = st.date_input(
                 "Data final",
-                value=st.session_state.get("asset_end_date", today),
+                value=st.session_state.get(
+                    "asset_end_date",
+                    today,
+                ),
+                key=f"{button_key}_end_date",
             )
         else:
             end_date = today
             years_to_subtract = int(selected_period.split()[0])
-            
-            # Regra: Pula o mês atual do passado e começa no dia 1º do mês seguinte
-            # Ex: Hoje = 11/09/2026. 1 ano atrás = 11/09/2025. Data inicial = 01/10/2025.
             target_year = today.year - years_to_subtract
             target_month = today.month + 1
-            
+
             if target_month > 12:
                 target_month = 1
                 target_year += 1
-                
-            start_date = datetime(target_year, target_month, 1).date()
 
-        freq_options = getattr(config, "FREQUENCIES", ["Diário", "Semanal", "Mensal"])
-        current_freq = st.session_state.get("asset_frequency", "Mensal")
+            start_date = datetime(
+                target_year,
+                target_month,
+                1,
+            ).date()
+
+        frequency_options = getattr(
+            config,
+            "FREQUENCIES",
+            ["Diário", "Semanal", "Mensal"],
+        )
+
+        current_frequency = st.session_state.get(
+            "asset_frequency",
+            "Mensal",
+        )
 
         frequency = st.selectbox(
             "Frequência",
-            options=freq_options,
-            index=freq_options.index(current_freq) if current_freq in freq_options else 0,
+            options=frequency_options,
+            index=(
+                frequency_options.index(current_frequency)
+                if current_frequency in frequency_options
+                else 0
+            ),
+            key=f"{button_key}_frequency_select",
+            width="stretch",
         )
 
-        submitted = st.button(button_label, key=button_key, type="primary", use_container_width=True)
+        submitted = st.button(
+            button_label,
+            key=button_key,
+            type="primary",
+            width="stretch",
+        )
 
         if submitted:
             st.session_state["asset_symbol"] = symbol

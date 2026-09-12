@@ -43,7 +43,7 @@ from core.visualizations import (
 
 
 st.set_page_config(
-    page_title="Indicadores Técnicos | Argos DataLab",
+    page_title="Argos DataLab",
     page_icon="📈",
     layout="wide",
 )
@@ -62,8 +62,6 @@ st.markdown(
     "</p>",
     unsafe_allow_html=True
 )
-
-# Removido o st.warning redundante sobre recomendação de investimento (já existe no rodapé)
 
 
 # ==========================================================
@@ -103,11 +101,13 @@ def format_indicator_value(value, column: str) -> str:
 
 
 def build_table_styles(prefix: str) -> str:
-    """Gera os estilos CSS comuns das tabelas HTML da página."""
+    """Gera os estilos CSS comuns das tabelas HTML da página com cabeçalho congelado."""
     return (
         "<style>"
         f".{prefix}-wrapper {{"
         "width:100%;"
+        "max-height:400px;"
+        "overflow-y:auto;"
         "overflow-x:auto;"
         "border:1px solid #D9E2EC;"
         "border-radius:10px;"
@@ -122,6 +122,9 @@ def build_table_styles(prefix: str) -> str:
         "color:#26364A;"
         "}"
         f".{prefix}-table th {{"
+        "position:sticky;"
+        "top:0;"
+        "z-index:10;"
         "background:#E8EEF7;"
         "color:#26364A;"
         "text-align:center;"
@@ -221,7 +224,7 @@ def render_indicators_table(dataframe: pd.DataFrame, columns: list) -> None:
 
     st.components.v1.html(
         table_html,
-        height=400,
+        height=420,
         scrolling=True,
     )
 
@@ -622,6 +625,9 @@ if chart_type == "Candles":
         symbol=symbol.upper(),
         context=context,
     )
+    
+    # Remove o título do eixo X
+    candle_figure.update_xaxes(title_text="")
 
     st.plotly_chart(
         candle_figure,
@@ -650,6 +656,9 @@ price_figure = create_price_indicator_chart(
     show_bollinger=show_bollinger,
 )
 
+# Remove o título do eixo X
+price_figure.update_xaxes(title_text="")
+
 st.plotly_chart(
     price_figure,
     width="stretch",
@@ -673,28 +682,25 @@ if show_volume and "Volume" in df.columns:
         context=context,
     )
 
-    # Criação de um array formatado em padrão brasileiro para uso no tooltip
     formatted_volume = df["Volume"].apply(
         lambda x: format_brazilian_number(x) if pd.notnull(x) else "—"
     )
 
-    # Injetando as formatações e cores no gráfico gerado pelo core
     volume_figure.update_traces(
         customdata=formatted_volume,
         hovertemplate="<b>%{x|%d/%m/%Y}</b><br>Volume: <b>%{customdata}</b><extra></extra>",
         marker_color="#64748B",
     )
 
-    # Limpando o fundo e ajustando margens para acomodar o container de borda
+    # Limpando o fundo e removendo título do eixo x
     volume_figure.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        xaxis=dict(showgrid=False, zeroline=False),
+        xaxis=dict(showgrid=False, zeroline=False, title=""),
         yaxis=dict(showgrid=True, gridcolor="#F1F5F9", zeroline=False),
         font=dict(family="Inter, Arial, sans-serif", color="#334155")
     )
 
-    # Renderiza o gráfico dentro da caixa demarcada
     with st.container(border=True):
         st.plotly_chart(
             volume_figure,
@@ -720,6 +726,9 @@ if show_rsi:
         lower_level=float(rsi_lower),
     )
 
+    # Remove o título do eixo X
+    rsi_figure.update_xaxes(title_text="")
+
     st.plotly_chart(
         rsi_figure,
         width="stretch",
@@ -743,6 +752,9 @@ if show_macd:
         symbol=symbol.upper(),
         context=context,
     )
+
+    # Remove o título do eixo X
+    macd_figure.update_xaxes(title_text="")
 
     st.plotly_chart(
         macd_figure,
@@ -779,7 +791,6 @@ display_columns = [
     if column in df.columns
 ]
 
-# Substituído st.dataframe() pela renderização HTML
 render_indicators_table(df, display_columns)
 
 

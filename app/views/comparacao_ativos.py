@@ -621,7 +621,7 @@ def render_correlation_heatmap(correlation_matrix: pd.DataFrame) -> None:
 # Configuração da página
 # ==========================================================
 st.set_page_config(
-    page_title="Comparação de Ativos | Argos DataLab",
+    page_title="Argos DataLab",
     page_icon="⚖️",
     layout="wide",
 )
