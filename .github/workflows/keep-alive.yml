@@ -1,0 +1,18 @@
+name: Streamlit Keep Alive
+
+on:
+  # Agenda a execução automaticamente a cada 1 hora (no minuto 0 de cada hora)
+  schedule:
+    - cron: '0 * * * *'
+  
+  # Permite que você também acione o teste manualmente pelo site do GitHub se desejar
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Ping Streamlit App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send HTTP GET request to Argos DataLab
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" https://argos-datalab.streamlit.app | grep -E "200|301|302" || exit 1
