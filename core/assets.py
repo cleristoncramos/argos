@@ -214,7 +214,7 @@ ASSETS: list[AssetRecord] = [
     _asset("^HSI", "Hang Seng", "Índice", "Large Cap", "Hong Kong", "Principais empresas de Hong Kong", "indexes"),
     _asset("000001.SS", "Shanghai Composite", "Índice", "Mercado amplo", "China", "Mercado acionário de Xangai", "indexes"),
 
-    _asset("USDBRL=X", "USD/BRL", "Forex", "Major/EM", "Global", "Dólar americano contra real", "forex"),
+    _asset("USDBRL=X", "USD/BRL", "Forex", "Major/EM", "Global", "Dólar contra real", "forex"),
     _asset("EURUSD=X", "EUR/USD", "Forex", "Major", "Global", "Euro contra dólar", "forex"),
     _asset("GBPUSD=X", "GBP/USD", "Forex", "Major", "Global", "Libra contra dólar", "forex"),
     _asset("USDJPY=X", "USD/JPY", "Forex", "Major", "Global", "Dólar contra iene", "forex"),

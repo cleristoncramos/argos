@@ -17,7 +17,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from app.ui.state import initialize_asset_state
-# IMPORTANTE: Importamos as injeções de estilo e script da sidebar padrão
+# IMPORTANTE: Importamos as injeções da sidebar padrão (agora elas vão existir!)
 from app.ui.sidebar import inject_compact_sidebar_css, inject_compact_dropdown_script
 
 from core.analyzer import calculate_returns
@@ -697,7 +697,7 @@ with st.sidebar:
         options=valid_options,
         default=safe_defaults,
         max_selections=5,
-        format_func=lambda a: f"{a['ticker']} — {a['name']}",
+        format_func=lambda a: f"{a['ticker']} — {a.get('description', a.get('descricao', a.get('name')))}" if a.get("group", a.get("class", "")) == "forex" else f"{a['ticker']} — {a.get('name')}",
         disabled=(selected_class is None),
         placeholder="Selecione um ativo",
         help="Selecione uma classe acima para habilitar." if selected_class is None else "Digite para buscar por nome ou código na classe selecionada."
