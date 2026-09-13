@@ -71,7 +71,7 @@ st.markdown(
     """
     <h1 style="font-weight: 800; padding-bottom: 0.2rem; margin-top: -1rem;">
         📊 Sobre o Projeto 
-        <span style="background: linear-gradient(90deg, #2563EB, #0891B2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        <span style="color: #ef4444; font-weight: 850; letter-spacing: -1px;">
             Argos DataLab
         </span>
     </h1>
