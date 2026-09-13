@@ -67,7 +67,18 @@ st.markdown(
 # ==========================================================
 # Cabeçalho Principal
 # ==========================================================
-st.title('📊 Sobre o Projeto "Argos DataLab"')
+st.markdown(
+    """
+    <h1 style="font-weight: 800; padding-bottom: 0.2rem; margin-top: -1rem;">
+        📊 Sobre o Projeto 
+        <span style="background: linear-gradient(90deg, #2563EB, #0891B2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Argos DataLab
+        </span>
+    </h1>
+    """,
+    unsafe_allow_html=True
+)
+
 st.markdown(
     "<p style='font-size:1.2rem; opacity: 0.8; margin-bottom:1.5rem;'>"
     "Plataforma inteligente de análise exploratória, modelagem de risco e "

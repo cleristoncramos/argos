@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 from core.assets import ASSETS
 from core.config import config
@@ -34,7 +35,7 @@ def inject_compact_sidebar_css() -> None:
     st.markdown(
         """
         <style>
-        /* Selectbox fechado */
+        /* Selectbox fechado: reduz a altura da caixa principal */
         section[data-testid="stSidebar"] [data-baseweb="select"] > div {
             min-height: 34px !important;
             height: 34px !important;
@@ -42,73 +43,140 @@ def inject_compact_sidebar_css() -> None:
             padding-bottom: 0 !important;
         }
 
-        /* Popover aberto: o menu pode ser filho do body, portanto não é
-           limitado por section[data-testid='stSidebar']. */
-        div[data-baseweb="popover"] {
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-
-        div[data-baseweb="popover"] [role="listbox"] {
-            padding: 0 !important;
-            margin: 0 !important;
-            border-spacing: 0 !important;
-        }
-
-        div[data-baseweb="popover"] [role="option"] {
+        /* Caixa de cada opção da lista aberta (arquitetura React Aria) */
+        div[role="option"][data-rac] {
+            height: 24px !important;
+            min-height: 24px !important;
+            max-height: 24px !important;
+            padding: 2px 8px !important;
+            margin: 0px !important;
             box-sizing: border-box !important;
             display: flex !important;
             align-items: center !important;
-            min-height: 24px !important;
-            height: 24px !important;
-            max-height: 24px !important;
-            padding: 2px 8px !important;
-            margin: 0 !important;
-            line-height: 1 !important;
-            font-size: 0.80rem !important;
+            line-height: 1.2 !important;
         }
 
-        div[data-baseweb="popover"] [role="option"] > *,
-        div[data-baseweb="popover"] [role="option"] p,
-        div[data-baseweb="popover"] [role="option"] span,
-        div[data-baseweb="popover"] [role="option"] div {
-            box-sizing: border-box !important;
-            min-height: 0 !important;
+        div[role="option"][data-rac] div[data-item-hl] {
             height: auto !important;
-            max-height: none !important;
+            min-height: 0 !important;
             padding: 0 !important;
             margin: 0 !important;
-            line-height: 1 !important;
+            line-height: 1.2 !important;
             font-size: 0.80rem !important;
         }
 
-        /* BaseWeb frequentemente adiciona esta camada interna. */
-        div[data-baseweb="popover"] [data-baseweb="menu"] {
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-
-        div[data-baseweb="popover"] [data-baseweb="menu"] li,
-        div[data-baseweb="popover"] [data-baseweb="menu"] [role="option"] {
-            min-height: 24px !important;
-            height: 24px !important;
-            padding-top: 2px !important;
-            padding-bottom: 2px !important;
-        }
-
-        /* Labels compactos no sidebar. */
+        /* Labels compactos no sidebar (ex: "Classe do Ativo") */
         section[data-testid="stSidebar"] label {
             margin-bottom: 1px !important;
         }
 
-        /* Espaçamento geral entre os widgets. */
-        section[data-testid="stSidebar"]
-        div[data-testid="stVerticalBlock"] {
+        /* Espaçamento geral (gap) entre os widgets (comboboxes) */
+        section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
             gap: 0.25rem !important;
         }
         </style>
         """,
         unsafe_allow_html=True,
+    )
+
+
+# ==========================================================
+# Script de compactação da lista virtualizada (React Aria)
+# ==========================================================
+def inject_compact_dropdown_script() -> None:
+    """
+    Corrige o espaçamento entre as opções dos dropdowns.
+
+    A lista de opções dos selectbox usa uma virtualização (React Aria) 
+    que posiciona cada item via `top`/`height` inline, calculados em JS.
+    Reescrevemos esses valores dinamicamente sempre que um menu é aberto.
+    """
+    components.html(
+        """
+        <script>
+        (function () {
+            const parentWindow = window.parent;
+            const doc = parentWindow.document;
+
+            // SOLUÇÃO SPA: Desconecta o observador antigo (se houver) da página anterior
+            // Isso previne vazamento de memória e garante que o contexto atual funcione.
+            if (parentWindow.__compactListboxObserver) {
+                parentWindow.__compactListboxObserver.disconnect();
+            }
+
+            const ROW_HEIGHT = 24;
+
+            function compactarListbox(listbox) {
+                // Remove o limite de altura/rolagem do container externo
+                listbox.style.setProperty("max-height", "none", "important");
+                listbox.style.setProperty("height", "auto", "important");
+                listbox.style.setProperty("overflow", "visible", "important");
+
+                const scrollBody = listbox.querySelector(":scope > div");
+                if (!scrollBody) {
+                    return;
+                }
+
+                const wrappers = scrollBody.querySelectorAll(
+                    ':scope > div[style*="position: absolute"]'
+                );
+                
+                let totalCount = null;
+
+                wrappers.forEach((wrapper) => {
+                    const opt = wrapper.querySelector('[role="option"]');
+                    if (!opt) return;
+
+                    // Usar aria-posinset (1-based) é a forma segura de saber a linha
+                    const posText = opt.getAttribute("aria-posinset");
+                    if (posText) {
+                        const pos = parseInt(posText, 10);
+                        if (!isNaN(pos)) {
+                            wrapper.style.setProperty(
+                                "top",
+                                ((pos - 1) * ROW_HEIGHT) + "px",
+                                "important"
+                            );
+                        }
+                    }
+                    
+                    wrapper.style.setProperty(
+                        "height",
+                        ROW_HEIGHT + "px",
+                        "important"
+                    );
+
+                    const setsize = opt.getAttribute("aria-setsize");
+                    if (setsize) {
+                        totalCount = parseInt(setsize, 10);
+                    }
+                });
+
+                if (totalCount) {
+                    scrollBody.style.setProperty(
+                        "height",
+                        (totalCount * ROW_HEIGHT) + "px",
+                        "important"
+                    );
+                }
+            }
+
+            // Cria o novo observador para a página atual
+            const observer = new MutationObserver(() => {
+                doc.querySelectorAll('div[role="listbox"]').forEach(
+                    compactarListbox
+                );
+            });
+
+            // Salva a referência na janela pai para poder ser destruída ao mudar de página
+            parentWindow.__compactListboxObserver = observer;
+
+            // Inicia a observação
+            observer.observe(doc.body, { childList: true, subtree: true });
+        })();
+        </script>
+        """,
+        height=0,
     )
 
 
@@ -122,6 +190,7 @@ def render_asset_controls(
 ) -> dict:
     """Renderiza os controles compactos da barra lateral."""
     inject_compact_sidebar_css()
+    inject_compact_dropdown_script()
 
     with st.sidebar:
         st.header(title)
@@ -192,10 +261,12 @@ def render_asset_controls(
                 break
 
         selected_asset = st.selectbox(
-            "Símbolo do Ativo",
+            "Símbolo/Nome do Ativo",
             options=filtered_assets,
             format_func=lambda asset: (
-                f"{asset['ticker']} — {asset['name']}"
+                f"{asset['ticker']} — {asset.get('description', asset.get('descricao', asset.get('name')))}"
+                if asset.get("group", asset.get("class", "")) == "forex"
+                else f"{asset['ticker']} — {asset.get('name')}"
             ),
             index=asset_index,
             key=f"{button_key}_asset_select",

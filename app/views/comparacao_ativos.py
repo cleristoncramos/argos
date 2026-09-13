@@ -17,15 +17,8 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from app.ui.state import initialize_asset_state
-
-try:
-    from app.ui.assets_selector import render_multi_asset_selector
-except ModuleNotFoundError:
-    try:
-        from app.ui.asset_selector import render_multi_asset_selector
-    except ModuleNotFoundError:
-        st.error("❌ O arquivo 'assets_selector.py' (ou 'asset_selector.py') não foi encontrado na pasta 'app/ui/'. Verifique se você salvou o arquivo corretamente.")
-        st.stop()
+# IMPORTANTE: Importamos as injeções de estilo e script da sidebar padrão
+from app.ui.sidebar import inject_compact_sidebar_css, inject_compact_dropdown_script
 
 from core.analyzer import calculate_returns
 from core.assets import ASSETS, get_assets
@@ -67,10 +60,6 @@ COMPARISON_RISK_FREE_RATE_WIDGET_KEY = "comparison_risk_free_rate_pct_widget"
 # ==========================================================
 # Sincronização de widgets
 # ==========================================================
-def sync_comparison_symbols() -> None:
-    selected_list = st.session_state.get(COMPARISON_SYMBOLS_WIDGET_KEY, [])
-    st.session_state[COMPARISON_SYMBOLS_STATE_KEY] = ",".join(selected_list)
-
 def sync_comparison_period() -> None:
     st.session_state[COMPARISON_PERIOD_STATE_KEY] = st.session_state[
         COMPARISON_PERIOD_WIDGET_KEY
@@ -642,19 +631,83 @@ st.markdown(
 # Parâmetros da comparação
 # ==========================================================
 with st.sidebar:
+    # Injeta a compactação via CSS e JS padrão da sidebar
+    inject_compact_sidebar_css()
+    inject_compact_dropdown_script()
+    
     st.header("⚙️ Parâmetros da Comparação")
 
     default_str = st.session_state.get(COMPARISON_SYMBOLS_STATE_KEY, "")
     default_list = [s.strip() for s in default_str.split(",") if s.strip()]
 
-    selected_tickers = render_multi_asset_selector(
-        key_prefix="comparison",
-        default_tickers=default_list,
-        max_selections=5
+    # ==========================================================
+    # SELEÇÃO DE ATIVOS (NOVA ESTRATÉGIA)
+    # ==========================================================
+    GROUP_MAPPING = {
+        "crypto": "₿ Criptomoedas",
+        "br_stocks": "🇧🇷 Ações Brasil",
+        "us_stocks": "🇺🇸 Ações EUA",
+        "europe_stocks": "🇪🇺 Ações Europa",
+        "asia_stocks": "🌏 Ações Ásia",
+        "equity_etfs": "📈 ETFs de Ações",
+        "fixed_income_etfs": "💵 ETFs de Renda Fixa",
+        "reits": "🏢 REITs / Mercado Imobiliário",
+        "brazil_fiis": "🏠 FIIs Brasil",
+        "fiis": "🏠 FIIs Brasil",
+        "indexes": "📊 Índices de Mercado",
+        "indices": "📊 Índices de Mercado",
+        "forex": "💱 Forex (Moedas)",
+        "commodities": "🛢️ Commodities",
+        "rates": "💵 Taxas de Juros / Treasuries",
+        "treasury": "💵 Taxas de Juros / Treasuries",
+    }
+
+    groups = []
+    for asset in ASSETS:
+        g = asset.get("group", asset.get("class", "Outros"))
+        if g not in groups:
+            groups.append(g)
+
+    selected_class = st.selectbox(
+        "Classe do Ativo:",
+        options=groups,
+        index=None,
+        placeholder="Selecione uma classe...",
+        format_func=lambda x: GROUP_MAPPING.get(str(x).lower(), str(x).replace("_", " ").title())
     )
 
+    valid_options = []
+    seen = set()
+    
+    # Estratégia de retenção: O ativo entra nas opções se for da classe selecionada 
+    # OU se ele já estiver selecionado (Isso permite comparação multi-classes)
+    for asset in ASSETS:
+        asset_group = asset.get("group", asset.get("class", "Outros"))
+        is_in_group = (asset_group == selected_class)
+        is_selected = (asset["ticker"] in default_list)
+        
+        if (is_in_group or is_selected) and asset["ticker"] not in seen:
+            valid_options.append(asset)
+            seen.add(asset["ticker"])
+            
+    safe_defaults = [asset for asset in valid_options if asset["ticker"] in default_list]
+
+    selected_assets_objs = st.multiselect(
+        "Símbolo/Nome do Ativo:",
+        options=valid_options,
+        default=safe_defaults,
+        max_selections=5,
+        format_func=lambda a: f"{a['ticker']} — {a['name']}",
+        disabled=(selected_class is None),
+        placeholder="Selecione um ativo",
+        help="Selecione uma classe acima para habilitar." if selected_class is None else "Digite para buscar por nome ou código na classe selecionada."
+    )
+
+    selected_tickers = [a["ticker"] for a in selected_assets_objs]
+    
     st.session_state[COMPARISON_SYMBOLS_STATE_KEY] = ",".join(selected_tickers)
     symbols_input = st.session_state[COMPARISON_SYMBOLS_STATE_KEY]
+    # ==========================================================
 
     st.divider()
 
