@@ -94,15 +94,18 @@ if pg != home_page:
             display: none !important;
         }
         
-        /* Empurra o menu "Menu Principal" para baixo */
+        /* Empurra o menu "Menu Principal" para baixo, abrindo espaço
+           para a casinha ficar posicionada acima dele */
         [data-testid="stSidebarNav"] {
-            margin-top: 35px !important;
+            margin-top: 60px !important;
         }
         
-        /* POSITION FIXED: Prega a casinha no topo do menu lateral */
+        /* POSITION FIXED: posiciona a casinha ABAIXO do botão nativo
+           de recolher/expandir o sidebar, alinhada à esquerda, e
+           acima do "Menu Principal" */
         .fixed-home-btn {
             position: fixed !important;
-            top: 15px !important;
+            top: 55px !important;
             left: 25px !important;
             font-size: 1.5rem !important;
             text-decoration: none !important;

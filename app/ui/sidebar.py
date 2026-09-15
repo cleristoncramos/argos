@@ -28,14 +28,14 @@ GROUP_MAPPING = {
 
 
 # ==========================================================
-# CSS global do sidebar
+# CSS global do sidebar (Compactação + Correção de Overflow)
 # ==========================================================
 def inject_compact_sidebar_css() -> None:
     """Aplica compactação global aos widgets do sidebar."""
     st.markdown(
         """
         <style>
-        /* Selectbox fechado: reduz a altura da caixa principal */
+        /* 1. Selectbox Fechado: Mantém a caixa principal compacta */
         section[data-testid="stSidebar"] [data-baseweb="select"] > div {
             min-height: 34px !important;
             height: 34px !important;
@@ -43,7 +43,7 @@ def inject_compact_sidebar_css() -> None:
             padding-bottom: 0 !important;
         }
 
-        /* Caixa de cada opção da lista aberta (arquitetura React Aria) */
+        /* 2. Textos do Dropdown Aberto: Compactados para 24px */
         div[role="option"][data-rac] {
             height: 24px !important;
             min-height: 24px !important;
@@ -65,12 +65,17 @@ def inject_compact_sidebar_css() -> None:
             font-size: 0.80rem !important;
         }
 
-        /* Labels compactos no sidebar (ex: "Classe do Ativo") */
+        /* 3. A MÁGICA: Força o Popover a ser menor para acionar o scroll */
+        div[data-baseweb="popover"] div[role="listbox"] {
+            max-height: 240px !important;
+            overflow-y: auto !important;
+        }
+
+        /* 4. Labels e Espaçamento: Mais discretos */
         section[data-testid="stSidebar"] label {
             margin-bottom: 1px !important;
         }
 
-        /* Espaçamento geral (gap) entre os widgets (comboboxes) */
         section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
             gap: 0.25rem !important;
         }
@@ -85,11 +90,22 @@ def inject_compact_sidebar_css() -> None:
 # ==========================================================
 def inject_compact_dropdown_script() -> None:
     """
-    Corrige o espaçamento entre as opções dos dropdowns.
+    Corrige apenas o posicionamento (top/height) de cada opção já montada,
+    SEM alterar a altura do container de rolagem interno ("sizer").
 
-    A lista de opções dos selectbox usa uma virtualização (React Aria) 
-    que posiciona cada item via `top`/`height` inline, calculados em JS.
-    Reescrevemos esses valores dinamicamente sempre que um menu é aberto.
+    IMPORTANTE: versões anteriores deste script sobrescreviam a altura do
+    sizer para (totalCount * ROW_HEIGHT). Isso quebrava a rolagem: o
+    virtualizador (react-window/BaseWeb) calcula internamente, em JS,
+    quando montar cada item com base na altura ORIGINAL das linhas
+    (maior que os 24px usados na compactação). Ao forçar uma área de
+    rolagem física menor que a esperada pelo virtualizador, a última
+    opção (ex: "Taxas de Juros / Treasuries", item 13 de 13) nunca
+    chegava a ser montada -- não importa o quanto o usuário rolasse.
+
+    Por isso NÃO tocamos mais na altura do sizer: deixamos o
+    virtualizador gerenciar sua própria área de rolagem (pode sobrar um
+    espaço em branco no fim da lista -- efeito colateral cosmético menor,
+    aceitável em troca de a rolagem voltar a funcionar de verdade).
     """
     components.html(
         """
@@ -98,8 +114,6 @@ def inject_compact_dropdown_script() -> None:
             const parentWindow = window.parent;
             const doc = parentWindow.document;
 
-            // SOLUÇÃO SPA: Desconecta o observador antigo (se houver) da página anterior
-            // Isso previne vazamento de memória e garante que o contexto atual funcione.
             if (parentWindow.__compactListboxObserver) {
                 parentWindow.__compactListboxObserver.disconnect();
             }
@@ -107,11 +121,6 @@ def inject_compact_dropdown_script() -> None:
             const ROW_HEIGHT = 24;
 
             function compactarListbox(listbox) {
-                // Remove o limite de altura/rolagem do container externo
-                listbox.style.setProperty("max-height", "none", "important");
-                listbox.style.setProperty("height", "auto", "important");
-                listbox.style.setProperty("overflow", "visible", "important");
-
                 const scrollBody = listbox.querySelector(":scope > div");
                 if (!scrollBody) {
                     return;
@@ -120,14 +129,17 @@ def inject_compact_dropdown_script() -> None:
                 const wrappers = scrollBody.querySelectorAll(
                     ':scope > div[style*="position: absolute"]'
                 );
-                
+
+                if (wrappers.length === 0) {
+                    return;
+                }
+
                 let totalCount = null;
 
                 wrappers.forEach((wrapper) => {
                     const opt = wrapper.querySelector('[role="option"]');
                     if (!opt) return;
 
-                    // Usar aria-posinset (1-based) é a forma segura de saber a linha
                     const posText = opt.getAttribute("aria-posinset");
                     if (posText) {
                         const pos = parseInt(posText, 10);
@@ -139,7 +151,7 @@ def inject_compact_dropdown_script() -> None:
                             );
                         }
                     }
-                    
+
                     wrapper.style.setProperty(
                         "height",
                         ROW_HEIGHT + "px",
@@ -152,26 +164,26 @@ def inject_compact_dropdown_script() -> None:
                     }
                 });
 
-                if (totalCount) {
-                    scrollBody.style.setProperty(
-                        "height",
-                        (totalCount * ROW_HEIGHT) + "px",
-                        "important"
+                // Diagnóstico: avisa no console se ainda faltar montar
+                // alguma linha (não deve mais acontecer após esta correção,
+                // já que paramos de estrangular a área de rolagem real).
+                if (totalCount && wrappers.length < totalCount) {
+                    console.warn(
+                        "[compactarListbox] Só " + wrappers.length +
+                        " de " + totalCount + " opções foram montadas no DOM."
                     );
                 }
+
+                // NÃO sobrescrevemos mais scrollBody.style.height aqui.
             }
 
-            // Cria o novo observador para a página atual
             const observer = new MutationObserver(() => {
                 doc.querySelectorAll('div[role="listbox"]').forEach(
                     compactarListbox
                 );
             });
 
-            // Salva a referência na janela pai para poder ser destruída ao mudar de página
             parentWindow.__compactListboxObserver = observer;
-
-            // Inicia a observação
             observer.observe(doc.body, { childList: true, subtree: true });
         })();
         </script>
