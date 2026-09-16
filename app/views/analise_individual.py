@@ -29,11 +29,13 @@ import streamlit as st
 
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
+from app.ui.asset_cards import render_asset_hero_logo
 from core.analyzer import (
     calculate_percentage_change,
     calculate_statistics,
     create_year_month_matrix,
 )
+from core.assets import ASSETS
 from core.data_loader import download_active_data, validate_data
 from core.data_processor import (
     aggregate_by_frequency,
@@ -362,26 +364,40 @@ end_date = query["end_date"]
 frequency = query["frequency"]
 
 
-# Expander para informações de contexto e processamento de qualidade
-with st.expander(f"✅ Análise gerada para {symbol}. Clique para visualizar detalhes e qualidade dos dados.", expanded=False):
-    st.markdown(f"**Ativo Analisado:** {symbol}")
-    st.markdown(f"**Período Selecionado:** {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}")
-    st.markdown(f"**Observações Processadas:** {len(df)} períodos.")
-    
-    st.markdown("#### Qualidade e Validação dos Dados")
-    st.markdown(f"- **Total de linhas brutas:** {validation['total_rows']}")
-    st.markdown(f"- **Datas duplicadas:** {validation['duplicate_dates']}")
-    st.markdown(f"- **Valores negativos (Fechamento):** {validation['negative_close']}")
-    
-    missing = validation["missing_values"]
-    if isinstance(missing, pd.Series):
-        missing_str = ", ".join([f"{idx}: {val}" for idx, val in missing.items() if val > 0])
-        if not missing_str: 
-            missing_str = "Nenhum"
-    else:
-        missing_str = str(missing)
-    st.markdown(f"- **Valores ausentes:** {missing_str}")
+# =====================
+# Card visual do ativo (logo em destaque) lado a lado com o
+# expander de detalhes da análise, na mesma fileira.
+# =====================
+current_asset = next((a for a in ASSETS if a["ticker"] == symbol), None)
 
+col_logo, col_expander = st.columns([1, 3], vertical_alignment="center")
+
+with col_logo:
+    if current_asset:
+        render_asset_hero_logo(current_asset)
+
+with col_expander:
+    with st.expander(f"✅ Análise gerada para {symbol}. Clique para visualizar detalhes e qualidade dos dados.", expanded=False):
+        st.markdown(f"**Ativo Analisado:** {symbol}")
+        st.markdown(f"**Período Selecionado:** {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}")
+        st.markdown(f"**Observações Processadas:** {len(df)} períodos.")
+        
+        st.markdown("#### Qualidade e Validação dos Dados")
+        st.markdown(f"- **Total de linhas brutas:** {validation['total_rows']}")
+        st.markdown(f"- **Datas duplicadas:** {validation['duplicate_dates']}")
+        st.markdown(f"- **Valores negativos (Fechamento):** {validation['negative_close']}")
+        
+        missing = validation["missing_values"]
+        if isinstance(missing, pd.Series):
+            missing_str = ", ".join([f"{idx}: {val}" for idx, val in missing.items() if val > 0])
+            if not missing_str: 
+                missing_str = "Nenhum"
+        else:
+            missing_str = str(missing)
+        st.markdown(f"- **Valores ausentes:** {missing_str}")
+
+st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
+    
 
 # =====================
 # Seção 1: Resumo

@@ -227,44 +227,61 @@ def render_asset_controls(
                 "submitted": False,
             }
 
-        current_symbol = st.session_state.get(
-            "asset_symbol",
-            "BTC-USD",
-        )
+        # ---------------------------------------------------------
+        # AJUSTE 1: Configuração do Placeholder da Classe de Ativo
+        # ---------------------------------------------------------
+        PLACEHOLDER_GROUP = "Selecione uma classe..."
+        options_group = [PLACEHOLDER_GROUP] + groups
 
-        current_group = groups[0]
-        for asset in ASSETS:
-            if asset.get("ticker") == current_symbol:
-                current_group = asset.get(
-                    "group",
-                    asset.get("class", "Outros"),
-                )
-                break
+        # Recupera o grupo selecionado ou define o placeholder como padrão
+        current_group = st.session_state.get(
+            "asset_group", 
+            PLACEHOLDER_GROUP
+        )
 
         selected_group = st.selectbox(
             "Classe do Ativo",
-            options=groups,
+            options=options_group,
             index=(
-                groups.index(current_group)
-                if current_group in groups
+                options_group.index(current_group)
+                if current_group in options_group
                 else 0
             ),
-            format_func=lambda value: GROUP_MAPPING.get(
-                str(value).lower(),
-                str(value).replace("_", " ").title(),
+            format_func=lambda value: (
+                value if value == PLACEHOLDER_GROUP 
+                else GROUP_MAPPING.get(str(value).lower(), str(value).replace("_", " ").title())
             ),
             key=f"{button_key}_group_select",
             width="stretch",
         )
 
-        filtered_assets = [
-            asset
-            for asset in ASSETS
-            if asset.get(
-                "group",
-                asset.get("class", "Outros"),
-            ) == selected_group
-        ]
+        # Atualiza o estado da classe de ativo
+        st.session_state["asset_group"] = selected_group
+
+        # ---------------------------------------------------------
+        # AJUSTE 2: Configuração do Placeholder do Símbolo do Ativo
+        # ---------------------------------------------------------
+        PLACEHOLDER_ASSET = {"ticker": "", "name": "Selecione um ativo", "group": ""}
+
+        if selected_group == PLACEHOLDER_GROUP:
+            # Se nenhuma classe foi escolhida, mostra apenas o placeholder
+            filtered_assets = [PLACEHOLDER_ASSET]
+        else:
+            # Se escolheu uma classe, mostra o placeholder seguido dos ativos da classe
+            filtered_assets = [PLACEHOLDER_ASSET] + [
+                asset
+                for asset in ASSETS
+                if asset.get(
+                    "group",
+                    asset.get("class", "Outros"),
+                ) == selected_group
+            ]
+
+        # Puxa o ticker vazio (placeholder) como padrão inicial ao invés de BTC-USD
+        current_symbol = st.session_state.get(
+            "asset_symbol",
+            "",
+        )
 
         asset_index = 0
         for index, asset in enumerate(filtered_assets):
@@ -276,7 +293,8 @@ def render_asset_controls(
             "Símbolo/Nome do Ativo",
             options=filtered_assets,
             format_func=lambda asset: (
-                f"{asset['ticker']} — {asset.get('description', asset.get('descricao', asset.get('name')))}"
+                asset["name"] if asset.get("ticker") == ""
+                else f"{asset['ticker']} — {asset.get('description', asset.get('descricao', asset.get('name')))}"
                 if asset.get("group", asset.get("class", "")) == "forex"
                 else f"{asset['ticker']} — {asset.get('name')}"
             ),
@@ -288,7 +306,7 @@ def render_asset_controls(
         symbol = (
             selected_asset["ticker"]
             if selected_asset
-            else current_symbol
+            else ""
         )
 
         st.divider()
@@ -377,11 +395,17 @@ def render_asset_controls(
             width="stretch",
         )
 
+        # ---------------------------------------------------------
+        # AJUSTE 3: Trava no botão caso nenhum ativo seja selecionado
+        # ---------------------------------------------------------
+        is_disabled = (symbol == "")
+
         submitted = st.button(
             button_label,
             key=button_key,
             type="primary",
             width="stretch",
+            disabled=is_disabled,
         )
 
         if submitted:

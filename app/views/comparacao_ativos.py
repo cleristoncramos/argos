@@ -19,6 +19,7 @@ import streamlit as st
 from app.ui.state import initialize_asset_state
 # IMPORTANTE: Importamos as injeções da sidebar padrão (agora elas vão existir!)
 from app.ui.sidebar import inject_compact_sidebar_css, inject_compact_dropdown_script
+from app.ui.asset_cards import render_selected_asset_cards
 
 from core.analyzer import calculate_returns
 from core.assets import ASSETS, get_assets
@@ -49,12 +50,15 @@ COMPARISON_END_DATE_STATE_KEY = "comparison_end_date"
 COMPARISON_FREQUENCY_STATE_KEY = "comparison_frequency"
 COMPARISON_RISK_FREE_RATE_STATE_KEY = "comparison_risk_free_rate_pct"
 COMPARISON_SYMBOLS_STATE_KEY = "comparison_symbols_input"
+COMPARISON_CLASS_STATE_KEY = "comparison_selected_class"
 
 COMPARISON_PERIOD_WIDGET_KEY = "comparison_period_widget"
 COMPARISON_START_DATE_WIDGET_KEY = "comparison_start_date_widget"
 COMPARISON_END_DATE_WIDGET_KEY = "comparison_end_date_widget"
 COMPARISON_FREQUENCY_WIDGET_KEY = "comparison_frequency_widget"
 COMPARISON_RISK_FREE_RATE_WIDGET_KEY = "comparison_risk_free_rate_pct_widget"
+COMPARISON_CLASS_WIDGET_KEY = "comparison_class_widget"
+COMPARISON_SYMBOLS_WIDGET_KEY = "comparison_symbols_widget"
 
 
 # ==========================================================
@@ -85,6 +89,27 @@ def sync_comparison_risk_free_rate() -> None:
         st.session_state[COMPARISON_RISK_FREE_RATE_WIDGET_KEY]
     )
 
+def sync_comparison_class() -> None:
+    """
+    Sincroniza a classe selecionada IMEDIATAMENTE no callback on_change,
+    antes do script ser executado novamente. Isso evita o atraso de uma
+    execução que causava a necessidade de clicar duas vezes.
+    """
+    st.session_state[COMPARISON_CLASS_STATE_KEY] = st.session_state[
+        COMPARISON_CLASS_WIDGET_KEY
+    ]
+
+def sync_comparison_symbols() -> None:
+    """
+    Sincroniza os tickers selecionados IMEDIATAMENTE no callback on_change.
+    Antes, o valor exibido dependia de uma variável (`default_list`)
+    recalculada a cada rerun a partir do estado ANTERIOR ao clique --
+    por isso o primeiro clique nunca "aparecia" de fato, exigindo um
+    segundo clique para ser refletido na tela.
+    """
+    selected = st.session_state[COMPARISON_SYMBOLS_WIDGET_KEY]
+    st.session_state[COMPARISON_SYMBOLS_STATE_KEY] = ",".join(selected)
+
 
 # ==========================================================
 # Estado inicial
@@ -111,6 +136,10 @@ def initialize_comparison_state() -> None:
         "comparison_frequency",
         "Mensal",
     )
+    asset_class = st.session_state.get(COMPARISON_CLASS_STATE_KEY, None)
+
+    symbols_str = st.session_state.get(COMPARISON_SYMBOLS_STATE_KEY, "")
+    symbols_list = [s.strip() for s in symbols_str.split(",") if s.strip()]
 
     defaults = {
         COMPARISON_PERIOD_STATE_KEY: asset_period,
@@ -118,12 +147,15 @@ def initialize_comparison_state() -> None:
         COMPARISON_END_DATE_STATE_KEY: asset_end_date,
         COMPARISON_FREQUENCY_STATE_KEY: asset_frequency,
         COMPARISON_RISK_FREE_RATE_STATE_KEY: 0.0,
-        COMPARISON_SYMBOLS_STATE_KEY: "", 
+        COMPARISON_SYMBOLS_STATE_KEY: symbols_str,
+        COMPARISON_CLASS_STATE_KEY: asset_class,
         COMPARISON_PERIOD_WIDGET_KEY: asset_period,
         COMPARISON_START_DATE_WIDGET_KEY: asset_start_date,
         COMPARISON_END_DATE_WIDGET_KEY: asset_end_date,
         COMPARISON_FREQUENCY_WIDGET_KEY: asset_frequency,
         COMPARISON_RISK_FREE_RATE_WIDGET_KEY: 0.0,
+        COMPARISON_CLASS_WIDGET_KEY: asset_class,
+        COMPARISON_SYMBOLS_WIDGET_KEY: symbols_list,
     }
 
     for key, value in defaults.items():
@@ -630,6 +662,36 @@ st.markdown(
 # ==========================================================
 # Parâmetros da comparação
 # ==========================================================
+GROUP_MAPPING = {
+    "crypto": "₿ Criptomoedas",
+    "br_stocks": "🇧🇷 Ações Brasil",
+    "us_stocks": "🇺🇸 Ações EUA",
+    "europe_stocks": "🇪🇺 Ações Europa",
+    "asia_stocks": "🌏 Ações Ásia",
+    "equity_etfs": "📈 ETFs de Ações",
+    "fixed_income_etfs": "💵 ETFs de Renda Fixa",
+    "reits": "🏢 REITs / Mercado Imobiliário",
+    "brazil_fiis": "🏠 FIIs Brasil",
+    "fiis": "🏠 FIIs Brasil",
+    "indexes": "📊 Índices de Mercado",
+    "indices": "📊 Índices de Mercado",
+    "forex": "💱 Forex (Moedas)",
+    "commodities": "🛢️ Commodities",
+    "rates": "💵 Taxas de Juros / Treasuries",
+    "treasury": "💵 Taxas de Juros / Treasuries",
+}
+
+
+def format_multiselect_option(ticker: str) -> str:
+    """Embeleza o ticker exibido no multiselect usando os dados originais do ativo."""
+    a = next((item for item in ASSETS if item["ticker"] == ticker), None)
+    if not a:
+        return ticker
+    if a.get("group", a.get("class", "")) == "forex":
+        return f"{a['ticker']} — {a.get('description', a.get('descricao', a.get('name')))}"
+    return f"{a['ticker']} — {a.get('name')}"
+
+
 with st.sidebar:
     # Injeta a compactação via CSS e JS padrão da sidebar
     inject_compact_sidebar_css()
@@ -637,75 +699,65 @@ with st.sidebar:
     
     st.header("⚙️ Parâmetros da Comparação")
 
-    default_str = st.session_state.get(COMPARISON_SYMBOLS_STATE_KEY, "")
-    default_list = [s.strip() for s in default_str.split(",") if s.strip()]
-
     # ==========================================================
-    # SELEÇÃO DE ATIVOS (NOVA ESTRATÉGIA)
+    # SELEÇÃO DE ATIVOS (CORREÇÃO: key + on_change eliminam o
+    # atraso de uma execução que exigia clicar duas vezes)
     # ==========================================================
-    GROUP_MAPPING = {
-        "crypto": "₿ Criptomoedas",
-        "br_stocks": "🇧🇷 Ações Brasil",
-        "us_stocks": "🇺🇸 Ações EUA",
-        "europe_stocks": "🇪🇺 Ações Europa",
-        "asia_stocks": "🌏 Ações Ásia",
-        "equity_etfs": "📈 ETFs de Ações",
-        "fixed_income_etfs": "💵 ETFs de Renda Fixa",
-        "reits": "🏢 REITs / Mercado Imobiliário",
-        "brazil_fiis": "🏠 FIIs Brasil",
-        "fiis": "🏠 FIIs Brasil",
-        "indexes": "📊 Índices de Mercado",
-        "indices": "📊 Índices de Mercado",
-        "forex": "💱 Forex (Moedas)",
-        "commodities": "🛢️ Commodities",
-        "rates": "💵 Taxas de Juros / Treasuries",
-        "treasury": "💵 Taxas de Juros / Treasuries",
-    }
-
     groups = []
     for asset in ASSETS:
         g = asset.get("group", asset.get("class", "Outros"))
         if g not in groups:
             groups.append(g)
 
-    selected_class = st.selectbox(
+    st.selectbox(
         "Classe do Ativo:",
         options=groups,
-        index=None,
         placeholder="Selecione uma classe...",
-        format_func=lambda x: GROUP_MAPPING.get(str(x).lower(), str(x).replace("_", " ").title())
+        format_func=lambda x: GROUP_MAPPING.get(str(x).lower(), str(x).replace("_", " ").title()),
+        key=COMPARISON_CLASS_WIDGET_KEY,
+        on_change=sync_comparison_class,
     )
 
-    valid_options = []
+    # O valor confirmado vem do estado sincronizado no callback,
+    # já refletindo o clique mais recente sem atraso.
+    selected_class = st.session_state[COMPARISON_CLASS_STATE_KEY]
+
+    # Tickers já selecionados (persistidos automaticamente pela key
+    # do próprio widget entre execuções).
+    previously_selected_tickers = st.session_state.get(
+        COMPARISON_SYMBOLS_WIDGET_KEY,
+        [],
+    )
+
+    valid_options_tickers = []
     seen = set()
-    
-    # Estratégia de retenção: O ativo entra nas opções se for da classe selecionada 
-    # OU se ele já estiver selecionado (Isso permite comparação multi-classes)
+
+    # Estratégia de retenção: o ticker entra nas opções se for da
+    # classe selecionada OU se já estiver selecionado (permite
+    # comparação entre ativos de classes diferentes).
     for asset in ASSETS:
         asset_group = asset.get("group", asset.get("class", "Outros"))
         is_in_group = (asset_group == selected_class)
-        is_selected = (asset["ticker"] in default_list)
-        
-        if (is_in_group or is_selected) and asset["ticker"] not in seen:
-            valid_options.append(asset)
-            seen.add(asset["ticker"])
-            
-    safe_defaults = [asset for asset in valid_options if asset["ticker"] in default_list]
+        is_selected = (asset["ticker"] in previously_selected_tickers)
 
-    selected_assets_objs = st.multiselect(
+        if (is_in_group or is_selected) and asset["ticker"] not in seen:
+            valid_options_tickers.append(asset["ticker"])
+            seen.add(asset["ticker"])
+
+    st.multiselect(
         "Símbolo/Nome do Ativo:",
-        options=valid_options,
-        default=safe_defaults,
+        options=valid_options_tickers,
         max_selections=5,
-        format_func=lambda a: f"{a['ticker']} — {a.get('description', a.get('descricao', a.get('name')))}" if a.get("group", a.get("class", "")) == "forex" else f"{a['ticker']} — {a.get('name')}",
+        format_func=format_multiselect_option,
         disabled=(selected_class is None),
         placeholder="Selecione um ativo",
-        help="Selecione uma classe acima para habilitar." if selected_class is None else "Digite para buscar por nome ou código na classe selecionada."
+        help="Selecione uma classe acima para habilitar." if selected_class is None else "Digite para buscar por nome ou código na classe selecionada.",
+        key=COMPARISON_SYMBOLS_WIDGET_KEY,
+        on_change=sync_comparison_symbols,
     )
 
-    selected_tickers = [a["ticker"] for a in selected_assets_objs]
-    
-    st.session_state[COMPARISON_SYMBOLS_STATE_KEY] = ",".join(selected_tickers)
+    # Valor confirmado, já sincronizado pelo callback -- sem atraso.
+    selected_tickers = st.session_state[COMPARISON_SYMBOLS_WIDGET_KEY]
     symbols_input = st.session_state[COMPARISON_SYMBOLS_STATE_KEY]
     # ==========================================================
 
@@ -932,6 +984,17 @@ if failed_symbols:
         "Os seguintes símbolos não retornaram dados válidos: "
         + ", ".join(failed_symbols)
     )
+
+
+# =====================
+# Cards visuais dos ativos comparados (logo/ícone + ticker + nome)
+# =====================
+selected_assets_for_cards = [
+    a for a in ASSETS if a["ticker"] in asset_data.keys()
+]
+render_selected_asset_cards(selected_assets_for_cards)
+st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
+
 
 with st.expander(
     f"✅ Análise gerada para {len(asset_data)} ativos. "
