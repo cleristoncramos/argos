@@ -216,7 +216,7 @@ col1, col2, col3 = st.columns([1, 1.2, 1]) # O botão ficará na coluna do meio
 
 with col2:
     if st.button("Acessar Terminal de Análise", use_container_width=True):
-        st.switch_page("views/analise_individual.py")
+        st.switch_page("views/sobre_projeto.py")
 
 
 # ==========================================================
