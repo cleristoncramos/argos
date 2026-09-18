@@ -26,9 +26,12 @@ header { display: none !important; }
 footer { display: none !important; }
 #MainMenu { visibility: hidden !important; }
 
-/* Fundo da Página (Dark Mode Gradiente) */
+/* Fundo da Página (Dark Mode Gradiente)
+   OBS: a claridade no topo foi reduzida (de 0.34 para 0.20 de opacidade
+   e o raio de propagação encurtado) para não prejudicar a leitura do
+   título e subtítulo, que ficam posicionados exatamente nessa área. */
 .stApp {
-    background: radial-gradient(circle at 50% -15%, rgba(35, 52, 100, 0.34) 0%, rgba(10, 20, 40, 0.72) 34%, #050b17 72%, #030711 100%) !important;
+    background: radial-gradient(circle at 50% -15%, rgba(35, 52, 100, 0.20) 0%, rgba(10, 20, 40, 0.75) 28%, #050b17 65%, #030711 100%) !important;
     color: #f8fafc;
 }
 
@@ -118,30 +121,64 @@ body {{
 .argos-page {{ width: 100%; }}
 .eyebrow {{
     display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 25px;
-    color: #e2e8f0; font-size: 0.8rem; font-weight: 750; letter-spacing: 0.25em; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    color: #e2e8f0; font-size: 0.8rem; font-weight: 750; letter-spacing: 0.25em; text-transform: uppercase;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.55);
 }}
 .eyebrow-line {{ width: 40px; height: 1px; background: #ef4444; }}
 .hero-title {{
     margin: 0; text-align: center; font-size: clamp(3.3rem, 7vw, 5.7rem);
     line-height: 0.98; font-weight: 850; letter-spacing: -0.065em; color: #f8fafc;
+    /* Sombra reforçada para garantir contraste mesmo sobre a área
+       mais clara do fundo -- duas camadas: uma difusa e ampla, outra
+       mais próxima e definida, para não perder nitidez das letras. */
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.55), 0 1px 3px rgba(0, 0, 0, 0.6);
 }}
 .hero-title .accent {{ color: #ef4444; }}
 .hero-subtitle {{
     max-width: 760px; margin: 22px auto 0; text-align: center;
-    color: #94a3b8; font-size: 1.05rem; line-height: 1.7;
+    color: #cbd5e1; font-size: 1.05rem; line-height: 1.7;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
 }}
+
+/* ==========================================================
+   FAIXA DE MERCADOS (B3, Global, Crypto, Forex, Commodities)
+   ==========================================================
+   Contraste reforçado: ícone e código do mercado estavam em tons
+   muito apagados (#94a3b8 e #475569) sobre fundo escuro, dificultando
+   a leitura. Cores clareadas, texto com sombra de segurança, e cada
+   item ganhou um fundo/borda próprios para se destacar como um
+   cartão individual em vez de texto solto.
+*/
 .market-strip {{
     display: grid; grid-template-columns: repeat(5, 1fr); width: 100%; margin-top: 46px;
-    border-top: 1px solid rgba(148, 163, 184, 0.14); border-bottom: 1px solid rgba(148, 163, 184, 0.14); background: rgba(15, 23, 42, 0.35);
+    gap: 10px;
 }}
 .market-item {{
-    min-height: 76px; padding: 14px 18px; display: flex; flex-direction: column;
-    justify-content: center; align-items: center; text-align: center; border-right: 1px solid rgba(148, 163, 184, 0.12);
+    min-height: 84px; padding: 16px 14px; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 8px;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }}
-.market-item:last-child {{ border-right: none; }}
-.market-icon {{ margin-bottom: 5px; font-size: 0.9rem; color: #94a3b8; }}
-.market-name {{ color: #e2e8f0; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }}
-.market-code {{ margin-top: 3px; color: #475569; font-size: 0.64rem; font-family: "JetBrains Mono", monospace; }}
+.market-item:hover {{
+    border-color: rgba(239, 68, 68, 0.5);
+    background: rgba(15, 23, 42, 0.75);
+    transform: translateY(-2px);
+}}
+.market-icon {{
+    margin-bottom: 6px; font-size: 1.05rem; color: #e2e8f0;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}}
+.market-name {{
+    color: #f1f5f9; font-size: 0.8rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}}
+.market-code {{
+    margin-top: 4px; color: #94a3b8; font-size: 0.68rem; font-weight: 600;
+    font-family: "JetBrains Mono", monospace; letter-spacing: 0.04em;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}}
 .analysis-visual {{
     position: relative; width: 100%; height: 245px; margin-top: 32px; overflow: hidden;
     border: 1px solid rgba(148, 163, 184, 0.13);
@@ -164,7 +201,6 @@ body {{
 .concept-description {{ margin-top: 5px; color: #64748b; font-size: 0.70rem; }}
 @media (max-width: 850px) {{
     .market-strip {{ grid-template-columns: repeat(2, 1fr); }}
-    .market-item {{ border-bottom: 1px solid rgba(148, 163, 184, 0.12); }}
     .concept-grid {{ grid-template-columns: 1fr; }}
     .concept {{ border-right: none; border-bottom: 1px solid rgba(148, 163, 184, 0.12); }}
 }}
@@ -178,7 +214,7 @@ body {{
         <span class="eyebrow-line"></span>
     </div>
     <h1 class="hero-title">Argos <span class="accent">DataLab</span></h1>
-    <div class="hero-subtitle">Plataforma quantitativa para análise de ativos financeiros, comparação histórica, auditoria de desempenho e avaliação de risco em múltiplos mercados.</div>
+    <div class="hero-subtitle">Uma plataforma em construção para visualizar e explorar dados do mercado financeiro de forma clara e personalizável — com gráficos, indicadores técnicos, relatórios e métricas de desempenho, tudo em um só lugar.</div>
     <div class="market-strip">
         <div class="market-item"><div class="market-icon">📈</div><div class="market-name">B3</div><div class="market-code">IBOV · AÇÕES</div></div>
         <div class="market-item"><div class="market-icon">◉</div><div class="market-name">Global</div><div class="market-code">NASDAQ · NYSE</div></div>

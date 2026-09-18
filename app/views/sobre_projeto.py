@@ -386,7 +386,7 @@ with col_acad:
                 <li><b>Plano de Trabalho:</b> <i>Análise de Dados para Apoio à Tomada de Decisão em Investimentos no Mercado Financeiro</i>.</li>
                 <li><b>Pesquisador (Discente):</b> Clériston de Castro Ramos.</li>
                 <li><b>Orientador:</b> Prof. Dr. Arlino Henrique Magalhães de Araújo.</li>
-                <li><b>Instituição:</b> Universidade Federal do Piauí (UFPI) — Curso de Tecnologia em Gestão de Dados.</li>
+                <li><b>Instituição:</b> Universidade Federal do Piauí (UFPI) — Curso Tecnólogo em Gestão de Dados.</li>
             </ul>
         </div>
         """,
