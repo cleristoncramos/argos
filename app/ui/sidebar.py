@@ -230,7 +230,7 @@ def render_asset_controls(
         # ---------------------------------------------------------
         # AJUSTE 1: Configuração do Placeholder da Classe de Ativo
         # ---------------------------------------------------------
-        PLACEHOLDER_GROUP = "Selecione uma classe..."
+        PLACEHOLDER_GROUP = "Selecione uma classe"
         options_group = [PLACEHOLDER_GROUP] + groups
 
         # Recupera o grupo selecionado ou define o placeholder como padrão

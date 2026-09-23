@@ -128,9 +128,6 @@ body {{
 .hero-title {{
     margin: 0; text-align: center; font-size: clamp(3.3rem, 7vw, 5.7rem);
     line-height: 0.98; font-weight: 850; letter-spacing: -0.065em; color: #f8fafc;
-    /* Sombra reforçada para garantir contraste mesmo sobre a área
-       mais clara do fundo -- duas camadas: uma difusa e ampla, outra
-       mais próxima e definida, para não perder nitidez das letras. */
     text-shadow: 0 4px 24px rgba(0, 0, 0, 0.55), 0 1px 3px rgba(0, 0, 0, 0.6);
 }}
 .hero-title .accent {{ color: #ef4444; }}
@@ -140,15 +137,6 @@ body {{
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
 }}
 
-/* ==========================================================
-   FAIXA DE MERCADOS (B3, Global, Crypto, Forex, Commodities)
-   ==========================================================
-   Contraste reforçado: ícone e código do mercado estavam em tons
-   muito apagados (#94a3b8 e #475569) sobre fundo escuro, dificultando
-   a leitura. Cores clareadas, texto com sombra de segurança, e cada
-   item ganhou um fundo/borda próprios para se destacar como um
-   cartão individual em vez de texto solto.
-*/
 .market-strip {{
     display: grid; grid-template-columns: repeat(5, 1fr); width: 100%; margin-top: 46px;
     gap: 10px;
@@ -189,7 +177,16 @@ body {{
     position: absolute; top: 15px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 5;
 }}
 .visual-label {{ color: #cbd5e1; font-size: 0.70rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }}
-.visual-status {{ color: #475569; font-size: 0.63rem; font-family: "JetBrains Mono", monospace; }}
+
+/* AJUSTE AQUI: Tamanho, cor e peso do "MULTI-ASSET · HISTORICAL DATA" */
+.visual-status {{ 
+    color: #cbd5e1; 
+    font-size: 0.72rem; 
+    font-weight: 600; 
+    letter-spacing: 0.05em; 
+    font-family: "JetBrains Mono", monospace; 
+}}
+
 .chart-area {{ position: absolute; left: 3%; right: 3%; top: 50px; bottom: 12px; }}
 .chart-svg {{ width: 100%; height: 100%; object-fit: fill; display: block; }}
 .concept-grid {{
@@ -266,13 +263,25 @@ FOOTER_CONTENT = """
 body {
     margin: 0; padding: 0; background-color: transparent; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
+/* AJUSTE AQUI: Tamanho geral do rodapé aumentado e cor mais viva */
 .argos-footer {
     width: 100%; padding: 21px 0 24px; border-top: 1px solid rgba(148, 163, 184, 0.12);
-    display: flex; justify-content: space-between; align-items: center; color: #475569; font-size: 0.65rem;
+    display: flex; justify-content: space-between; align-items: center; 
+    color: #94a3b8; font-size: 0.72rem;
 }
-.footer-brand { color: #94a3b8; font-weight: 750; letter-spacing: 0.10em; text-transform: uppercase; }
-.footer-markets { display: flex; gap: 18px; font-family: "JetBrains Mono", monospace; }
-.footer-right { text-align: right; }
+.footer-brand { color: #e2e8f0; font-weight: 750; letter-spacing: 0.10em; text-transform: uppercase; }
+
+/* AJUSTE AQUI: Os links dos mercados mais claros e nítidos */
+.footer-markets { 
+    display: flex; gap: 18px; font-family: "JetBrains Mono", monospace; 
+    color: #cbd5e1; font-weight: 600; letter-spacing: 0.05em;
+}
+
+/* AJUSTE AQUI: O texto da direita mais nítido */
+.footer-right { 
+    text-align: right; color: #cbd5e1; font-weight: 600; letter-spacing: 0.05em;
+}
+
 @media (max-width: 850px) {
     .argos-footer { flex-direction: column; gap: 12px; text-align: center; }
 }

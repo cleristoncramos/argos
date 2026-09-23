@@ -23,6 +23,8 @@ import streamlit as st
 
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
+from app.ui.asset_cards import render_asset_hero_logo
+from core.assets import ASSETS
 from core.data_loader import download_active_data
 from core.data_processor import prepare_dataframe
 from core.indicators import (
@@ -604,14 +606,28 @@ context = format_context(
 )
 
 
-# Expander em substituição ao antigo st.info (Caixa azul)
-with st.expander(f"✅ Análise gerada para {symbol.upper()}. Clique para visualizar os detalhes do processamento.", expanded=False):
-    st.markdown(f"**Ativo Analisado:** {symbol.upper()}")
-    st.markdown(f"**Período Selecionado:** {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}")
-    st.markdown(f"**Observações Processadas:** {len(df)} períodos válidos calculados com sucesso.")
-    st.markdown(
-        "**Tratamento:** As médias móveis, RSI, MACD e Bandas de Bollinger são sempre calculadas sobre a coluna de preço de **fechamento**."
-    )
+# =====================
+# Card visual do ativo (logo em destaque) lado a lado com o
+# expander de detalhes do processamento, na mesma fileira.
+# =====================
+current_asset = next((a for a in ASSETS if a["ticker"] == symbol), None)
+
+col_logo, col_expander = st.columns([1, 3], vertical_alignment="center")
+
+with col_logo:
+    if current_asset:
+        render_asset_hero_logo(current_asset)
+
+with col_expander:
+    with st.expander(f"✅ Análise gerada para {symbol.upper()}. Clique para visualizar os detalhes do processamento.", expanded=False):
+        st.markdown(f"**Ativo Analisado:** {symbol.upper()}")
+        st.markdown(f"**Período Selecionado:** {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}")
+        st.markdown(f"**Observações Processadas:** {len(df)} períodos válidos calculados com sucesso.")
+        st.markdown(
+            "**Tratamento:** As médias móveis, RSI, MACD e Bandas de Bollinger são sempre calculadas sobre a coluna de preço de **fechamento**."
+        )
+
+st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
 
 
 # =====================
