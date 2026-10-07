@@ -1,84 +1,83 @@
 # 📚 Catálogo de Ativos — Argos DataLab
 
-> Catálogo oficial dos ativos financeiros disponibilizados pelo **Argos DataLab** para consulta, análise exploratória, comparação de desempenho, indicadores técnicos e métricas de risco.
+> Catálogo dos ativos financeiros disponibilizados pelo **Argos DataLab** para consulta, análise exploratória, comparação de desempenho, indicadores técnicos e métricas de risco.
 
 ---
 
 ## 1. Visão geral
 
-O **Argos DataLab** mantém um catálogo centralizado de ativos financeiros para garantir uma estrutura padronizada de seleção, organização e identificação dos instrumentos utilizados pela aplicação.
+O **Argos DataLab** mantém um catálogo centralizado de ativos para padronizar a seleção, a organização e a identificação dos instrumentos usados pela aplicação.
 
-O catálogo é implementado no módulo:
+O catálogo é implementado em:
 
 ```text
 core/assets.py
 ```
 
-A estrutura foi concebida para separar:
+Cada registro separa: classe, subclasse, mercado, ticker, nome de exibição, descrição, grupo de interface, tipo de dado, ícone e cor de categoria.
 
-* **classe do ativo**;
-* **subclasse**;
-* **mercado**;
-* **ticker**;
-* **nome de exibição**;
-* **descrição**;
-* **grupo de interface**;
-* **tipo de dado**;
-* **ícone**;
-* **cor de categoria**.
-
-O catálogo atualmente contém **120 ativos**, distribuídos em **13 grupos principais**.
+O catálogo contém **120 ativos**, distribuídos em **13 grupos**.
 
 > [!IMPORTANT]
-> Este documento descreve o catálogo efetivamente implementado no código-fonte do Argos DataLab.
->
-> O catálogo é uma estrutura de **metadados editoriais para seleção e organização da interface**. A existência de um ticker no catálogo não garante que o Yahoo Finance disponibilize a mesma profundidade de histórico, fundamentos, dividendos ou demais informações para todos os tipos de ativos.
+> O catálogo é uma estrutura de **metadados editoriais** para seleção e organização da interface. A existência de um ticker no catálogo **não garante** que o Yahoo Finance disponibilize a mesma profundidade de histórico para todos os ativos.
+
+> [!NOTE]
+> **Terminologia.** Na interface, os 13 grupos aparecem no campo "Classe do Ativo". No código, porém, o campo `class` possui 9 valores (Criptomoeda, Ação, ETF, REIT, FII, Índice, Forex, Commodity e Renda Fixa), e os 13 valores do campo `group` organizam o menu. Neste documento, **grupo** se refere aos 13 itens do menu e **classe** aos 9 valores técnicos.
 
 ---
 
-# 2. Objetivos do catálogo
+## 2. Natureza e critério de seleção
 
-O catálogo possui os seguintes objetivos:
+A seleção de ativos adotada no Argos DataLab possui natureza intencional e não probabilística. O catálogo inicial é composto por 120 instrumentos financeiros organizados em 13 classes, incluindo criptomoedas, ações brasileiras e internacionais, ETFs, FIIs, REITs, índices, pares cambiais, commodities e taxas de juros. A escolha considerou critérios combinados de representatividade por classe, diversidade geográfica, cobertura setorial, relevância econômica, liquidez ou notoriedade, disponibilidade de séries históricas, compatibilidade com os tickers utilizados pelo Yahoo Finance e valor educacional para a análise de risco, retorno, correlação e sazonalidade.
 
-1. Centralizar os ativos disponíveis na aplicação;
-2. Evitar a duplicação de definições de ativos em diferentes módulos;
-3. Padronizar nomes, classes, subclasses e mercados;
-4. Facilitar a construção dos menus da interface;
-5. Permitir filtros por diferentes dimensões;
-6. Fornecer uma lista de tickers para consulta no `yfinance`;
-7. Permitir a construção de uma hierarquia navegável;
-8. Facilitar a manutenção e expansão futura do projeto;
-9. Garantir a validação estrutural do catálogo;
+A inclusão de um ativo no catálogo não representa recomendação de investimento, ranking de qualidade, indicação de compra ou venda, nem avaliação de adequação ao perfil do investidor. O catálogo funciona como uma amostra operacional para demonstração, análise exploratória e pesquisa aplicada. A disponibilidade e a profundidade dos dados podem variar conforme o ativo e a fonte externa utilizada.
+
+**Decisões de escopo (reunião de orientação de 06/10/2026):**
+
+- Os 13 grupos são mantidos na primeira versão.
+- O catálogo é uma **amostra inicial**, não o universo do mercado.
+- A seleção hierárquica é o fluxo principal para usuários iniciantes. A digitação livre de ticker existe como modo alternativo (ver seção 27).
+
+---
+
+## 3. Objetivos do catálogo
+
+1. Centralizar os ativos disponíveis na aplicação.
+2. Evitar a duplicação de definições de ativos entre módulos.
+3. Padronizar nomes, classes, subclasses e mercados.
+4. Facilitar a construção dos menus da interface.
+5. Permitir filtros por diferentes dimensões.
+6. Fornecer a lista de tickers para consulta no `yfinance`.
+7. Permitir uma hierarquia navegável.
+8. Facilitar a manutenção e a expansão futura.
+9. Garantir a validação estrutural do catálogo.
 10. Manter uma referência documental dos ativos suportados.
 
 ---
 
-# 3. Quantidade de ativos
+## 4. Quantidade de ativos
 
-O catálogo possui atualmente:
+| Indicador                        | Quantidade |
+| -------------------------------- | ---------: |
+| **Total de ativos**              |    **120** |
+| Grupos (menu da interface)       |     **13** |
+| Classes técnicas (campo `class`) |      **9** |
+| Registros com ticker único       |    **120** |
+| Campos obrigatórios por ativo    |     **10** |
 
-| Indicador                     | Quantidade |
-| ----------------------------- | ---------: |
-| **Total de ativos**           |    **120** |
-| Grupos principais             |     **13** |
-| Classes de ativos             |      **9** |
-| Registros com ticker único    |    **120** |
-| Campos obrigatórios por ativo |     **11** |
-
-A quantidade total é validada automaticamente pelo código.
+A quantidade total é validada pelo código:
 
 ```python
 if len(ASSETS) != 120:
     raise ValueError(...)
 ```
 
-Caso a quantidade seja diferente de 120, a validação do catálogo gera um erro.
+> [!NOTE]
+> Como o valor 120 está fixo na validação, qualquer inclusão ou remoção exige atualizá-lo (ver seção 32). Os números exibidos na página "Sobre o Projeto" também devem acompanhar essa mudança (ver seção 38).
 
 ---
 
-# 4. Estrutura hierárquica
-
-A aplicação organiza os ativos segundo a seguinte estrutura:
+## 5. Estrutura hierárquica
 
 ```text
 Classe
@@ -95,21 +94,15 @@ Ação
     └── EUA
         ├── Apple
         ├── Microsoft
-        ├── Nvidia
-        └── Alphabet
+        ├── Alphabet
+        └── Meta Platforms
 ```
 
-Essa hierarquia é gerada pela função:
-
-```python
-get_hierarchy()
-```
+A hierarquia é gerada por `get_hierarchy()`.
 
 ---
 
-# 5. Classes de ativos
-
-O catálogo utiliza nove classes principais:
+## 6. Classes de ativos
 
 | Classe      | Ícone | Tipo de dado |
 | ----------- | ----- | ------------ |
@@ -125,9 +118,9 @@ O catálogo utiliza nove classes principais:
 
 ---
 
-# 6. Grupos do catálogo
+## 7. Grupos do catálogo
 
-A ordem dos grupos é deliberadamente mantida no código para garantir estabilidade no menu da aplicação.
+A ordem é mantida no código para garantir estabilidade do menu.
 
 | Ordem | Chave               | Grupo                          | Classe      |
 | ----: | ------------------- | ------------------------------ | ----------- |
@@ -147,28 +140,24 @@ A ordem dos grupos é deliberadamente mantida no código para garantir estabilid
 
 ---
 
-# 7. Campos dos registros
-
-Cada ativo é representado por um registro padronizado.
-
-## 7.1 Campos principais
+## 8. Campos dos registros
 
 | Campo            | Descrição                                              |
 | ---------------- | ------------------------------------------------------ |
-| `ticker`         | Símbolo utilizado para identificação/consulta do ativo |
-| `name`           | Nome de exibição do ativo                              |
-| `class`          | Classe principal do ativo                              |
+| `ticker`         | Símbolo usado para identificação/consulta do ativo     |
+| `name`           | Nome de exibição                                       |
+| `class`          | Classe principal                                       |
 | `subcategory`    | Subclasse ou segmento                                  |
 | `market`         | Mercado, país ou região associado                      |
 | `description`    | Descrição resumida                                     |
-| `group`          | Grupo utilizado na organização do menu                 |
+| `group`          | Grupo usado na organização do menu                     |
 | `icon`           | Ícone visual associado à classe                        |
 | `category_color` | Cor visual associada à classe                          |
-| `data_type`      | Tipo técnico utilizado pela aplicação                  |
+| `data_type`      | Tipo técnico usado pela aplicação                      |
 
 ---
 
-# 8. ₿ Criptomoedas
+## 9. ₿ Criptomoedas
 
 **Total: 10 ativos**
 
@@ -187,7 +176,7 @@ Cada ativo é representado por um registro padronizado.
 
 ---
 
-# 9. 🇧🇷 Ações Brasil
+## 10. 🇧🇷 Ações Brasil
 
 **Total: 12 ativos**
 
@@ -207,11 +196,11 @@ Cada ativo é representado por um registro padronizado.
 | 22 | `SUZB3.SA` | Suzano                           | Papel e celulose          | Brasil/B3 | Celulose e papel                   |
 
 > [!NOTE]
-> O catálogo utiliza atualmente `AXIA3.SA` para representar a **Axia Energia (Antiga Eletrobras)**. Esse registro deve ser considerado a referência oficial do projeto para essa posição do catálogo.
+> O catálogo usa `AXIA3.SA` para a **Axia Energia (Antiga Eletrobras)**. Esse registro é a referência do projeto para essa posição.
 
 ---
 
-# 10. 🇺🇸 Ações EUA
+## 11. 🇺🇸 Ações EUA
 
 **Total: 15 ativos**
 
@@ -235,7 +224,7 @@ Cada ativo é representado por um registro padronizado.
 
 ---
 
-# 11. 🇪🇺 Ações Europa
+## 12. 🇪🇺 Ações Europa
 
 **Total: 8 ativos**
 
@@ -250,9 +239,12 @@ Cada ativo é representado por um registro padronizado.
 | 44 | `SIE.DE`    | Siemens      | Indústria      | Alemanha    | Automação e tecnologia industrial     |
 | 45 | `AIR.PA`    | Airbus       | Aeroespacial   | França      | Aviação e defesa                      |
 
+> [!NOTE]
+> A coluna **Mercado** indica o país de origem da empresa. Tickers sem sufixo de bolsa (`ASML`, `SAP`, `SHEL`) correspondem, em geral, a listagens nos EUA, e não à bolsa do país de origem. Ver seção 24.
+
 ---
 
-# 12. 🌏 Ações Ásia
+## 13. 🌏 Ações Ásia
 
 **Total: 8 ativos**
 
@@ -268,11 +260,11 @@ Cada ativo é representado por um registro padronizado.
 | 53 | `9988.HK`   | Alibaba Group        | Tecnologia/E-commerce      | Hong Kong      | E-commerce e tecnologia             |
 
 > [!NOTE]
-> O catálogo possui duas listagens relacionadas à Alibaba: `BABA`, identificada como China/EUA ADR, e `9988.HK`, identificada como Hong Kong. Elas devem ser tratadas pelo sistema como **tickers distintos**, pois são registros diferentes no catálogo.
+> `BABA` e `9988.HK` são duas listagens da mesma empresa e são tratadas como **tickers distintos**. Em comparações entre elas, espera-se correlação muito alta, o que reflete a duplicidade de listagem e não diversificação.
 
 ---
 
-# 13. 📈 ETFs de ações
+## 14. 📈 ETFs de ações
 
 **Total: 10 ativos**
 
@@ -289,9 +281,12 @@ Cada ativo é representado por um registro padronizado.
 | 62 | `VEA`  | Vanguard FTSE Developed Markets   | Internacional | Global     | Mercados desenvolvidos fora dos EUA        |
 | 63 | `VOO`  | Vanguard S&P 500                  | Large Cap EUA | EUA        | Replica o S&P 500                          |
 
+> [!NOTE]
+> `SPY` e `VOO` replicam o mesmo índice (S&P 500), e `VOO` e `VTI` têm forte sobreposição. Comparações entre eles mostram correlação próxima de 1 por construção.
+
 ---
 
-# 14. 💵 ETFs de renda fixa
+## 15. 💵 ETFs de renda fixa
 
 **Total: 6 ativos**
 
@@ -306,7 +301,7 @@ Cada ativo é representado por um registro padronizado.
 
 ---
 
-# 15. 🏢 REITs / Mercado imobiliário
+## 16. 🏢 REITs / Mercado imobiliário
 
 **Total: 5 ativos**
 
@@ -319,11 +314,11 @@ Cada ativo é representado por um registro padronizado.
 | 74 | `SPG`  | Simon Property Group     | Shopping centers | EUA     | Centros comerciais              |
 
 > [!NOTE]
-> Embora `VNQ` seja um ETF, no catálogo atual ele está classificado deliberadamente na classe `REIT`, dentro do grupo `reits`, para representar o segmento de mercado imobiliário.
+> `VNQ` é um ETF, mas está classificado deliberadamente na classe `REIT`, no grupo `reits`, para representar o segmento imobiliário.
 
 ---
 
-# 16. 🏠 FIIs Brasil
+## 17. 🏠 FIIs Brasil
 
 **Total: 5 ativos**
 
@@ -337,7 +332,7 @@ Cada ativo é representado por um registro padronizado.
 
 ---
 
-# 17. 📊 Índices de mercado
+## 18. 📊 Índices de mercado
 
 **Total: 12 ativos**
 
@@ -356,9 +351,12 @@ Cada ativo é representado por um registro padronizado.
 | 90 | `^HSI`      | Hang Seng             | Large Cap          | Hong Kong   | Principais empresas de Hong Kong       |
 | 91 | `000001.SS` | Shanghai Composite    | Mercado amplo      | China       | Mercado acionário de Xangai            |
 
+> [!NOTE]
+> Índices não são negociáveis diretamente. Seus valores são expressos em **pontos**, e `^VIX` mede volatilidade esperada, não o preço de um ativo. Ver seção 24.
+
 ---
 
-# 18. 💱 Forex
+## 19. 💱 Forex
 
 **Total: 8 ativos**
 
@@ -375,11 +373,11 @@ Cada ativo é representado por um registro padronizado.
 
 ---
 
-# 19. 🛢️ Commodities
+## 20. 🛢️ Commodities
 
 **Total: 14 ativos**
 
-## 19.1 Metais
+### 20.1 Metais
 
 |   # | Ticker | Nome    | Mercado   | Descrição                  |
 | --: | ------ | ------- | --------- | -------------------------- |
@@ -388,7 +386,7 @@ Cada ativo é representado por um registro padronizado.
 | 102 | `HG=F` | Cobre   | EUA/COMEX | Contrato futuro de cobre   |
 | 103 | `PL=F` | Platina | EUA/NYMEX | Contrato futuro de platina |
 
-## 19.2 Energia
+### 20.2 Energia
 
 |   # | Ticker | Nome           | Mercado    | Descrição      |
 | --: | ------ | -------------- | ---------- | -------------- |
@@ -396,7 +394,7 @@ Cada ativo é representado por um registro padronizado.
 | 105 | `BZ=F` | Petróleo Brent | Global/ICE | Petróleo Brent |
 | 106 | `NG=F` | Gás Natural    | EUA/NYMEX  | Gás natural    |
 
-## 19.3 Agrícolas
+### 20.3 Agrícolas
 
 |   # | Ticker | Nome    | Mercado  | Descrição |
 | --: | ------ | ------- | -------- | --------- |
@@ -409,17 +407,17 @@ Cada ativo é representado por um registro padronizado.
 | 113 | `CT=F` | Algodão | EUA/ICE  | Algodão   |
 
 > [!NOTE]
-> Os ativos desta classe utilizam `data_type = "future"`, refletindo que os registros representam contratos futuros de commodities.
+> Os ativos desta classe usam `data_type = "future"`: os registros representam **contratos futuros**, não o preço à vista da mercadoria. Ver seção 24.
 
 ---
 
-# 20. 💵 Treasury / taxas de juros
+## 21. 💵 Treasury / taxas de juros
 
 **Total: 7 ativos**
 
-Esta categoria possui uma característica específica: o catálogo combina **índices de rendimento (yield)** e **ETFs de Treasuries**.
+Este grupo combina **indicadores de rendimento (yield)** e **ETFs de Treasuries**, que são tipos de série diferentes.
 
-## 20.1 Treasury — indicadores de yield
+### 21.1 Indicadores de yield
 
 |   # | Ticker | Nome                | Subclasse   | Mercado | Descrição                       |
 | --: | ------ | ------------------- | ----------- | ------- | ------------------------------- |
@@ -428,7 +426,7 @@ Esta categoria possui uma característica específica: o catálogo combina **ín
 | 116 | `^TNX` | Treasury 10 Anos    | Longo prazo | EUA     | Yield de Treasury de 10 anos    |
 | 117 | `^TYX` | Treasury 30 Anos    | Longo prazo | EUA     | Yield de Treasury de 30 anos    |
 
-## 20.2 Treasury — ETFs
+### 21.2 ETFs de Treasuries
 
 |   # | Ticker | Nome                     | Subclasse         | Mercado | Descrição                       |
 | --: | ------ | ------------------------ | ----------------- | ------- | ------------------------------- |
@@ -437,15 +435,11 @@ Esta categoria possui uma característica específica: o catálogo combina **ín
 | 120 | `VGSH` | Treasury 1-3 Anos (VGSH) | Curto/médio prazo | EUA     | ETF de Treasuries de 1 a 3 anos |
 
 > [!IMPORTANT]
-> Os tickers `^IRX`, `^FVX`, `^TNX` e `^TYX` representam **indicadores de rendimento (yield)** e não devem ser interpretados da mesma forma que uma ação ou ETF.
->
-> Já `BIL`, `SHV` e `VGSH` representam **ETFs negociados** que oferecem exposição a títulos do Tesouro americano.
+> `^IRX`, `^FVX`, `^TNX` e `^TYX` são **taxas** (nível de rendimento), e não preços de um título. `BIL`, `SHV` e `VGSH` são **ETFs negociados**, com preço em US$. Ver seção 24 para as implicações nas métricas.
 
 ---
 
-# 21. Resumo quantitativo
-
-A composição atual do catálogo é:
+## 22. Resumo quantitativo
 
 | Grupo                          | Quantidade |
 | ------------------------------ | ---------: |
@@ -466,11 +460,9 @@ A composição atual do catálogo é:
 
 ---
 
-# 22. Distribuição por classe técnica
+## 23. Classes técnicas e `data_type`
 
-Os grupos são associados às seguintes classes técnicas:
-
-| Classe      | Grupos associados                | Data type    |
+| Classe      | Grupos associados                | `data_type`  |
 | ----------- | -------------------------------- | ------------ |
 | Criptomoeda | Criptomoedas                     | `crypto`     |
 | Ação        | Ações Brasil, EUA, Europa e Ásia | `stock`      |
@@ -482,56 +474,168 @@ Os grupos são associados às seguintes classes técnicas:
 | Commodity   | Commodities                      | `future`     |
 | Renda Fixa  | Treasury / taxas de juros        | `bond_yield` |
 
----
-
-# 23. Identificação dos ativos
-
-Cada registro possui um `ticker` único.
-
-Exemplos:
-
-```text
-BTC-USD
-PETR4.SA
-AAPL
-SPY
-VNQ
-MXRF11.SA
-^GSPC
-USDBRL=X
-GC=F
-^TNX
-```
-
-O catálogo mantém um índice interno:
-
-```python
-ASSET_BY_TICKER
-```
-
-Esse índice permite localizar rapidamente os metadados de um ativo a partir do ticker.
+O campo `data_type` identifica tecnicamente a natureza do ativo (exemplos: `crypto` → `BTC-USD`; `stock` → `PETR4.SA`; `etf` → `SPY`; `reit` → `O`; `fii` → `MXRF11.SA`; `index` → `^BVSP`; `forex` → `USDBRL=X`; `future` → `GC=F`; `bond_yield` → `^TNX`, `BIL`).
 
 ---
 
-# 24. Consulta individual
+## 24. Particularidades por tipo de ativo
 
-O módulo disponibiliza a função:
+Estas particularidades afetam a **interpretação** das métricas e devem ser consideradas ao comparar ativos de tipos diferentes.
 
-```python
-get_asset(ticker)
-```
+### 24.1 Moeda de cotação
 
-Exemplo conceitual:
+| Sufixo / padrão                 | Moeda ou unidade típica       |
+| ------------------------------- | ----------------------------- |
+| `.SA`                           | Real (R$)                     |
+| Sem sufixo (EUA, ADRs)          | Dólar (US$)                   |
+| `.SW`                           | Franco suíço                  |
+| `.PA`, `.DE`                    | Euro                          |
+| `.CO`                           | Coroa dinamarquesa            |
+| `.KS`                           | Won sul-coreano               |
+| `.HK`                           | Dólar de Hong Kong            |
+| `.T`                            | Iene                          |
+| `-USD` (cripto)                 | Dólar (US$)                   |
+| `=F` (futuros)                  | Dólar (US$)                   |
+| `=X` (câmbio)                   | Taxa de câmbio (sem moeda)    |
+| `^...` e `.SS` (índices)        | Pontos                        |
 
-```python
-from core.assets import get_asset
+> [!WARNING]
+> Os valores de ativos de moedas diferentes **não são diretamente comparáveis em nível**. A comparação em **Base 100** e os retornos percentuais contornam isso, mas **não** incorporam variação cambial.
 
-asset = get_asset("PETR4.SA")
-```
+### 24.2 Tickers sem sufixo da Europa e da Ásia
 
-O retorno contém os metadados do ativo.
+`ASML`, `SAP`, `SHEL`, `SONY`, `TSM` e `BABA` correspondem, em geral, a listagens nos EUA (ADRs ou ações listadas), cotadas em dólar, embora a coluna **Mercado** indique o país de origem. A convenção de listagem é definida pela fonte (Yahoo Finance) e deve ser verificada ao adicionar novos ativos.
+
+### 24.3 Contratos futuros (commodities)
+
+Os registros de commodities são **contratos futuros** (`=F`), não preços à vista. Séries longas de futuros dependem de como a fonte encadeia contratos sucessivos, e a troca de vencimento pode introduzir saltos que não correspondem a retorno real.
+
+### 24.4 Taxas de juros (yields)
+
+`^IRX`, `^FVX`, `^TNX` e `^TYX` são **níveis de taxa**, normalmente expressos em pontos percentuais. Calcular "retorno" sobre uma taxa mede a variação do nível da taxa, e **não** o retorno de um título. Assim, métricas como retorno total, Sharpe e drawdown têm interpretação diferente para esses ativos e para os ETFs de Treasury (`BIL`, `SHV`, `VGSH`), que são preços.
+
+### 24.5 Índice de volatilidade
+
+`^VIX` mede a volatilidade esperada do S&P 500. Não é um ativo negociável diretamente, e retornos calculados sobre ele descrevem a variação do indicador.
+
+### 24.6 Calendário de negociação
+
+Criptomoedas negociam todos os dias. Ações, ETFs e índices seguem calendários de bolsa (cerca de 252 dias por ano). Por isso, o número de observações diárias de um mesmo período difere entre classes.
+
+### 24.7 Volume
+
+Nem todos os tipos de ativo possuem volume confiável (por exemplo, índices e câmbio). Os gráficos de volume dependem dessa disponibilidade na fonte.
+
+---
+
+## 25. Disponibilidade e período dos dados
+
+O catálogo define **o que a aplicação oferece**; a fonte define **quais dados existem**. Para deixar essa diferença explícita ao usuário, as páginas de análise exibem:
+
+- **Período solicitado** × **período disponível** (primeira e última observação efetivamente recebidas);
+- quantidade de **observações diárias** e **no período agregado** pela frequência escolhida;
+- **fonte** (Yahoo Finance via `yfinance`) e **data/hora da consulta**.
+
+Avisos gerados automaticamente (`core/data_availability.py`):
+
+| Situação                     | Critério                                               | Nível |
+| ---------------------------- | ------------------------------------------------------ | ----- |
+| Dados insuficientes          | menos de 2 períodos agregados                          | erro  |
+| Histórico menor que o pedido | primeiro dado mais de 10 dias depois da data inicial   | aviso |
+| Dados terminam antes         | último dado mais de 7 dias antes da data final         | aviso |
+| Poucas observações           | menos de 12 períodos agregados                         | info  |
+
+> Selecionar "10 anos" **não garante** dez anos de dados. Ativos recentes (criptomoedas novas, IPOs) e fontes com histórico incompleto podem oferecer períodos menores, e as métricas valem para o período efetivamente disponível.
+
+Falhas temporárias da fonte não ficam em cache: uma nova consulta tenta baixar os dados novamente.
+
+---
+
+## 26. Convenção de anualização
+
+A volatilidade é anualizada de acordo com a frequência dos retornos utilizados no cálculo.
+
+| Frequência dos retornos | Fator de anualização |
+| ----------------------- | -------------------- |
+| Diária                  | √252                 |
+| Semanal                 | √52                  |
+| Mensal                  | √12                  |
+| Semestral               | √2                   |
+| Anual                   | 1                    |
+
+Para retornos diários, utiliza-se convencionalmente o fator √252, correspondente a aproximadamente 252 dias de negociação por ano.
+
+Quando a frequência mensal é selecionada, a volatilidade anualizada é calculada pela multiplicação do desvio-padrão dos retornos mensais por √12. Essa convenção é aplicada independentemente da classe do ativo, pois a série já foi agregada em 12 períodos por ano.
+
+Em análises individuais de criptoativos com dados diários, pode-se adotar futuramente o fator √365, considerando que esses mercados operam continuamente. Na versão comparativa do sistema, a convenção padronizada de √252 pode ser mantida para preservar comparabilidade entre ativos negociados em calendários distintos.
+
+O mesmo fator de anualização é usado no Índice de Sharpe, junto com a taxa livre de risco anual informada pelo usuário.
+
+---
+
+## 27. Ativos fora do catálogo (ticker digitado)
+
+Usuários avançados podem digitar um ticker diretamente na barra lateral, como alternativa ao menu hierárquico.
+
+- O ticker é **normalizado** (maiúsculas, sem espaços) e tem o **formato validado**.
+- A existência é confirmada com uma consulta curta à fonte. Se o ticker não existir ou não tiver dados recentes, a aplicação exibe uma mensagem clara e **não** habilita a análise.
+- Tickers válidos fora do catálogo **não possuem metadados** (classe, subclasse, descrição, ícone). Nesse caso, a interface usa o ticker como identificação e o ícone padrão.
+- A seleção hierárquica continua sendo o **fluxo principal**, indicado para iniciantes.
+- O ticker digitado não entra no catálogo, e a validação não equivale a inclusão.
+
+---
+
+## 28. Logos, ícones e cores
+
+Cada ativo é exibido com um logo quando disponível, e **sempre com um ícone (emoji) de reserva**, para que imagens indisponíveis não quebrem a página.
+
+| Grupo                                   | Fonte do logo                          |
+| --------------------------------------- | -------------------------------------- |
+| Criptomoedas                            | Serviço público de ícones por símbolo  |
+| Ações, ETFs, REITs e FIIs               | Serviço público de logos por ticker    |
+| Índices, Forex, Commodities e Treasury  | Sem logo: usa o ícone da classe        |
+
+> Os logos vêm de serviços de terceiros e podem estar indisponíveis ou desatualizados para alguns tickers. Nesses casos, o ícone de reserva é exibido. A lógica está em `core/asset_logos.py`.
+
+Ícones e cores por classe (metadados de interface, sem significado financeiro):
+
+| Classe      | Ícone | Cor       |
+| ----------- | ----- | --------- |
+| Criptomoeda | ₿     | `#F59E0B` |
+| Ação        | 📈    | `#2563EB` |
+| ETF         | 📊    | `#7C3AED` |
+| REIT        | 🏢    | `#0F766E` |
+| FII         | 🏠    | `#0891B2` |
+| Índice      | 📐    | `#475569` |
+| Forex       | 💱    | `#16A34A` |
+| Commodity   | 🛢️   | `#B45309` |
+| Renda Fixa  | 💵    | `#0E7490` |
+
+Os valores são definidos em `CATEGORY_METADATA` e aplicados pela função `_asset()`.
+
+---
+
+## 29. Identificação e consulta
+
+Cada registro possui um `ticker` único. O índice interno `ASSET_BY_TICKER` permite localizar os metadados a partir do ticker.
+
+| Função            | Finalidade                                                                  |
+| ----------------- | --------------------------------------------------------------------------- |
+| `get_asset(t)`    | Retorna os metadados de um ativo                                            |
+| `get_assets(...)` | Filtra por classe, subclasse, mercado, tipo de dado e grupo                 |
+| `get_tickers()`   | Lista os tickers para consulta de dados                                     |
+| `get_hierarchy()` | Gera a hierarquia Classe → Subclasse → Mercado → Ativos                     |
 
 Exemplo:
+
+```python
+from core.assets import get_asset, get_assets
+
+asset = get_asset("PETR4.SA")
+acoes_eua = get_assets(asset_class="Ação", market="EUA")
+```
+
+Retorno de `get_asset("PETR4.SA")`:
 
 ```python
 {
@@ -550,367 +654,43 @@ Exemplo:
 
 ---
 
-# 25. Filtragem do catálogo
+## 30. Integração com o yfinance
 
-A função:
+O catálogo **não consulta** dados de mercado. Ele fornece metadados e identificadores. A camada de dados (`core/data_loader.py`) usa os tickers para consultar o Yahoo Finance por meio do `yfinance`.
 
-```python
-get_assets()
+```text
+Catálogo  →  define o que a aplicação oferece
+yfinance  →  define quais dados estão efetivamente disponíveis
 ```
 
-permite filtrar o catálogo por:
-
-* classe;
-* subclasse;
-* mercado;
-* tipo de dado;
-* grupo.
-
-Exemplo:
-
-```python
-from core.assets import get_assets
-
-assets = get_assets(
-    asset_class="Ação",
-    market="EUA"
-)
-```
-
-Outro exemplo:
-
-```python
-assets = get_assets(
-    asset_class="Commodity"
-)
-```
+Essas duas camadas devem permanecer conceitualmente separadas.
 
 ---
 
-# 26. Obtenção dos tickers
+## 31. Validação automática
 
-A função:
+A função `validate_catalog()` verifica:
 
-```python
-get_tickers()
-```
-
-extrai os tickers do catálogo para utilização nas consultas de dados.
-
-Exemplo:
-
-```python
-from core.assets import get_tickers
-
-tickers = get_tickers()
-```
-
-O resultado é uma lista semelhante a:
-
-```python
-[
-    "BTC-USD",
-    "ETH-USD",
-    "PETR4.SA",
-    "AAPL",
-    "SPY",
-    ...
-]
-```
-
-Essa estrutura pode ser utilizada nas consultas do `yfinance`.
+1. **Quantidade:** exatamente 120 ativos.
+2. **Unicidade:** nenhum ticker duplicado (o erro informa os tickers envolvidos).
+3. **Campos obrigatórios:** ticker, name, class, subcategory, market, description, group, icon, category_color e data_type.
 
 ---
 
-# 27. Integração com o yfinance
-
-O catálogo não realiza diretamente a consulta de dados de mercado.
-
-Sua responsabilidade é fornecer os **metadados e identificadores dos ativos**.
-
-A camada de dados utiliza os tickers para consultar o Yahoo Finance por meio do `yfinance`.
-
-Exemplo:
-
-```python
-import yfinance as yf
-
-data = yf.download(
-    ["PETR4.SA", "VALE3.SA", "AAPL"],
-    period="1y"
-)
-```
-
-Para consultas individuais:
-
-```python
-import yfinance as yf
-
-ticker = yf.Ticker("AAPL")
-
-history = ticker.history(
-    period="1y"
-)
-```
-
-> [!IMPORTANT]
-> O catálogo e a camada de consulta devem permanecer conceitualmente separados.
->
-> O catálogo define **o que a aplicação oferece**.
->
-> A camada `yfinance` define **quais dados estão efetivamente disponíveis para consulta**.
-
----
-
-# 28. Tipos de dados
-
-O campo `data_type` é utilizado para identificar tecnicamente a natureza do ativo.
-
-## `crypto`
-
-Utilizado para criptomoedas.
-
-Exemplo:
-
-```text
-BTC-USD
-ETH-USD
-SOL-USD
-```
-
-## `stock`
-
-Utilizado para ações.
-
-Exemplo:
-
-```text
-PETR4.SA
-AAPL
-NVDA
-ASML
-```
-
-## `etf`
-
-Utilizado para ETFs.
-
-Exemplo:
-
-```text
-SPY
-QQQ
-BND
-TLT
-```
-
-## `reit`
-
-Utilizado para REITs.
-
-Exemplo:
-
-```text
-O
-PLD
-AMT
-```
-
-## `fii`
-
-Utilizado para FIIs brasileiros.
-
-Exemplo:
-
-```text
-MXRF11.SA
-HGLG11.SA
-KNRI11.SA
-```
-
-## `index`
-
-Utilizado para índices de mercado.
-
-Exemplo:
-
-```text
-^BVSP
-^GSPC
-^VIX
-```
-
-## `forex`
-
-Utilizado para pares de moedas.
-
-Exemplo:
-
-```text
-USDBRL=X
-EURUSD=X
-USDJPY=X
-```
-
-## `future`
-
-Utilizado para contratos futuros de commodities.
-
-Exemplo:
-
-```text
-GC=F
-CL=F
-ZS=F
-```
-
-## `bond_yield`
-
-Utilizado para instrumentos classificados pelo projeto como renda fixa/Treasury.
-
-Exemplo:
-
-```text
-^TNX
-^TYX
-BIL
-SHV
-VGSH
-```
-
----
-
-# 29. Ícones e identidade visual
-
-Cada classe possui um ícone padrão.
-
-| Classe      | Ícone |
-| ----------- | ----- |
-| Criptomoeda | ₿     |
-| Ação        | 📈    |
-| ETF         | 📊    |
-| REIT        | 🏢    |
-| FII         | 🏠    |
-| Índice      | 📐    |
-| Forex       | 💱    |
-| Commodity   | 🛢️   |
-| Renda Fixa  | 💵    |
-
-Os ícones são definidos no dicionário:
-
-```python
-CATEGORY_METADATA
-```
-
-e aplicados automaticamente aos registros por meio da função:
-
-```python
-_asset()
-```
-
----
-
-# 30. Cores das categorias
-
-O catálogo também mantém uma cor padrão para cada classe.
-
-| Classe      | Cor       |
-| ----------- | --------- |
-| Criptomoeda | `#F59E0B` |
-| Ação        | `#2563EB` |
-| ETF         | `#7C3AED` |
-| REIT        | `#0F766E` |
-| FII         | `#0891B2` |
-| Índice      | `#475569` |
-| Forex       | `#16A34A` |
-| Commodity   | `#B45309` |
-| Renda Fixa  | `#0E7490` |
-
-Essas cores são metadados da interface e não possuem significado financeiro.
-
----
-
-# 31. Validação automática
-
-O catálogo possui uma função de validação:
-
-```python
-validate_catalog()
-```
-
-Essa validação verifica três aspectos principais:
-
-### 31.1 Quantidade
-
-O catálogo deve possuir exatamente:
-
-```text
-120 ativos
-```
-
-### 31.2 Unicidade
-
-Não são permitidos tickers duplicados.
-
-Caso sejam encontrados registros duplicados, o sistema gera erro informando os tickers envolvidos.
-
-### 31.3 Campos obrigatórios
-
-Cada registro deve possuir:
-
-```text
-ticker
-name
-class
-subcategory
-market
-description
-group
-icon
-category_color
-data_type
-```
-
-A ausência de qualquer campo obrigatório gera erro durante a validação.
-
----
-
-# 32. Regras para inclusão de novos ativos
-
-Quando um novo ativo for incluído no catálogo, recomenda-se seguir as seguintes regras:
-
-1. Confirmar o ticker utilizado pelo Yahoo Finance;
-2. Definir um nome de exibição claro;
-3. Classificar corretamente o ativo;
-4. Definir uma subclasse;
-5. Informar o mercado correspondente;
-6. Criar uma descrição curta e objetiva;
-7. Associar o ativo ao grupo correto;
-8. Utilizar o `data_type` correspondente à classe;
-9. Evitar duplicidade de ticker;
-10. Atualizar este documento;
-11. Executar os testes;
-12. Confirmar que `validate_catalog()` continua funcionando.
-
----
-
-# 33. Exemplo de inclusão
-
-Um novo ativo deve seguir o padrão utilizado pelo módulo:
-
-```python
-_asset(
-    "TICKER",
-    "Nome do ativo",
-    "Classe",
-    "Subclasse",
-    "Mercado",
-    "Descrição",
-    "grupo",
-)
-```
-
-Exemplo:
+## 32. Regras para inclusão de novos ativos
+
+1. Confirmar o ticker usado pelo Yahoo Finance e verificar se há dados.
+2. Definir nome de exibição, classe, subclasse e mercado.
+3. Escrever uma descrição curta e objetiva, **sem linguagem de recomendação**.
+4. Associar ao grupo correto e ao `data_type` da classe.
+5. Evitar duplicidade de ticker.
+6. Atualizar a quantidade esperada em `validate_catalog()` (hoje fixa em 120).
+7. Atualizar este documento, incluindo as seções 22 e 35.
+8. Atualizar `GROUP_MAPPING` em `app/ui/sidebar.py` se for criado um novo grupo.
+9. Executar os testes (incluindo `tests/test_catalog_doc.py`).
+10. Confirmar que `validate_catalog()` continua funcionando.
+
+Exemplo de inclusão:
 
 ```python
 _asset(
@@ -924,138 +704,39 @@ _asset(
 )
 ```
 
-Os metadados de:
-
-```text
-icon
-category_color
-data_type
-```
-
-são herdados automaticamente da classe, salvo quando explicitamente sobrescritos.
+`icon`, `category_color` e `data_type` são herdados da classe, salvo quando sobrescritos.
 
 ---
 
-# 34. Expansão futura
+## 33. Manutenção e responsabilidades
 
-O catálogo foi projetado para permitir expansão.
-
-Possíveis futuras categorias incluem:
-
-* novos mercados acionários;
-* novos ETFs;
-* mais FIIs;
-* mais REITs;
-* novos instrumentos de renda fixa;
-* novas commodities;
-* novos índices;
-* novos pares cambiais;
-* outros instrumentos financeiros disponibilizados pela fonte de dados.
-
-A expansão deve preservar a arquitetura:
-
-```text
-Classe
-→ Subclasse
-→ Mercado
-→ Ativo
-```
-
----
-
-# 35. Critérios para manutenção
-
-O catálogo deve ser tratado como uma **fonte central de verdade para os ativos disponíveis na interface**.
-
-Evite cadastrar o mesmo ticker diretamente em diferentes módulos.
-
-### Não recomendado
+O catálogo é a **fonte central de verdade** dos ativos disponíveis na interface. Não cadastre o mesmo ticker diretamente em outros módulos; use:
 
 ```python
-stocks = [
-    "PETR4.SA",
-    "VALE3.SA",
-]
+from core.assets import get_assets, get_tickers
 ```
 
-em vários arquivos independentes.
+**O catálogo é responsável por:** identificação, classificação, organização, descrição, agrupamento, metadados visuais, tipo técnico e fornecimento dos tickers.
 
-### Recomendado
-
-```python
-from core.assets import get_assets
-```
-
-ou:
-
-```python
-from core.assets import get_tickers
-```
-
-Dessa maneira, alterações no catálogo são propagadas de forma centralizada.
+**O catálogo não é responsável por:** buscar dados históricos, calcular indicadores, retorno, volatilidade, Sharpe ou drawdown, emitir recomendações de investimento ou garantir a disponibilidade dos dados externos.
 
 ---
 
-# 36. Responsabilidades do catálogo
-
-O catálogo é responsável por:
-
-* identificação;
-* classificação;
-* organização;
-* descrição;
-* agrupamento;
-* metadados visuais;
-* tipo técnico;
-* fornecimento dos tickers.
-
-O catálogo **não é responsável** por:
-
-* buscar dados históricos;
-* calcular indicadores;
-* calcular retorno;
-* calcular volatilidade;
-* calcular Sharpe;
-* calcular drawdown;
-* realizar recomendações de investimento;
-* garantir disponibilidade dos dados externos.
-
----
-
-# 37. Relação com as análises do Argos DataLab
-
-Os ativos do catálogo podem alimentar diferentes funcionalidades da aplicação, incluindo:
+## 34. Relação com as análises
 
 ```text
-Catálogo
-   ↓
-Seleção do ativo
-   ↓
-Ticker
-   ↓
-Consulta de dados
-   ↓
-Tratamento
-   ↓
-Análise
-   ├── Retorno
-   ├── Volatilidade
-   ├── Drawdown
-   ├── Sharpe
-   ├── Indicadores técnicos
-   ├── Sazonalidade
-   └── Correlação
-   ↓
-Visualização
+Catálogo → Seleção do ativo → Ticker → Consulta de dados
+        → Verificação de disponibilidade → Tratamento
+        → Análise (retorno, volatilidade, drawdown, Sharpe,
+                   indicadores técnicos, sazonalidade, correlação)
+        → Visualização
 ```
-
-O catálogo, portanto, funciona como a camada de identificação e organização que conecta a interface à camada de dados.
 
 ---
 
-# 38. Lista consolidada dos 120 tickers
+## 35. Lista consolidada dos 120 tickers
 
-Para facilitar auditorias, testes e manutenção, segue a lista completa na ordem atual do catálogo:
+Lista completa, na ordem do catálogo, usada para auditoria, testes e manutenção.
 
 ```text
 BTC-USD
@@ -1194,202 +875,74 @@ VGSH
 
 ---
 
-# 39. Checklist de atualização
+## 36. Checklist de atualização
 
-Antes de realizar commit de uma alteração no catálogo:
+Antes de fazer commit de uma alteração no catálogo:
 
 ```text
-[ ] O ticker foi validado?
-[ ] O ativo possui nome de exibição?
-[ ] A classe foi definida?
-[ ] A subclasse foi definida?
-[ ] O mercado foi definido?
-[ ] A descrição foi preenchida?
-[ ] O grupo está correto?
-[ ] O data_type está correto?
+[ ] O ticker foi validado e retorna dados?
+[ ] Nome, classe, subclasse, mercado e descrição foram preenchidos?
+[ ] O grupo e o data_type estão corretos?
 [ ] Não existe ticker duplicado?
-[ ] A quantidade esperada foi atualizada?
-[ ] O catálogo foi validado?
+[ ] A quantidade esperada em validate_catalog() foi atualizada?
+[ ] Os números da página "Sobre o Projeto" foram conferidos?
+[ ] GROUP_MAPPING cobre todos os grupos?
+[ ] As seções 22 e 35 deste documento foram atualizadas?
 [ ] Os testes foram executados?
-[ ] Este documento foi atualizado?
 ```
 
 ---
 
-# 40. Referência técnica
+## 37. Avisos
 
-O catálogo foi desenvolvido para funcionar como camada de metadados sobre a infraestrutura de consulta de dados do Argos DataLab.
+### 37.1 Aviso metodológico
 
-A integração com o `yfinance` deve considerar que diferentes tipos de instrumentos podem oferecer diferentes conjuntos de informações e níveis de histórico.
+A presença de um ativo neste catálogo significa apenas que ele foi **selecionado para fazer parte do universo de análise do Argos DataLab**. Isso não significa recomendação de investimento, indicação de compra ou venda, avaliação de qualidade, previsão de valorização, garantia de liquidez ou garantia de disponibilidade permanente dos dados.
 
-A documentação oficial do `yfinance` apresenta suporte para:
+### 37.2 Aviso acadêmico
 
-* `Ticker`;
-* múltiplos tickers;
-* histórico;
-* download de dados;
-* ETFs e fundos;
-* informações financeiras;
-* dividendos;
-* desdobramentos;
-* dados de mercado;
-* consultas específicas por instrumento.
+O Argos DataLab é desenvolvido para fins de pesquisa, estudo, ensino, análise exploratória e desenvolvimento tecnológico (PIBITI UFPI 2026–2027). As funcionalidades atuais constituem um **protótipo evolutivo**. O catálogo faz parte da infraestrutura metodológica do projeto e poderá ser atualizado conforme a pesquisa avança.
 
 ---
 
-# 41. Aviso metodológico
+## 38. Controle de consistência e pendências
 
-A presença de um ativo neste catálogo significa apenas que ele foi **selecionado para fazer parte do universo de análise do Argos DataLab**.
+O código (`core/assets.py`) é a **fonte operacional** do catálogo; este documento é a **fonte documental**. Alterou o catálogo → atualize os testes → atualize este documento → execute a validação → faça o commit.
 
-Isso não significa:
+O teste `tests/test_catalog_doc.py` compara a lista da seção 35 com `ASSETS` e confere se o texto da seção 2 coincide com `core/catalog_notice.py`.
 
-* recomendação de investimento;
-* indicação de compra ou venda;
-* avaliação de qualidade do ativo;
-* previsão de valorização;
-* garantia de liquidez;
-* garantia de disponibilidade permanente dos dados.
+**Pendências de alinhamento entre código e documentação (verificar):**
 
-Os dados externos podem sofrer alterações, indisponibilidade ou limitações específicas de acordo com o ativo e a fonte utilizada.
-
----
-
-# 42. Aviso acadêmico
-
-O Argos DataLab está sendo desenvolvido para fins de:
-
-* pesquisa;
-* estudo;
-* ensino;
-* análise exploratória;
-* desenvolvimento tecnológico.
-
-O catálogo de ativos constitui parte da infraestrutura metodológica do projeto e poderá ser atualizado conforme a evolução da pesquisa e dos requisitos da aplicação.
+| # | Item                                                                                                                                              |
+| - | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | Confirmar que `ANNUALIZATION_FACTORS` em `core/config.py` segue a seção 26 (252, 52, 12, 2, 1).                                                  |
+| 2 | A volatilidade mensal da Análise Individual ainda usa √365; deve passar a √252 conforme a seção 26.                                              |
+| 3 | O prefixo de moeda da Análise Individual só distingue `.SA`, `=X`, `^`/`.SS` e "demais = US$". Ativos `.SW`, `.PA`, `.DE`, `.CO`, `.KS`, `.HK` e `.T` aparecem com "US$" apesar de cotados em moeda local (seção 24.1). |
+| 4 | Séries de yield (`^IRX`, `^FVX`, `^TNX`, `^TYX`) são exibidas com prefixo "Pts", mas são taxas em percentual (seção 24.4).                        |
+| 5 | Os números do catálogo na página "Sobre o Projeto" são digitados à mão; devem ser calculados a partir de `ASSETS`.                               |
+| 6 | O texto da interface chama os 13 grupos de "classes"; padronizar a terminologia (ver nota na seção 1).                                           |
 
 ---
 
-# 43. Arquivo de implementação
+## 39. Status atual
 
-A fonte de implementação deste catálogo é:
-
-```text
-core/assets.py
-```
-
-A documentação correspondente é:
-
-```text
-docs/catalogo-de-ativos.md
-```
-
-Estrutura recomendada:
-
-```text
-argos/
-├── app/
-├── core/
-│   └── assets.py
-├── docs/
-│   └── catalogo-de-ativos.md
-├── tests/
-├── requirements.txt
-└── README.md
-```
-
----
-
-# 44. Controle de consistência
-
-O código-fonte deve permanecer como a **fonte operacional** do catálogo.
-
-Este documento deve permanecer como a **fonte documental**.
-
-Sempre que houver alteração estrutural no arquivo:
-
-```text
-core/assets.py
-```
-
-o arquivo:
-
-```text
-docs/catalogo-de-ativos.md
-```
-
-deve ser revisado para manter a documentação sincronizada.
-
-A regra geral é:
-
-```text
-Alterou o catálogo?
-        ↓
-Atualizou os testes?
-        ↓
-Atualizou a documentação?
-        ↓
-Executou a validação?
-        ↓
-Commit
-```
-
----
-
-# 45. Status atual
-
-**Status:** ✅ Catálogo definido
-
-**Versão:** Catálogo de 120 ativos
-
-**Total de ativos:** 120
-
-**Total de grupos:** 13
-
-**Fonte de identificação:** Tickers utilizados pelo ecossistema Yahoo Finance/yfinance
-
-**Arquivo de implementação:**
-
-```text
-core/assets.py
-```
-
-**Arquivo de documentação:**
-
-```text
-docs/catalogo-de-ativos.md
-```
-
-**Última finalidade definida:**
-
-> Base centralizada de ativos financeiros para seleção, organização e análise no Argos DataLab.
-
----
-
-## 📌 Resumo
-
-O catálogo atual do Argos DataLab reúne **120 ativos financeiros**, distribuídos entre criptomoedas, ações brasileiras, ações americanas, ações europeias, ações asiáticas, ETFs, REITs, FIIs, índices, Forex, commodities e instrumentos relacionados a Treasury e taxas de juros.
-
-Sua estrutura padronizada permite que a aplicação mantenha uma única fonte de metadados para a seleção de ativos e para a integração com a camada de consulta de dados.
+| Item                       | Valor                                          |
+| -------------------------- | ---------------------------------------------- |
+| **Status**                 | Catálogo definido (amostra inicial intencional) |
+| **Total de ativos**        | 120                                            |
+| **Grupos**                 | 13                                             |
+| **Classes técnicas**       | 9                                              |
+| **Fonte de identificação** | Tickers do Yahoo Finance / `yfinance`          |
+| **Implementação**          | `core/assets.py`                               |
+| **Documentação**           | `docs/catalogo-de-ativos.md`                   |
+| **Última revisão**         | 07/10/2026                                     |
 
 ```text
 120 ATIVOS
-     │
-     ├── 13 GRUPOS
-     │
-     ├── 9 CLASSES
-     │
-     ├── CLASSE
-     │      ↓
-     │   SUBCLASSE
-     │      ↓
-     │    MERCADO
-     │      ↓
-     │    TICKER
-     │
-     └── yfinance
-            ↓
-       Dados históricos
-            ↓
-          Análises
+     ├── 13 GRUPOS (menu)
+     ├── 9 CLASSES (campo class)
+     ├── Classe → Subclasse → Mercado → Ticker
+     └── yfinance → dados históricos → verificação de disponibilidade → análises
 ```
 
 **Argos DataLab — Catálogo centralizado de ativos financeiros.**

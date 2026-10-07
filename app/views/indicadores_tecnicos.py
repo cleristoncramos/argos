@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 
 
 PROJECT_ROOT = os.path.abspath(
@@ -21,6 +22,11 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from app.ui.asset_cards import render_asset_hero_logo
+from app.ui.data_info import (
+    render_availability_messages,
+    render_catalog_notice,
+    render_data_availability,
+)
 from app.ui.disclaimers import (
     render_footer_disclaimer,
     render_methodology_limitations,
@@ -34,6 +40,7 @@ from app.ui.state import initialize_asset_state
 from app.ui.tables import date_cell, number_cell, render_table
 from core.assets import ASSETS
 from core.config import ANNUALIZATION_FACTORS
+from core.data_availability import assess_availability
 from core.data_loader import download_active_data
 from core.data_processor import prepare_dataframe
 from core.formatters import format_number_br
@@ -400,11 +407,15 @@ if load_analysis:
 
             st.error(
                 f"Não foi possível carregar dados para '{symbol}'. "
-                "Verifique o símbolo e o período."
+                "Confira o código do ativo (ações brasileiras terminam em .SA) "
+                "e o período, ou tente novamente em instantes."
             )
             st.stop()
 
         df = prepare_dataframe(df_raw)
+
+        # Datas diárias baixadas, guardadas antes de agregar pela frequência
+        daily_dates = df["Date"].copy()
 
         if frequency == "Semanal":
             df = (
@@ -441,6 +452,20 @@ if load_analysis:
                 .dropna()
                 .reset_index()
             )
+
+        # Disponibilidade: período solicitado x período efetivamente disponível
+        availability = assess_availability(
+            dates=daily_dates,
+            requested_start=start_date,
+            requested_end=end_date,
+            period_observations=len(df),
+        )
+
+        if availability.insufficient:
+            st.session_state["indicators_loaded"] = False
+            st.session_state["indicators_query"] = None
+            render_availability_messages(availability)
+            st.stop()
 
         df["Value"] = df["Close"]
 
@@ -494,6 +519,8 @@ if load_analysis:
         )
 
         st.session_state["indicators_df"] = df
+        st.session_state["indicators_availability"] = availability
+        st.session_state["indicators_fetched_at"] = datetime.now()
 
 
 # =====================
@@ -573,6 +600,19 @@ with col_expander:
             "**Tratamento:** As médias móveis, RSI, MACD, Bandas de Bollinger, ATR e volatilidade móvel são calculados somente com dados disponíveis até cada data. "
             "As médias, o RSI, o MACD e a volatilidade usam o preço de **fechamento**; o ATR usa também máxima e mínima."
         )
+
+st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
+
+
+# =====================
+# Disponibilidade dos dados: solicitado x disponível, fonte e consulta
+# =====================
+availability = st.session_state.get("indicators_availability")
+if availability is not None:
+    render_data_availability(
+        availability,
+        st.session_state.get("indicators_fetched_at"),
+    )
 
 st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
 
@@ -840,7 +880,7 @@ st.download_button(
 
 
 # =====================
-# Glossário, limitações e rodapé
+# Glossário, limitações, catálogo e rodapé
 # =====================
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -853,5 +893,7 @@ render_methodology_limitations([
     "Em frequência mensal ou semanal há menos observações, o que torna médias e janelas mais longas menos estáveis.",
     "Os primeiros valores de médias exponenciais e do MACD dependem do ponto inicial da série e são menos confiáveis (período de aquecimento).",
 ])
+
+render_catalog_notice()
 
 render_footer_disclaimer()

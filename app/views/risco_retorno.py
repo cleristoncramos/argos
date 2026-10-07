@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 
 
 PROJECT_ROOT = os.path.abspath(
@@ -22,6 +23,11 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from app.ui.asset_cards import render_asset_hero_logo
+from app.ui.data_info import (
+    render_availability_messages,
+    render_catalog_notice,
+    render_data_availability,
+)
 from app.ui.disclaimers import (
     render_footer_disclaimer,
     render_methodology_limitations,
@@ -40,6 +46,7 @@ from app.ui.tables import (
 from core.analyzer import calculate_returns
 from core.assets import ASSETS
 from core.config import ANNUALIZATION_FACTORS
+from core.data_availability import assess_availability
 from core.data_loader import download_active_data
 from core.data_processor import (
     aggregate_by_frequency,
@@ -221,7 +228,8 @@ if load_analysis:
 
             st.error(
                 f"Não foi possível carregar dados para '{symbol}'. "
-                "Verifique o símbolo e o período."
+                "Confira o código do ativo (ações brasileiras terminam em .SA) "
+                "e o período, ou tente novamente em instantes."
             )
             st.stop()
 
@@ -236,6 +244,22 @@ if load_analysis:
             df_aggregated,
             "Close",
         )
+
+        # Disponibilidade: período solicitado x período efetivamente disponível
+        availability = assess_availability(
+            dates=df_prepared["Date"],
+            requested_start=start_date,
+            requested_end=end_date,
+            period_observations=len(df_primary),
+        )
+
+        if availability.insufficient:
+            st.session_state["risk_return_loaded"] = False
+            st.session_state["risk_return_query"] = None
+            st.session_state.pop("risk_return_metrics", None)
+            st.session_state.pop("risk_return_df", None)
+            render_availability_messages(availability)
+            st.stop()
 
         df_returns = calculate_returns(
             df_primary,
@@ -269,6 +293,8 @@ if load_analysis:
     }
     st.session_state["risk_return_metrics"] = metrics
     st.session_state["risk_return_df"] = df_risk
+    st.session_state["risk_return_availability"] = availability
+    st.session_state["risk_return_fetched_at"] = datetime.now()
 
 
 # =====================
@@ -335,6 +361,19 @@ with col_expander:
             f"**Metodologia Matemática:** A volatilidade e o Índice de Sharpe foram anualizados usando o fator multiplicador **{annualization_factor}**. "
             f"A taxa livre de risco anual considerada no cálculo foi de **{risk_free_rate_pct:.2f}%**."
         )
+
+st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
+
+
+# =====================
+# Disponibilidade dos dados: solicitado x disponível, fonte e consulta
+# =====================
+availability = st.session_state.get("risk_return_availability")
+if availability is not None:
+    render_data_availability(
+        availability,
+        st.session_state.get("risk_return_fetched_at"),
+    )
 
 st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
 
@@ -620,7 +659,7 @@ st.download_button(
 
 
 # =====================
-# Limitações metodológicas
+# Limitações metodológicas e catálogo
 # =====================
 render_methodology_limitations([
     "O Índice de Sharpe depende diretamente da taxa livre de risco e do fator de anualização escolhidos; alterar esses parâmetros altera o resultado.",
@@ -629,6 +668,8 @@ render_methodology_limitations([
     "Todas as métricas desta página dependem do período e da frequência escolhidos -- resultados podem variar significativamente ao alterar esses parâmetros.",
     "Nenhuma métrica apresentada nesta página deve ser interpretada isoladamente como indicação de compra, venda ou adequação do ativo ao perfil do usuário.",
 ])
+
+render_catalog_notice()
 
 
 # =====================

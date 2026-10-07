@@ -10,6 +10,12 @@ from core.data_availability import (
     availability_summary,
 )
 
+from core.catalog_notice import (
+    CATALOG_DISCLAIMER_TEXT,
+    CATALOG_SELECTION_TEXT,
+    CATALOG_SHORT_NOTE,
+)
+
 DATA_SOURCE = "Yahoo Finance (via biblioteca yfinance)"
 
 
@@ -39,3 +45,10 @@ def render_data_availability(
         )
 
     render_availability_messages(availability)
+
+
+def render_catalog_notice() -> None:
+    """Expander com o critério de seleção dos ativos do catálogo."""
+    with st.expander(f"🗂️ Sobre o catálogo de ativos. {CATALOG_SHORT_NOTE}", expanded=False):
+        st.markdown(CATALOG_SELECTION_TEXT)
+        st.markdown(CATALOG_DISCLAIMER_TEXT)
