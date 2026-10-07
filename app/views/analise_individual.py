@@ -1,7 +1,6 @@
 import os
 import sys
-from datetime import datetime
-from html import escape
+
 
 # ==========================================================
 # Correção de Caminho para Páginas Multi-página do Streamlit
@@ -27,9 +26,18 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.asset_cards import render_asset_hero_logo
+from app.ui.disclaimers import render_footer_disclaimer
+from app.ui.education import render_glossary, render_what_it_means
+from app.ui.metric_card import render_metric_card
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
-from app.ui.asset_cards import render_asset_hero_logo
+from app.ui.tables import (
+    date_cell,
+    number_cell,
+    percent_cell,
+    render_table,
+)
 from core.analyzer import (
     calculate_percentage_change,
     calculate_statistics,
@@ -42,6 +50,7 @@ from core.data_processor import (
     prepare_dataframe,
     select_primary_variable,
 )
+from core.formatters import format_number_br
 
 
 st.set_page_config(
@@ -50,6 +59,15 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+
+# ==========================================================
+# Configuração padrão da modebar do Plotly (zoom, pan, download, etc.)
+# ==========================================================
+PLOTLY_CONFIG = {
+    "displayModeBar": True,
+    "displaylogo": False,
+}
 
 
 initialize_asset_state()
@@ -68,21 +86,6 @@ st.markdown(
 # ==========================================================
 # Funções de Formatação e Componentes Visuais
 # ==========================================================
-def format_brazilian_number(value) -> str:
-    """Formata um número com ponto de milhar e vírgula decimal."""
-    if value is None or pd.isna(value):
-        return "—"
-    try:
-        numeric_value = float(value)
-    except (TypeError, ValueError):
-        return str(value)
-    return (
-        f"{numeric_value:,.2f}"
-        .replace(",", "X")
-        .replace(".", ",")
-        .replace("X", ".")
-    )
-
 def format_brazilian_integer(value) -> str:
     """Formata um número inteiro com ponto de milhar."""
     if value is None or pd.isna(value):
@@ -93,138 +96,22 @@ def format_brazilian_integer(value) -> str:
         return str(value)
     return f"{numeric_value:,}".replace(",", ".")
 
+
 def get_currency_prefix(ticker: str) -> str:
     """Retorna o prefixo da moeda correto com base na regra do Ticker."""
     if ticker.endswith(".SA"):
         return "R$ "
     elif ticker.endswith("=X"):
-        return "" 
+        return ""
     elif ticker.startswith("^") or ticker.endswith(".SS"):
-        return "Pts " 
+        return "Pts "
     else:
         return "US$ "
 
 
-def build_table_styles(prefix: str) -> str:
-    """Gera os estilos CSS comuns das tabelas HTML da página."""
-    return (
-        f"""
-        <style>
-        .{prefix}-wrapper {{
-            width: 100%;
-            overflow-x: auto;
-            border: 1px solid #E2E8F0;
-            border-radius: 12px;
-            background: #FFFFFF;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
-        }}
-        .{prefix}-table {{
-            width: 100%;
-            min-width: 800px;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-            color: #334155;
-            font-family: 'Inter', Arial, sans-serif;
-        }}
-        .{prefix}-table th {{
-            background-color: #F8FAFC;
-            color: #1E293B;
-            text-align: center;
-            vertical-align: middle;
-            font-weight: 700;
-            padding: 14px 16px;
-            border-bottom: 3px solid #97b7c4; /* Borda customizada solicitada */
-            border-right: 1px solid #E2E8F0;
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }}
-        .{prefix}-table th:last-child {{ border-right: none; }}
-        .{prefix}-table td {{
-            vertical-align: middle;
-            padding: 12px 16px;
-            border-bottom: 1px solid #E2E8F0;
-            border-right: 1px solid #E2E8F0;
-        }}
-        .{prefix}-table td:last-child {{ border-right: none; }}
-        .{prefix}-table tr:last-child td {{ border-bottom: none; }}
-        .{prefix}-row-even {{ background-color: #FFFFFF; }}
-        .{prefix}-row-odd {{ background-color: #F1F5F9; }}
-        .{prefix}-table tr:hover {{ background-color: #E2E8F0; transition: background-color 0.2s; }}
-        </style>
-        """
-    )
-
-
-def render_html_table(dataframe: pd.DataFrame, columns: list, prefix: str) -> None:
-    """Renderiza um DataFrame como tabela HTML customizada."""
-    if dataframe is None or dataframe.empty:
-        st.info("Não há dados disponíveis para exibição.")
-        return
-
-    display_df = dataframe[columns].copy()
-    records = display_df.to_dict(orient="records")
-
-    header_html = "".join(f"<th>{escape(str(c))}</th>" for c in columns)
-
-    rows_html = []
-    for position, record in enumerate(records):
-        cells_html = []
-        for column in columns:
-            raw_val = record.get(column)
-            
-            if column == "Date":
-                date_val = pd.to_datetime(raw_val, errors="coerce")
-                formatted_val = "—" if pd.isna(date_val) else date_val.strftime("%d/%m/%Y")
-                cell_style = "text-align:center;white-space:nowrap;"
-            elif column in ["Open", "High", "Low", "Close", "Value"]:
-                formatted_val = format_brazilian_number(raw_val)
-                cell_style = "text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;"
-            elif column == "Pct_Change":
-                if pd.isna(raw_val):
-                    formatted_val = "—"
-                    color = ""
-                else:
-                    formatted_val = f"{float(raw_val):,.2f}%".replace(",", "X").replace(".", ",").replace("X", ".")
-                    color = "color:#166534;font-weight:600;" if float(raw_val) > 0 else "color:#991b1b;font-weight:600;" if float(raw_val) < 0 else ""
-                cell_style = f"text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;{color}"
-            else:
-                formatted_val = str(raw_val) if pd.notna(raw_val) else "—"
-                cell_style = "text-align:right;white-space:nowrap;"
-
-            cells_html.append(f'<td style="{cell_style}">{escape(str(formatted_val))}</td>')
-
-        row_class = f"{prefix}-row-even" if position % 2 == 0 else f"{prefix}-row-odd"
-        rows_html.append(f'<tr class="{row_class}">{"".join(cells_html)}</tr>')
-
-    table_html = (
-        build_table_styles(prefix)
-        + f'<div class="{prefix}-wrapper" style="max-height: 450px; overflow-y: auto;">'
-        + f'<table class="{prefix}-table">'
-        + f"<thead><tr>{header_html}</tr></thead>"
-        + f"<tbody>{''.join(rows_html)}</tbody>"
-        + "</table>"
-        + "</div>"
-    )
-    
-    st.markdown(table_html, unsafe_allow_html=True)
-
-
 def render_custom_metric_card(title: str, value: str) -> None:
-    """Renderiza um card com design refinado, aceitando HTML no value."""
-    html = f"""
-    <div style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.025); display: flex; flex-direction: column; height: 100%; transition: all 0.3s ease;">
-        <div style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">
-            {title}
-        </div>
-        <div style="color: #0f172a; font-size: 2rem; font-weight: 800; margin-bottom: 0px; font-family: 'Inter', sans-serif; letter-spacing: -0.5px;">
-            {value}
-        </div>
-    </div>
-    """
-    st.markdown(html, unsafe_allow_html=True)
+    """Card de métrica (componente comum), aceitando HTML no value."""
+    render_metric_card(title, value, value_size="2rem")
 
 
 def apply_custom_layout(fig):
@@ -277,7 +164,7 @@ if load_data:
         "end_date": end_date,
         "frequency": frequency,
     }
-    
+
     with st.spinner("Baixando e processando dados..."):
         df_raw = download_active_data(
             symbol=symbol,
@@ -312,13 +199,13 @@ if load_data:
         # -----------------------------------------------------------------
         df_vol = df_prepared[['Date', 'Close']].copy()
         df_vol['Date'] = pd.to_datetime(df_vol['Date'])
-        
+
         df_vol['Daily_Return'] = df_vol['Close'].pct_change()
         df_vol['YearMonth'] = df_vol['Date'].dt.to_period('M')
-        
+
         monthly_std = df_vol.groupby('YearMonth')['Daily_Return'].std()
         monthly_vol_annualized = monthly_std * np.sqrt(365) * 100
-        
+
         df_monthly_vol = monthly_vol_annualized.reset_index()
         df_monthly_vol.columns = ['Date', 'Volatility']
         df_monthly_vol['Date'] = df_monthly_vol['Date'].dt.to_timestamp()
@@ -381,23 +268,23 @@ with col_expander:
         st.markdown(f"**Ativo Analisado:** {symbol}")
         st.markdown(f"**Período Selecionado:** {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}")
         st.markdown(f"**Observações Processadas:** {len(df)} períodos.")
-        
+
         st.markdown("#### Qualidade e Validação dos Dados")
         st.markdown(f"- **Total de linhas brutas:** {validation['total_rows']}")
         st.markdown(f"- **Datas duplicadas:** {validation['duplicate_dates']}")
         st.markdown(f"- **Valores negativos (Fechamento):** {validation['negative_close']}")
-        
+
         missing = validation["missing_values"]
         if isinstance(missing, pd.Series):
             missing_str = ", ".join([f"{idx}: {val}" for idx, val in missing.items() if val > 0])
-            if not missing_str: 
+            if not missing_str:
                 missing_str = "Nenhum"
         else:
             missing_str = str(missing)
         st.markdown(f"- **Valores ausentes:** {missing_str}")
 
 st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
-    
+
 
 # =====================
 # Seção 1: Resumo
@@ -410,14 +297,14 @@ prefix_currency = get_currency_prefix(symbol)
 
 with col1:
     render_custom_metric_card(
-        "Primeiro Valor", 
-        f"<span style='font-size: 1.2rem; color: #64748b; font-weight: 600;'>{prefix_currency}</span>{format_brazilian_number(stats['first_value'])}"
+        "Primeiro Valor",
+        f"<span style='font-size: 1.2rem; color: #64748b; font-weight: 600;'>{prefix_currency}</span>{format_number_br(stats['first_value'])}"
     )
 
 with col2:
     render_custom_metric_card(
-        "Último Valor", 
-        f"<span style='font-size: 1.2rem; color: #64748b; font-weight: 600;'>{prefix_currency}</span>{format_brazilian_number(stats['last_value'])}"
+        "Último Valor",
+        f"<span style='font-size: 1.2rem; color: #64748b; font-weight: 600;'>{prefix_currency}</span>{format_number_br(stats['last_value'])}"
     )
 
 with col3:
@@ -425,17 +312,17 @@ with col3:
     return_str = f"{total_return:,.2f}%".replace(",", "X").replace(".", ",").replace("X", ".")
     if total_return > 0:
         return_str = f"+{return_str}"
-        
+
     color = "#166534" if total_return > 0 else "#991b1b" if total_return < 0 else "#0f172a"
     colored_value = f"<span style='color: {color};'>{return_str}</span>"
-    
+
     render_custom_metric_card("Retorno Total", colored_value)
 
 with col4:
     freq_label = "dias" if frequency == "Diário" else "semanas" if frequency == "Semanal" else "meses"
     count_formatted = format_brazilian_integer(stats["count"])
     render_custom_metric_card(
-        "Períodos Analisados", 
+        "Períodos Analisados",
         f"{count_formatted} <span style='font-size: 1rem; color: #64748b; font-weight: 500;'>{freq_label}</span>"
     )
 
@@ -454,15 +341,15 @@ st.markdown(
 )
 
 fig_line = go.Figure()
-formatted_y = df["Value"].apply(format_brazilian_number)
+formatted_y = df["Value"].apply(format_number_br)
 
 fig_line.add_trace(go.Scatter(
     x=df["Date"],
     y=df["Value"],
     mode="lines",
-    line=dict(color="#10B981", width=2.5), 
+    line=dict(color="#10B981", width=2.5),
     fill="tozeroy",
-    fillcolor="rgba(16, 185, 129, 0.15)",  
+    fillcolor="rgba(16, 185, 129, 0.15)",
     customdata=formatted_y,
     hovertemplate=f"<b>Data:</b> %{{x|%d/%m/%Y}}<br><b>Preço:</b> {prefix_currency}%{{customdata}}<extra></extra>"
 ))
@@ -470,7 +357,7 @@ fig_line.add_trace(go.Scatter(
 fig_line = apply_custom_layout(fig_line)
 
 with st.container(border=True):
-    st.plotly_chart(fig_line, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig_line, use_container_width=True, config=PLOTLY_CONFIG)
 
 
 # =====================
@@ -487,9 +374,9 @@ st.markdown(
 if df_monthly_vol is not None and not df_monthly_vol.empty:
     threshold = df_monthly_vol['Volatility'].quantile(0.95)
     colors = ["#F59E0B" if val >= threshold else "#10B981" for val in df_monthly_vol['Volatility']]
-    
+
     formatted_vol = df_monthly_vol['Volatility'].apply(lambda x: f"{x:,.2f}%".replace(",", "X").replace(".", ",").replace("X", "."))
-    
+
     fig_vol = go.Figure(
         data=go.Bar(
             x=df_monthly_vol['Date'],
@@ -499,7 +386,7 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
             hovertemplate="<b>Mês:</b> %{x|%m/%Y}<br><b>Volatilidade:</b> %{customdata}<extra></extra>"
         )
     )
-    
+
     fig_vol = apply_custom_layout(fig_vol)
     fig_vol.update_layout(
         margin=dict(l=10, r=20, t=20, b=20),
@@ -507,9 +394,11 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
         yaxis_title=None,
         yaxis_ticksuffix="%"
     )
-    
+
     with st.container(border=True):
-        st.plotly_chart(fig_vol, use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig_vol, use_container_width=True, config=PLOTLY_CONFIG)
+
+    render_what_it_means("volatilidade")
 
 
 # =====================
@@ -518,14 +407,14 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
 st.markdown(f"### 📉 Variação Percentual — {frequency}")
 st.markdown(
     "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
-    f"Distribuição das variações percentuais período a período."
+    "Distribuição das variações percentuais período a período."
     "</p>",
     unsafe_allow_html=True
 )
 
 df_chart = df.dropna(subset=["Pct_Change"]).copy()
 fig_bar = px.bar(
-    df_chart, x="Date", y="Pct_Change", color="Pct_Change", 
+    df_chart, x="Date", y="Pct_Change", color="Pct_Change",
     color_continuous_scale="RdYlGn", template="plotly_white"
 )
 fig_bar = apply_custom_layout(fig_bar)
@@ -539,7 +428,7 @@ fig_bar.update_traces(
 )
 
 with st.container(border=True):
-    st.plotly_chart(fig_bar, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig_bar, use_container_width=True, config=PLOTLY_CONFIG)
 
 
 # =====================
@@ -568,8 +457,8 @@ fig_heatmap = go.Figure(
         z=df_matrix.values,
         x=df_matrix.columns,
         y=df_matrix.index,
-        colorscale=[[0.0, "#ef4444"], [0.5, "#ffffff"], [1.0, "#22c55e"]], 
-        zmid=0, 
+        colorscale=[[0.0, "#ef4444"], [0.5, "#ffffff"], [1.0, "#22c55e"]],
+        zmid=0,
         text=text_matrix.values,
         texttemplate="%{text}",
         textfont={"size": 12, "color": "#1e293b", "family": "Inter, Arial"},
@@ -588,7 +477,9 @@ fig_heatmap.update_yaxes(autorange="reversed")
 
 with st.container(border=True):
     st.markdown("<h5 style='text-align: center; color: #334155; margin-bottom: 10px; font-size: 1rem;'>Variação Mensal Histórica</h5>", unsafe_allow_html=True)
-    st.plotly_chart(fig_heatmap, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig_heatmap, use_container_width=True, config=PLOTLY_CONFIG)
+
+render_what_it_means("sazonalidade")
 
 monthly_avg = df_matrix.mean(axis=0)
 bar_colors = ["#22c55e" if val >= 0 else "#ef4444" for val in monthly_avg]
@@ -615,7 +506,7 @@ fig_bar_season.update_layout(
 
 with st.container(border=True):
     st.markdown("<h5 style='text-align: center; color: #334155; margin-top: 10px; margin-bottom: 10px; font-size: 1rem;'>Média Consolidada por Mês do Calendário</h5>", unsafe_allow_html=True)
-    st.plotly_chart(fig_bar_season, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig_bar_season, use_container_width=True, config=PLOTLY_CONFIG)
 
 
 # =====================
@@ -627,7 +518,19 @@ df_display = df.rename(columns={"Value": "Close"}).copy()
 display_columns = ["Date", "Open", "High", "Low", "Close", "Pct_Change"]
 available_columns = [col for col in display_columns if col in df_display.columns]
 
-render_html_table(df_display, available_columns, prefix="argos-main")
+render_table(
+    df_display,
+    available_columns,
+    {
+        "Date": date_cell,
+        "Open": number_cell,
+        "High": number_cell,
+        "Low": number_cell,
+        "Close": number_cell,
+        "Pct_Change": percent_cell(fraction=False, colored=True),
+    },
+    max_height=450,
+)
 
 
 # =====================
@@ -642,13 +545,12 @@ st.download_button(
     mime="text/csv",
 )
 
-# =====================
-# Rodapé
-# =====================
-st.markdown("---")
 
-st.caption(
-    "⚠️ **Aviso:** Esta ferramenta é destinada a fins educacionais "
-    "e de pesquisa. Os dados históricos não garantem resultados "
-    "futuros. Não constitui recomendação de investimento."
-)
+# =====================
+# Glossário e rodapé
+# =====================
+st.markdown("<br>", unsafe_allow_html=True)
+
+render_glossary(["retorno", "volatilidade", "sazonalidade"])
+
+render_footer_disclaimer()

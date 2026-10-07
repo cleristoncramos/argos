@@ -1,7 +1,5 @@
 import os
 import sys
-from datetime import datetime
-from html import escape
 
 
 PROJECT_ROOT = os.path.abspath(
@@ -20,13 +18,25 @@ if PROJECT_ROOT not in sys.path:
 
 import numpy as np
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.asset_cards import render_asset_hero_logo
+from app.ui.disclaimers import (
+    render_footer_disclaimer,
+    render_methodology_limitations,
+    render_profile_limitation_notice,
+)
+from app.ui.education import render_what_it_means
+from app.ui.metric_card import render_metric_card
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
-from app.ui.asset_cards import render_asset_hero_logo
+from app.ui.tables import (
+    date_cell,
+    number_cell,
+    percent_cell,
+    render_table,
+)
 from core.analyzer import calculate_returns
 from core.assets import ASSETS
 from core.config import ANNUALIZATION_FACTORS
@@ -52,7 +62,16 @@ RISK_FREE_RATE_WIDGET_KEY = "risk_return_risk_free_rate_pct_widget"
 
 
 # ==========================================================
-# Funções de Formatação e Tabelas Customizadas
+# Configuração padrão da modebar do Plotly (zoom, pan, download, etc.)
+# ==========================================================
+PLOTLY_CONFIG = {
+    "displayModeBar": True,
+    "displaylogo": False,
+}
+
+
+# ==========================================================
+# Funções de Formatação
 # ==========================================================
 def format_percentage(value) -> str:
     """Formata em porcentagem no padrão brasileiro."""
@@ -65,6 +84,7 @@ def format_percentage(value) -> str:
         .replace("X", ".")
     )
 
+
 def format_colored_pct(value, neutral_if_nan=False) -> str:
     """Formata porcentagem com cor dinâmica injetada via HTML."""
     if value is None or pd.isna(value):
@@ -73,148 +93,6 @@ def format_colored_pct(value, neutral_if_nan=False) -> str:
     sign = "+" if value > 0 else ""
     formatted_str = f"{sign}{value * 100:,.2f}%".replace(",", "X").replace(".", ",").replace("X", ".")
     return f"<span style='color: {color};'>{formatted_str}</span>"
-
-
-def format_brazilian_number(value) -> str:
-    """Formata um número com duas casas decimais no padrão brasileiro."""
-    if value is None or pd.isna(value):
-        return "—"
-    try:
-        numeric_value = float(value)
-    except (TypeError, ValueError):
-        return str(value)
-    return (
-        f"{numeric_value:,.2f}"
-        .replace(",", "X")
-        .replace(".", ",")
-        .replace("X", ".")
-    )
-
-
-def build_table_styles(prefix: str) -> str:
-    """Gera os estilos CSS comuns das tabelas HTML da página."""
-    return (
-        f"""
-        <style>
-        .{prefix}-wrapper {{
-            width: 100%;
-            overflow-x: auto;
-            border: 1px solid #E2E8F0;
-            border-radius: 12px;
-            background: #FFFFFF;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
-        }}
-        .{prefix}-table {{
-            width: 100%;
-            min-width: 800px;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-            color: #334155;
-            font-family: 'Inter', Arial, sans-serif;
-        }}
-        .{prefix}-table th {{
-            background-color: #F8FAFC;
-            color: #1E293B;
-            text-align: center;
-            vertical-align: middle;
-            font-weight: 700;
-            padding: 14px 16px;
-            border-bottom: 3px solid #97b7c4; /* Borda customizada combinando com demais páginas */
-            border-right: 1px solid #E2E8F0;
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }}
-        .{prefix}-table th:last-child {{ border-right: none; }}
-        .{prefix}-table td {{
-            vertical-align: middle;
-            padding: 12px 16px;
-            border-bottom: 1px solid #E2E8F0;
-            border-right: 1px solid #E2E8F0;
-        }}
-        .{prefix}-table td:last-child {{ border-right: none; }}
-        .{prefix}-table tr:last-child td {{ border-bottom: none; }}
-        .{prefix}-row-even {{ background-color: #FFFFFF; }}
-        .{prefix}-row-odd {{ background-color: #F1F5F9; }}
-        .{prefix}-table tr:hover {{ background-color: #E2E8F0; transition: background-color 0.2s; }}
-        </style>
-        """
-    )
-
-
-def render_html_table(dataframe: pd.DataFrame, columns: list, prefix: str, is_details: bool = False) -> None:
-    """Renderiza um DataFrame como tabela HTML customizada."""
-    if dataframe is None or dataframe.empty:
-        st.info("Não há dados disponíveis para exibição.")
-        return
-
-    display_df = dataframe[columns].copy()
-    records = display_df.to_dict(orient="records")
-
-    header_html = "".join(f"<th>{escape(str(c))}</th>" for c in columns)
-
-    rows_html = []
-    for position, record in enumerate(records):
-        cells_html = []
-        for column in columns:
-            raw_val = record.get(column)
-
-            if is_details:
-                formatted_val = raw_val
-                if column in ["Métrica", "Descrição"]:
-                    cell_style = "text-align:left;white-space:normal;font-family:inherit;"
-                else:
-                    cell_style = "text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;"
-            else:
-                if column == "Date":
-                    date_val = pd.to_datetime(raw_val, errors="coerce")
-                    formatted_val = "—" if pd.isna(date_val) else date_val.strftime("%d/%m/%Y")
-                    cell_style = "text-align:center;white-space:nowrap;"
-                elif column in ["Value", "Running_Peak"]:
-                    formatted_val = format_brazilian_number(raw_val)
-                    cell_style = "text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;"
-                elif column in ["Simple_Return", "Log_Return", "Drawdown"]:
-                    formatted_val = format_percentage(raw_val)
-                    cell_style = "text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;"
-                else:
-                    formatted_val = str(raw_val) if pd.notna(raw_val) else "—"
-                    cell_style = "text-align:right;white-space:nowrap;"
-
-            cells_html.append(f'<td style="{cell_style}">{escape(str(formatted_val))}</td>')
-
-        row_class = f"{prefix}-row-even" if position % 2 == 0 else f"{prefix}-row-odd"
-        rows_html.append(f'<tr class="{row_class}">{"".join(cells_html)}</tr>')
-
-    table_height = 420 if is_details else 350
-    table_html = (
-        build_table_styles(prefix)
-        + f'<div class="{prefix}-wrapper" style="max-height: {table_height}px; overflow-y: auto;">'
-        + f'<table class="{prefix}-table">'
-        + f"<thead><tr>{header_html}</tr></thead>"
-        + f"<tbody>{''.join(rows_html)}</tbody>"
-        + "</table>"
-        + "</div>"
-    )
-    
-    st.markdown(table_html, unsafe_allow_html=True)
-
-
-def render_metric_card(title: str, value: str, tooltip: str = "") -> None:
-    """Renderiza um card estizado via HTML simulando aparência de dashboards modernos, com tooltip de info."""
-    tooltip_html = f"""<span title="{escape(tooltip)}" style="cursor: help; color: #94a3b8; margin-left: 6px; font-size: 0.95rem;">&#9432;</span>""" if tooltip else ""
-    html = f"""
-    <div style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 100%;">
-        <div style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center;">
-            {title} {tooltip_html}
-        </div>
-        <div style="color: #0f172a; font-size: 1.8rem; font-weight: 700; margin-bottom: 0px; font-family: 'Inter', sans-serif; letter-spacing: -0.5px;">
-            {value}
-        </div>
-    </div>
-    """
-    st.markdown(html, unsafe_allow_html=True)
 
 
 def apply_custom_layout(fig):
@@ -462,6 +340,14 @@ st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
 
 
 # =====================
+# Aviso de limitação de perfil (não personalizado ao usuário)
+# =====================
+render_profile_limitation_notice()
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+
+# =====================
 # Métricas principais
 # =====================
 st.header("📊 Métricas Principais")
@@ -472,64 +358,77 @@ worst_period_val = df_risk["Simple_Return"].min()
 sharpe_value = metrics["Sharpe"]
 str_sharpe = "N/A" if pd.isna(sharpe_value) else f"{sharpe_value:.2f}"
 
-# Primeira Linha de Cards com Tooltips embutidos
+# Data do pior drawdown
+if not df_risk.empty and not df_risk["Drawdown"].isna().all():
+    worst_drawdown_idx = df_risk["Drawdown"].idxmin()
+    worst_drawdown_date = df_risk.loc[worst_drawdown_idx, "Date"]
+    worst_drawdown_date_str = pd.to_datetime(worst_drawdown_date).strftime("%d/%m/%Y")
+else:
+    worst_drawdown_date_str = "N/A"
+
+# Primeira linha de cards
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     render_metric_card(
-        title="Retorno Acumulado", 
-        value=format_colored_pct(metrics["Retorno total"]),
-        tooltip="Variação acumulada entre o primeiro e o último valor do período."
+        "Retorno Acumulado",
+        format_colored_pct(metrics["Retorno total"]),
+        metric_key="retorno_total",
     )
 with col2:
     render_metric_card(
-        title="Retorno Médio / Período", 
-        value=format_colored_pct(metrics["Retorno médio"]),
-        tooltip="Média aritmética dos retornos simples na frequência selecionada."
+        "Retorno Médio / Período",
+        format_colored_pct(metrics["Retorno médio"]),
+        metric_key="retorno_medio",
     )
 with col3:
     render_metric_card(
-        title="Volatilidade Anualizada", 
-        value=f"<span style='color: #475569;'>{format_percentage(metrics['Volatilidade'])}</span>",
-        tooltip="Dispersão anualizada dos retornos; valores maiores indicam maior variação histórica e risco."
+        "Volatilidade Anualizada",
+        f"<span style='color: #475569;'>{format_percentage(metrics['Volatilidade'])}</span>",
+        metric_key="volatilidade",
     )
 with col4:
     render_metric_card(
-        title="Índice de Sharpe", 
-        value=f"<span style='color: #0f172a;'>{str_sharpe}</span>",
-        tooltip="Relação anualizada entre o retorno excedente (acima da taxa livre de risco) e a volatilidade."
+        "Índice de Sharpe",
+        f"<span style='color: #0f172a;'>{str_sharpe}</span>",
+        metric_key="sharpe",
     )
 
 st.markdown("<div style='margin-top: 1rem;'></div>", unsafe_allow_html=True)
 
-# Segunda Linha de Cards com Tooltips embutidos
+# Segunda linha de cards
 col5, col6, col7, col8 = st.columns(4)
 
 with col5:
     render_metric_card(
-        title="Melhor Período", 
-        value=format_colored_pct(best_period_val),
-        tooltip="O maior ganho registrado em um único período."
+        "Melhor Período",
+        format_colored_pct(best_period_val),
+        tooltip="O maior ganho registrado em um único período dentro do intervalo analisado.",
     )
 with col6:
     render_metric_card(
-        title="Pior Período", 
-        value=format_colored_pct(worst_period_val),
-        tooltip="A maior perda registrada em um único período."
+        "Pior Período",
+        format_colored_pct(worst_period_val),
+        tooltip="A maior perda registrada em um único período dentro do intervalo analisado.",
     )
 with col7:
     render_metric_card(
-        title="Períodos Positivos", 
-        value=f"<span style='color: #166534;'>{format_percentage(metrics['Percentual positivo'])}</span>",
-        tooltip="Proporção de períodos que registraram ganho (retorno simples superior a zero)."
+        "Períodos Positivos",
+        f"<span style='color: #166534;'>{format_percentage(metrics['Percentual positivo'])}</span>",
+        metric_key="win_rate",
     )
 with col8:
     render_metric_card(
-        title="Drawdown Máximo", 
-        value=format_colored_pct(metrics["Drawdown máximo"]),
-        tooltip="A maior queda percentual registrada a partir de um topo histórico anterior no período analisado."
+        "Drawdown Máximo",
+        format_colored_pct(metrics["Drawdown máximo"]),
+        metric_key="drawdown_maximo",
     )
-    
+
+st.caption(f"📅 Data do pior drawdown no período: **{worst_drawdown_date_str}**")
+
+render_what_it_means("drawdown")
+render_what_it_means("sharpe")
+
 st.markdown("<br>", unsafe_allow_html=True)
 
 
@@ -566,7 +465,7 @@ if not df_risk.empty and not df_risk["Cum_Ret"].isna().all():
         textfont=dict(color="#166534", size=11, family="Inter, Arial, sans-serif"),
         hoverinfo="skip"
     ))
-    
+
     cumulative_return_figure.add_trace(go.Scatter(
         x=[min_date], y=[min_val],
         mode="markers+text",
@@ -581,8 +480,14 @@ with st.container(border=True):
     st.plotly_chart(
         cumulative_return_figure,
         use_container_width=True,
-        config={"displayModeBar": False},
+        config=PLOTLY_CONFIG,
     )
+
+st.caption(
+    "Os marcadores indicam o maior e o menor valor acumulado dentro do "
+    "período analisado -- não representam, isoladamente, pontos de "
+    "entrada ou saída recomendados."
+)
 
 
 # =====================
@@ -599,7 +504,7 @@ drawdown_figure = create_drawdown_chart(
 
 drawdown_figure = apply_custom_layout(drawdown_figure)
 
-# Injeção do Marcador de Max Drawdown
+# Marcador do drawdown máximo
 if not df_risk.empty and not df_risk["Drawdown"].isna().all():
     min_dd_idx = df_risk["Drawdown"].idxmin()
     min_dd_date = df_risk.loc[min_dd_idx, "Date"]
@@ -619,7 +524,7 @@ with st.container(border=True):
     st.plotly_chart(
         drawdown_figure,
         use_container_width=True,
-        config={"displayModeBar": False},
+        config=PLOTLY_CONFIG,
     )
 
 
@@ -628,11 +533,9 @@ with st.container(border=True):
 # =====================
 st.header("📊 Distribuição de Retornos")
 
-# Criação manual do histograma avançado (substituindo a função genérica)
 rets = df_risk["Simple_Return"].dropna() * 100
 if not rets.empty:
-    
-    # 1. Definir os intervalos fixos exigidos
+
     bins = [-np.inf, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, np.inf]
     x_labels = [
         "Abaixo de<br>-30%", "-30 a<br>-25%", "-25 a<br>-20%", "-20 a<br>-15%",
@@ -640,12 +543,10 @@ if not rets.empty:
         "5 a<br>10%", "10 a<br>15%", "15 a<br>20%", "20 a<br>25%",
         "25 a<br>30%", "Acima de<br>30%"
     ]
-    
-    # 2. Categorizar os retornos usando pd.cut
+
     categorized = pd.cut(rets, bins=bins, labels=x_labels, right=True)
     counts = categorized.value_counts(sort=False)
-    
-    # 3. Montar o gráfico
+
     histogram_figure = go.Figure(
         go.Bar(
             x=counts.index.astype(str),
@@ -658,18 +559,22 @@ if not rets.empty:
             hovertemplate="<b>Intervalo:</b> %{x}<br><b>Frequência:</b> %{y} ocorrências<extra></extra>"
         )
     )
-    
+
     histogram_figure = apply_custom_layout(histogram_figure)
-    
-    # Remover o eixo Y completamente (títulos e valores) e alinhar margens
     histogram_figure.update_yaxes(showticklabels=False, showgrid=False, zeroline=False, title_text="")
-    
+
     with st.container(border=True):
         st.plotly_chart(
             histogram_figure,
             use_container_width=True,
-            config={"displayModeBar": False},
+            config=PLOTLY_CONFIG,
         )
+
+    st.caption(
+        "A distribuição mostra a frequência histórica de retornos em cada "
+        "faixa percentual -- um retrato estatístico do passado, não uma "
+        "projeção de resultados futuros."
+    )
 
 
 # =====================
@@ -686,11 +591,18 @@ display_columns = [
     "Drawdown",
 ]
 
-render_html_table(
-    dataframe=df_risk,
-    columns=display_columns,
-    prefix="argos-risk",
-    is_details=False
+render_table(
+    df_risk,
+    display_columns,
+    {
+        "Date": date_cell,
+        "Value": number_cell,
+        "Running_Peak": number_cell,
+        "Simple_Return": percent_cell(),
+        "Log_Return": percent_cell(),
+        "Drawdown": percent_cell(),
+    },
+    max_height=350,
 )
 
 csv_data = df_risk.to_csv(
@@ -708,12 +620,18 @@ st.download_button(
 
 
 # =====================
+# Limitações metodológicas
+# =====================
+render_methodology_limitations([
+    "O Índice de Sharpe depende diretamente da taxa livre de risco e do fator de anualização escolhidos; alterar esses parâmetros altera o resultado.",
+    f"Nesta análise, o fator de anualização utilizado foi **{annualization_factor}**, correspondente à frequência **{frequency}**, e a taxa livre de risco anual informada foi **{risk_free_rate_pct:.2f}%**.",
+    "O drawdown máximo reflete um único evento histórico dentro do período selecionado e não indica a frequência com que perdas dessa magnitude costumam ocorrer.",
+    "Todas as métricas desta página dependem do período e da frequência escolhidos -- resultados podem variar significativamente ao alterar esses parâmetros.",
+    "Nenhuma métrica apresentada nesta página deve ser interpretada isoladamente como indicação de compra, venda ou adequação do ativo ao perfil do usuário.",
+])
+
+
+# =====================
 # Rodapé
 # =====================
-st.markdown("---")
-
-st.caption(
-    "⚠️ Esta ferramenta possui finalidade educacional e de pesquisa. "
-    "Desempenho passado não garante resultados futuros. As métricas "
-    "dependem da janela analisada e não constituem recomendação de investimento."
-)
+render_footer_disclaimer()

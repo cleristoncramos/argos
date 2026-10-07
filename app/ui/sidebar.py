@@ -5,6 +5,11 @@ import streamlit.components.v1 as components
 
 from core.assets import ASSETS
 from core.config import config
+from core.periods import (
+    DEFAULT_PERIOD,
+    PERIOD_OPTIONS,
+    period_start_date,
+)
 
 
 GROUP_MAPPING = {
@@ -235,7 +240,7 @@ def render_asset_controls(
 
         # Recupera o grupo selecionado ou define o placeholder como padrão
         current_group = st.session_state.get(
-            "asset_group", 
+            "asset_group",
             PLACEHOLDER_GROUP
         )
 
@@ -248,7 +253,7 @@ def render_asset_controls(
                 else 0
             ),
             format_func=lambda value: (
-                value if value == PLACEHOLDER_GROUP 
+                value if value == PLACEHOLDER_GROUP
                 else GROUP_MAPPING.get(str(value).lower(), str(value).replace("_", " ").title())
             ),
             key=f"{button_key}_group_select",
@@ -311,26 +316,18 @@ def render_asset_controls(
 
         st.divider()
 
-        period_options = [
-            "1 ano",
-            "3 anos",
-            "5 anos",
-            "10 anos",
-            "Personalizado",
-        ]
-
         current_period = st.session_state.get(
             "asset_period",
-            "5 anos",
+            DEFAULT_PERIOD,
         )
 
         selected_period = st.selectbox(
             "Período",
-            options=period_options,
+            options=PERIOD_OPTIONS,
             index=(
-                period_options.index(current_period)
-                if current_period in period_options
-                else 2
+                PERIOD_OPTIONS.index(current_period)
+                if current_period in PERIOD_OPTIONS
+                else PERIOD_OPTIONS.index(DEFAULT_PERIOD)
             ),
             key=f"{button_key}_period_select",
             width="stretch",
@@ -343,7 +340,7 @@ def render_asset_controls(
                 "Data inicial",
                 value=st.session_state.get(
                     "asset_start_date",
-                    today.replace(year=today.year - 5),
+                    period_start_date(DEFAULT_PERIOD, today),
                 ),
                 key=f"{button_key}_start_date",
             )
@@ -358,19 +355,7 @@ def render_asset_controls(
             )
         else:
             end_date = today
-            years_to_subtract = int(selected_period.split()[0])
-            target_year = today.year - years_to_subtract
-            target_month = today.month + 1
-
-            if target_month > 12:
-                target_month = 1
-                target_year += 1
-
-            start_date = datetime(
-                target_year,
-                target_month,
-                1,
-            ).date()
+            start_date = period_start_date(selected_period, today)
 
         frequency_options = getattr(
             config,

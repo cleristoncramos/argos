@@ -1,7 +1,5 @@
 import os
 import sys
-from datetime import datetime
-from html import escape
 
 
 PROJECT_ROOT = os.path.abspath(
@@ -19,14 +17,26 @@ if PROJECT_ROOT not in sys.path:
 
 
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.asset_cards import render_asset_hero_logo
+from app.ui.disclaimers import (
+    render_footer_disclaimer,
+    render_methodology_limitations,
+)
+from app.ui.indicator_docs import (
+    render_indicator_glossary,
+    render_indicator_note,
+)
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
-from app.ui.asset_cards import render_asset_hero_logo
+from app.ui.tables import date_cell, number_cell, render_table
 from core.assets import ASSETS
+from core.config import ANNUALIZATION_FACTORS
 from core.data_loader import download_active_data
 from core.data_processor import prepare_dataframe
+from core.formatters import format_number_br
 from core.indicators import (
     add_bollinger_bands,
     add_exponential_moving_averages,
@@ -34,6 +44,7 @@ from core.indicators import (
     add_moving_averages,
     add_rsi,
 )
+from core.indicators_extra import add_atr, add_rolling_volatility
 from core.visualizations import (
     create_candlestick_chart,
     create_macd_chart,
@@ -59,176 +70,57 @@ st.title("📈 Indicadores Técnicos")
 st.markdown(
     "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 2rem;'>"
     "Explore indicadores técnicos calculados sobre dados históricos. "
-    "Médias móveis, RSI, MACD e Bandas de Bollinger ajudam a descrever "
-    "tendência, momentum e dispersão de preços."
+    "Médias móveis, RSI, MACD, Bandas de Bollinger, ATR e volatilidade móvel "
+    "ajudam a descrever tendência, momentum e dispersão de preços."
     "</p>",
     unsafe_allow_html=True
 )
 
 
+PLOTLY_CONFIG = {
+    "displayModeBar": True,
+    "displaylogo": False,
+}
+
+
 # ==========================================================
-# Funções de Formatação e Tabela Customizada
+# Gráficos auxiliares
 # ==========================================================
-def format_brazilian_number(value) -> str:
-    """Formata um número com duas casas decimais no padrão brasileiro."""
-    if value is None or pd.isna(value):
-        return "—"
-
-    try:
-        numeric_value = float(value)
-    except (TypeError, ValueError):
-        return str(value)
-
-    return (
-        f"{numeric_value:,.2f}"
-        .replace(",", "X")
-        .replace(".", ",")
-        .replace("X", ".")
-    )
-
-
-def format_indicator_value(value, column: str) -> str:
-    """Formata os valores da tabela de indicadores."""
-    if value is None or pd.isna(value) or str(value).strip().lower() == "none":
-        return "—"
-
-    if column == "Date":
-        date_value = pd.to_datetime(value, errors="coerce")
-        if pd.isna(date_value):
-            return "—"
-        return date_value.strftime("%d/%m/%Y")
-
-    # Demais colunas numéricas
-    return format_brazilian_number(value)
-
-
-def build_table_styles(prefix: str) -> str:
-    """Gera os estilos CSS comuns das tabelas HTML da página com cabeçalho congelado."""
-    return (
-        "<style>"
-        f".{prefix}-wrapper {{"
-        "width:100%;"
-        "max-height:400px;"
-        "overflow-y:auto;"
-        "overflow-x:auto;"
-        "border:1px solid #D9E2EC;"
-        "border-radius:10px;"
-        "background:#FFFFFF;"
-        "}"
-        f".{prefix}-table {{"
-        "width:100%;"
-        "border-collapse:separate;"
-        "border-spacing:0;"
-        "table-layout:auto;"
-        "font-size:14px;"
-        "color:#26364A;"
-        "}"
-        f".{prefix}-table th {{"
-        "position:sticky;"
-        "top:0;"
-        "z-index:10;"
-        "background:#E8EEF7;"
-        "color:#26364A;"
-        "text-align:center;"
-        "vertical-align:middle;"
-        "font-weight:700;"
-        "white-space:nowrap;"
-        "border-right:1px solid #D9E2EC;"
-        "border-bottom:2px solid #B7C7D9;"
-        "padding:12px 16px;"
-        "}"
-        f".{prefix}-table th:last-child {{"
-        "border-right:none;"
-        "}"
-        f".{prefix}-table td {{"
-        "vertical-align:middle;"
-        "border-right:1px solid #E7EDF3;"
-        "border-bottom:1px solid #E7EDF3;"
-        "padding:10px 16px;"
-        "}"
-        f".{prefix}-table td:last-child {{"
-        "border-right:none;"
-        "}"
-        f".{prefix}-table tbody tr:last-child td {{"
-        "border-bottom:none;"
-        "}"
-        f".{prefix}-row-even {{"
-        "background:#FFFFFF;"
-        "}"
-        f".{prefix}-row-odd {{"
-        "background:#F8FAFC;"
-        "}"
-        f".{prefix}-table tbody tr:hover {{"
-        "background:#EEF5FF;"
-        "}"
-        "</style>"
-    )
-
-
-def render_indicators_table(dataframe: pd.DataFrame, columns: list) -> None:
-    """Renderiza a tabela de indicadores em HTML puro."""
-    if dataframe is None or dataframe.empty:
-        st.info("Não há dados disponíveis para exibição.")
-        return
-
-    display_df = dataframe[columns].copy()
-    records = display_df.to_dict(orient="records")
-
-    header_html = "".join(
-        "<th>" + escape(str(column)) + "</th>"
-        for column in columns
-    )
-
-    rows_html = []
-    for position, record in enumerate(records):
-        cells_html = []
-        for column in columns:
-            formatted_value = format_indicator_value(record.get(column), column)
-
-            if column == "Date":
-                cell_style = (
-                    "text-align:center;"
-                    "white-space:nowrap;"
-                    "font-family:inherit;"
-                )
-            else:
-                cell_style = (
-                    "text-align:right;"
-                    "white-space:nowrap;"
-                    "font-variant-numeric:tabular-nums;"
-                    "font-family:ui-monospace,SFMono-Regular,Menlo,"
-                    "Monaco,Consolas,'Liberation Mono',monospace;"
-                )
-
-            cells_html.append(
-                f'<td style="{cell_style}">{escape(str(formatted_value))}</td>'
-            )
-
-        row_class = (
-            "argos-indicators-row-even"
-            if position % 2 == 0
-            else "argos-indicators-row-odd"
+def build_simple_line_chart(
+    dataframe: pd.DataFrame,
+    column: str,
+    name: str,
+    color: str,
+    y_suffix: str = "",
+    scale: float = 1.0,
+) -> go.Figure:
+    """Gráfico de linha simples, usado para ATR e volatilidade móvel."""
+    figure = go.Figure(
+        go.Scatter(
+            x=dataframe["Date"],
+            y=dataframe[column] * scale,
+            mode="lines",
+            line=dict(color=color, width=2),
+            name=name,
+            hovertemplate=(
+                "<b>%{x|%d/%m/%Y}</b><br>"
+                + name
+                + ": %{y:.2f}"
+                + y_suffix
+                + "<extra></extra>"
+            ),
         )
-
-        rows_html.append(
-            f'<tr class="{row_class}">{"".join(cells_html)}</tr>'
-        )
-
-    table_html = (
-        build_table_styles("argos-indicators")
-        + '<div class="argos-indicators-wrapper">'
-        + '<table class="argos-indicators-table">'
-        + f"<thead><tr>{header_html}</tr></thead>"
-        + f"<tbody>{''.join(rows_html)}</tbody>"
-        + "</table>"
-        + "</div>"
     )
-
-    st.components.v1.html(
-        table_html,
-        height=420,
-        scrolling=True,
+    figure.update_layout(
+        showlegend=False,
+        margin=dict(l=10, r=20, t=20, b=20),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        xaxis=dict(showgrid=False, title=""),
+        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", ticksuffix=y_suffix),
+        font=dict(family="Inter, Arial, sans-serif", color="#334155"),
     )
+    return figure
 
 
 # =====================
@@ -385,6 +277,38 @@ with st.sidebar:
         key="indicators_show_macd",
     )
 
+    st.subheader("ATR")
+
+    show_atr = st.checkbox(
+        "Exibir ATR",
+        value=False,
+        key="indicators_show_atr",
+    )
+
+    atr_window = st.slider(
+        "Período do ATR",
+        min_value=2,
+        max_value=100,
+        value=14,
+        key="indicators_atr_window",
+    )
+
+    st.subheader("Volatilidade móvel")
+
+    show_vol = st.checkbox(
+        "Exibir volatilidade móvel",
+        value=False,
+        key="indicators_show_vol",
+    )
+
+    vol_window = st.slider(
+        "Janela da volatilidade móvel",
+        min_value=2,
+        max_value=100,
+        value=20,
+        key="indicators_vol_window",
+    )
+
     show_volume = st.checkbox(
         "Exibir volume",
         value=True,
@@ -455,6 +379,10 @@ if load_analysis:
         "rsi_upper": rsi_upper,
         "rsi_lower": rsi_lower,
         "show_macd": show_macd,
+        "show_atr": show_atr,
+        "atr_window": atr_window,
+        "show_vol": show_vol,
+        "vol_window": vol_window,
         "show_volume": show_volume,
     }
 
@@ -551,6 +479,20 @@ if load_analysis:
             signal_span=9,
         )
 
+        df = add_atr(
+            df,
+            window=atr_window,
+        )
+
+        df = add_rolling_volatility(
+            df,
+            window=vol_window,
+            value_col="Value",
+            annualization_factor=float(
+                ANNUALIZATION_FACTORS.get(frequency, 252)
+            ),
+        )
+
         st.session_state["indicators_df"] = df
 
 
@@ -595,6 +537,10 @@ rsi_window = query["rsi_window"]
 rsi_upper = query["rsi_upper"]
 rsi_lower = query["rsi_lower"]
 show_macd = query["show_macd"]
+show_atr = query.get("show_atr", False)
+atr_window = query.get("atr_window", 14)
+show_vol = query.get("show_vol", False)
+vol_window = query.get("vol_window", 20)
 show_volume = query["show_volume"]
 
 
@@ -624,7 +570,8 @@ with col_expander:
         st.markdown(f"**Período Selecionado:** {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}")
         st.markdown(f"**Observações Processadas:** {len(df)} períodos válidos calculados com sucesso.")
         st.markdown(
-            "**Tratamento:** As médias móveis, RSI, MACD e Bandas de Bollinger são sempre calculadas sobre a coluna de preço de **fechamento**."
+            "**Tratamento:** As médias móveis, RSI, MACD, Bandas de Bollinger, ATR e volatilidade móvel são calculados somente com dados disponíveis até cada data. "
+            "As médias, o RSI, o MACD e a volatilidade usam o preço de **fechamento**; o ATR usa também máxima e mínima."
         )
 
 st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
@@ -641,8 +588,7 @@ if chart_type == "Candles":
         symbol=symbol.upper(),
         context=context,
     )
-    
-    # Remove o título do eixo X
+
     candle_figure.update_xaxes(title_text="")
 
     st.plotly_chart(
@@ -672,7 +618,6 @@ price_figure = create_price_indicator_chart(
     show_bollinger=show_bollinger,
 )
 
-# Remove o título do eixo X
 price_figure.update_xaxes(title_text="")
 
 st.plotly_chart(
@@ -684,6 +629,15 @@ st.caption(
     "Preço exibido na moeda de origem do ativo. "
     "As médias móveis e bandas são calculadas a partir do fechamento."
 )
+
+if show_sma_short or show_sma_long:
+    render_indicator_note("sma")
+
+if show_ema_short or show_ema_long:
+    render_indicator_note("ema")
+
+if show_bollinger:
+    render_indicator_note("bollinger")
 
 
 # =====================
@@ -698,9 +652,7 @@ if show_volume and "Volume" in df.columns:
         context=context,
     )
 
-    formatted_volume = df["Volume"].apply(
-        lambda x: format_brazilian_number(x) if pd.notnull(x) else "—"
-    )
+    formatted_volume = df["Volume"].apply(format_number_br)
 
     volume_figure.update_traces(
         customdata=formatted_volume,
@@ -708,7 +660,6 @@ if show_volume and "Volume" in df.columns:
         marker_color="#64748B",
     )
 
-    # Limpando o fundo e removendo título do eixo x
     volume_figure.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
@@ -721,10 +672,10 @@ if show_volume and "Volume" in df.columns:
         st.plotly_chart(
             volume_figure,
             use_container_width=True,
-            config={
-                "displayModeBar": False,
-            },
+            config=PLOTLY_CONFIG,
         )
+
+    render_indicator_note("volume")
 
 
 # =====================
@@ -742,7 +693,6 @@ if show_rsi:
         lower_level=float(rsi_lower),
     )
 
-    # Remove o título do eixo X
     rsi_figure.update_xaxes(title_text="")
 
     st.plotly_chart(
@@ -755,6 +705,7 @@ if show_rsi:
         "contextualizar o indicador, mas não devem ser interpretados "
         "isoladamente como recomendação de investimento."
     )
+    render_indicator_note("rsi")
 
 
 # =====================
@@ -769,13 +720,63 @@ if show_macd:
         context=context,
     )
 
-    # Remove o título do eixo X
     macd_figure.update_xaxes(title_text="")
 
     st.plotly_chart(
         macd_figure,
         width="stretch",
     )
+
+    st.caption(
+        f"O MACD desta análise usa EMA curta de {ema_short_window} e EMA longa "
+        f"de {ema_long_window} períodos (as mesmas definidas na barra lateral) "
+        "e linha de sinal de 9 períodos."
+    )
+    render_indicator_note("macd")
+
+
+# =====================
+# ATR
+# =====================
+if show_atr and f"ATR_{atr_window}" in df.columns:
+    st.header("📏 ATR")
+
+    with st.container(border=True):
+        st.plotly_chart(
+            build_simple_line_chart(
+                df,
+                f"ATR_{atr_window}",
+                "ATR",
+                "#8B5CF6",
+            ),
+            use_container_width=True,
+            config=PLOTLY_CONFIG,
+        )
+
+    render_indicator_note("atr")
+
+
+# =====================
+# Volatilidade móvel
+# =====================
+if show_vol and f"VOL_{vol_window}" in df.columns:
+    st.header("🌪️ Volatilidade Móvel")
+
+    with st.container(border=True):
+        st.plotly_chart(
+            build_simple_line_chart(
+                df,
+                f"VOL_{vol_window}",
+                "Volatilidade",
+                "#F59E0B",
+                y_suffix="%",
+                scale=100.0,
+            ),
+            use_container_width=True,
+            config=PLOTLY_CONFIG,
+        )
+
+    render_indicator_note("volatilidade_movel")
 
 
 # =====================
@@ -803,11 +804,25 @@ display_columns = [
         "MACD",
         "MACD_Signal",
         "MACD_Histogram",
+        f"ATR_{atr_window}",
+        f"VOL_{vol_window}",
     ]
     if column in df.columns
 ]
 
-render_indicators_table(df, display_columns)
+table_formatters = {"Date": date_cell}
+table_formatters.update(
+    {column: number_cell for column in display_columns if column != "Date"}
+)
+
+render_table(
+    df,
+    display_columns,
+    table_formatters,
+    max_height=400,
+    min_width=1600,
+    iframe=True,
+)
 
 
 csv_data = df.to_csv(
@@ -825,12 +840,18 @@ st.download_button(
 
 
 # =====================
-# Rodapé
+# Glossário, limitações e rodapé
 # =====================
-st.markdown("---")
+st.markdown("<br>", unsafe_allow_html=True)
 
-st.caption(
-    "⚠️ Esta ferramenta possui finalidade educacional e de pesquisa. "
-    "Indicadores técnicos e dados históricos não garantem resultados "
-    "futuros e não constituem recomendação de investimento."
-)
+render_indicator_glossary()
+
+render_methodology_limitations([
+    "Todos os indicadores são calculados somente com dados disponíveis até cada data (sem informação futura); essa propriedade é verificada por testes automatizados.",
+    "Os parâmetros (janelas, desvios-padrão, níveis do RSI) são convenções ajustáveis; os resultados mudam ao alterá-los.",
+    "Indicadores descrevem o comportamento histórico do preço. Cruzamentos, faixas e níveis de referência não indicam compra, venda nem resultado futuro.",
+    "Em frequência mensal ou semanal há menos observações, o que torna médias e janelas mais longas menos estáveis.",
+    "Os primeiros valores de médias exponenciais e do MACD dependem do ponto inicial da série e são menos confiáveis (período de aquecimento).",
+])
+
+render_footer_disclaimer()
