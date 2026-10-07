@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 
 
 # ==========================================================
@@ -27,6 +28,10 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from app.ui.asset_cards import render_asset_hero_logo
+from app.ui.data_info import (
+    render_availability_messages,
+    render_data_availability,
+)
 from app.ui.disclaimers import render_footer_disclaimer
 from app.ui.education import render_glossary, render_what_it_means
 from app.ui.metric_card import render_metric_card
@@ -44,6 +49,7 @@ from core.analyzer import (
     create_year_month_matrix,
 )
 from core.assets import ASSETS
+from core.data_availability import assess_availability
 from core.data_loader import download_active_data, validate_data
 from core.data_processor import (
     aggregate_by_frequency,
@@ -178,8 +184,9 @@ if load_data:
             st.session_state["asset_query"] = None
 
             st.error(
-                f"Não foi possível carregar dados para o ativo "
-                f"'{symbol}'. Verifique o símbolo e o período informado."
+                f"Não foi possível carregar dados para o ativo '{symbol}'. "
+                "Confira o código do ativo (ações brasileiras terminam em .SA) "
+                "e o período, ou tente novamente em instantes."
             )
             st.stop()
 
@@ -214,6 +221,23 @@ if load_data:
 
         df_aggregated = aggregate_by_frequency(df_prepared, frequency)
         df_primary = select_primary_variable(df_aggregated, "Close")
+
+        # -----------------------------------------------------------------
+        # DISPONIBILIDADE: período solicitado x período efetivamente disponível
+        # -----------------------------------------------------------------
+        availability = assess_availability(
+            dates=df_prepared["Date"],
+            requested_start=start_date,
+            requested_end=end_date,
+            period_observations=len(df_primary),
+        )
+
+        if availability.insufficient:
+            st.session_state["asset_loaded"] = False
+            st.session_state["asset_query"] = None
+            render_availability_messages(availability)
+            st.stop()
+
         df_with_change = calculate_percentage_change(df_primary, "Value")
         stats = calculate_statistics(df_with_change, "Value")
 
@@ -221,6 +245,8 @@ if load_data:
         st.session_state["asset_stats"] = stats
         st.session_state["asset_validation"] = validation
         st.session_state["asset_monthly_vol"] = df_monthly_vol
+        st.session_state["asset_availability"] = availability
+        st.session_state["asset_fetched_at"] = datetime.now()
 
 
 # =====================
@@ -279,9 +305,26 @@ with col_expander:
             missing_str = ", ".join([f"{idx}: {val}" for idx, val in missing.items() if val > 0])
             if not missing_str:
                 missing_str = "Nenhum"
+        elif isinstance(missing, dict):
+            missing_str = ", ".join([f"{idx}: {val}" for idx, val in missing.items() if val > 0])
+            if not missing_str:
+                missing_str = "Nenhum"
         else:
             missing_str = str(missing)
         st.markdown(f"- **Valores ausentes:** {missing_str}")
+
+st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
+
+
+# =====================
+# Disponibilidade dos dados: solicitado x disponível, fonte e consulta
+# =====================
+availability = st.session_state.get("asset_availability")
+if availability is not None:
+    render_data_availability(
+        availability,
+        st.session_state.get("asset_fetched_at"),
+    )
 
 st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
 
@@ -363,10 +406,12 @@ with st.container(border=True):
 # =====================
 # Seção 3: Volatilidade por Mês
 # =====================
-st.markdown("### 🌪️ Volatilidade por Mês")
+st.markdown("### 🌪️ Volatilidade Anualizada por Mês")
 st.markdown(
     "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
-    "Desvio padrão dos retornos diários, anualizado — barras em destaque indicam os meses com maiores picos de volatilidade histórica."
+    "Volatilidade <b>anualizada</b>: desvio padrão dos retornos diários de cada mês, "
+    "convertido para base anual. Barras em destaque indicam os meses com maiores picos "
+    "de volatilidade histórica."
     "</p>",
     unsafe_allow_html=True
 )
@@ -383,7 +428,7 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
             y=df_monthly_vol['Volatility'],
             marker_color=colors,
             customdata=formatted_vol,
-            hovertemplate="<b>Mês:</b> %{x|%m/%Y}<br><b>Volatilidade:</b> %{customdata}<extra></extra>"
+            hovertemplate="<b>Mês:</b> %{x|%m/%Y}<br><b>Volatilidade anualizada:</b> %{customdata}<extra></extra>"
         )
     )
 
@@ -407,7 +452,8 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
 st.markdown(f"### 📉 Variação Percentual — {frequency}")
 st.markdown(
     "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
-    "Distribuição das variações percentuais período a período."
+    "Retorno de <b>cada período</b> em relação ao período anterior (não é a valorização "
+    "acumulada desde o início, que aparece no card \"Retorno Total\")."
     "</p>",
     unsafe_allow_html=True
 )
@@ -437,7 +483,9 @@ with st.container(border=True):
 st.markdown("### 🗓️ Padrões Sazonais")
 st.markdown(
     "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
-    "Mapeamento da variação percentual média agregada por mês e ano."
+    "Cada célula mostra a variação percentual de um mês de um ano específico "
+    "(retorno mensal, não acumulado). Verde indica variação positiva e vermelho, negativa; "
+    "células vazias indicam meses sem dados no período."
     "</p>",
     unsafe_allow_html=True
 )
@@ -507,6 +555,11 @@ fig_bar_season.update_layout(
 with st.container(border=True):
     st.markdown("<h5 style='text-align: center; color: #334155; margin-top: 10px; margin-bottom: 10px; font-size: 1rem;'>Média Consolidada por Mês do Calendário</h5>", unsafe_allow_html=True)
     st.plotly_chart(fig_bar_season, use_container_width=True, config=PLOTLY_CONFIG)
+
+st.caption(
+    "A média por mês do calendário usa poucos anos de histórico; amostras curtas "
+    "geram médias instáveis, e padrões passados não garantem repetição futura."
+)
 
 
 # =====================

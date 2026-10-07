@@ -1,15 +1,17 @@
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 import streamlit as st
 import streamlit.components.v1 as components
 
 from core.assets import ASSETS
 from core.config import config
+from core.data_loader import download_active_data
 from core.periods import (
     DEFAULT_PERIOD,
     PERIOD_OPTIONS,
     period_start_date,
 )
+from core.ticker_input import validate_ticker
 
 
 GROUP_MAPPING = {
@@ -170,8 +172,7 @@ def inject_compact_dropdown_script() -> None:
                 });
 
                 // Diagnóstico: avisa no console se ainda faltar montar
-                // alguma linha (não deve mais acontecer após esta correção,
-                // já que paramos de estrangular a área de rolagem real).
+                // alguma linha.
                 if (totalCount && wrappers.length < totalCount) {
                     console.warn(
                         "[compactarListbox] Só " + wrappers.length +
@@ -195,6 +196,55 @@ def inject_compact_dropdown_script() -> None:
         """,
         height=0,
     )
+
+
+# ==========================================================
+# Digitação livre de ticker (usuários avançados)
+# ==========================================================
+def _fetch_recent(ticker: str):
+    """
+    Baixa ~15 dias do ticker só para verificar se ele existe e tem dados.
+    Sem cache próprio: o data_loader já faz cache dos downloads.
+    """
+    end = date.today()
+    start = end - timedelta(days=15)
+    return download_active_data(
+        symbol=ticker,
+        start_date=start.strftime("%Y-%m-%d"),
+        end_date=end.strftime("%Y-%m-%d"),
+        interval="1d",
+    )
+
+
+def _render_ticker_input(button_key: str) -> str:
+    """Campo de digitação livre. Devolve o ticker validado ou '' se inválido."""
+    raw = st.text_input(
+        "Ticker (código do Yahoo Finance)",
+        key=f"{button_key}_ticker_input",
+        placeholder="Ex.: PETR4.SA, AAPL, BTC-USD",
+        help=(
+            "Para usuários avançados. Ações brasileiras terminam em .SA, "
+            "criptomoedas em -USD e câmbio em =X. Pressione Enter para validar."
+        ),
+    )
+
+    if not raw.strip():
+        st.caption("Digite o código do ativo e pressione Enter.")
+        return ""
+
+    with st.spinner("Verificando ticker..."):
+        result = validate_ticker(raw, _fetch_recent)
+
+    if not result.ok:
+        st.error(result.message)
+        return ""
+
+    asset = next((a for a in ASSETS if a.get("ticker") == result.ticker), None)
+    if asset:
+        st.success(f"{result.ticker} — {asset.get('name')}")
+    else:
+        st.success(f"{result.message} (fora do catálogo do Argos)")
+    return result.ticker
 
 
 # ==========================================================
@@ -232,87 +282,92 @@ def render_asset_controls(
                 "submitted": False,
             }
 
-        # ---------------------------------------------------------
-        # AJUSTE 1: Configuração do Placeholder da Classe de Ativo
-        # ---------------------------------------------------------
-        PLACEHOLDER_GROUP = "Selecione uma classe"
-        options_group = [PLACEHOLDER_GROUP] + groups
-
-        # Recupera o grupo selecionado ou define o placeholder como padrão
-        current_group = st.session_state.get(
-            "asset_group",
-            PLACEHOLDER_GROUP
+        input_mode = st.radio(
+            "Como escolher o ativo",
+            options=["Catálogo", "Digitar ticker"],
+            horizontal=True,
+            key=f"{button_key}_input_mode",
+            help=(
+                "O catálogo é o caminho guiado. Digitar ticker é opcional, "
+                "para usuários avançados."
+            ),
         )
 
-        selected_group = st.selectbox(
-            "Classe do Ativo",
-            options=options_group,
-            index=(
-                options_group.index(current_group)
-                if current_group in options_group
-                else 0
-            ),
-            format_func=lambda value: (
-                value if value == PLACEHOLDER_GROUP
-                else GROUP_MAPPING.get(str(value).lower(), str(value).replace("_", " ").title())
-            ),
-            key=f"{button_key}_group_select",
-            width="stretch",
-        )
+        symbol = ""
 
-        # Atualiza o estado da classe de ativo
-        st.session_state["asset_group"] = selected_group
+        if input_mode == "Catálogo":
+            PLACEHOLDER_GROUP = "Selecione uma classe"
+            options_group = [PLACEHOLDER_GROUP] + groups
 
-        # ---------------------------------------------------------
-        # AJUSTE 2: Configuração do Placeholder do Símbolo do Ativo
-        # ---------------------------------------------------------
-        PLACEHOLDER_ASSET = {"ticker": "", "name": "Selecione um ativo", "group": ""}
+            current_group = st.session_state.get(
+                "asset_group",
+                PLACEHOLDER_GROUP,
+            )
 
-        if selected_group == PLACEHOLDER_GROUP:
-            # Se nenhuma classe foi escolhida, mostra apenas o placeholder
-            filtered_assets = [PLACEHOLDER_ASSET]
+            selected_group = st.selectbox(
+                "Classe do Ativo",
+                options=options_group,
+                index=(
+                    options_group.index(current_group)
+                    if current_group in options_group
+                    else 0
+                ),
+                format_func=lambda value: (
+                    value if value == PLACEHOLDER_GROUP
+                    else GROUP_MAPPING.get(
+                        str(value).lower(),
+                        str(value).replace("_", " ").title(),
+                    )
+                ),
+                key=f"{button_key}_group_select",
+                width="stretch",
+            )
+
+            st.session_state["asset_group"] = selected_group
+
+            PLACEHOLDER_ASSET = {
+                "ticker": "",
+                "name": "Selecione um ativo",
+                "group": "",
+            }
+
+            if selected_group == PLACEHOLDER_GROUP:
+                filtered_assets = [PLACEHOLDER_ASSET]
+            else:
+                filtered_assets = [PLACEHOLDER_ASSET] + [
+                    asset
+                    for asset in ASSETS
+                    if asset.get(
+                        "group",
+                        asset.get("class", "Outros"),
+                    ) == selected_group
+                ]
+
+            current_symbol = st.session_state.get("asset_symbol", "")
+
+            asset_index = 0
+            for index, asset in enumerate(filtered_assets):
+                if asset.get("ticker") == current_symbol:
+                    asset_index = index
+                    break
+
+            selected_asset = st.selectbox(
+                "Símbolo/Nome do Ativo",
+                options=filtered_assets,
+                format_func=lambda asset: (
+                    asset["name"] if asset.get("ticker") == ""
+                    else f"{asset['ticker']} — {asset.get('description', asset.get('descricao', asset.get('name')))}"
+                    if asset.get("group", asset.get("class", "")) == "forex"
+                    else f"{asset['ticker']} — {asset.get('name')}"
+                ),
+                index=asset_index,
+                key=f"{button_key}_asset_select",
+                width="stretch",
+            )
+
+            symbol = selected_asset["ticker"] if selected_asset else ""
         else:
-            # Se escolheu uma classe, mostra o placeholder seguido dos ativos da classe
-            filtered_assets = [PLACEHOLDER_ASSET] + [
-                asset
-                for asset in ASSETS
-                if asset.get(
-                    "group",
-                    asset.get("class", "Outros"),
-                ) == selected_group
-            ]
-
-        # Puxa o ticker vazio (placeholder) como padrão inicial ao invés de BTC-USD
-        current_symbol = st.session_state.get(
-            "asset_symbol",
-            "",
-        )
-
-        asset_index = 0
-        for index, asset in enumerate(filtered_assets):
-            if asset.get("ticker") == current_symbol:
-                asset_index = index
-                break
-
-        selected_asset = st.selectbox(
-            "Símbolo/Nome do Ativo",
-            options=filtered_assets,
-            format_func=lambda asset: (
-                asset["name"] if asset.get("ticker") == ""
-                else f"{asset['ticker']} — {asset.get('description', asset.get('descricao', asset.get('name')))}"
-                if asset.get("group", asset.get("class", "")) == "forex"
-                else f"{asset['ticker']} — {asset.get('name')}"
-            ),
-            index=asset_index,
-            key=f"{button_key}_asset_select",
-            width="stretch",
-        )
-
-        symbol = (
-            selected_asset["ticker"]
-            if selected_asset
-            else ""
-        )
+            symbol = _render_ticker_input(button_key)
 
         st.divider()
 
@@ -380,9 +435,7 @@ def render_asset_controls(
             width="stretch",
         )
 
-        # ---------------------------------------------------------
-        # AJUSTE 3: Trava no botão caso nenhum ativo seja selecionado
-        # ---------------------------------------------------------
+        # Botão desabilitado enquanto nenhum ativo válido estiver escolhido
         is_disabled = (symbol == "")
 
         submitted = st.button(
