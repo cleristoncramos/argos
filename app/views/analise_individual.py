@@ -30,6 +30,7 @@ import streamlit as st
 from app.ui.asset_cards import render_asset_hero_logo
 from app.ui.data_info import (
     render_availability_messages,
+    render_catalog_notice,
     render_data_availability,
 )
 from app.ui.disclaimers import render_footer_disclaimer
@@ -49,6 +50,7 @@ from core.analyzer import (
     create_year_month_matrix,
 )
 from core.assets import ASSETS
+from core.currency import currency_info
 from core.data_availability import assess_availability
 from core.data_loader import download_active_data, validate_data
 from core.data_processor import (
@@ -74,6 +76,10 @@ PLOTLY_CONFIG = {
     "displayModeBar": True,
     "displaylogo": False,
 }
+
+# Fator de anualização da volatilidade calculada sobre retornos DIÁRIOS
+# (convenção do projeto: 252 dias de negociação por ano).
+DAILY_ANNUALIZATION_FACTOR = 252
 
 
 initialize_asset_state()
@@ -101,18 +107,6 @@ def format_brazilian_integer(value) -> str:
     except (TypeError, ValueError):
         return str(value)
     return f"{numeric_value:,}".replace(",", ".")
-
-
-def get_currency_prefix(ticker: str) -> str:
-    """Retorna o prefixo da moeda correto com base na regra do Ticker."""
-    if ticker.endswith(".SA"):
-        return "R$ "
-    elif ticker.endswith("=X"):
-        return ""
-    elif ticker.startswith("^") or ticker.endswith(".SS"):
-        return "Pts "
-    else:
-        return "US$ "
 
 
 def render_custom_metric_card(title: str, value: str) -> None:
@@ -203,6 +197,8 @@ if load_data:
 
         # -----------------------------------------------------------------
         # CÁLCULO DA VOLATILIDADE MENSAL ANUALIZADA
+        # Desvio-padrão dos retornos diários de cada mês, anualizado com
+        # √252 (convenção do projeto, ver docs/catalogo-de-ativos.md, seção 26).
         # -----------------------------------------------------------------
         df_vol = df_prepared[['Date', 'Close']].copy()
         df_vol['Date'] = pd.to_datetime(df_vol['Date'])
@@ -211,7 +207,9 @@ if load_data:
         df_vol['YearMonth'] = df_vol['Date'].dt.to_period('M')
 
         monthly_std = df_vol.groupby('YearMonth')['Daily_Return'].std()
-        monthly_vol_annualized = monthly_std * np.sqrt(365) * 100
+        monthly_vol_annualized = (
+            monthly_std * np.sqrt(DAILY_ANNUALIZATION_FACTOR) * 100
+        )
 
         df_monthly_vol = monthly_vol_annualized.reset_index()
         df_monthly_vol.columns = ['Date', 'Volatility']
@@ -283,11 +281,18 @@ frequency = query["frequency"]
 # =====================
 current_asset = next((a for a in ASSETS if a["ticker"] == symbol), None)
 
+# Ativos digitados fora do catálogo usam um registro mínimo
+logo_asset = current_asset or {
+    "ticker": symbol,
+    "name": symbol,
+    "group": "",
+    "icon": "📊",
+}
+
 col_logo, col_expander = st.columns([1, 3], vertical_alignment="center")
 
 with col_logo:
-    if current_asset:
-        render_asset_hero_logo(current_asset)
+    render_asset_hero_logo(logo_asset)
 
 with col_expander:
     with st.expander(f"✅ Análise gerada para {symbol}. Clique para visualizar detalhes e qualidade dos dados.", expanded=False):
@@ -301,12 +306,10 @@ with col_expander:
         st.markdown(f"- **Valores negativos (Fechamento):** {validation['negative_close']}")
 
         missing = validation["missing_values"]
-        if isinstance(missing, pd.Series):
-            missing_str = ", ".join([f"{idx}: {val}" for idx, val in missing.items() if val > 0])
-            if not missing_str:
-                missing_str = "Nenhum"
-        elif isinstance(missing, dict):
-            missing_str = ", ".join([f"{idx}: {val}" for idx, val in missing.items() if val > 0])
+        if isinstance(missing, (pd.Series, dict)):
+            missing_str = ", ".join(
+                [f"{idx}: {val}" for idx, val in dict(missing).items() if val > 0]
+            )
             if not missing_str:
                 missing_str = "Nenhum"
         else:
@@ -336,18 +339,20 @@ st.header("📊 Visão Geral do Ativo")
 
 col1, col2, col3, col4 = st.columns(4)
 
-prefix_currency = get_currency_prefix(symbol)
+currency = currency_info(symbol)
+prefix_currency = currency.prefix
+value_suffix = "%" if currency.kind == "rate" else ""
 
 with col1:
     render_custom_metric_card(
         "Primeiro Valor",
-        f"<span style='font-size: 1.2rem; color: #64748b; font-weight: 600;'>{prefix_currency}</span>{format_number_br(stats['first_value'])}"
+        f"<span style='font-size: 1.2rem; color: #64748b; font-weight: 600;'>{prefix_currency}</span>{format_number_br(stats['first_value'])}{value_suffix}"
     )
 
 with col2:
     render_custom_metric_card(
         "Último Valor",
-        f"<span style='font-size: 1.2rem; color: #64748b; font-weight: 600;'>{prefix_currency}</span>{format_number_br(stats['last_value'])}"
+        f"<span style='font-size: 1.2rem; color: #64748b; font-weight: 600;'>{prefix_currency}</span>{format_number_br(stats['last_value'])}{value_suffix}"
     )
 
 with col3:
@@ -369,16 +374,26 @@ with col4:
         f"{count_formatted} <span style='font-size: 1rem; color: #64748b; font-weight: 500;'>{freq_label}</span>"
     )
 
+st.caption(f"Unidade de cotação: {currency.label}.")
+
+if currency.kind == "rate":
+    st.caption(
+        "Este ativo é uma taxa de juros: o \"Retorno Total\" mede a variação do "
+        "nível da taxa, e não o retorno de um título."
+    )
+
 st.markdown("<br>", unsafe_allow_html=True)
 
 
 # =====================
 # Seção 2: Evolução Temporal
 # =====================
+value_label = "Taxa" if currency.kind == "rate" else "Preço"
+
 st.markdown("### 📈 Evolução Temporal do Ativo")
 st.markdown(
     "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
-    f"Comportamento histórico do preço de fechamento para {symbol}."
+    f"Comportamento histórico de {'nível da taxa' if currency.kind == 'rate' else 'preço de fechamento'} para {symbol}."
     "</p>",
     unsafe_allow_html=True
 )
@@ -394,7 +409,11 @@ fig_line.add_trace(go.Scatter(
     fill="tozeroy",
     fillcolor="rgba(16, 185, 129, 0.15)",
     customdata=formatted_y,
-    hovertemplate=f"<b>Data:</b> %{{x|%d/%m/%Y}}<br><b>Preço:</b> {prefix_currency}%{{customdata}}<extra></extra>"
+    hovertemplate=(
+        f"<b>Data:</b> %{{x|%d/%m/%Y}}<br>"
+        f"<b>{value_label}:</b> {prefix_currency}%{{customdata}}{value_suffix}"
+        "<extra></extra>"
+    ),
 ))
 
 fig_line = apply_custom_layout(fig_line)
@@ -410,8 +429,8 @@ st.markdown("### 🌪️ Volatilidade Anualizada por Mês")
 st.markdown(
     "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
     "Volatilidade <b>anualizada</b>: desvio padrão dos retornos diários de cada mês, "
-    "convertido para base anual. Barras em destaque indicam os meses com maiores picos "
-    "de volatilidade histórica."
+    f"convertido para base anual (fator √{DAILY_ANNUALIZATION_FACTOR}). Barras em destaque "
+    "indicam os meses com maiores picos de volatilidade histórica."
     "</p>",
     unsafe_allow_html=True
 )
@@ -442,6 +461,12 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
 
     with st.container(border=True):
         st.plotly_chart(fig_vol, use_container_width=True, config=PLOTLY_CONFIG)
+
+    if currency.kind == "rate":
+        st.caption(
+            "Para taxas de juros, a volatilidade descreve a oscilação da variação "
+            "percentual do nível da taxa."
+        )
 
     render_what_it_means("volatilidade")
 
@@ -600,10 +625,12 @@ st.download_button(
 
 
 # =====================
-# Glossário e rodapé
+# Glossário, catálogo e rodapé
 # =====================
 st.markdown("<br>", unsafe_allow_html=True)
 
 render_glossary(["retorno", "volatilidade", "sazonalidade"])
+
+render_catalog_notice()
 
 render_footer_disclaimer()

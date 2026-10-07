@@ -145,6 +145,13 @@ def calculate_returns_table(
 ) -> pd.DataFrame:
     """
     Calcula retornos simples de cada ativo.
+
+    O retorno de uma linha é medido contra a linha imediatamente anterior
+    da tabela. Onde um dos dois valores está ausente (lacuna de calendário),
+    o retorno fica NaN em vez de ser preenchido com o valor anterior, para
+    que a correlação use apenas retornos efetivamente coincidentes. A
+    fórmula não usa o parâmetro fill_method do pandas, que varia entre
+    versões.
     """
     if price_table.empty:
         return pd.DataFrame()
@@ -157,7 +164,8 @@ def calculate_returns_table(
         if column != "Date"
     ]
 
-    result[asset_columns] = result[asset_columns].pct_change()
+    prices = result[asset_columns]
+    result[asset_columns] = prices / prices.shift(1) - 1
 
     return result
 

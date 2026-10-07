@@ -1,6 +1,6 @@
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from html import escape
 
 PROJECT_ROOT = os.path.abspath(
@@ -18,9 +18,18 @@ import streamlit as st
 
 from app.ui.asset_cards import render_selected_asset_cards
 from app.ui.colors import tone_icon, tone_of
+from app.ui.comparison_info import render_comparison_notes
+from app.ui.data_info import DATA_SOURCE, render_catalog_notice
+from app.ui.disclaimers import (
+    render_footer_disclaimer,
+    render_methodology_limitations,
+    render_profile_limitation_notice,
+)
+from app.ui.education import render_what_it_means
 from app.ui.metric_card import render_metric_card
 from app.ui.sidebar import (
     GROUP_MAPPING,
+    fetch_recent,
     inject_compact_dropdown_script,
     inject_compact_sidebar_css,
 )
@@ -43,7 +52,13 @@ from core.comparison import (
     create_comparison_summary,
     format_return_pct,
 )
+from core.comparison_checks import (
+    build_spans,
+    check_period_divergence,
+    comparison_notes,
+)
 from core.config import ANNUALIZATION_FACTORS, config
+from core.currency import currency_info
 from core.data_loader import download_active_data
 from core.data_processor import (
     aggregate_by_frequency,
@@ -57,6 +72,16 @@ from core.periods import (
     period_start_date,
 )
 from core.risk_metrics import build_risk_summary, calculate_drawdown
+from core.ticker_input import validate_ticker
+
+
+MAX_COMPARED = 5
+
+PLOTLY_CONFIG = {
+    "displayModeBar": True,
+    "displaylogo": False,
+    "responsive": True,
+}
 
 
 # ==========================================================
@@ -69,6 +94,7 @@ COMPARISON_FREQUENCY_STATE_KEY = "comparison_frequency"
 COMPARISON_RISK_FREE_RATE_STATE_KEY = "comparison_risk_free_rate_pct"
 COMPARISON_SYMBOLS_STATE_KEY = "comparison_symbols_input"
 COMPARISON_CLASS_STATE_KEY = "comparison_selected_class"
+COMPARISON_CUSTOM_MSG_KEY = "comparison_custom_msg"
 
 COMPARISON_PERIOD_WIDGET_KEY = "comparison_period_widget"
 COMPARISON_START_DATE_WIDGET_KEY = "comparison_start_date_widget"
@@ -77,6 +103,49 @@ COMPARISON_FREQUENCY_WIDGET_KEY = "comparison_frequency_widget"
 COMPARISON_RISK_FREE_RATE_WIDGET_KEY = "comparison_risk_free_rate_pct_widget"
 COMPARISON_CLASS_WIDGET_KEY = "comparison_class_widget"
 COMPARISON_SYMBOLS_WIDGET_KEY = "comparison_symbols_widget"
+COMPARISON_CUSTOM_INPUT_KEY = "comparison_custom_ticker_input"
+COMPARISON_COMMON_PERIOD_KEY = "comparison_common_period_widget"
+
+
+# ==========================================================
+# Utilitários de catálogo
+# ==========================================================
+def asset_meta(ticker: str) -> dict | None:
+    return next((a for a in ASSETS if a["ticker"] == ticker), None)
+
+
+def asset_or_placeholder(ticker: str) -> dict:
+    """Metadados do catálogo ou um registro mínimo para tickers digitados."""
+    return asset_meta(ticker) or {
+        "ticker": ticker,
+        "name": ticker,
+        "group": "",
+        "icon": "📊",
+    }
+
+
+def get_asset_full_name(ticker: str) -> str:
+    asset = asset_meta(ticker)
+    if asset:
+        return f"{asset['name']} ({ticker})"
+    return ticker
+
+
+def get_asset_multiline_name(ticker: str) -> str:
+    asset = asset_meta(ticker)
+    if asset:
+        return f"{asset['name']}<br>({ticker})"
+    return ticker
+
+
+def format_multiselect_option(ticker: str) -> str:
+    """Embeleza o ticker exibido no multiselect usando os dados originais do ativo."""
+    a = asset_meta(ticker)
+    if not a:
+        return f"{ticker} — fora do catálogo"
+    if a.get("group", a.get("class", "")) == "forex":
+        return f"{a['ticker']} — {a.get('description', a.get('descricao', a.get('name')))}"
+    return f"{a['ticker']} — {a.get('name')}"
 
 
 # ==========================================================
@@ -108,25 +177,51 @@ def sync_comparison_risk_free_rate() -> None:
     )
 
 def sync_comparison_class() -> None:
-    """
-    Sincroniza a classe selecionada IMEDIATAMENTE no callback on_change,
-    antes do script ser executado novamente. Isso evita o atraso de uma
-    execução que causava a necessidade de clicar duas vezes.
-    """
+    """Sincroniza a classe selecionada no callback, antes do rerun."""
     st.session_state[COMPARISON_CLASS_STATE_KEY] = st.session_state[
         COMPARISON_CLASS_WIDGET_KEY
     ]
 
 def sync_comparison_symbols() -> None:
-    """
-    Sincroniza os tickers selecionados IMEDIATAMENTE no callback on_change.
-    Antes, o valor exibido dependia de uma variável (`default_list`)
-    recalculada a cada rerun a partir do estado ANTERIOR ao clique --
-    por isso o primeiro clique nunca "aparecia" de fato, exigindo um
-    segundo clique para ser refletido na tela.
-    """
+    """Sincroniza os tickers selecionados no callback, antes do rerun."""
     selected = st.session_state[COMPARISON_SYMBOLS_WIDGET_KEY]
     st.session_state[COMPARISON_SYMBOLS_STATE_KEY] = ",".join(selected)
+
+
+def add_custom_ticker() -> None:
+    """
+    Valida um ticker digitado e o acrescenta à seleção. Roda como callback
+    do botão, portanto pode alterar o estado do multiselect com segurança.
+    A validação consulta a fonte e pode levar alguns segundos.
+    """
+    raw = st.session_state.get(COMPARISON_CUSTOM_INPUT_KEY, "")
+    current = list(st.session_state.get(COMPARISON_SYMBOLS_WIDGET_KEY, []))
+
+    result = validate_ticker(raw, fetch_recent)
+
+    if not result.ok:
+        st.session_state[COMPARISON_CUSTOM_MSG_KEY] = ("error", result.message)
+        return
+
+    if result.ticker in current:
+        st.session_state[COMPARISON_CUSTOM_MSG_KEY] = (
+            "info", f"{result.ticker} já está na seleção.",
+        )
+        return
+
+    if len(current) >= MAX_COMPARED:
+        st.session_state[COMPARISON_CUSTOM_MSG_KEY] = (
+            "error", f"A comparação aceita no máximo {MAX_COMPARED} ativos.",
+        )
+        return
+
+    current.append(result.ticker)
+    st.session_state[COMPARISON_SYMBOLS_WIDGET_KEY] = current
+    st.session_state[COMPARISON_SYMBOLS_STATE_KEY] = ",".join(current)
+    st.session_state[COMPARISON_CUSTOM_INPUT_KEY] = ""
+    st.session_state[COMPARISON_CUSTOM_MSG_KEY] = (
+        "success", f"{result.ticker} adicionado à seleção.",
+    )
 
 
 # ==========================================================
@@ -140,14 +235,8 @@ def initialize_comparison_state() -> None:
         "comparison_start_date",
         period_start_date(DEFAULT_PERIOD, today),
     )
-    asset_end_date = st.session_state.get(
-        "comparison_end_date",
-        today,
-    )
-    asset_frequency = st.session_state.get(
-        "comparison_frequency",
-        "Mensal",
-    )
+    asset_end_date = st.session_state.get("comparison_end_date", today)
+    asset_frequency = st.session_state.get("comparison_frequency", "Mensal")
     asset_class = st.session_state.get(COMPARISON_CLASS_STATE_KEY, None)
 
     symbols_str = st.session_state.get(COMPARISON_SYMBOLS_STATE_KEY, "")
@@ -161,6 +250,7 @@ def initialize_comparison_state() -> None:
         COMPARISON_RISK_FREE_RATE_STATE_KEY: 0.0,
         COMPARISON_SYMBOLS_STATE_KEY: symbols_str,
         COMPARISON_CLASS_STATE_KEY: asset_class,
+        COMPARISON_CUSTOM_MSG_KEY: None,
         COMPARISON_PERIOD_WIDGET_KEY: asset_period,
         COMPARISON_START_DATE_WIDGET_KEY: asset_start_date,
         COMPARISON_END_DATE_WIDGET_KEY: asset_end_date,
@@ -168,6 +258,8 @@ def initialize_comparison_state() -> None:
         COMPARISON_RISK_FREE_RATE_WIDGET_KEY: 0.0,
         COMPARISON_CLASS_WIDGET_KEY: asset_class,
         COMPARISON_SYMBOLS_WIDGET_KEY: symbols_list,
+        COMPARISON_CUSTOM_INPUT_KEY: "",
+        COMPARISON_COMMON_PERIOD_KEY: False,
     }
 
     for key, value in defaults.items():
@@ -176,21 +268,8 @@ def initialize_comparison_state() -> None:
 
 
 # ==========================================================
-# Utilitários
+# Layout e cards
 # ==========================================================
-def get_asset_full_name(ticker: str) -> str:
-    asset = next((a for a in ASSETS if a["ticker"] == ticker), None)
-    if asset:
-        return f"{asset['name']} ({ticker})"
-    return ticker
-
-def get_asset_multiline_name(ticker: str) -> str:
-    asset = next((a for a in ASSETS if a["ticker"] == ticker), None)
-    if asset:
-        return f"{asset['name']}<br>({ticker})"
-    return ticker
-
-
 def apply_custom_layout(fig):
     fig.update_layout(
         title="",
@@ -204,13 +283,45 @@ def apply_custom_layout(fig):
     return fig
 
 
-def render_custom_metric_card(title: str, asset: str, raw_value: float, formatted_str: str) -> None:
+def render_custom_metric_card(
+    title: str,
+    asset: str,
+    raw_value: float,
+    formatted_str: str,
+    subtitle: str | None = None,
+) -> None:
     """Card de destaque: nome do ativo + selo colorido com o valor."""
     render_metric_card(
         title,
         escape(asset),
         value_size="1.1rem",
+        subtitle=subtitle,
         badge=(f"{tone_icon(raw_value)} {formatted_str}", tone_of(raw_value)),
+    )
+
+
+def extreme_row(dataframe: pd.DataFrame, column: str, largest: bool = True):
+    """Linha com o maior/menor valor da coluna, ignorando NaN (None se vazia)."""
+    if column not in dataframe.columns:
+        return None
+    values = dataframe[column].dropna()
+    if values.empty:
+        return None
+    index = values.idxmax() if largest else values.idxmin()
+    return dataframe.loc[index]
+
+
+def render_highlight(title: str, row, value_column: str, formatter) -> None:
+    if row is None:
+        render_metric_card(title, "N/A", value_size="1.1rem")
+        return
+    raw_value = row[value_column]
+    render_custom_metric_card(
+        title,
+        get_asset_full_name(row["Ativo"]),
+        raw_value,
+        formatter(raw_value),
+        subtitle="No período analisado",
     )
 
 
@@ -339,6 +450,42 @@ def render_normalized_data_table(dataframe: pd.DataFrame) -> None:
     render_table(display_df, columns, formatters, max_height=450)
 
 
+def render_asset_metadata_table(tickers: list[str], used_spans) -> None:
+    """Metadados do catálogo + período efetivamente usado de cada ativo."""
+    spans_by_ticker = {s.ticker: s for s in used_spans}
+    rows = []
+    for ticker in tickers:
+        meta = asset_meta(ticker)
+        span = spans_by_ticker.get(ticker)
+        rows.append({
+            "Ativo": get_asset_full_name(ticker),
+            "Classe": meta["class"] if meta else "Fora do catálogo",
+            "Subclasse": meta["subcategory"] if meta else "—",
+            "Mercado": meta["market"] if meta else "—",
+            "Unidade": currency_info(ticker).label,
+            "Início": span.start if span else None,
+            "Fim": span.end if span else None,
+            "Obs. diárias": span.observations if span else None,
+        })
+
+    render_table(
+        pd.DataFrame(rows),
+        ["Ativo", "Classe", "Subclasse", "Mercado", "Unidade", "Início", "Fim", "Obs. diárias"],
+        {
+            "Ativo": text_cell,
+            "Classe": text_cell,
+            "Subclasse": text_cell,
+            "Mercado": text_cell,
+            "Unidade": text_cell,
+            "Início": date_cell,
+            "Fim": date_cell,
+            "Obs. diárias": integer_cell,
+        },
+        max_height=None,
+        min_width=900,
+    )
+
+
 # ==========================================================
 # Heatmap de correlação
 # ==========================================================
@@ -462,7 +609,7 @@ def render_correlation_heatmap(correlation_matrix: pd.DataFrame) -> None:
         st.plotly_chart(
             figure,
             use_container_width=True,
-            config={"displayModeBar": False, "responsive": True},
+            config=PLOTLY_CONFIG,
         )
 
 
@@ -490,27 +637,12 @@ st.markdown(
 # ==========================================================
 # Parâmetros da comparação
 # ==========================================================
-def format_multiselect_option(ticker: str) -> str:
-    """Embeleza o ticker exibido no multiselect usando os dados originais do ativo."""
-    a = next((item for item in ASSETS if item["ticker"] == ticker), None)
-    if not a:
-        return ticker
-    if a.get("group", a.get("class", "")) == "forex":
-        return f"{a['ticker']} — {a.get('description', a.get('descricao', a.get('name')))}"
-    return f"{a['ticker']} — {a.get('name')}"
-
-
 with st.sidebar:
-    # Injeta a compactação via CSS e JS padrão da sidebar
     inject_compact_sidebar_css()
     inject_compact_dropdown_script()
 
     st.header("⚙️ Parâmetros da Comparação")
 
-    # ==========================================================
-    # SELEÇÃO DE ATIVOS (key + on_change eliminam o atraso de uma
-    # execução que exigia clicar duas vezes)
-    # ==========================================================
     groups = []
     for asset in ASSETS:
         g = asset.get("group", asset.get("class", "Outros"))
@@ -526,12 +658,8 @@ with st.sidebar:
         on_change=sync_comparison_class,
     )
 
-    # O valor confirmado vem do estado sincronizado no callback,
-    # já refletindo o clique mais recente sem atraso.
     selected_class = st.session_state[COMPARISON_CLASS_STATE_KEY]
 
-    # Tickers já selecionados (persistidos automaticamente pela key
-    # do próprio widget entre execuções).
     previously_selected_tickers = st.session_state.get(
         COMPARISON_SYMBOLS_WIDGET_KEY,
         [],
@@ -540,9 +668,8 @@ with st.sidebar:
     valid_options_tickers = []
     seen = set()
 
-    # Estratégia de retenção: o ticker entra nas opções se for da
-    # classe selecionada OU se já estiver selecionado (permite
-    # comparação entre ativos de classes diferentes).
+    # O ticker entra nas opções se for da classe selecionada OU se já estiver
+    # selecionado (permite comparar classes diferentes e tickers digitados).
     for asset in ASSETS:
         asset_group = asset.get("group", asset.get("class", "Outros"))
         is_in_group = (asset_group == selected_class)
@@ -552,22 +679,48 @@ with st.sidebar:
             valid_options_tickers.append(asset["ticker"])
             seen.add(asset["ticker"])
 
+    for ticker in previously_selected_tickers:
+        if ticker not in seen:
+            valid_options_tickers.append(ticker)
+            seen.add(ticker)
+
     st.multiselect(
         "Símbolo/Nome do Ativo:",
         options=valid_options_tickers,
-        max_selections=5,
+        max_selections=MAX_COMPARED,
         format_func=format_multiselect_option,
-        disabled=(selected_class is None),
+        disabled=(selected_class is None and not previously_selected_tickers),
         placeholder="Selecione um ativo",
         help="Selecione uma classe acima para habilitar." if selected_class is None else "Digite para buscar por nome ou código na classe selecionada.",
         key=COMPARISON_SYMBOLS_WIDGET_KEY,
         on_change=sync_comparison_symbols,
     )
 
-    # Valor confirmado, já sincronizado pelo callback -- sem atraso.
+    with st.expander("⌨️ Digitar ticker (avançado)", expanded=False):
+        st.text_input(
+            "Ticker (código do Yahoo Finance)",
+            key=COMPARISON_CUSTOM_INPUT_KEY,
+            placeholder="Ex.: PETR4.SA, AAPL, BTC-USD",
+            help=(
+                "Para usuários avançados. Ações brasileiras terminam em .SA, "
+                "criptomoedas em -USD e câmbio em =X. A validação consulta a "
+                "fonte e pode levar alguns segundos."
+            ),
+        )
+        st.button(
+            "➕ Adicionar ao comparativo",
+            key="comparison_add_custom",
+            on_click=add_custom_ticker,
+            use_container_width=True,
+        )
+        custom_message = st.session_state.get(COMPARISON_CUSTOM_MSG_KEY)
+        if custom_message:
+            {"error": st.error, "success": st.success}.get(
+                custom_message[0], st.info
+            )(custom_message[1])
+
     selected_tickers = st.session_state[COMPARISON_SYMBOLS_WIDGET_KEY]
     symbols_input = st.session_state[COMPARISON_SYMBOLS_STATE_KEY]
-    # ==========================================================
 
     st.divider()
 
@@ -606,6 +759,16 @@ with st.sidebar:
         on_change=sync_comparison_frequency,
     )
 
+    st.checkbox(
+        "Comparar apenas o período comum",
+        key=COMPARISON_COMMON_PERIOD_KEY,
+        help=(
+            "Quando os ativos têm históricos de tamanhos diferentes, corta todos "
+            "para o intervalo em que todos têm dados. Torna as métricas "
+            "diretamente comparáveis, mas usa menos histórico."
+        ),
+    )
+
     st.number_input(
         "Taxa livre de risco anual (%)",
         min_value=0.0,
@@ -636,11 +799,7 @@ annual_risk_free_rate = risk_free_rate_pct / 100
 # Processamento da comparação
 # ==========================================================
 if load_comparison:
-    try:
-        symbols = [s.strip() for s in symbols_input.split(",") if s.strip()]
-    except ValueError as error:
-        st.sidebar.error(str(error))
-        st.stop()
+    symbols = [s.strip() for s in symbols_input.split(",") if s.strip()]
 
     if len(symbols) < 2:
         st.sidebar.error("Selecione pelo menos dois ativos para comparar.")
@@ -650,10 +809,12 @@ if load_comparison:
         st.sidebar.error("A data inicial deve ser anterior à data final.")
         st.stop()
 
-    asset_data = {}
+    use_common_period = bool(st.session_state.get(COMPARISON_COMMON_PERIOD_KEY, False))
+
+    downloaded = {}
     failed_symbols = []
 
-    with st.spinner("Carregando e processando os ativos..."):
+    with st.spinner("Baixando os ativos..."):
         for symbol in symbols:
             df_raw = download_active_data(
                 symbol=symbol,
@@ -666,22 +827,9 @@ if load_comparison:
                 failed_symbols.append(symbol)
                 continue
 
-            df_prepared = prepare_dataframe(df_raw)
-            df_aggregated = aggregate_by_frequency(
-                df_prepared,
-                frequency,
-            )
-            df_primary = select_primary_variable(
-                df_aggregated,
-                "Close",
-            )
-            df_returns = calculate_returns(df_primary, "Value")
-            asset_data[symbol] = calculate_drawdown(
-                df_returns,
-                "Value",
-            )
+            downloaded[symbol] = prepare_dataframe(df_raw)
 
-    if len(asset_data) < 2:
+    if len(downloaded) < 2:
         st.session_state["comparison_loaded"] = False
         st.session_state["comparison_query"] = None
         st.error(
@@ -689,10 +837,64 @@ if load_comparison:
         )
         if failed_symbols:
             st.warning(
-                "Símbolos sem dados válidos: "
+                "Símbolos sem dados válidos: " + ", ".join(failed_symbols)
+            )
+        st.stop()
+
+    # Períodos históricos de cada ativo (datas diárias, antes de agregar)
+    period_check = check_period_divergence(
+        build_spans({s: d["Date"] for s, d in downloaded.items()})
+    )
+
+    if use_common_period:
+        if not period_check.has_common_period:
+            st.session_state["comparison_loaded"] = False
+            st.session_state["comparison_query"] = None
+            st.error(
+                "Os ativos selecionados não possuem período em comum no intervalo "
+                "consultado. Desative a opção de período comum ou troque os ativos."
+            )
+            st.stop()
+
+        common_start_ts = pd.Timestamp(period_check.common_start)
+        common_end_ts = pd.Timestamp(period_check.common_end) + timedelta(days=1)
+        downloaded = {
+            symbol: frame[
+                (frame["Date"] >= common_start_ts) & (frame["Date"] < common_end_ts)
+            ].reset_index(drop=True)
+            for symbol, frame in downloaded.items()
+        }
+
+    asset_data = {}
+
+    with st.spinner("Processando os ativos..."):
+        for symbol, df_prepared in downloaded.items():
+            df_aggregated = aggregate_by_frequency(df_prepared, frequency)
+            df_primary = select_primary_variable(df_aggregated, "Close")
+
+            if len(df_primary) < 2:
+                failed_symbols.append(symbol)
+                continue
+
+            df_returns = calculate_returns(df_primary, "Value")
+            asset_data[symbol] = calculate_drawdown(df_returns, "Value")
+
+    if len(asset_data) < 2:
+        st.session_state["comparison_loaded"] = False
+        st.session_state["comparison_query"] = None
+        st.error(
+            "Não foi possível obter dados suficientes para pelo menos dois ativos."
+        )
+        if failed_symbols:
+            st.warning(
+                "Símbolos sem dados válidos ou com dados insuficientes: "
                 + ", ".join(failed_symbols)
             )
         st.stop()
+
+    used_spans = build_spans(
+        {s: d["Date"] for s, d in downloaded.items() if s in asset_data}
+    )
 
     base_100_table = build_base_100_table(asset_data)
     price_table = build_price_table(asset_data)
@@ -736,6 +938,7 @@ if load_comparison:
         "end_date": end_date,
         "frequency": frequency,
         "risk_free_rate_pct": risk_free_rate_pct,
+        "common_period": use_common_period,
     }
     st.session_state["comparison_asset_data"] = asset_data
     st.session_state["comparison_failed_symbols"] = failed_symbols
@@ -744,6 +947,9 @@ if load_comparison:
     st.session_state["comparison_returns_table"] = returns_table
     st.session_state["comparison_correlation_matrix"] = correlation_matrix
     st.session_state["comparison_summary"] = summary
+    st.session_state["comparison_period_check"] = period_check
+    st.session_state["comparison_used_spans"] = used_spans
+    st.session_state["comparison_fetched_at"] = datetime.now()
 
 
 # ==========================================================
@@ -769,15 +975,20 @@ failed_symbols = st.session_state["comparison_failed_symbols"]
 base_100_table = st.session_state["comparison_base_100_table"]
 correlation_matrix = st.session_state["comparison_correlation_matrix"]
 summary = st.session_state["comparison_summary"]
+period_check = st.session_state.get("comparison_period_check")
+used_spans = st.session_state.get("comparison_used_spans", [])
+fetched_at = st.session_state.get("comparison_fetched_at")
 start_date = query["start_date"]
 end_date = query["end_date"]
 frequency = query["frequency"]
 risk_free_rate_pct = float(query["risk_free_rate_pct"])
+aligned_to_common = bool(query.get("common_period", False))
 annualization_factor = ANNUALIZATION_FACTORS.get(frequency, 252)
+compared_tickers = list(asset_data.keys())
 
 if failed_symbols:
     st.warning(
-        "Os seguintes símbolos não retornaram dados válidos: "
+        "Os seguintes símbolos não retornaram dados válidos ou suficientes: "
         + ", ".join(failed_symbols)
     )
 
@@ -785,24 +996,41 @@ if failed_symbols:
 # =====================
 # Cards visuais dos ativos comparados (logo/ícone + ticker + nome)
 # =====================
-selected_assets_for_cards = [
-    a for a in ASSETS if a["ticker"] in asset_data.keys()
-]
-render_selected_asset_cards(selected_assets_for_cards)
+render_selected_asset_cards([asset_or_placeholder(t) for t in compared_tickers])
 st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
 
 
+# =====================
+# Comparabilidade: períodos divergentes, moedas, taxas, calendários
+# =====================
+if period_check is not None:
+    render_comparison_notes(
+        comparison_notes(
+            period_check,
+            compared_tickers,
+            frequency,
+            aligned_to_common=aligned_to_common,
+        )
+    )
+
+consulted = fetched_at.strftime("%d/%m/%Y às %H:%M") if fetched_at else "—"
+st.caption(
+    f"Fonte: {DATA_SOURCE} · Consulta realizada em {consulted} · "
+    f"Todos os ativos usam a frequência **{frequency}**, então as métricas "
+    "são calculadas sobre o mesmo tipo de período."
+)
+
+
+# =====================
+# Metodologia e metadados dos ativos comparados
+# =====================
 with st.expander(
     f"✅ Análise gerada para {len(asset_data)} ativos. "
-    "Clique para visualizar a metodologia e parâmetros.",
+    "Clique para visualizar a metodologia e os ativos comparados.",
     expanded=False,
 ):
     st.markdown(
-        "**Ativos analisados:** "
-        + ", ".join(asset_data.keys())
-    )
-    st.markdown(
-        f"**Período:** {start_date.strftime('%d/%m/%Y')} a "
+        f"**Período solicitado:** {start_date.strftime('%d/%m/%Y')} a "
         f"{end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}"
     )
     st.markdown(
@@ -811,9 +1039,14 @@ with st.expander(
         f"**{annualization_factor}**."
     )
     st.markdown(
-        "**Tratamento de dados:** alinhamento completo por data, com "
-        "correlações calculadas somente entre retornos válidos e coincidentes."
+        "**Tratamento de dados:** alinhamento por data, com correlações "
+        "calculadas somente entre retornos válidos e coincidentes."
     )
+    if aligned_to_common:
+        st.markdown("**Período comum:** aplicado (todos os ativos cortados para o mesmo intervalo).")
+
+    st.markdown("#### Ativos comparados")
+    render_asset_metadata_table(compared_tickers, used_spans)
 
 summary_numeric = summary.copy()
 summary_display = summary_numeric.sort_values(
@@ -833,169 +1066,191 @@ for i, symbol in enumerate(summary_numeric["Ativo"].tolist()):
 
 
 # ==========================================================
-# Destaques (4 Cards Analíticos)
+# Destaques (descrevem o histórico; não são recomendação)
 # ==========================================================
-st.header("📌 Destaques da Comparação")
+st.header("📌 Destaques do Período")
 
 if not summary_numeric.empty:
-    best_row = summary_numeric.loc[summary_numeric["Retorno total"].idxmax()]
-    worst_row = summary_numeric.loc[summary_numeric["Retorno total"].idxmin()]
-    lowest_drawdown_row = summary_numeric.loc[summary_numeric["Drawdown máximo"].idxmax()]
-    best_sharpe_row = summary_numeric.loc[summary_numeric["Sharpe"].idxmax()]
-
     highlight_cols = st.columns(4)
     with highlight_cols[0]:
-        render_custom_metric_card(
-            "Melhor retorno",
-            get_asset_full_name(best_row["Ativo"]),
-            best_row["Retorno total"],
-            format_return_pct(best_row["Retorno total"])
+        render_highlight(
+            "Maior retorno histórico",
+            extreme_row(summary_numeric, "Retorno total", largest=True),
+            "Retorno total",
+            format_return_pct,
         )
     with highlight_cols[1]:
-        render_custom_metric_card(
-            "Menor retorno",
-            get_asset_full_name(worst_row["Ativo"]),
-            worst_row["Retorno total"],
-            format_return_pct(worst_row["Retorno total"])
+        render_highlight(
+            "Menor retorno histórico",
+            extreme_row(summary_numeric, "Retorno total", largest=False),
+            "Retorno total",
+            format_return_pct,
         )
     with highlight_cols[2]:
-        render_custom_metric_card(
-            "Menor perda máxima",
-            get_asset_full_name(lowest_drawdown_row["Ativo"]),
-            lowest_drawdown_row["Drawdown máximo"],
-            format_return_pct(lowest_drawdown_row["Drawdown máximo"])
+        render_highlight(
+            "Menor queda máxima histórica",
+            extreme_row(summary_numeric, "Drawdown máximo", largest=True),
+            "Drawdown máximo",
+            format_return_pct,
         )
     with highlight_cols[3]:
-        sharpe_val = best_sharpe_row["Sharpe"]
-        sharpe_str = "N/A" if pd.isna(sharpe_val) else f"{sharpe_val:.2f}"
-        render_custom_metric_card(
-            "Melhor Risco-Retorno",
-            get_asset_full_name(best_sharpe_row["Ativo"]),
-            sharpe_val if not pd.isna(sharpe_val) else 0,
-            f"Sharpe: {sharpe_str}"
+        render_highlight(
+            "Maior Sharpe histórico",
+            extreme_row(summary_numeric, "Sharpe", largest=True),
+            "Sharpe",
+            lambda v: f"Sharpe: {format_number_br(v)}",
         )
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.caption(
+        "Os destaques descrevem o desempenho observado no período analisado. "
+        "Não indicam qual ativo é melhor nem recomendam compra ou venda."
+    )
+
+render_profile_limitation_notice()
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 
 # ==========================================================
-# Gráfico Base 100
+# Seções: Desempenho, Risco, Correlação e Dados
 # ==========================================================
-st.markdown("### 📈 Evolução de Desempenho Histórico")
-st.markdown(
-    "<p style='color:#64748b;font-size:0.95rem;margin-top:-12px;"
-    "margin-bottom:24px;'>Comparação de trajetória normalizada em "
-    "<b>Base 100</b> no período inicial.</p>",
-    unsafe_allow_html=True,
-)
+tab_performance, tab_risk, tab_correlation, tab_data = st.tabs([
+    "📈 Desempenho",
+    "🛡️ Risco",
+    "🔗 Correlação",
+    "📋 Dados",
+])
 
-if not base_100_table.empty:
-    base_100_melted = base_100_table.melt(
-        id_vars="Date",
-        var_name="Ativo",
-        value_name="Índice base 100",
+
+# ---------- Desempenho ----------
+with tab_performance:
+    st.markdown("### Evolução de Desempenho Histórico")
+    st.markdown(
+        "<p style='color:#64748b;font-size:0.95rem;margin-top:-12px;"
+        "margin-bottom:24px;'>Comparação de trajetória normalizada em "
+        "<b>Base 100</b> no período inicial.</p>",
+        unsafe_allow_html=True,
     )
 
-    base_100_melted["Nome Ativo"] = base_100_melted["Ativo"].apply(get_asset_full_name)
-    color_map_names = {get_asset_full_name(ticker): color for ticker, color in color_map.items()}
-    base_100_melted["Tooltip_Value"] = base_100_melted["Índice base 100"].apply(format_number_br)
-
-    fig_base_100 = px.line(
-        base_100_melted,
-        x="Date",
-        y="Índice base 100",
-        color="Nome Ativo",
-        color_discrete_map=color_map_names,
-        custom_data=["Tooltip_Value"]
-    )
-
-    fig_base_100 = apply_custom_layout(fig_base_100)
-
-    fig_base_100.update_layout(
-        hovermode="x unified",
-        legend={
-            "title": "",
-            "orientation": "h",
-            "yanchor": "bottom",
-            "y": 1.02,
-            "xanchor": "right",
-            "x": 1,
-        },
-    )
-
-    fig_base_100.update_xaxes(title_text="")
-    fig_base_100.update_yaxes(title_text="")
-
-    fig_base_100.update_traces(
-        connectgaps=True,
-        line={"width": 2.5},
-        hovertemplate="%{customdata}<extra></extra>"
-    )
-
-    with st.container(border=True):
-        st.plotly_chart(
-            fig_base_100,
-            use_container_width=True,
-            config={"displayModeBar": False},
+    if not base_100_table.empty:
+        base_100_melted = base_100_table.melt(
+            id_vars="Date",
+            var_name="Ativo",
+            value_name="Índice base 100",
         )
 
+        base_100_melted["Nome Ativo"] = base_100_melted["Ativo"].apply(get_asset_full_name)
+        color_map_names = {get_asset_full_name(ticker): color for ticker, color in color_map.items()}
+        base_100_melted["Tooltip_Value"] = base_100_melted["Índice base 100"].apply(format_number_br)
+
+        fig_base_100 = px.line(
+            base_100_melted,
+            x="Date",
+            y="Índice base 100",
+            color="Nome Ativo",
+            color_discrete_map=color_map_names,
+            custom_data=["Tooltip_Value"]
+        )
+
+        fig_base_100 = apply_custom_layout(fig_base_100)
+
+        fig_base_100.update_layout(
+            hovermode="x unified",
+            legend={
+                "title": "",
+                "orientation": "h",
+                "yanchor": "bottom",
+                "y": 1.02,
+                "xanchor": "right",
+                "x": 1,
+            },
+        )
+
+        fig_base_100.update_xaxes(title_text="")
+        fig_base_100.update_yaxes(title_text="")
+
+        fig_base_100.update_traces(
+            connectgaps=True,
+            line={"width": 2.5},
+            hovertemplate="%{customdata}<extra></extra>"
+        )
+
+        with st.container(border=True):
+            st.plotly_chart(
+                fig_base_100,
+                use_container_width=True,
+                config=PLOTLY_CONFIG,
+            )
+
+        st.caption(
+            "Na Base 100, todos os ativos partem de 100 na data inicial. "
+            "Compara trajetórias, não preços, e não incorpora variação cambial."
+        )
+
+    render_what_it_means("base_100")
+    render_what_it_means("retorno")
+
+
+# ---------- Risco ----------
+with tab_risk:
+    st.markdown("### Métricas de Risco e Retorno por Ativo")
+    st.caption(
+        f"Volatilidade e Sharpe anualizados com fator **{annualization_factor}** "
+        f"(frequência {frequency}) e taxa livre de risco de **{risk_free_rate_pct:.2f}% ao ano**."
+    )
+    render_asset_metrics_table(summary_numeric)
+
+    render_what_it_means("volatilidade")
+    render_what_it_means("drawdown")
+    render_what_it_means("sharpe")
+
+
+# ---------- Correlação ----------
+with tab_correlation:
+    st.markdown("### Correlação entre Retornos")
+    render_correlation_heatmap(correlation_matrix)
+    st.caption(
+        "A matriz exibe apenas as correlações únicas entre pares de ativos. "
+        "A diagonal e os valores duplicados foram ocultados para reduzir "
+        "a redundância visual."
+    )
+    render_correlation_table(correlation_matrix)
+    st.caption(
+        "A correlação é calculada com retornos históricos coincidentes. "
+        "Ela não representa causalidade nem garante comportamento futuro."
+    )
+    render_what_it_means("correlacao")
+
+
+# ---------- Dados ----------
+with tab_data:
+    st.markdown("### Resumo Comparativo")
+    render_summary_table(summary_display)
+
+    st.markdown("### Dados Normalizados (Base 100)")
+    render_normalized_data_table(base_100_table)
+
+    csv_data = base_100_table.to_csv(index=False).encode("utf-8")
+    st.download_button(
+        label="⬇️ Baixar comparação em CSV",
+        data=csv_data,
+        file_name="comparacao_ativos_base_100.csv",
+        mime="text/csv",
+    )
+
 
 # ==========================================================
-# Resumo Comparativo
+# Limitações, catálogo e rodapé
 # ==========================================================
-st.header("📊 Resumo Comparativo")
-render_summary_table(summary_display)
+render_methodology_limitations([
+    "A correlação usa apenas retornos coincidentes no tempo e não representa causalidade nem garante comportamento futuro.",
+    "Quando os ativos têm históricos de tamanhos diferentes, as métricas de cada um valem para o período dele, a menos que a opção \"Comparar apenas o período comum\" esteja ativa.",
+    "Ativos em moedas diferentes não têm variação cambial incorporada nos retornos percentuais nem na Base 100.",
+    "Taxas de juros (yields) medem o nível da taxa; seus retornos não são equivalentes aos de preços de ativos.",
+    f"O fator de anualização usado foi {annualization_factor} (frequência {frequency}) e a taxa livre de risco anual foi {risk_free_rate_pct:.2f}%; alterar esses parâmetros altera Sharpe e volatilidade.",
+    "Os destaques descrevem desempenho histórico no período analisado e não indicam qual ativo é melhor, nem compra ou venda.",
+])
 
+render_catalog_notice()
 
-# ==========================================================
-# Correlação entre Retornos
-# ==========================================================
-st.header("🔗 Correlação entre Retornos")
-render_correlation_heatmap(correlation_matrix)
-st.caption(
-    "A matriz exibe apenas as correlações únicas entre pares de ativos. "
-    "A diagonal e os valores duplicados foram ocultados para reduzir "
-    "a redundância visual."
-)
-render_correlation_table(correlation_matrix)
-st.caption(
-    "A correlação é calculada com retornos históricos coincidentes. "
-    "Ela não representa causalidade nem garante comportamento futuro."
-)
-
-
-# ==========================================================
-# Métricas por Ativo
-# ==========================================================
-st.header("🧮 Métricas por Ativo")
-st.caption(
-    "A tabela consolida retorno, volatilidade, drawdown e Sharpe para "
-    "facilitar a comparação entre os ativos."
-)
-render_asset_metrics_table(summary_numeric)
-
-
-# ==========================================================
-# Dados Normalizados
-# ==========================================================
-st.header("📋 Dados Normalizados")
-render_normalized_data_table(base_100_table)
-
-
-# ==========================================================
-# Download e rodapé
-# ==========================================================
-csv_data = base_100_table.to_csv(index=False).encode("utf-8")
-st.download_button(
-    label="⬇️ Baixar comparação em CSV",
-    data=csv_data,
-    file_name="comparacao_ativos_base_100.csv",
-    mime="text/csv",
-)
-
-st.markdown("---")
-st.caption(
-    "⚠️ Esta ferramenta possui finalidade educacional e de pesquisa. "
-    "Dados históricos, indicadores de risco e resultados passados não "
-    "garantem resultados futuros e não constituem recomendação de investimento."
-)
+render_footer_disclaimer()

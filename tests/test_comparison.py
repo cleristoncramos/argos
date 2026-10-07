@@ -240,3 +240,22 @@ def test_format_return_pct_formats_decimal_values():
 
 def test_format_return_pct_handles_none():
     assert format_return_pct(None) == "—"
+
+
+def test_returns_table_does_not_fill_calendar_gaps():
+    import numpy as np
+    import pandas as pd
+    from core.comparison import calculate_returns_table
+
+    table = pd.DataFrame({
+        "Date": pd.date_range("2024-01-01", periods=4, freq="D"),
+        "A": [100.0, 110.0, 121.0, 133.1],
+        "B": [50.0, np.nan, 55.0, 60.5],
+    })
+
+    result = calculate_returns_table(table)
+
+    assert result["A"].iloc[1] == pytest.approx(0.10)
+    assert pd.isna(result["B"].iloc[1])   # sem valor no dia: sem retorno
+    assert pd.isna(result["B"].iloc[2])   # anterior ausente: sem retorno
+    assert result["B"].iloc[3] == pytest.approx(0.10)

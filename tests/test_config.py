@@ -20,3 +20,16 @@ def test_config_frequencies_are_strings():
         isinstance(frequency, str)
         for frequency in config.FREQUENCIES
     )
+
+
+def test_every_frequency_has_annualization_factor():
+    from core.config import ANNUALIZATION_FACTORS, config
+
+    for frequency in config.FREQUENCIES:
+        assert frequency in ANNUALIZATION_FACTORS
+
+
+def test_annualization_factors_follow_convention():
+    from core.config import ANNUALIZATION_FACTORS
+
+    assert ANNUALIZATION_FACTORS == {"Diário": 252, "Semanal": 52, "Mensal": 12}

@@ -214,6 +214,7 @@ def _fetch_recent(ticker: str):
         end_date=end.strftime("%Y-%m-%d"),
         interval="1d",
     )
+fetch_recent = _fetch_recent  # versão pública, usada pela página de comparação
 
 
 def _render_ticker_input(button_key: str) -> str:
