@@ -47,7 +47,7 @@ from app.ui.tables import (
 from core.analyzer import (
     calculate_percentage_change,
     calculate_statistics,
-    create_year_month_matrix,
+    create_monthly_return_matrix,
 )
 from core.assets import ASSETS
 from core.currency import currency_info
@@ -58,6 +58,7 @@ from core.data_processor import (
     prepare_dataframe,
     select_primary_variable,
 )
+from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.formatters import format_number_br
 
 
@@ -509,82 +510,90 @@ st.markdown("### 🗓️ Padrões Sazonais")
 st.markdown(
     "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
     "Cada célula mostra a variação percentual de um mês de um ano específico "
-    "(retorno mensal, não acumulado). Verde indica variação positiva e vermelho, negativa; "
-    "células vazias indicam meses sem dados no período."
+    "(retorno mensal, não acumulado), calculada pelo último fechamento de cada mês, "
+    "independentemente da frequência escolhida. Verde indica variação positiva e vermelho, negativa; "
+    "células vazias indicam meses sem dados, o mês seguinte a uma lacuna e o primeiro mês da série "
+    "(que não tem mês anterior para comparação)."
     "</p>",
     unsafe_allow_html=True
 )
 
-df_matrix = create_year_month_matrix(df, "Pct_Change")
+df_matrix = create_monthly_return_matrix(df, "Value")
 
-text_matrix = df_matrix.apply(
-    lambda column: column.map(
-        lambda value: (
-            f"{value:.2f}%".replace(".", ",") if pd.notna(value) else ""
+if df_matrix.empty or df_matrix.isna().all().all():
+    st.info(
+        "O período selecionado não tem meses suficientes para calcular a variação mensal. "
+        "Escolha um período mais longo para ver os padrões sazonais."
+    )
+else:
+    text_matrix = df_matrix.apply(
+        lambda column: column.map(
+            lambda value: (
+                f"{value:.2f}%".replace(".", ",") if pd.notna(value) else ""
+            )
         )
     )
-)
 
-fig_heatmap = go.Figure(
-    data=go.Heatmap(
-        z=df_matrix.values,
-        x=df_matrix.columns,
-        y=df_matrix.index,
-        colorscale=[[0.0, "#ef4444"], [0.5, "#ffffff"], [1.0, "#22c55e"]],
-        zmid=0,
-        text=text_matrix.values,
-        texttemplate="%{text}",
-        textfont={"size": 12, "color": "#1e293b", "family": "Inter, Arial"},
-        customdata=text_matrix.values,
-        hoverongaps=False,
-        hovertemplate="Ano: %{y}<br>Mês: %{x}<br>Variação: %{customdata}<extra></extra>",
-        showscale=False,
-        xgap=3,
-        ygap=3,
+    fig_heatmap = go.Figure(
+        data=go.Heatmap(
+            z=df_matrix.values,
+            x=df_matrix.columns,
+            y=df_matrix.index,
+            colorscale=[[0.0, "#ef4444"], [0.5, "#ffffff"], [1.0, "#22c55e"]],
+            zmid=0,
+            text=text_matrix.values,
+            texttemplate="%{text}",
+            textfont={"size": 12, "color": "#1e293b", "family": "Inter, Arial"},
+            customdata=text_matrix.values,
+            hoverongaps=False,
+            hovertemplate="Ano: %{y}<br>Mês: %{x}<br>Variação: %{customdata}<extra></extra>",
+            showscale=False,
+            xgap=3,
+            ygap=3,
+        )
     )
-)
 
-fig_heatmap = apply_custom_layout(fig_heatmap)
-fig_heatmap.update_layout(margin=dict(l=40, r=20, t=20, b=40))
-fig_heatmap.update_yaxes(autorange="reversed")
+    fig_heatmap = apply_custom_layout(fig_heatmap)
+    fig_heatmap.update_layout(margin=dict(l=40, r=20, t=20, b=40))
+    fig_heatmap.update_yaxes(autorange="reversed")
 
-with st.container(border=True):
-    st.markdown("<h5 style='text-align: center; color: #334155; margin-bottom: 10px; font-size: 1rem;'>Variação Mensal Histórica</h5>", unsafe_allow_html=True)
-    st.plotly_chart(fig_heatmap, use_container_width=True, config=PLOTLY_CONFIG)
+    with st.container(border=True):
+        st.markdown("<h5 style='text-align: center; color: #334155; margin-bottom: 10px; font-size: 1rem;'>Variação Mensal Histórica</h5>", unsafe_allow_html=True)
+        st.plotly_chart(fig_heatmap, use_container_width=True, config=PLOTLY_CONFIG)
 
-render_what_it_means("sazonalidade")
+    render_what_it_means("sazonalidade")
 
-monthly_avg = df_matrix.mean(axis=0)
-bar_colors = ["#22c55e" if val >= 0 else "#ef4444" for val in monthly_avg]
-text_avg = [f"{val:.2f}%".replace(".", ",") if pd.notna(val) else "" for val in monthly_avg]
+    monthly_avg = df_matrix.mean(axis=0)
+    bar_colors = ["#22c55e" if val >= 0 else "#ef4444" for val in monthly_avg]
+    text_avg = [f"{val:.2f}%".replace(".", ",") if pd.notna(val) else "" for val in monthly_avg]
 
-fig_bar_season = go.Figure(
-    data=go.Bar(
-        x=monthly_avg.index,
-        y=monthly_avg.values,
-        marker_color=bar_colors,
-        text=text_avg,
-        textposition="outside",
-        textfont=dict(size=12, color="#475569", family="Inter, Arial"),
-        hovertemplate="Mês: %{x}<br>Média: %{text}<extra></extra>"
+    fig_bar_season = go.Figure(
+        data=go.Bar(
+            x=monthly_avg.index,
+            y=monthly_avg.values,
+            marker_color=bar_colors,
+            text=text_avg,
+            textposition="outside",
+            textfont=dict(size=12, color="#475569", family="Inter, Arial"),
+            hovertemplate="Mês: %{x}<br>Média: %{text}<extra></extra>"
+        )
     )
-)
 
-fig_bar_season = apply_custom_layout(fig_bar_season)
-fig_bar_season.update_layout(
-    margin=dict(l=40, r=20, t=40, b=20),
-    xaxis_title=None,
-    yaxis_title="Média de Variação (%)",
-)
+    fig_bar_season = apply_custom_layout(fig_bar_season)
+    fig_bar_season.update_layout(
+        margin=dict(l=40, r=20, t=40, b=20),
+        xaxis_title=None,
+        yaxis_title="Média de Variação (%)",
+    )
 
-with st.container(border=True):
-    st.markdown("<h5 style='text-align: center; color: #334155; margin-top: 10px; margin-bottom: 10px; font-size: 1rem;'>Média Consolidada por Mês do Calendário</h5>", unsafe_allow_html=True)
-    st.plotly_chart(fig_bar_season, use_container_width=True, config=PLOTLY_CONFIG)
+    with st.container(border=True):
+        st.markdown("<h5 style='text-align: center; color: #334155; margin-top: 10px; margin-bottom: 10px; font-size: 1rem;'>Média Consolidada por Mês do Calendário</h5>", unsafe_allow_html=True)
+        st.plotly_chart(fig_bar_season, use_container_width=True, config=PLOTLY_CONFIG)
 
-st.caption(
-    "A média por mês do calendário usa poucos anos de histórico; amostras curtas "
-    "geram médias instáveis, e padrões passados não garantem repetição futura."
-)
+    st.caption(
+        "A média por mês do calendário usa poucos anos de histórico; amostras curtas "
+        "geram médias instáveis, e padrões passados não garantem repetição futura."
+    )
 
 
 # =====================
@@ -614,12 +623,10 @@ render_table(
 # =====================
 # Download
 # =====================
-csv_data = df.to_csv(index=False).encode("utf-8")
-
 st.download_button(
     label="⬇️ Baixar CSV",
-    data=csv_data,
-    file_name=f"{symbol}_dados_tratados.csv",
+    data=dataframe_to_csv_bytes(df),
+    file_name=csv_filename(symbol, "dados_tratados"),
     mime="text/csv",
 )
 

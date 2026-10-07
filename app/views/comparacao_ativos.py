@@ -65,6 +65,8 @@ from core.data_processor import (
     prepare_dataframe,
     select_primary_variable,
 )
+from core.date_validation import validate_date_range
+from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.formatters import format_number_br
 from core.periods import (
     DEFAULT_PERIOD,
@@ -76,6 +78,12 @@ from core.ticker_input import validate_ticker
 
 
 MAX_COMPARED = 5
+
+NON_POSITIVE_WARNING = (
+    "Símbolos excluídos por terem preços iguais ou abaixo de zero no período, "
+    "o que impede o cálculo de retorno, drawdown e Base 100 (ex.: petróleo WTI "
+    "em abril de 2020): "
+)
 
 PLOTLY_CONFIG = {
     "displayModeBar": True,
@@ -805,8 +813,9 @@ if load_comparison:
         st.sidebar.error("Selecione pelo menos dois ativos para comparar.")
         st.stop()
 
-    if start_date >= end_date:
-        st.sidebar.error("A data inicial deve ser anterior à data final.")
+    date_check = validate_date_range(start_date, end_date, today)
+    if not date_check.ok:
+        st.sidebar.error(date_check.message)
         st.stop()
 
     use_common_period = bool(st.session_state.get(COMPARISON_COMMON_PERIOD_KEY, False))
@@ -866,6 +875,7 @@ if load_comparison:
         }
 
     asset_data = {}
+    non_positive_symbols = []
 
     with st.spinner("Processando os ativos..."):
         for symbol, df_prepared in downloaded.items():
@@ -876,8 +886,13 @@ if load_comparison:
                 failed_symbols.append(symbol)
                 continue
 
-            df_returns = calculate_returns(df_primary, "Value")
-            asset_data[symbol] = calculate_drawdown(df_returns, "Value")
+            try:
+                df_returns = calculate_returns(df_primary, "Value")
+                asset_data[symbol] = calculate_drawdown(df_returns, "Value")
+            except ValueError:
+                # Preços iguais ou abaixo de zero (ex.: petróleo WTI em abril de
+                # 2020) impedem retorno percentual, drawdown e Base 100.
+                non_positive_symbols.append(symbol)
 
     if len(asset_data) < 2:
         st.session_state["comparison_loaded"] = False
@@ -890,13 +905,15 @@ if load_comparison:
                 "Símbolos sem dados válidos ou com dados insuficientes: "
                 + ", ".join(failed_symbols)
             )
+        if non_positive_symbols:
+            st.warning(NON_POSITIVE_WARNING + ", ".join(non_positive_symbols))
         st.stop()
 
     used_spans = build_spans(
         {s: d["Date"] for s, d in downloaded.items() if s in asset_data}
     )
 
-        # Mensal/semanal: alinha por fim do período (calendário), não pelo
+    # Mensal/semanal: alinha por fim do período (calendário), não pelo
     # último pregão de cada ativo. Só usa PeriodEnd se todos os ativos o têm.
     can_align_by_period = frequency in ("Semanal", "Mensal") and all(
         "PeriodEnd" in frame.columns for frame in asset_data.values()
@@ -949,6 +966,7 @@ if load_comparison:
     }
     st.session_state["comparison_asset_data"] = asset_data
     st.session_state["comparison_failed_symbols"] = failed_symbols
+    st.session_state["comparison_non_positive_symbols"] = non_positive_symbols
     st.session_state["comparison_base_100_table"] = base_100_table
     st.session_state["comparison_price_table"] = price_table
     st.session_state["comparison_returns_table"] = returns_table
@@ -979,6 +997,7 @@ if (
 
 asset_data = st.session_state["comparison_asset_data"]
 failed_symbols = st.session_state["comparison_failed_symbols"]
+non_positive_symbols = st.session_state.get("comparison_non_positive_symbols", [])
 base_100_table = st.session_state["comparison_base_100_table"]
 correlation_matrix = st.session_state["comparison_correlation_matrix"]
 summary = st.session_state["comparison_summary"]
@@ -998,6 +1017,9 @@ if failed_symbols:
         "Os seguintes símbolos não retornaram dados válidos ou suficientes: "
         + ", ".join(failed_symbols)
     )
+
+if non_positive_symbols:
+    st.warning(NON_POSITIVE_WARNING + ", ".join(non_positive_symbols))
 
 
 # =====================
@@ -1237,11 +1259,10 @@ with tab_data:
     st.markdown("### Dados Normalizados (Base 100)")
     render_normalized_data_table(base_100_table)
 
-    csv_data = base_100_table.to_csv(index=False).encode("utf-8")
     st.download_button(
         label="⬇️ Baixar comparação em CSV",
-        data=csv_data,
-        file_name="comparacao_ativos_base_100.csv",
+        data=dataframe_to_csv_bytes(base_100_table),
+        file_name=csv_filename("comparacao_ativos_base_100"),
         mime="text/csv",
     )
 

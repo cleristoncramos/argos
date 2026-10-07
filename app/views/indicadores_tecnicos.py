@@ -40,9 +40,11 @@ from app.ui.state import initialize_asset_state
 from app.ui.tables import date_cell, number_cell, render_table
 from core.assets import ASSETS
 from core.config import ANNUALIZATION_FACTORS
+from core.currency import currency_info
 from core.data_availability import assess_availability
 from core.data_loader import download_active_data
 from core.data_processor import prepare_dataframe
+from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.formatters import format_number_br
 from core.indicators import (
     add_bollinger_bands,
@@ -93,6 +95,14 @@ PLOTLY_CONFIG = {
 # ==========================================================
 # Gráficos auxiliares
 # ==========================================================
+def price_axis_label(symbol: str) -> str:
+    """Título do eixo de preço com a unidade de cotação do ativo."""
+    currency = currency_info(symbol)
+    kind = "Taxa" if currency.kind == "rate" else "Preço"
+    unit = currency.prefix.strip() or currency.label
+    return f"{kind} ({unit})"
+
+
 def build_simple_line_chart(
     dataframe: pd.DataFrame,
     column: str,
@@ -578,6 +588,8 @@ context = format_context(
     frequency=frequency,
 )
 
+price_label = price_axis_label(symbol)
+
 
 # =====================
 # Card visual do ativo (logo em destaque) lado a lado com o
@@ -627,6 +639,7 @@ if chart_type == "Candles":
         df=df,
         symbol=symbol.upper(),
         context=context,
+        price_label=price_label,
     )
 
     candle_figure.update_xaxes(title_text="")
@@ -656,6 +669,7 @@ price_figure = create_price_indicator_chart(
     show_ema_long=show_ema_long,
     ema_long_col=f"EMA_{ema_long_window}",
     show_bollinger=show_bollinger,
+    price_label=price_label,
 )
 
 price_figure.update_xaxes(title_text="")
@@ -865,16 +879,10 @@ render_table(
 )
 
 
-csv_data = df.to_csv(
-    index=False,
-).encode(
-    "utf-8"
-)
-
 st.download_button(
     label="⬇️ Baixar dados com indicadores em CSV",
-    data=csv_data,
-    file_name=f"{symbol.upper()}_indicadores.csv",
+    data=dataframe_to_csv_bytes(df),
+    file_name=csv_filename(symbol.upper(), "indicadores"),
     mime="text/csv",
 )
 

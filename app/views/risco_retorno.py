@@ -53,9 +53,11 @@ from core.data_processor import (
     prepare_dataframe,
     select_primary_variable,
 )
+from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.risk_metrics import (
     build_risk_summary,
     calculate_drawdown,
+    get_max_drawdown_date,
 )
 from core.visualizations import (
     create_cumulative_return_chart,
@@ -261,27 +263,41 @@ if load_analysis:
             render_availability_messages(availability)
             st.stop()
 
-        df_returns = calculate_returns(
-            df_primary,
-            "Value",
-        )
-
-        df_risk = calculate_drawdown(
-            df_returns,
-            "Value",
-        )
-
         annualization_factor = ANNUALIZATION_FACTORS.get(
             frequency,
             252,
         )
 
-        metrics = build_risk_summary(
-            df=df_risk,
-            value_col="Value",
-            annualization_factor=float(annualization_factor),
-            annual_risk_free_rate=annual_risk_free_rate,
-        )
+        try:
+            df_returns = calculate_returns(
+                df_primary,
+                "Value",
+            )
+
+            df_risk = calculate_drawdown(
+                df_returns,
+                "Value",
+            )
+
+            metrics = build_risk_summary(
+                df=df_risk,
+                value_col="Value",
+                annualization_factor=float(annualization_factor),
+                annual_risk_free_rate=annual_risk_free_rate,
+            )
+        except ValueError:
+            st.session_state["risk_return_loaded"] = False
+            st.session_state["risk_return_query"] = None
+            st.session_state.pop("risk_return_metrics", None)
+            st.session_state.pop("risk_return_df", None)
+
+            st.error(
+                f"Não foi possível calcular as métricas de risco para '{symbol}'. "
+                "O ativo tem preços iguais ou abaixo de zero no período (como o petróleo "
+                "WTI em abril de 2020), o que impede calcular retorno percentual e "
+                "drawdown. Tente outro período ou outro ativo."
+            )
+            st.stop()
 
     st.session_state["risk_return_loaded"] = True
     st.session_state["risk_return_query"] = {
@@ -397,13 +413,13 @@ worst_period_val = df_risk["Simple_Return"].min()
 sharpe_value = metrics["Sharpe"]
 str_sharpe = "N/A" if pd.isna(sharpe_value) else f"{sharpe_value:.2f}"
 
-# Data do pior drawdown
-if not df_risk.empty and not df_risk["Drawdown"].isna().all():
-    worst_drawdown_idx = df_risk["Drawdown"].idxmin()
-    worst_drawdown_date = df_risk.loc[worst_drawdown_idx, "Date"]
-    worst_drawdown_date_str = pd.to_datetime(worst_drawdown_date).strftime("%d/%m/%Y")
-else:
-    worst_drawdown_date_str = "N/A"
+# Data do pior drawdown (fundo da queda), calculada em core/risk_metrics.py
+worst_drawdown_date = get_max_drawdown_date(df_risk)
+worst_drawdown_date_str = (
+    pd.to_datetime(worst_drawdown_date).strftime("%d/%m/%Y")
+    if worst_drawdown_date is not None
+    else "N/A"
+)
 
 # Primeira linha de cards
 col1, col2, col3, col4 = st.columns(4)
@@ -544,10 +560,9 @@ drawdown_figure = create_drawdown_chart(
 drawdown_figure = apply_custom_layout(drawdown_figure)
 
 # Marcador do drawdown máximo
-if not df_risk.empty and not df_risk["Drawdown"].isna().all():
-    min_dd_idx = df_risk["Drawdown"].idxmin()
-    min_dd_date = df_risk.loc[min_dd_idx, "Date"]
-    min_dd_val = df_risk.loc[min_dd_idx, "Drawdown"]
+if worst_drawdown_date is not None:
+    min_dd_date = worst_drawdown_date
+    min_dd_val = df_risk["Drawdown"].min()
 
     drawdown_figure.add_trace(go.Scatter(
         x=[min_dd_date], y=[min_dd_val],
@@ -644,16 +659,10 @@ render_table(
     max_height=350,
 )
 
-csv_data = df_risk.to_csv(
-    index=False,
-).encode(
-    "utf-8"
-)
-
 st.download_button(
     label="⬇️ Baixar dados de risco e retorno em CSV",
-    data=csv_data,
-    file_name=f"{symbol.upper()}_risco_retorno.csv",
+    data=dataframe_to_csv_bytes(df_risk),
+    file_name=csv_filename(symbol.upper(), "risco_retorno"),
     mime="text/csv",
 )
 
