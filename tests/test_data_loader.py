@@ -5,6 +5,7 @@ import pytest
 
 from core import data_loader
 from core.data_loader import (
+    DataUnavailable,
     _download_active_data_cached,
     download_active_data,
     validate_data,
@@ -112,6 +113,50 @@ def test_download_returns_none_for_empty_symbol(monkeypatch):
     cached_download.assert_not_called()
 
 
+def test_download_returns_none_when_cached_call_fails(monkeypatch):
+    """Contrato público: DataUnavailable da função cacheada vira None."""
+    cached_download = Mock(side_effect=DataUnavailable("falha"))
+
+    monkeypatch.setattr(
+        data_loader,
+        "_download_active_data_cached",
+        cached_download,
+    )
+
+    result = download_active_data(
+        symbol="AAPL",
+        start_date="2024-01-01",
+        end_date="2024-01-31",
+    )
+
+    assert result is None
+    cached_download.assert_called_once()
+
+
+def test_download_keeps_end_date_when_format_is_invalid(monkeypatch):
+    """Data final fora do formato ISO é repassada sem ajuste."""
+    cached_download = Mock(return_value="ok")
+
+    monkeypatch.setattr(
+        data_loader,
+        "_download_active_data_cached",
+        cached_download,
+    )
+
+    download_active_data(
+        symbol="AAPL",
+        start_date="2024-01-01",
+        end_date="31/01/2024",
+    )
+
+    cached_download.assert_called_once_with(
+        symbol="AAPL",
+        start_date="2024-01-01",
+        end_date="31/01/2024",
+        interval="1d",
+    )
+
+
 def test_cached_download_returns_valid_dataframe(
     monkeypatch,
     uncached_download,
@@ -155,26 +200,26 @@ def test_cached_download_returns_valid_dataframe(
 
 
 @patch("core.data_loader.time.sleep")
-def test_cached_download_retries_and_returns_none_when_history_raises_exception(
+def test_cached_download_retries_and_raises_when_history_raises_exception(
     mock_sleep,
     monkeypatch,
     uncached_download,
 ):
-    """Testa o retry da API se houver falha de rede/exceção. Deve retornar None após exceder tentativas."""
+    """Testa o retry da API se houver falha de rede/exceção. Deve levantar DataUnavailable após exceder tentativas."""
     ticker = build_ticker(
         history_side_effect=RuntimeError("Falha de rede simulada")
     )
     monkeypatch.setattr(data_loader.yf, "Ticker", Mock(return_value=ticker))
 
     # Passamos max_retries=2 explícito para testar o limite
-    result = uncached_download(
-        symbol="AAPL",
-        start_date="2024-01-01",
-        end_date="2024-01-31",
-        max_retries=2
-    )
+    with pytest.raises(DataUnavailable):
+        uncached_download(
+            symbol="AAPL",
+            start_date="2024-01-01",
+            end_date="2024-01-31",
+            max_retries=2,
+        )
 
-    assert result is None
     assert ticker.history.call_count == 2
     mock_sleep.assert_called_once()  # Dorme apenas 1 vez (entre as 2 tentativas)
 
@@ -224,7 +269,7 @@ def test_cached_download_recovers_after_exception(
         ),
     ],
 )
-def test_cached_download_returns_none_for_empty_or_incomplete_history(
+def test_cached_download_raises_for_empty_or_incomplete_history(
     mock_sleep,
     monkeypatch,
     uncached_download,
@@ -234,19 +279,19 @@ def test_cached_download_returns_none_for_empty_or_incomplete_history(
     ticker = build_ticker(history_return=history)
     monkeypatch.setattr(data_loader.yf, "Ticker", Mock(return_value=ticker))
 
-    result = uncached_download(
-        symbol="AAPL",
-        start_date="2024-01-01",
-        end_date="2024-01-31",
-        max_retries=2
-    )
+    with pytest.raises(DataUnavailable):
+        uncached_download(
+            symbol="AAPL",
+            start_date="2024-01-01",
+            end_date="2024-01-31",
+            max_retries=2,
+        )
 
-    assert result is None
     assert ticker.history.call_count == 2
 
 
 @patch("core.data_loader.time.sleep")
-def test_cached_download_returns_none_without_date_or_datetime_column(
+def test_cached_download_raises_without_date_or_datetime_column(
     mock_sleep,
     monkeypatch,
     uncached_download,
@@ -264,14 +309,56 @@ def test_cached_download_returns_none_without_date_or_datetime_column(
     ticker = build_ticker(history_return=history)
     monkeypatch.setattr(data_loader.yf, "Ticker", Mock(return_value=ticker))
 
-    result = uncached_download(
-        symbol="AAPL",
-        start_date="2024-01-01",
-        end_date="2024-01-31",
-        max_retries=1
+    with pytest.raises(DataUnavailable):
+        uncached_download(
+            symbol="AAPL",
+            start_date="2024-01-01",
+            end_date="2024-01-31",
+            max_retries=1,
+        )
+
+
+def test_cached_download_failure_is_not_cached(monkeypatch):
+    """
+    Falhas levantam exceção, e o st.cache_data não armazena exceções:
+    uma nova chamada com os mesmos argumentos deve consultar a fonte de novo.
+    """
+    data_loader._download_active_data_cached.clear()
+
+    valid = pd.DataFrame(
+        {
+            "Open": [100.0],
+            "High": [101.0],
+            "Low": [99.0],
+            "Close": [100.5],
+            "Volume": [1000],
+        },
+        index=pd.DatetimeIndex(pd.to_datetime(["2024-01-01"]), name="Date"),
     )
 
-    assert result is None
+    ticker = build_ticker(history_side_effect=[RuntimeError("falha"), valid])
+    monkeypatch.setattr(data_loader.yf, "Ticker", Mock(return_value=ticker))
+
+    kwargs = dict(
+        symbol="NOCACHE",
+        start_date="2024-01-01",
+        end_date="2024-01-31",
+        interval="1d",
+        max_retries=1,
+    )
+
+    with patch("core.data_loader.time.sleep"):
+        with pytest.raises(DataUnavailable):
+            data_loader._download_active_data_cached(**kwargs)
+
+        # Mesmos argumentos: se a falha tivesse sido cacheada, não haveria
+        # nova consulta à fonte e o resultado seguiria sendo falha.
+        result = data_loader._download_active_data_cached(**kwargs)
+
+    assert len(result) == 1
+    assert ticker.history.call_count == 2
+
+    data_loader._download_active_data_cached.clear()
 
 
 def test_validate_data_returns_expected_indicators():

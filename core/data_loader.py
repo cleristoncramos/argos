@@ -7,6 +7,17 @@ import streamlit as st
 import yfinance as yf
 
 
+class DataUnavailable(Exception):
+    """
+    Falha ao obter dados da fonte.
+
+    É levantada dentro da função cacheada para que o st.cache_data NÃO
+    armazene o resultado de falhas temporárias (ex.: instabilidade do
+    Yahoo Finance), que de outra forma ficariam em cache por 1 hora e
+    fariam um ticker válido parecer inexistente.
+    """
+
+
 def download_active_data(
     symbol: str,
     start_date: str,
@@ -14,11 +25,12 @@ def download_active_data(
     interval: str = "1d",
 ) -> Optional[pd.DataFrame]:
     """
-    Normaliza os parâmetros públicos, ajusta a data final e delega o download à função cacheada.
+    Normaliza os parâmetros públicos, ajusta a data final e delega o
+    download à função cacheada. Devolve None em caso de falha.
     """
     normalized_symbol = str(symbol).strip().upper()
     normalized_start_date = str(start_date).strip()
-    
+
     # Adiciona 1 dia à data final para garantir que o Yahoo Finance inclua o último pregão
     try:
         end_dt = datetime.strptime(str(end_date).strip(), "%Y-%m-%d")
@@ -31,12 +43,15 @@ def download_active_data(
     if not normalized_symbol:
         return None
 
-    return _download_active_data_cached(
-        symbol=normalized_symbol,
-        start_date=normalized_start_date,
-        end_date=normalized_end_date,
-        interval=normalized_interval,
-    )
+    try:
+        return _download_active_data_cached(
+            symbol=normalized_symbol,
+            start_date=normalized_start_date,
+            end_date=normalized_end_date,
+            interval=normalized_interval,
+        )
+    except DataUnavailable:
+        return None
 
 
 @st.cache_data(
@@ -49,10 +64,13 @@ def _download_active_data_cached(
     end_date: str,
     interval: str = "1d",
     max_retries: int = 3,
-) -> Optional[pd.DataFrame]:
+) -> pd.DataFrame:
     """
     Baixa dados históricos do Yahoo Finance para parâmetros já normalizados.
     Implementa retries automáticos e limpeza de colunas MultiIndex.
+
+    Só devolve DataFrames válidos. Qualquer falha levanta DataUnavailable,
+    o que impede que o resultado seja armazenado em cache.
     """
     for attempt in range(max_retries):
         try:
@@ -71,8 +89,7 @@ def _download_active_data_cached(
                 if attempt < max_retries - 1:
                     time.sleep(1.5)
                     continue
-                else:
-                    return None
+                raise DataUnavailable(f"Sem dados para '{symbol}'.")
 
             # Corrige bug do yfinance que retorna MultiIndex em versões recentes
             if isinstance(df.columns, pd.MultiIndex):
@@ -90,8 +107,9 @@ def _download_active_data_cached(
                 if attempt < max_retries - 1:
                     time.sleep(1.5)
                     continue
-                else:
-                    return None
+                raise DataUnavailable(
+                    f"Colunas obrigatórias ausentes para '{symbol}'."
+                )
 
             df = df.reset_index()
 
@@ -100,7 +118,9 @@ def _download_active_data_cached(
             elif "Datetime" in df.columns:
                 date_column = "Datetime"
             else:
-                return None
+                raise DataUnavailable(
+                    f"Coluna de data ausente para '{symbol}'."
+                )
 
             df = df.rename(
                 columns={
@@ -123,14 +143,18 @@ def _download_active_data_cached(
                 drop=True,
             )
 
+        except DataUnavailable:
+            raise
+
         except Exception:
             if attempt < max_retries - 1:
                 time.sleep(1.5)
                 continue
-            else:
-                return None
-                
-    return None
+            raise DataUnavailable(
+                f"Falha ao consultar a fonte para '{symbol}'."
+            )
+
+    raise DataUnavailable(f"Falha ao obter dados para '{symbol}'.")
 
 
 def validate_data(df: pd.DataFrame) -> dict:
