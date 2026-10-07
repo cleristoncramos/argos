@@ -86,10 +86,14 @@ def calculate_volatility(
     """
     Calcula a volatilidade anualizada da série de retornos.
 
-    Para mercados de ações, 252 é uma aproximação comum para dias úteis.
-    Para criptoativos, esse valor pode ser ajustado para 365, pois o mercado
-    opera todos os dias. O fator deve ser configurável e não usado como regra
-    universal para todos os mercados.
+    Convenção do projeto: fator 252 para frequência diária (√252), 52 para
+    semanal e 12 para mensal, aplicada a todas as classes de ativos para que
+    as métricas sejam comparáveis. O fator é um parâmetro, não uma verdade
+    universal: criptoativos negociam todos os dias e poderiam usar 365.
+
+    Retorna 0.0 quando não há retornos ou não há variabilidade; a interface
+    deve explicar que 0% aqui significa "sem dados suficientes ou série
+    constante" e não ausência de risco.
     """
     if returns.empty:
         return 0.0
@@ -111,6 +115,8 @@ def calculate_positive_percentage(
     - 0.4545 representa 45,45% de períodos positivos;
     - 0.0 representa ausência de períodos positivos;
     - 1.0 representa todos os períodos positivos.
+
+    Retorno exatamente igual a zero não conta como positivo.
 
     A conversão para texto percentual deve ocorrer somente na interface,
     por meio de format_return_pct().
@@ -136,6 +142,11 @@ def build_risk_summary(
     - Sharpe é uma razão adimensional anualizada.
     - annual_risk_free_rate deve ser informada como taxa anual decimal:
       0.10 representa 10% ao ano.
+
+    Levanta ValueError se a série tiver valores menores ou iguais a zero.
+    Isso pode ocorrer em dados reais (por exemplo, o petróleo WTI fechou
+    negativo em abril de 2020); as páginas devem capturar o erro e exibir
+    uma mensagem clara em vez de interromper a análise.
     """
     if df.empty or value_col not in df.columns:
         raise ValueError(
@@ -289,3 +300,33 @@ def get_max_drawdown(
         return None
 
     return float(df[drawdown_col].min())
+
+
+def get_max_drawdown_date(
+    df: pd.DataFrame,
+    drawdown_col: str = "Drawdown",
+    date_col: str = "Date",
+):
+    """
+    Retorna a data em que ocorreu o maior drawdown (o mais negativo).
+
+    Em caso de empate, retorna a primeira data. Retorna None quando não há
+    valores de drawdown. É a data do fundo da queda, não a do pico anterior.
+    """
+    for column in (drawdown_col, date_col):
+        if column not in df.columns:
+            raise ValueError(
+                f"A coluna '{column}' não existe no DataFrame."
+            )
+
+    drawdowns = pd.to_numeric(
+        df[drawdown_col],
+        errors="coerce",
+    ).to_numpy(dtype=float)
+
+    if np.isnan(drawdowns).all():
+        return None
+
+    position = int(np.nanargmin(drawdowns))
+
+    return df[date_col].iloc[position]

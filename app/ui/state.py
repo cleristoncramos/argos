@@ -1,21 +1,23 @@
-from datetime import date, datetime
+from datetime import date
 
 import streamlit as st
 
+from core.periods import DEFAULT_PERIOD, period_start_date
+
+
 def get_default_start_date() -> date:
-    """Calcula a data inicial padrão (5 anos atrás, arredondado para o mês seguinte)."""
-    today = datetime.now().date()
-    target_year = today.year - 5
-    target_month = today.month + 1
-    if target_month > 12:
-        target_month = 1
-        target_year += 1
-    return date(target_year, target_month, 1)
+    """
+    Data inicial padrão, derivada do período padrão (core/periods.py).
+
+    Usa a mesma regra da barra lateral, para que o estado inicial e o
+    seletor de período nunca divirjam.
+    """
+    return period_start_date(DEFAULT_PERIOD, date.today())
 
 
 ASSET_DEFAULTS = {
     "asset_symbol": "BTC-USD",
-    "asset_period": "5 anos",
+    "asset_period": DEFAULT_PERIOD,
     "asset_start_date": get_default_start_date(),
     "asset_end_date": date.today(),
     "asset_frequency": "Mensal",
@@ -26,7 +28,7 @@ ASSET_DEFAULTS = {
 
 COMPARISON_DEFAULTS = {
     "comparison_symbols_text": "BTC-USD,AAPL,SPY",
-    "comparison_period": "5 anos",
+    "comparison_period": DEFAULT_PERIOD,
     "comparison_start_date": get_default_start_date(),
     "comparison_end_date": date.today(),
     "comparison_frequency": "Mensal",
@@ -48,18 +50,26 @@ def initialize_state(defaults: dict) -> None:
 
 def initialize_asset_state() -> None:
     """Inicializa o estado persistente da análise individual."""
-    # Atualiza a data caso o app fique aberto por dias
-    ASSET_DEFAULTS["asset_start_date"] = get_default_start_date()
-    ASSET_DEFAULTS["asset_end_date"] = date.today()
-    initialize_state(ASSET_DEFAULTS)
+    # Datas recalculadas a cada chamada (o app pode ficar aberto por dias),
+    # sem alterar o dicionário de padrões do módulo.
+    initialize_state(
+        {
+            **ASSET_DEFAULTS,
+            "asset_start_date": get_default_start_date(),
+            "asset_end_date": date.today(),
+        }
+    )
 
 
 def initialize_comparison_state() -> None:
     """Inicializa o estado persistente da comparação de ativos."""
-    # Atualiza a data caso o app fique aberto por dias
-    COMPARISON_DEFAULTS["comparison_start_date"] = get_default_start_date()
-    COMPARISON_DEFAULTS["comparison_end_date"] = date.today()
-    initialize_state(COMPARISON_DEFAULTS)
+    initialize_state(
+        {
+            **COMPARISON_DEFAULTS,
+            "comparison_start_date": get_default_start_date(),
+            "comparison_end_date": date.today(),
+        }
+    )
 
 
 def sync_asset_widget_state() -> None:
@@ -72,6 +82,9 @@ def sync_asset_widget_state() -> None:
 
     Durante reruns na própria página, os widgets já existem e seus
     valores não devem ser sobrescritos.
+
+    Atenção: a barra lateral atual usa chaves próprias ({button_key}_...).
+    Se nenhum arquivo importar esta função, ela pode ser removida.
     """
     widget_defaults = {
         "widget_asset_symbol": st.session_state.get("asset_symbol", "BTC-USD"),
@@ -91,6 +104,8 @@ def persist_asset_widget_state() -> None:
 
     Esta função é chamada por on_change, antes do rerun que redesenha
     os widgets, portanto não viola a regra do Streamlit.
+
+    Veja a observação em sync_asset_widget_state sobre possível remoção.
     """
     if "widget_asset_symbol" in st.session_state:
         st.session_state["asset_symbol"] = (

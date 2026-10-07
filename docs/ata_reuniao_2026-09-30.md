@@ -1,6 +1,6 @@
 # Ata de Reunião — Orientação do Projeto Argos DataLab
 
-**Data:** 06/10/2026
+**Data:** 30/09/2026
 **Participantes:** Clériston de Castro Ramos (discente), Prof. Dr. Arlino Henrique Magalhães de Araújo (orientador)
 **Contexto:** Apresentação do protótipo atual do Argos DataLab e definição de diretrizes de avanço.
 

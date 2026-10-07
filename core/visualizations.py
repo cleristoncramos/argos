@@ -6,6 +6,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from core.analyzer import calculate_cumulative_return
+
 
 COLORS = {
     "price": "#2563EB",
@@ -22,6 +24,31 @@ COLORS = {
     "negative": "#DC2626",
     "neutral": "#475569",
 }
+
+
+DEFAULT_PRICE_LABEL = "Preço na moeda de origem"
+
+# Separadores do Plotly: decimal "," e milhar "." (padrão brasileiro).
+# Afetam eixos e tooltips (ex.: 1.234,56).
+BR_SEPARATORS = ",."
+
+
+def _finish(fig: go.Figure, context: str) -> go.Figure:
+    """Aplica o padrão comum: contexto sob o título e separadores BR."""
+    fig.update_layout(separators=BR_SEPARATORS)
+
+    fig.add_annotation(
+        text=context,
+        xref="paper",
+        yref="paper",
+        x=0,
+        y=1.10,
+        showarrow=False,
+        font=dict(size=11, color="#475569"),
+        align="left",
+    )
+
+    return fig
 
 
 def format_context(
@@ -79,6 +106,7 @@ def create_price_indicator_chart(
     bb_lower_col: str = "BB_Lower",
     bb_middle_col: str = "BB_Middle",
     bb_upper_col: str = "BB_Upper",
+    price_label: str = DEFAULT_PRICE_LABEL,
 ) -> go.Figure:
     """
     Cria gráfico de preço de fechamento com camadas opcionais
@@ -238,7 +266,7 @@ def create_price_indicator_chart(
     fig.update_layout(
         title=f"Preço de Fechamento e Indicadores — {symbol}",
         xaxis_title="Data",
-        yaxis_title="Preço na moeda de origem",
+        yaxis_title=price_label,
         template="plotly_white",
         hovermode="x unified",
         legend_title_text="Séries",
@@ -247,16 +275,7 @@ def create_price_indicator_chart(
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
-    fig.add_annotation(
-        text=context,
-        xref="paper",
-        yref="paper",
-        x=0,
-        y=1.10,
-        showarrow=False,
-        font=dict(size=11, color="#475569"),
-        align="left",
-    )
+    _finish(fig, context)
 
     fig.update_xaxes(
         showgrid=True,
@@ -275,6 +294,7 @@ def create_candlestick_chart(
     df: pd.DataFrame,
     symbol: str,
     context: str,
+    price_label: str = DEFAULT_PRICE_LABEL,
 ) -> go.Figure:
     """
     Cria gráfico candle com Open, High, Low e Close.
@@ -318,7 +338,7 @@ def create_candlestick_chart(
     fig.update_layout(
         title=f"Gráfico Candle — {symbol}",
         xaxis_title="Data",
-        yaxis_title="Preço na moeda de origem",
+        yaxis_title=price_label,
         template="plotly_white",
         paper_bgcolor="#F8FAFC",
         plot_bgcolor="#FFFFFF",
@@ -326,18 +346,7 @@ def create_candlestick_chart(
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
-    fig.add_annotation(
-        text=context,
-        xref="paper",
-        yref="paper",
-        x=0,
-        y=1.10,
-        showarrow=False,
-        font=dict(size=11, color="#475569"),
-        align="left",
-    )
-
-    return fig
+    return _finish(fig, context)
 
 
 def create_volume_chart(
@@ -376,18 +385,7 @@ def create_volume_chart(
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
-    fig.add_annotation(
-        text=context,
-        xref="paper",
-        yref="paper",
-        x=0,
-        y=1.10,
-        showarrow=False,
-        font=dict(size=11, color="#475569"),
-        align="left",
-    )
-
-    return fig
+    return _finish(fig, context)
 
 
 def create_rsi_chart(
@@ -457,18 +455,7 @@ def create_rsi_chart(
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
-    fig.add_annotation(
-        text=context,
-        xref="paper",
-        yref="paper",
-        x=0,
-        y=1.10,
-        showarrow=False,
-        font=dict(size=11, color="#475569"),
-        align="left",
-    )
-
-    return fig
+    return _finish(fig, context)
 
 
 def create_macd_chart(
@@ -551,18 +538,7 @@ def create_macd_chart(
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
-    fig.add_annotation(
-        text=context,
-        xref="paper",
-        yref="paper",
-        x=0,
-        y=1.10,
-        showarrow=False,
-        font=dict(size=11, color="#475569"),
-        align="left",
-    )
-
-    return fig
+    return _finish(fig, context)
 
 
 def create_cumulative_return_chart(
@@ -576,11 +552,7 @@ def create_cumulative_return_chart(
     """
     validate_columns(df, ["Date", return_col])
 
-    result = df.copy()
-
-    result["Cumulative_Return"] = (
-        (1 + result[return_col].fillna(0)).cumprod() - 1
-    )
+    result = calculate_cumulative_return(df, return_col)
 
     fig = go.Figure()
 
@@ -621,18 +593,7 @@ def create_cumulative_return_chart(
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
-    fig.add_annotation(
-        text=context,
-        xref="paper",
-        yref="paper",
-        x=0,
-        y=1.10,
-        showarrow=False,
-        font=dict(size=11, color="#475569"),
-        align="left",
-    )
-
-    return fig
+    return _finish(fig, context)
 
 
 def create_drawdown_chart(
@@ -685,18 +646,7 @@ def create_drawdown_chart(
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
-    fig.add_annotation(
-        text=context,
-        xref="paper",
-        yref="paper",
-        x=0,
-        y=1.10,
-        showarrow=False,
-        font=dict(size=11, color="#475569"),
-        align="left",
-    )
-
-    return fig
+    return _finish(fig, context)
 
 
 def create_returns_histogram(
@@ -737,15 +687,4 @@ def create_returns_histogram(
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
-    fig.add_annotation(
-        text=context,
-        xref="paper",
-        yref="paper",
-        x=0,
-        y=1.10,
-        showarrow=False,
-        font=dict(size=11, color="#475569"),
-        align="left",
-    )
-
-    return fig
+    return _finish(fig, context)
