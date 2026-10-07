@@ -6,6 +6,7 @@ import streamlit.components.v1 as components
 from core.assets import ASSETS
 from core.config import config
 from core.data_loader import download_active_data
+from core.date_validation import validate_date_range
 from core.periods import (
     DEFAULT_PERIOD,
     PERIOD_OPTIONS,
@@ -413,6 +414,14 @@ def render_asset_controls(
             end_date = today
             start_date = period_start_date(selected_period, today)
 
+        # Valida o intervalo digitado; períodos predefinidos já são válidos
+        dates_valid = True
+        if selected_period == "Personalizado":
+            date_check = validate_date_range(start_date, end_date, today)
+            if not date_check.ok:
+                dates_valid = False
+                st.error(date_check.message)
+
         frequency_options = getattr(
             config,
             "FREQUENCIES",
@@ -436,8 +445,8 @@ def render_asset_controls(
             width="stretch",
         )
 
-        # Botão desabilitado enquanto nenhum ativo válido estiver escolhido
-        is_disabled = (symbol == "")
+        # Botão desabilitado sem ativo válido ou com intervalo de datas inválido
+        is_disabled = (symbol == "") or not dates_valid
 
         submitted = st.button(
             button_label,
@@ -460,5 +469,6 @@ def render_asset_controls(
             "start_date": start_date,
             "end_date": end_date,
             "frequency": frequency,
+            "dates_valid": dates_valid,
             "submitted": submitted,
         }

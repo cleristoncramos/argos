@@ -2,7 +2,7 @@
 
 Lista consolidada das deliberações da reunião com o orientador, organizada por prioridade e fase de execução. Ver `docs/ata_reuniao_2026-09-30.md` para o contexto completo.
 
-**Última atualização:** 07/10/2026 · **Testes:** 276 passando, cobertura de `core/` em 96,87% (última execução registrada, antes dos arquivos entregues em 07/10).
+**Última atualização:** 07/10/2026 · **Testes:** 383 passando, cobertura de `core/` em 100% (execução de 07/10/2026, já com os arquivos da Fase 7, da revisão e da Fase 8).
 
 ## Como usar este checklist
 
@@ -83,7 +83,7 @@ Decisões já tomadas (registro):
 - [~] Exibir quantidade real de observações
 - [~] Diferenciar "período solicitado" de "período disponível"
 - [ ] Documentar que criptos e ativos recentes podem ter histórico menor (Fase 9)
-- [~] Tratar corretamente ativos com datas de início diferentes — período comum implementado; alinhamento por fim de período (PeriodEnd) pendente de aplicação
+- [~] Tratar corretamente ativos com datas de início diferentes — período comum e alinhamento por fim de período (PeriodEnd) aplicados em `core/`; falta conferir na página de comparação
 - [ ] Avaliar frequências semestral e anual (a configuração atual tem apenas Diário, Semanal e Mensal; depende do orientador)
 
 ### 4. Análise Individual
@@ -193,9 +193,9 @@ Decisões já tomadas (registro):
 - [x] Testes para ativos sem histórico completo
 - [ ] Testes para filtros sem resultado (confirmar se `test_assets.py` já tem caso de filtro vazio)
 - [ ] Testes para exportação CSV (exige extrair a geração do CSV para uma função em `core/`)
-- [ ] Testes para validação de datas (localizar a regra na barra lateral)
-- [x] Manter cobertura ≥ 80% (meta), preservar ~95% (atual: 96,87%)
-- [~] Testes de bordas de `comparison.py` e `data_processor.py` (entregues em 07/10)
+- [x] Validação de datas do período personalizado: `core/date_validation.py` + `test_date_validation.py` (8 testes); a barra lateral exibe o erro e desabilita o botão
+- [x] Manter cobertura ≥ 80% (meta), preservar ~95% (atual: 100%)
+- [x] Testes de bordas de `comparison.py` e `data_processor.py` — ambos em 100% de cobertura
 
 ---
 
@@ -204,17 +204,17 @@ Decisões já tomadas (registro):
 ### A. Pendências técnicas
 
 Fase 6 (comparação):
-- [~] Alinhamento por fim de período (`PeriodEnd`) em `data_processor.py` e `comparison.py` — arquivos entregues, ainda não aplicados (a cobertura mostra a versão antiga de `data_processor.py`)
+- [x] Alinhamento por fim de período (`PeriodEnd`) em `data_processor.py` e `comparison.py` — aplicado e coberto por testes (383 passando)
 - [ ] Usar `PeriodEnd` na página de comparação quando a frequência for semanal ou mensal
 - [ ] Proteção do Base 100 na página: remover ativos com primeiro valor ≤ 0, com aviso
 - [ ] Commit da Fase 6 após aplicar e testar
 
 Fase 7 e navegação:
-- [~] Registrar a página "Simulação de Aportes" em `app/main.py` (arquivo entregue)
-- [ ] Rodar `python -m pytest` com os testes novos (`test_simulation.py`, `test_review_adjustments.py`, `test_visualizations_br.py`, `test_data_processor_edges.py`, `test_comparison_edges.py`)
+- [~] Registrar a página "Simulação de Aportes" em `app/main.py` (arquivo entregue; conferir no navegador)
+- [x] Rodar `python -m pytest` com os testes novos (`test_simulation.py`, `test_review_adjustments.py`, `test_visualizations_br.py`, `test_data_processor_edges.py`, `test_comparison_edges.py`) — 383 passando em 07/10/2026
 
 Correções da revisão de 07/10 (`risk_metrics.py`, `analyzer.py`, `visualizations.py`, `state.py`):
-- [~] Versões corrigidas entregues; falta aplicar e rodar os testes
+- [x] Versões corrigidas aplicadas e testadas (383 passando); as integrações nas páginas estão listadas abaixo
 - [ ] Integrar `get_max_drawdown_date` à página de risco e retorno
 - [ ] Trocar `create_year_month_matrix` por `create_monthly_return_matrix` no mapa de calor (ou forçar frequência mensal nessa visualização)
 - [ ] Passar a moeda do ativo (`price_label`) aos gráficos de preço
@@ -231,7 +231,7 @@ Interface e conteúdo:
 - [ ] Selo "protótipo evolutivo"
 
 Qualidade (continuação da Fase 8):
-- [ ] Cobrir linhas restantes: `assets.py` (331, 343, 351), `data_loader.py` (96, 119, 157), `indicator_docs.py` (114), `indicators_extra.py` (43), `data_availability.py` (107)
+- [x] Cobrir as 9 linhas restantes (`test_coverage_gaps.py`, 12 testes; `core/` em 100%): `assets.py` (331, 343, 351), `data_loader.py` (96, 119, 157), `indicator_docs.py` (114), `indicators_extra.py` (43), `data_availability.py` (107)
 - [ ] Atualizar `docs/checkpoint_qualidade.md` a cada fase
 
 ### B. Pendências acadêmicas

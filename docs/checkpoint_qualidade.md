@@ -1,7 +1,7 @@
 # Checkpoint de Qualidade e Testes — Fase 8
 
 Referência: ata de 30/09/2026, item 15 ("Qualidade e testes").
-Última execução registrada: **276 testes passando; cobertura de `core/` em 96,87%**
+Última execução registrada (07/10/2026): **383 testes passando; cobertura de `core/` em 100%**
 (mínimo exigido: 80%; meta do projeto: manter próximo ou acima de 95%).
 
 > Este documento é um checkpoint, não um relatório automático. Reexecute
@@ -11,31 +11,33 @@ Referência: ata de 30/09/2026, item 15 ("Qualidade e testes").
 
 | Item da ata | Onde está coberto | Situação |
 | --- | --- | --- |
-| Manter todos os testes existentes | suíte completa | Atendido (276 passando) |
+| Manter todos os testes existentes | suíte completa | Atendido (383 passando) |
 | Testes para novos indicadores | `test_indicators_extra.py`, `test_indicators_validation.py`, `test_features.py` | Atendido |
 | Textos e componentes críticos | `test_disclaimers.py`, `test_ui_components.py`, `test_periods_glossary.py` | Atendido |
 | Catálogo de ativos | `test_assets.py`, `test_catalog_doc.py`, `test_catalog_notice.py` | Atendido |
 | Logos e fallbacks | `test_asset_logos.py` | Atendido |
 | Dados insuficientes | `test_data_availability.py`, `test_comparison_checks.py` | Atendido |
 | Ativos sem histórico completo / períodos diferentes | `test_data_availability.py`, `test_comparison_checks.py` | Atendido |
-| Cálculos com valores ausentes | `test_indicators_validation.py`, `test_risk_metrics.py`, `test_comparison_edges.py` | Atendido (revisar após a Fase 6 final) |
+| Cálculos com valores ausentes | `test_indicators_validation.py`, `test_risk_metrics.py`, `test_comparison_edges.py`, `test_review_adjustments.py` | Atendido |
 | Filtros sem resultado | `test_assets.py` (confirmar se há caso de filtro vazio) | **A confirmar** |
 | Exportação CSV | — (a exportação é feita dentro das páginas, sem função em `core/`) | **Pendente** |
-| Validação de datas | `test_data_loader.py` cobre a normalização da data final; regras de intervalo na barra lateral não têm teste | **Parcial** |
-| Cobertura mínima de 80% | 96,87% | Atendido |
-| Cobertura próxima ou acima de 95% | 96,87% | Atendido |
+| Validação de datas | `test_date_validation.py` (regra em `core/date_validation.py`, usada na barra lateral); `test_data_loader.py` cobre a normalização da data final | Atendido |
+| Cobertura mínima de 80% | 100% | Atendido |
+| Cobertura próxima ou acima de 95% | 100% | Atendido |
 
 ## 2. Lacunas de cobertura (última execução)
 
 | Módulo | Cobertura | Linhas sem teste | Tratamento |
 | --- | ---: | --- | --- |
-| `comparison.py` | 86% | 43, 51, 58, 80, 85, 92, 117, 129, 157, 180, 189, 205, 210 | Coberto por `test_comparison_edges.py` |
-| `data_processor.py` | 90% | 29, 34, 90, 93, 127, 192 | Coberto por `test_data_processor_edges.py` |
-| `assets.py` | 93% | 331, 343, 351 | Pendente (ramos de erro de `validate_catalog`) |
-| `data_loader.py` | 95% | 96, 119, 157 | Pendente |
-| `indicator_docs.py` | 95% | 114 | Pendente |
-| `indicators_extra.py` | 95% | 43 | Pendente |
-| `data_availability.py` | 98% | 107 | Pendente |
+| `comparison.py` | 100% | — | Fechado por `test_comparison_edges.py` |
+| `data_processor.py` | 100% | — | Fechado por `test_data_processor_edges.py` |
+| `assets.py` | 100% | — | Fechado por `test_coverage_gaps.py` |
+| `data_loader.py` | 100% | — | Fechado por `test_coverage_gaps.py` |
+| `indicator_docs.py` | 100% | — | Fechado por `test_coverage_gaps.py` |
+| `indicators_extra.py` | 100% | — | Fechado por `test_coverage_gaps.py` |
+| `data_availability.py` | 100% | — | Fechado por `test_coverage_gaps.py` |
+
+Novos módulos de 07/10 (`simulation.py`, `risk_metrics.py`, `analyzer.py`, `visualizations.py`) estão em 100%.
 
 ## 3. Limitações conhecidas desta medição
 
