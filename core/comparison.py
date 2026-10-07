@@ -69,9 +69,15 @@ def normalize_to_base_100(
 def build_price_table(
     asset_data: Dict[str, pd.DataFrame],
     value_col: str = "Value",
+    align_col: str = "Date",
 ) -> pd.DataFrame:
     """
-    Une as séries dos ativos por data usando união externa.
+    Une as séries dos ativos usando união externa.
+
+    `align_col` define a chave de alinhamento. Use "PeriodEnd" em
+    frequências semanal/mensal para alinhar ativos de calendários
+    diferentes; se a coluna não existir em um ativo, usa "Date".
+    A coluna de saída chama-se sempre "Date".
     """
     frames = []
 
@@ -79,13 +85,14 @@ def build_price_table(
         if df.empty:
             continue
 
-        required_columns = {"Date", value_col}
+        key = align_col if align_col in df.columns else "Date"
+        required_columns = {key, value_col}
 
         if not required_columns.issubset(df.columns):
             continue
 
-        frame = df[["Date", value_col]].copy()
-        frame = frame.rename(columns={value_col: symbol})
+        frame = df[[key, value_col]].copy()
+        frame = frame.rename(columns={key: "Date", value_col: symbol})
         frames.append(frame)
 
     if not frames:
@@ -106,9 +113,11 @@ def build_price_table(
 def build_base_100_table(
     asset_data: Dict[str, pd.DataFrame],
     value_col: str = "Value",
+    align_col: str = "Date",
 ) -> pd.DataFrame:
     """
     Cria tabela de preços normalizados para base 100.
+    Ver `build_price_table` para o uso de `align_col`.
     """
     frames = []
 
@@ -121,8 +130,9 @@ def build_base_100_table(
             value_col=value_col,
         )
 
-        frame = normalized[["Date", "Base_100"]].copy()
-        frame = frame.rename(columns={"Base_100": symbol})
+        key = align_col if align_col in normalized.columns else "Date"
+        frame = normalized[[key, "Base_100"]].copy()
+        frame = frame.rename(columns={key: "Date", "Base_100": symbol})
         frames.append(frame)
 
     if not frames:

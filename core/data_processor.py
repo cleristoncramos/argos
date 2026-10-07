@@ -85,6 +85,10 @@ def aggregate_by_frequency(
     - Diário
     - Semanal
     - Mensal
+
+    Nas frequências semanal e mensal, a coluna `PeriodEnd` guarda o fim
+    do período (calendário) e serve para alinhar ativos com calendários
+    de negociação diferentes; `Date` continua sendo o último pregão.
     """
     if df is None or df.empty:
         return pd.DataFrame()
@@ -154,6 +158,10 @@ def aggregate_by_frequency(
         )
     )
 
+    # Fim do período (mês/semana): data de alinhamento entre ativos
+    df_agg["PeriodEnd"] = df_agg["Period"].dt.end_time.dt.normalize()
+    df_agg = df_agg.drop(columns=["Period"])
+
     df_agg["Date"] = pd.to_datetime(
         df_agg["Date"],
         errors="coerce",
@@ -187,6 +195,8 @@ def select_primary_variable(
 
     Por padrão:
     - Value recebe os valores de Close.
+
+    A coluna `PeriodEnd`, quando existe, é preservada.
     """
     if df is None or df.empty:
         return pd.DataFrame()
@@ -212,6 +222,9 @@ def select_primary_variable(
         for column in OHLC_COLUMNS
         if column in df.columns
     ]
+
+    if "PeriodEnd" in df.columns:
+        columns_to_keep.append("PeriodEnd")
 
     df_selected = df[columns_to_keep].copy()
 

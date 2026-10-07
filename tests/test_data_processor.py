@@ -135,3 +135,37 @@ def test_select_primary_variable_raises_error_for_missing_column():
         assert False, "A função deveria gerar erro para uma coluna inexistente."
     except ValueError as error:
         assert "Colunas obrigatórias ausentes" in str(error)
+
+
+def test_monthly_aggregation_adds_period_end():
+    import pandas as pd
+    from core.data_processor import aggregate_by_frequency
+
+    df = pd.DataFrame({
+        "Date": pd.to_datetime(["2024-01-15", "2024-01-30", "2024-02-28"]),
+        "Open": [1.0, 2.0, 3.0],
+        "High": [1.0, 2.0, 3.0],
+        "Low": [1.0, 2.0, 3.0],
+        "Close": [1.0, 2.0, 3.0],
+        "Volume": [1, 1, 1],
+    })
+
+    result = aggregate_by_frequency(df, "Mensal")
+
+    assert list(result["PeriodEnd"].dt.strftime("%Y-%m-%d")) == ["2024-01-31", "2024-02-29"]
+    assert list(result["Date"].dt.strftime("%Y-%m-%d")) == ["2024-01-30", "2024-02-28"]
+
+
+def test_select_primary_variable_keeps_period_end():
+    import pandas as pd
+    from core.data_processor import aggregate_by_frequency, select_primary_variable
+
+    df = pd.DataFrame({
+        "Date": pd.to_datetime(["2024-01-15", "2024-02-28"]),
+        "Open": [1.0, 3.0], "High": [1.0, 3.0], "Low": [1.0, 3.0],
+        "Close": [1.0, 3.0], "Volume": [1, 1],
+    })
+
+    result = select_primary_variable(aggregate_by_frequency(df, "Mensal"), "Close")
+
+    assert "PeriodEnd" in result.columns

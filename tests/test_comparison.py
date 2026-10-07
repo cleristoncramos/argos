@@ -259,3 +259,26 @@ def test_returns_table_does_not_fill_calendar_gaps():
     assert pd.isna(result["B"].iloc[1])   # sem valor no dia: sem retorno
     assert pd.isna(result["B"].iloc[2])   # anterior ausente: sem retorno
     assert result["B"].iloc[3] == pytest.approx(0.10)
+
+
+def test_tables_align_by_period_end_instead_of_last_trading_day():
+    import pandas as pd
+    from core.comparison import build_price_table
+
+    a = pd.DataFrame({
+        "Date": pd.to_datetime(["2024-01-30"]),
+        "PeriodEnd": pd.to_datetime(["2024-01-31"]),
+        "Value": [10.0],
+    })
+    b = pd.DataFrame({
+        "Date": pd.to_datetime(["2024-01-31"]),
+        "PeriodEnd": pd.to_datetime(["2024-01-31"]),
+        "Value": [20.0],
+    })
+
+    by_date = build_price_table({"A": a, "B": b})
+    by_period = build_price_table({"A": a, "B": b}, align_col="PeriodEnd")
+
+    assert len(by_date) == 2
+    assert len(by_period) == 1
+    assert by_period.iloc[0]["A"] == 10.0 and by_period.iloc[0]["B"] == 20.0

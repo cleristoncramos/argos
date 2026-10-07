@@ -896,8 +896,15 @@ if load_comparison:
         {s: d["Date"] for s, d in downloaded.items() if s in asset_data}
     )
 
-    base_100_table = build_base_100_table(asset_data)
-    price_table = build_price_table(asset_data)
+        # Mensal/semanal: alinha por fim do período (calendário), não pelo
+    # último pregão de cada ativo. Só usa PeriodEnd se todos os ativos o têm.
+    can_align_by_period = frequency in ("Semanal", "Mensal") and all(
+        "PeriodEnd" in frame.columns for frame in asset_data.values()
+    )
+    align_col = "PeriodEnd" if can_align_by_period else "Date"
+
+    base_100_table = build_base_100_table(asset_data, align_col=align_col)
+    price_table = build_price_table(asset_data, align_col=align_col)
     returns_table = calculate_returns_table(price_table)
     correlation_matrix = calculate_correlation_matrix(returns_table)
     summary = create_comparison_summary(asset_data)
