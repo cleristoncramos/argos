@@ -66,6 +66,7 @@ analise_page = st.Page("views/analise_individual.py", title="Análise Individual
 comparacao_page = st.Page("views/comparacao_ativos.py", title="Comparação de Ativos", icon="⚖️")
 indicadores_page = st.Page("views/indicadores_tecnicos.py", title="Indicadores Técnicos", icon="📉")
 risco_page = st.Page("views/risco_retorno.py", title="Risco e Retorno", icon="⚠️")
+simulacao_page = st.Page("views/simulacao_aportes.py", title="Simulação de Aportes", icon="🧪")
 
 
 # ==========================================================
@@ -79,6 +80,7 @@ pg = st.navigation({
         comparacao_page,
         indicadores_page,
         risco_page,
+        simulacao_page,
     ]
 })
 
