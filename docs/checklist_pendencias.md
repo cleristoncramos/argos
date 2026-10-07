@@ -2,7 +2,7 @@
 
 Lista consolidada das deliberações da reunião com o orientador, organizada por prioridade e fase de execução. Ver `docs/ata_reuniao_2026-09-30.md` para o contexto completo.
 
-**Última atualização:** 07/10/2026 · **Testes:** 383 passando, cobertura de `core/` em 100% (execução de 07/10/2026, já com os arquivos da Fase 7, da revisão e da Fase 8).
+**Última atualização:** 07/10/2026 · **Testes:** 393 passando, cobertura de `core/` em 100% (execução de 07/10/2026, já com os arquivos da Fase 7, da revisão e da Fase 8).
 
 ## Como usar este checklist
 
@@ -83,7 +83,7 @@ Decisões já tomadas (registro):
 - [~] Exibir quantidade real de observações
 - [~] Diferenciar "período solicitado" de "período disponível"
 - [ ] Documentar que criptos e ativos recentes podem ter histórico menor (Fase 9)
-- [~] Tratar corretamente ativos com datas de início diferentes — período comum e alinhamento por fim de período (PeriodEnd) aplicados em `core/`; falta conferir na página de comparação
+- [~] Tratar corretamente ativos com datas de início diferentes — período comum e alinhamento por fim de período (PeriodEnd) aplicados em `core/`; integrado na página de comparação em 07/10; falta conferir no navegador
 - [ ] Avaliar frequências semestral e anual (a configuração atual tem apenas Diário, Semanal e Mensal; depende do orientador)
 
 ### 4. Análise Individual
@@ -93,7 +93,7 @@ Decisões já tomadas (registro):
 - [x] Revisar fallback de logos (URL indisponível → emoji) — coberto por `test_asset_logos.py`
 - [~] Confirmar rótulo "anualizada" na volatilidade
 - [~] Explicação curta do mapa de calor de sazonalidade
-- [ ] Diferenciar retorno mensal de valorização acumulada — `create_monthly_return_matrix` criada em 07/10; falta usá-la no mapa de calor da página
+- [ ] Diferenciar retorno mensal de valorização acumulada — `create_monthly_return_matrix` integrada ao mapa de calor da Análise Individual em 07/10; falta conferir no navegador
 - [~] Tooltip com unidade, período e interpretação
 
 ### 5. Indicadores técnicos
@@ -122,7 +122,7 @@ Decisões já tomadas (registro):
 - [ ] Não confundir acurácia com rentabilidade (registrar no relatório metodológico)
 
 ### 7-8. Risco/Retorno e Educação Financeira
-- [~] Exibir data do pior drawdown — função `get_max_drawdown_date` entregue em 07/10; falta integrar à página
+- [~] Exibir data do pior drawdown — `get_max_drawdown_date` integrada à página de risco e retorno em 07/10; falta conferir no navegador
 - [~] Texto explicativo por métrica (textos prontos na ata)
 - [~] Indicar se maior/menor é desejável, com ressalva de contexto
 - [~] Exibir unidades (%, R$/US$, índice)
@@ -191,8 +191,8 @@ Decisões já tomadas (registro):
 - [x] Testes para logos e fallbacks
 - [x] Testes para dados insuficientes
 - [x] Testes para ativos sem histórico completo
-- [ ] Testes para filtros sem resultado (confirmar se `test_assets.py` já tem caso de filtro vazio)
-- [ ] Testes para exportação CSV (exige extrair a geração do CSV para uma função em `core/`)
+- [x] Testes para filtros sem resultado — confirmado: `test_get_assets_with_no_match_returns_empty_list` em `test_assets.py`
+- [x] Testes para exportação CSV — geração extraída para `core/exports.py` (`dataframe_to_csv_bytes`, `csv_filename`), usada nas 4 páginas; `test_exports.py` (10 testes)
 - [x] Validação de datas do período personalizado: `core/date_validation.py` + `test_date_validation.py` (8 testes); a barra lateral exibe o erro e desabilita o botão
 - [x] Manter cobertura ≥ 80% (meta), preservar ~95% (atual: 100%)
 - [x] Testes de bordas de `comparison.py` e `data_processor.py` — ambos em 100% de cobertura
@@ -204,21 +204,22 @@ Decisões já tomadas (registro):
 ### A. Pendências técnicas
 
 Fase 6 (comparação):
-- [x] Alinhamento por fim de período (`PeriodEnd`) em `data_processor.py` e `comparison.py` — aplicado e coberto por testes (383 passando)
-- [ ] Usar `PeriodEnd` na página de comparação quando a frequência for semanal ou mensal
-- [ ] Proteção do Base 100 na página: remover ativos com primeiro valor ≤ 0, com aviso
+- [x] Alinhamento por fim de período (`PeriodEnd`) em `data_processor.py` e `comparison.py` — aplicado e coberto por testes (393 passando)
+- [~] Usar `PeriodEnd` na página de comparação quando a frequência for semanal ou mensal — já aplicado na página; falta conferir no navegador
+- [~] Proteção do Base 100 na página: ativos com preços ≤ 0 são excluídos com aviso (`calculate_drawdown` levanta `ValueError`); falta conferir no navegador com `CL=F`
 - [ ] Commit da Fase 6 após aplicar e testar
 
 Fase 7 e navegação:
 - [~] Registrar a página "Simulação de Aportes" em `app/main.py` (arquivo entregue; conferir no navegador)
-- [x] Rodar `python -m pytest` com os testes novos (`test_simulation.py`, `test_review_adjustments.py`, `test_visualizations_br.py`, `test_data_processor_edges.py`, `test_comparison_edges.py`) — 383 passando em 07/10/2026
+- [x] Rodar `python -m pytest` com os testes novos (`test_simulation.py`, `test_review_adjustments.py`, `test_visualizations_br.py`, `test_data_processor_edges.py`, `test_comparison_edges.py`) — 393 passando em 07/10/2026
 
 Correções da revisão de 07/10 (`risk_metrics.py`, `analyzer.py`, `visualizations.py`, `state.py`):
-- [x] Versões corrigidas aplicadas e testadas (383 passando); as integrações nas páginas estão listadas abaixo
-- [ ] Integrar `get_max_drawdown_date` à página de risco e retorno
-- [ ] Trocar `create_year_month_matrix` por `create_monthly_return_matrix` no mapa de calor (ou forçar frequência mensal nessa visualização)
-- [ ] Passar a moeda do ativo (`price_label`) aos gráficos de preço
-- [ ] Capturar `ValueError` de valores ≤ 0 nas páginas de risco (ex.: petróleo WTI negativo em abril de 2020) com mensagem clara
+- [x] Versões corrigidas aplicadas e testadas (393 passando); as integrações nas páginas estão listadas abaixo
+- [~] Integrar `get_max_drawdown_date` à página de risco e retorno — feito; conferir no navegador
+- [~] Trocar `create_year_month_matrix` por `create_monthly_return_matrix` no mapa de calor — feito; conferir em frequência diária e mensal
+- [~] Passar a moeda do ativo (`price_label`) aos gráficos de preço — feito em Indicadores Técnicos; conferir no navegador
+- [~] Capturar `ValueError` de valores ≤ 0 nas páginas de risco e de comparação (ex.: petróleo WTI negativo em abril de 2020) com mensagem clara — feito; conferir com `CL=F`
+- [ ] Conferir no navegador as 5 páginas alteradas em 07/10 (Análise Individual, Risco e Retorno, Indicadores Técnicos, Comparação, Simulação de Aportes) e os 4 downloads de CSV
 - [ ] Decidir se volatilidade e retorno médio sem dados passam a retornar `NaN` em vez de `0.0` (exige ajustar testes e exibição)
 - [ ] Confirmar com `Select-String` se `sync_asset_widget_state` e `persist_asset_widget_state` são usadas; remover se não forem
 - [ ] Decidir sobre o símbolo padrão (`BTC-USD` no estado × placeholder vazio na seleção)

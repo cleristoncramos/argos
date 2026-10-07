@@ -1,7 +1,7 @@
 # Checkpoint de Qualidade e Testes — Fase 8
 
 Referência: ata de 30/09/2026, item 15 ("Qualidade e testes").
-Última execução registrada (07/10/2026): **383 testes passando; cobertura de `core/` em 100%**
+Última execução registrada (07/10/2026): **393 testes passando; cobertura de `core/` em 100%**
 (mínimo exigido: 80%; meta do projeto: manter próximo ou acima de 95%).
 
 > Este documento é um checkpoint, não um relatório automático. Reexecute
@@ -11,7 +11,7 @@ Referência: ata de 30/09/2026, item 15 ("Qualidade e testes").
 
 | Item da ata | Onde está coberto | Situação |
 | --- | --- | --- |
-| Manter todos os testes existentes | suíte completa | Atendido (383 passando) |
+| Manter todos os testes existentes | suíte completa | Atendido (393 passando) |
 | Testes para novos indicadores | `test_indicators_extra.py`, `test_indicators_validation.py`, `test_features.py` | Atendido |
 | Textos e componentes críticos | `test_disclaimers.py`, `test_ui_components.py`, `test_periods_glossary.py` | Atendido |
 | Catálogo de ativos | `test_assets.py`, `test_catalog_doc.py`, `test_catalog_notice.py` | Atendido |
@@ -19,8 +19,8 @@ Referência: ata de 30/09/2026, item 15 ("Qualidade e testes").
 | Dados insuficientes | `test_data_availability.py`, `test_comparison_checks.py` | Atendido |
 | Ativos sem histórico completo / períodos diferentes | `test_data_availability.py`, `test_comparison_checks.py` | Atendido |
 | Cálculos com valores ausentes | `test_indicators_validation.py`, `test_risk_metrics.py`, `test_comparison_edges.py`, `test_review_adjustments.py` | Atendido |
-| Filtros sem resultado | `test_assets.py` (confirmar se há caso de filtro vazio) | **A confirmar** |
-| Exportação CSV | — (a exportação é feita dentro das páginas, sem função em `core/`) | **Pendente** |
+| Filtros sem resultado | `test_assets.py::test_get_assets_with_no_match_returns_empty_list` | Atendido |
+| Exportação CSV | `test_exports.py` (função em `core/exports.py`, usada nas 4 páginas com download) | Atendido |
 | Validação de datas | `test_date_validation.py` (regra em `core/date_validation.py`, usada na barra lateral); `test_data_loader.py` cobre a normalização da data final | Atendido |
 | Cobertura mínima de 80% | 100% | Atendido |
 | Cobertura próxima ou acima de 95% | 100% | Atendido |
