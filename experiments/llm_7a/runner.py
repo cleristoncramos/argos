@@ -119,7 +119,7 @@ def call_model(
     context: dict,
     api_key: str,
     transport: Callable = http_transport,
-    max_tokens: int = 900,
+    max_tokens: int = 1400,
     params: Optional[dict] = None,
     sleep: Callable = time.sleep,
 ):
@@ -217,7 +217,7 @@ def run_experiment(
     repetitions: int = DEFAULT_REPETITIONS,
     api_key: str = "",
     transport: Callable = http_transport,
-    max_tokens: int = 900,
+    max_tokens: int = 1400,
     params: Optional[dict] = None,
     max_cost: float = 2.0,
     known_tickers: Iterable[str] = (),

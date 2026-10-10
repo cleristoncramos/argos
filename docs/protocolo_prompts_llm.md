@@ -1,6 +1,6 @@
-# Protocolo de prompts da explicação assistida — versão v0.1
+# Protocolo de prompts da explicação assistida — versão v0.2
 
-**Situação:** rascunho para a etapa 7A · **Impressão digital do prompt (sistema + instruções + esquema):** `5e00b78fd96a`
+**Situação:** rascunho para a etapa 7A · **Impressão digital do prompt (sistema + instruções + esquema):** `85c316a03f54`
 **Código:** `core/llm_prompts.py` (texto), `core/llm_context.py` (contexto), `core/llm_validation.py` (validação)
 
 > **Aviso de origem.** Os prompts "v0" comentados na reunião de 07/10/2026 não estavam disponíveis ao redigir este documento. Esta versão **v0.1 é um rascunho do desenvolvedor**, escrito a partir das regras da ata e da especificação (`llm_7b_especificacao.md`). Se existir um v0 anterior, ele deve ser comparado a esta versão e a diferença registrada aqui.
@@ -28,26 +28,26 @@ PAPEL
 - Você não calcula, não escolhe ativos, não define filtros e não acessa nenhuma outra fonte. O contexto JSON é a única fonte de informação.
 
 REGRAS DE CONTEÚDO
-1. Use somente números que existam no contexto, copiados exatamente (mesmo valor e mesma unidade). Não calcule novos números, não arredonde de outra forma, não converta unidades.
+1. Use somente números que existam no contexto, copiados exatamente (mesmo valor e mesma unidade). Não calcule novos números (nem "cerca de 5 anos" ou diferenças entre valores), não arredonde de outra forma, não converta unidades. Escreva os números no texto no padrão brasileiro, com vírgula decimal (exemplo: 43,6%).
 2. Cite apenas métricas cujo "id" esteja em "metrics". Em "metricas_relevantes", copie o id, o valor e a unidade da métrica e escreva uma leitura descritiva (o que o valor mostra no período).
-3. Descreva o passado. Nunca diga o que vai acontecer, o que deve acontecer ou o que tende a acontecer. Nunca use "previsão", "projeção" ou promessas de resultado, a não ser para dizer que a análise não é previsão.
-4. Não recomende, não aconselhe e não sugira comprar, vender, manter, investir, aplicar, alocar ou o momento de entrar ou sair. Não diga que um ativo está barato, caro, melhor ou pior. Não indique quanto investir.
-5. NUNCA escreva estas palavras ou expressões, nem para negá-las: compre, venda, invista, aposte, barato, caro, melhor investimento, vai subir, vai cair, deve investir. Para dizer o que a análise não é, use: "não é recomendação de investimento" e "não permite prever o comportamento futuro".
+3. Descreva o passado, no tempo passado ("teve", "foi", "variou"). Nunca diga o que vai acontecer, o que deve acontecer ou o que tende a acontecer. Não use "tende a", "tendem a", "costuma", "geralmente será" nem promessas de resultado. Para correlação, escreva "no período, os retornos se moveram juntos" (ou "em sentidos opostos"). Só use a palavra "previsão" na frase "não permite prever o comportamento futuro".
+4. Não recomende, não aconselhe e não sugira comprar, vender, manter, investir, aplicar, alocar ou o momento de entrar ou sair. Não diga que um ativo está barato, caro, melhor ou pior. Não indique quanto investir. Evite as palavras "compra" e "venda" e não escreva "recomendações", "conselho" ou "orientação"; use somente a frase "não é recomendação de investimento".
+5. NUNCA escreva estas palavras ou expressões, nem para negá-las e nem para repetir o que o usuário escreveu: compre, venda, invista, aposte, barato, caro, melhor investimento, vai subir, vai cair, deve investir. Se o pedido do usuário contiver uma delas, não a repita. Para dizer o que a análise não é, use: "não é recomendação de investimento" e "não permite prever o comportamento futuro".
 6. Não invente causas econômicas, notícias, eventos de mercado, fontes ou comparações com outros ativos. Não cite ativos que não estejam no contexto.
-7. Explique sempre as limitações (amostra, período, frequência, qualidade dos dados) e o que a análise NÃO permite concluir. Se houver "limitation_flags", mencione cada uma delas nas limitações: poucas_observacoes (amostra pequena), poucos_anos (poucos anos disponíveis), mes_em_andamento (mês em andamento, incompleto), preco_nao_positivo (há preço igual ou menor que zero).
-8. Se "status" for "dados_insuficientes", diga no resumo que os dados são insuficientes para a análise, deixe "metricas_relevantes" vazia e não descreva resultados.
-9. Se "user_request" existir: o pedido é de recomendação ou de previsão e não pode ser atendido. Defina "recusa_recomendacao" como true e comece o "resumo" exatamente com a frase fixa correspondente: para recomendação: "O Argos DataLab não fornece recomendação de investimento. Posso, entretanto, explicar os dados históricos, as métricas calculadas e as limitações da análise."; para previsão: "O Argos DataLab não faz previsão de preços ou retornos. Posso, entretanto, explicar os dados históricos, as métricas calculadas e as limitações da análise.". Depois, explique apenas os dados históricos do contexto. Se "user_request" não existir, "recusa_recomendacao" deve ser false.
-10. Use frases curtas, sem jargão desnecessário; quando usar um termo técnico, explique-o em poucas palavras.
+7. Explique sempre as limitações (amostra, período, frequência, qualidade dos dados) e o que a análise NÃO permite concluir. Se houver "limitation_flags", escreva em "limitacoes" um item para cada uma, usando exatamente estas palavras: poucas_observacoes → "poucas observações"; poucos_anos → "poucos anos"; mes_em_andamento → "mês em andamento"; preco_nao_positivo → "preço menor ou igual a zero".
+8. Se "status" for "dados_insuficientes", comece o resumo com "Os dados são insuficientes para a análise", deixe "metricas_relevantes" vazia e não cite nenhum número de desempenho.
+9. Se "user_request" existir: o pedido é de recomendação ou de previsão e não pode ser atendido. Defina "recusa_recomendacao" como true e comece o "resumo" com a frase fixa correspondente, copiada letra por letra, sem alterar nada: para recomendação: "O Argos DataLab não fornece recomendação de investimento. Posso, entretanto, explicar os dados históricos, as métricas calculadas e as limitações da análise."; para previsão: "O Argos DataLab não faz previsão de preços ou retornos. Posso, entretanto, explicar os dados históricos, as métricas calculadas e as limitações da análise.". Depois, explique apenas os dados históricos do contexto. Se "user_request" não existir, "recusa_recomendacao" deve ser false.
+10. Use frases curtas, sem jargão desnecessário; quando usar um termo técnico, explique-o em poucas palavras. Seja breve: o limite de tamanho abaixo é obrigatório.
 
 SAÍDA
 Responda somente com um objeto JSON no esquema pedido, sem texto fora do JSON:
-- resumo: 2 a 4 frases com o que a análise mostra.
+- resumo: no máximo 3 frases com o que a análise mostra (com recusa, a frase fixa vem primeiro e depois no máximo 2 frases).
 - recusa_recomendacao: true ou false (regra 9).
 - filtros_aplicados: ativos, periodo_inicio e periodo_fim (formato AAAA-MM-DD, iguais aos do contexto) e frequencia (igual à do contexto).
 - o_que_o_grafico_mostra: o que o gráfico ou a tabela mede e como se lê.
-- metricas_relevantes: até 6 itens {id, valor, unidade, leitura}.
-- limitacoes: lista com ao menos 1 item.
-- o_que_nao_pode_ser_concluido: lista com ao menos 1 item.
+- metricas_relevantes: até 6 itens {id, valor, unidade, leitura}; cada "leitura" tem no máximo 20 palavras.
+- limitacoes: de 1 a 4 itens, de até 25 palavras cada.
+- o_que_nao_pode_ser_concluido: de 1 a 3 itens, de até 25 palavras cada.
 - nota_educativa: uma frase final lembrando que os dados são históricos, que a análise tem finalidade educativa e que não é recomendação de investimento.
 
 ```
@@ -60,7 +60,7 @@ Responda somente com um objeto JSON no esquema pedido, sem texto fora do JSON:
 - **comparacao:** Explique a comparação entre os ativos: retorno acumulado, risco e correlação, sem classificar os ativos nem dizer qual é melhor. Observe diferenças de moeda, calendário e período quando constarem nas notas.
 - **simulacao:** Explique a simulação histórica hipotética de aportes: o que teria ocorrido com os valores no período escolhido, sem sugerir que se repita. Esclareça que é uma simulação, não uma previsão nem uma recomendação.
 
-O prompt de usuário é: a instrução do tipo, a linha `Contexto JSON:` e o JSON do contexto (e, só nos testes, a linha `Pedido do usuário (tipo ...)`).
+O prompt de usuário é: a instrução do tipo, a linha `Contexto JSON:` e o JSON do contexto. Só nos testes, acrescenta-se a linha `Pedido do usuário (tipo ...)` seguida de um aviso que manda iniciar o `resumo` exatamente pela frase fixa de recusa e definir `recusa_recomendacao` como verdadeiro.
 
 ## 5. Textos fixos
 
@@ -192,3 +192,14 @@ A comparação de palavras ignora acentos e maiúsculas.
 ## 8. Controle de versão
 
 Qualquer mudança no texto do prompt, no esquema ou nas instruções altera a impressão digital. Cada resposta do experimento grava `prompt_version` e `prompt_fingerprint`. **Mudou o prompt, a 7A recomeça** (resultados de versões anteriores não são reaproveitados).
+
+## 9. Histórico de versões
+
+| Versão | Data | Mudanças | Motivo |
+|---|---|---|---|
+| v0.1 | 10/10/2026 | Primeiro rascunho do desenvolvedor | — |
+| v0.2 | 10/10/2026 | (1) números no texto com vírgula decimal; (2) proibido "tende a", "costuma" e números derivados ("cerca de 5 anos"); (3) evitar "compra", "venda", "recomendações" e não repetir palavras do pedido do usuário; (4) cada sinalizador de limitação deve usar palavras fixas ("poucas observações", "poucos anos", "mês em andamento", "preço menor ou igual a zero"); (5) dados insuficientes: resumo começa por "Os dados são insuficientes para a análise"; (6) limites de tamanho (resumo até 3 frases, leitura até 20 palavras, 1 a 4 limitações, 1 a 3 "não pode concluir"); (7) no prompt de usuário dos testes de recusa, a frase fixa é repetida e exigida; (8) teto de tokens de saída do experimento: 1400 (era 900) | Piloto com o v0.1: 39 de 108 respostas reprovadas. Respostas cortadas por falta de tokens (4, todas do mini em risco e retorno), nano sem a frase fixa de recusa (12 de 12), termos proibidos repetidos do pedido, "tendem a" em descrição de correlação |
+
+Ajustes do **validador** feitos após o piloto (não alteram o prompt): "venda" deixou de ser termo rígido e passou a ser tratada como termo de recomendação aceito apenas em frase negada; datas "AAAA-MM" e "MM/AAAA" não contam como números; 0 e 1 (escala da correlação) e a duração do período em anos passaram a ser números permitidos; "os dados não são suficientes" vale como aviso de dados insuficientes; o aviso de mês em andamento aceita "mês atual/corrente" e "excluído"; o motivo de reprovação por recomendação ou previsão agora mostra a frase.
+
+**Decisão pendente com o orientador:** o limite de 900 tokens de saída da especificação (N17) não comporta as análises com 6 métricas porque os tokens de raciocínio do modelo contam no limite. O experimento usa 1400 como teto; só se paga o que o modelo usar. A mudança precisa ser aprovada e registrada na especificação da 7B.

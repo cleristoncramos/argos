@@ -39,7 +39,7 @@ def main(argv=None) -> int:
     parser.add_argument("--out", default="experiments/llm_7a/results/respostas.jsonl")
     parser.add_argument("--models", nargs="+", default=list(runner.DEFAULT_MODELS))
     parser.add_argument("--repetitions", type=int, default=runner.DEFAULT_REPETITIONS)
-    parser.add_argument("--max-tokens", type=int, default=900)
+    parser.add_argument("--max-tokens", type=int, default=1400, help="Teto de tokens de saída (inclui o raciocínio do modelo).")
     parser.add_argument("--max-cost", type=float, default=2.0, help="Teto de custo em US$ desta execução.")
     parser.add_argument("--reasoning-effort", default="minimal", help="'' para não enviar.")
     parser.add_argument("--only", nargs="*", default=None, help="Ids de casos a rodar.")

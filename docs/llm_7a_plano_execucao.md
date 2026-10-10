@@ -27,7 +27,7 @@
 1. Crie uma chave **exclusiva** para a validação, com limite de gasto de **US$ 10** no painel do provedor. Verifique os preços na página oficial e atualize `PRICES` em `core/llm_eval.py` (o de `gpt-5-nano` não foi verificado).
 2. No PowerShell, na sessão atual (nunca em arquivo):
    `$env:OPENAI_API_KEY = "sua-chave"`
-3. **Sonda** (uma chamada por modelo): `python -m experiments.llm_7a.run_experiment --probe`. Confira: tokens de saída, `finish_reason` (se for `length`, os 900 tokens não bastaram porque o raciocínio consome parte; reexecute com `--max-tokens 2000` e registre), parâmetros removidos automaticamente (como `reasoning_effort`) e o custo.
+3. **Sonda** (uma chamada por modelo): `python -m experiments.llm_7a.run_experiment --probe`. Confira: tokens de saída, `finish_reason` (se for `length`, os tokens não bastaram porque o raciocínio consome parte; o teto padrão agora é 1400, ajustável por `--max-tokens`; registre), parâmetros removidos automaticamente (como `reasoning_effort`) e o custo.
 4. **Execução completa** (≥ 72 respostas): `python -m experiments.llm_7a.run_experiment --max-cost 2`. O script grava cada resposta assim que chega, pode ser interrompido e retomado, e para sozinho se o custo passar do teto.
 5. Ao terminar: `Remove-Item Env:OPENAI_API_KEY`. Os resultados ficam em `experiments/llm_7a/results/` (já fora do Git; não publique as respostas antes de revisá-las).
 
@@ -78,3 +78,14 @@
 3. Aprovar a frase de recusa de previsão.
 4. Definir a chave com limite de US$ 10 e rodar a sonda.
 5. Marcar a sessão de calibração.
+
+## 7. Piloto automático (antes da execução oficial)
+
+Rode primeiro um piloto, que não vale como resultado, para achar problemas do prompt e do validador:
+
+```powershell
+python -m experiments.llm_7a.run_experiment --out experiments/llm_7a/results/piloto.jsonl --max-cost 1
+python -m experiments.llm_7a.diagnose --responses experiments/llm_7a/results/piloto.jsonl --out experiments/llm_7a/results/diagnostico.txt
+```
+
+O `diagnose` lista cada reprovação com o motivo, o `finish_reason` e o início do texto. **Qualquer mudança no prompt** (nova versão) exige regenerar o `cases.json` (`build_cases`), apagar o piloto e recomeçar. O piloto com o v0.1 está descrito em `docs/protocolo_prompts_llm.md`, seção 9.

@@ -40,11 +40,15 @@ LIMITATION_FLAGS = (
 LIMITATION_KEYWORDS = {
     "poucas_observacoes": ("poucas observacoes", "amostra pequena", "poucos dados", "observacoes"),
     "poucos_anos": ("poucos anos", "anos disponiveis", "amostra", "poucos"),
-    "mes_em_andamento": ("em andamento", "incompleto", "parcial", "ainda nao terminou"),
+    "mes_em_andamento": (
+        "em andamento", "incompleto", "parcial", "ainda nao terminou",
+        "mes atual", "mes corrente", "mes vigente", "nao terminou", "excluid",
+    ),
     "preco_nao_positivo": ("preco", "zero", "negativ", "nao positivo"),
 }
 
-ALWAYS_ALLOWED_NUMBERS = (100.0,)
+# 100 (percentual), 0 e 1 (escala da correlação e contagens triviais).
+ALWAYS_ALLOWED_NUMBERS = (100.0, 0.0, 1.0)
 
 
 def metric(
@@ -188,4 +192,10 @@ def allowed_numbers(context: dict) -> list:
     start = int(context["filters"]["period_start"][:4])
     end = int(context["filters"]["period_end"][:4])
     numbers.extend(float(year) for year in range(start, end + 1))
+    # Duração do período em anos (exata, arredondada e truncada): "cerca de 5 anos".
+    span = (
+        date.fromisoformat(context["filters"]["period_end"])
+        - date.fromisoformat(context["filters"]["period_start"])
+    ).days / 365.25
+    numbers.extend([round(span, 1), float(round(span)), float(int(span))])
     return numbers

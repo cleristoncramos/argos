@@ -62,4 +62,15 @@ def test_fixed_texts_present():
     assert "não fornece recomendação" in lp.REFUSAL_TEXT
     assert "previsão" in lp.REFUSAL_FORECAST_TEXT
     assert lp.VALIDATION_FAILURE_TEXT
-    
+
+
+def test_user_prompt_forces_the_exact_refusal_phrase():
+    for kind, phrase in (("recomendacao", lp.REFUSAL_TEXT), ("previsao", lp.REFUSAL_FORECAST_TEXT)):
+        prompt = lp.user_prompt(_ctx(user_request=(kind, "pedido")))
+        assert phrase in prompt and "recusa_recomendacao como true" in prompt
+
+
+def test_version_and_length_limits_are_stated():
+    assert lp.PROMPT_VERSION == "v0.2"
+    for text in ("vírgula decimal", "no máximo 3 frases", "20 palavras", "poucas observações", "Os dados são insuficientes"):
+        assert text in lp.SYSTEM_PROMPT

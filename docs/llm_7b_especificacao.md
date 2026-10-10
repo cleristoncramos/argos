@@ -184,6 +184,8 @@ O desenvolvedor executa a **validação automática** de formato, consistência 
 ## 7. Ressalvas e pontos a resolver [S]
 
 1. **Temperatura e tokens de raciocínio.** Pelo que conheço, os modelos de raciocínio da família GPT-5 não aceitam temperatura diferente do padrão e contam os tokens de raciocínio no limite de saída; com 900 tokens, a resposta visível pode ficar truncada ou vazia. **Não consegui confirmar na documentação oficial** (a busca retornou apenas páginas de terceiros, que não tratam do ponto). Testar na primeira chamada; se necessário, omitir a temperatura, usar o menor esforço de raciocínio e ajustar o limite de saída. Registrar o resultado no relatório da 7A.
+
+   **Resultado do piloto (10/10/2026):** a API aceitou `reasoning_effort=minimal` nos dois modelos, mas 4 de 54 respostas do `gpt-5-mini` foram cortadas em 900 tokens (`finish_reason=length`), todas em risco e retorno com 6 métricas. O experimento passou a usar teto de 1400 tokens de saída e textos mais curtos (prompt v0.2). A mudança do limite de 900 para 1400 depende de aprovação do orientador (N17).
 2. **Medir custo e tempo exige chamar a API.** Por isso a 7A usa um script de experimento fora do aplicativo (`experiments/llm_7a/`), com os mesmos contextos e prompts. O orçamento de US$ 10,00 cobre com folga 72 chamadas.
 3. **Limites de uso:** ver a seção 3 (três camadas, contador global persistente, teto no provedor).
 4. **Recusa a pedido de recomendação** é testada no experimento da 7A, porque a primeira versão não tem entrada livre.

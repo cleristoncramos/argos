@@ -347,3 +347,24 @@ def test_render_helpers():
 def test_cleanup():
     for path in _TMP:
         shutil.rmtree(path, ignore_errors=True)
+
+
+def test_diagnose_summary_and_cli():
+    from experiments.llm_7a import diagnose
+
+    payload, out, _, _ = _run_dry(models=("gpt-5-mini",), repetitions=1)
+    records = [json.loads(x) for x in out.read_text(encoding="utf-8").splitlines()]
+    records[0]["validation"] = {"ok": False, "failed": ["valores_rastreaveis"], "details": {"valores_rastreaveis": "número fora do contexto: 56"}}
+    records[1]["validation"] = {"ok": False, "failed": ["json_valido"]}
+    records[1]["raw"] = '{"resumo": "cortado'
+    records[1]["finish_reason"] = "length"
+    records[2]["validation"] = {"ok": False}
+    records[2]["error"] = "HTTP 500"
+    text = diagnose.summarize(records)
+    assert "Reprovadas: 3 de" in text and "número fora do contexto: 56" in text
+    assert "(JSON inválido)" in text and "length): 1" in text and "erro: HTTP 500" in text
+    path = _tmp() / "r.jsonl"
+    path.write_text("\n".join(json.dumps(r) for r in records), encoding="utf-8")
+    dest = _tmp() / "diag.txt"
+    assert diagnose.main(["--responses", str(path), "--out", str(dest)]) == 0
+    assert "Reprovadas" in dest.read_text(encoding="utf-8")

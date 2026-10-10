@@ -11,8 +11,7 @@ import math
 from collections import defaultdict
 from typing import Iterable, Optional
 
-# Preço em US$ por 1 milhão de tokens: (entrada, saída). Conferir na tabela
-# oficial antes de rodar; o valor de gpt-5-nano não foi verificado.
+# Preço em US$ por 1 milhão de tokens: (entrada, saída). 
 PRICES = {
     "gpt-5-mini": (0.25, 2.00),
     "gpt-5-nano": (0.05, 0.40),

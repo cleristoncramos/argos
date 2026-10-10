@@ -187,6 +187,28 @@ def test_traceable_numbers_forms():
     assert "valores_rastreaveis" in _fails(_good(resumo="A volatilidade foi de 33,2%."))
 
 
+def test_decimal_point_numbers_are_not_read_as_thousands():
+    # "0.056" é decimal (milhar nunca começa com zero); "1.250" vale 1250 ou 1,25
+    ctx = _context(metrics=[lc.metric("retorno_medio", "Retorno médio", 0.056, "%", 3)])
+    data = _good(
+        resumo="O retorno médio foi de 0.056% por observação, em 1.250 observações.",
+        metricas_relevantes=[{"id": "retorno_medio", "valor": 0.056, "unidade": "%", "leitura": "Média."}],
+    )
+    assert "valores_rastreaveis" not in lv.validate_response(json.dumps(data), ctx, TICKERS).failed
+    data = _good(
+        resumo="Com 1250 observações o retorno médio foi de 0,056%.",
+        metricas_relevantes=data["metricas_relevantes"],
+    )
+    assert "valores_rastreaveis" not in lv.validate_response(json.dumps(data), ctx, TICKERS).failed
+    # 12.345,6 (milhar com decimal brasileiro) que não está no contexto continua reprovado
+    bad = _good(resumo="A variação foi de 12.345,6 pontos.", metricas_relevantes=data["metricas_relevantes"])
+    assert "valores_rastreaveis" in lv.validate_response(json.dumps(bad), ctx, TICKERS).failed
+    big = _context(extra_numbers=[1250.5], metrics=ctx["metrics"])
+    good = _good(resumo="Foram 1.250,5 pontos.", metricas_relevantes=data["metricas_relevantes"])
+    assert "valores_rastreaveis" not in lv.validate_response(json.dumps(good), big, TICKERS).failed
+    assert "valores_rastreaveis" in lv.validate_response(json.dumps(good), ctx, TICKERS).failed
+
+
 def test_asset_name_digits_are_ignored():
     ctx = _context(assets=["PETR4.SA"], asset_names={"PETR4.SA": "Petrobras PN 4"})
     data = _good(
@@ -344,3 +366,42 @@ def test_refusal_texts_pass_language_checks():
 
 def test_fold():
     assert lv.fold("Previsão ÇÃO") == "previsao cao"
+
+
+def test_buy_sell_nouns_are_soft_terms():
+    ok = _good(o_que_nao_pode_ser_concluido=["Não é um sinal de compra ou de venda de nenhum ativo."])
+    assert "sem_recomendacao" not in _fails(ok)
+    bad = _good(resumo="Há um sinal de venda neste ativo.")
+    result = _run(bad)
+    assert "sem_recomendacao" in result.failed
+    assert "venda" in result.as_dict()["details"]["sem_recomendacao"]
+
+
+def test_details_show_the_offending_sentence():
+    result = _run(_good(resumo="Os retornos tendem a se repetir."))
+    detail = result.as_dict()["details"]["sem_previsao"]
+    assert "tende" in detail and "repetir" in detail
+
+
+def test_year_month_and_scale_numbers_are_accepted():
+    data = _good(resumo="De 2020-01 a 2024-12 (01/2020 a 12/2024), a correlação fica entre -1 e 1, com 0 sendo nula.")
+    assert "valores_rastreaveis" not in _fails(data)
+    # duração do período (cerca de 5 anos) é derivada das datas do contexto
+    assert "valores_rastreaveis" not in _fails(_good(resumo="São cerca de 5 anos de dados."))
+    assert "valores_rastreaveis" in _fails(_good(resumo="São cerca de 8 anos de dados."))
+
+
+def test_insufficient_wording_variants():
+    ctx = _context(status="dados_insuficientes", metrics=[], n_observations=10, limitation_flags=["poucas_observacoes"])
+    for resumo in (
+        "Os dados não são suficientes para calcular as métricas.",
+        "Não há dados suficientes para esta análise.",
+        "Os dados são insuficientes para a análise.",
+    ):
+        data = _good(
+            resumo=resumo,
+            o_que_o_grafico_mostra="Não há observações suficientes para descrever o período.",
+            metricas_relevantes=[],
+            limitacoes=["Há poucas observações no período."],
+        )
+        assert lv.validate_response(json.dumps(data), ctx, TICKERS).ok, resumo

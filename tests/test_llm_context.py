@@ -98,3 +98,8 @@ def test_allowed_numbers():
     assert 7.0 in nums
     assert 100.0 in nums
     assert 2022.0 in nums
+
+
+def test_allowed_numbers_include_period_span_and_scale():
+    nums = lc.allowed_numbers(_ctx())
+    assert 5.0 in nums and 0.0 in nums and 1.0 in nums

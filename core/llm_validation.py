@@ -30,6 +30,8 @@ CHECK_NAMES = (
     "recusa_correta",
 )
 
+_INSUFFICIENT = re.compile(r"insuficient|nao (sao|ha|foi possivel|e possivel)\b.{0,40}suficiente")
+
 MAX_TEXT = 900
 MAX_RESUMO = 700
 MAX_LIST_ITEMS = 6
@@ -51,7 +53,6 @@ REQUIRED_FIELDS = (
 HARD_TERMS = (
     r"\bcompre\b",
     r"\bcomprem\b",
-    r"\bvenda\b",
     r"\binvista\b",
     r"\binvistam\b",
     r"\baposte\b",
@@ -79,6 +80,7 @@ SOFT_RECOMMENDATION = (
     r"\brecomend\w*",
     r"\baconselh\w*",
     r"\b(comprar|vender|investir|aplicar|resgatar)\b",
+    r"\bvendas?\b",
     r"\baloc\w+",
 )
 
@@ -150,23 +152,32 @@ def _hard_hits(folded: str) -> list:
 
 
 def _soft_hits(folded: str, patterns: Iterable[str]) -> list:
-    """Ocorrências que não estão em frase com negação anterior ao termo."""
+    """(termo, frase) das ocorrências sem negação anterior ao termo na frase."""
     hits = []
     for sentence in _sentences(folded):
         for pattern in patterns:
             for match in re.finditer(pattern, sentence):
                 before = sentence[: match.start()]
                 if not any(re.search(rf"\b{n}\b", before) for n in NEGATIONS):
-                    hits.append(match.group(0))
+                    hits.append((match.group(0), sentence.strip()))
     return hits
 
 
 _NUMBER = re.compile(r"\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+(?:[.,]\d+)?")
-_DATE = re.compile(r"\d{4}-\d{2}-\d{2}|\d{1,2}/\d{1,2}/\d{2,4}")
+_DATE = re.compile(r"\d{4}-\d{2}-\d{2}|\d{1,2}/\d{1,2}/\d{2,4}|\d{4}-\d{2}(?!\d)|\d{1,2}/\d{4}")
+_THOUSANDS = re.compile(r"[1-9]\d{0,2}(?:\.\d{3})+(?:,\d+)?")
+
+
+def _decimals_of(raw: str) -> int:
+    return len(raw.split(".")[1]) if "." in raw else 0
 
 
 def _numbers_in(text: str, remove: Iterable[str]) -> list:
-    """Números do texto como (valor, casas decimais), sem tickers nem datas."""
+    """
+    Números do texto, sem tickers nem datas. Cada item é a lista de leituras
+    possíveis [(valor, casas decimais), ...]: "1.825" tanto pode ser 1825
+    (milhar brasileiro) quanto 1,825 (ponto decimal); "0.056" só pode ser decimal.
+    """
     cleaned = _DATE.sub(" ", text)
     for token in sorted({t for t in remove if t}, key=len, reverse=True):
         cleaned = re.sub(re.escape(token), " ", cleaned, flags=re.IGNORECASE)
@@ -176,11 +187,14 @@ def _numbers_in(text: str, remove: Iterable[str]) -> list:
         end = match.end()
         if end < len(cleaned) and cleaned[end] in "ºª":
             continue
-        if re.fullmatch(r"\d{1,3}(?:\.\d{3})+(?:,\d+)?", raw):
-            raw = raw.replace(".", "")
-        raw = raw.replace(",", ".")
-        decimals = len(raw.split(".")[1]) if "." in raw else 0
-        found.append((float(raw), decimals))
+        readings = []
+        if _THOUSANDS.fullmatch(raw):
+            thousands = raw.replace(".", "").replace(",", ".")
+            readings.append((float(thousands), _decimals_of(thousands)))
+        plain = raw.replace(",", ".")
+        if plain.count(".") <= 1:
+            readings.append((float(plain), _decimals_of(plain)))
+        found.append(readings)
     return found
 
 
@@ -331,7 +345,7 @@ def validate_response(
     if context["status"] == "dados_insuficientes":
         if cited:
             problems.append("com dados insuficientes não deve citar métricas")
-        if "insuficient" not in fold(data["resumo"]):
+        if not _INSUFFICIENT.search(fold(data["resumo"])):
             problems.append("o resumo não informa que os dados são insuficientes")
     elif context["metrics"] and not cited and not context.get("user_request"):
         problems.append("nenhuma métrica citada")
@@ -341,9 +355,9 @@ def validate_response(
     remove = list(context["assets"]) + [str(n) for n in context["asset_names"].values()]
     allowed = allowed_numbers(context)
     untraceable = [
-        value
-        for value, decimals in _numbers_in(text, remove)
-        if not _is_traceable(value, decimals, allowed)
+        readings[0][0]
+        for readings in _numbers_in(text, remove)
+        if not any(_is_traceable(v, d, allowed) for v, d in readings)
     ]
     add(
         "valores_rastreaveis",
@@ -353,9 +367,9 @@ def validate_response(
 
     # 7-9. Linguagem ------------------------------------------------------------
     rec = _soft_hits(folded, SOFT_RECOMMENDATION)
-    add("sem_recomendacao", not rec, "" if not rec else f"recomendação: '{rec[0]}'")
+    add("sem_recomendacao", not rec, "" if not rec else f"recomendação: '{rec[0][0]}' em «{rec[0][1][:140]}»")
     pred = _soft_hits(folded, SOFT_PREDICTION)
-    add("sem_previsao", not pred, "" if not pred else f"previsão: '{pred[0]}'")
+    add("sem_previsao", not pred, "" if not pred else f"previsão: '{pred[0][0]}' em «{pred[0][1][:140]}»")
     hard = _hard_hits(folded)
     add("sem_termos_proibidos", not hard, "" if not hard else f"termo proibido: '{hard[0]}'")
 
