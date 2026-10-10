@@ -588,3 +588,37 @@ def test_main_renders_the_demo_banner_before_running_the_page():
     source = (ROOT / "app" / "main.py").read_text(encoding="utf-8")
     assert "from app.ui.demo_banner import render_demo_banner" in source
     assert source.index("render_demo_banner()") < source.index("pg.run()")
+
+
+# ----------------------------------------------------------------------
+# Catálogo restrito ao pacote da demo
+# ----------------------------------------------------------------------
+CATALOG = [
+    {"ticker": "AAPL", "name": "Apple", "group": "us_stocks"},
+    {"ticker": "MSFT", "name": "Microsoft", "group": "us_stocks"},
+    {"ticker": "BTC-USD", "name": "Bitcoin", "group": "crypto"},
+    {"ticker": "VALE3.SA", "name": "Vale", "group": "br_stocks"},
+]
+
+
+def test_catalog_is_restricted_only_in_demo_mode():
+    pkg = _new_package(assets=[("AAPL", "Apple"), ("BTC-USD", "Bitcoin")])
+    assert demo_mode.catalog_assets(CATALOG, pkg) == CATALOG
+    with _env(ARGOS_DEMO_MODE="true"):
+        shown = demo_mode.catalog_assets(CATALOG, pkg)
+    assert [a["ticker"] for a in shown] == ["AAPL", "BTC-USD"]
+
+
+def test_catalog_falls_back_to_full_list_without_a_package():
+    missing = Path(tempfile.mkdtemp(prefix="argos_demo_"))
+    _TMP.append(str(missing))
+    with _env(ARGOS_DEMO_MODE="true"):
+        assert demo_mode.catalog_assets(CATALOG, missing) == CATALOG
+
+
+def test_pages_use_the_demo_catalog_and_hide_free_ticker_input():
+    sidebar = (ROOT / "app" / "ui" / "sidebar.py").read_text(encoding="utf-8")
+    assert "catalog_assets(ASSETS)" in sidebar and "if is_demo_mode():" in sidebar
+    comparison = (ROOT / "app" / "views" / "comparacao_ativos.py").read_text(encoding="utf-8")
+    assert comparison.count("catalog_assets(ASSETS)") == 1
+    assert "if not is_demo_mode():" in comparison

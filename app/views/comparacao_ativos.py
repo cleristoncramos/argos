@@ -45,6 +45,7 @@ from app.ui.tables import (
 
 from core.analyzer import calculate_returns
 from core.assets import ASSETS
+from core.demo_mode import catalog_assets, is_demo_mode
 from core.comparison import (
     build_base_100_table,
     build_price_table,
@@ -671,8 +672,11 @@ with st.sidebar:
 
     st.header("⚙️ Parâmetros da Comparação")
 
+    # No modo demo, o catálogo mostra só os ativos dos dados salvos.
+    catalog = catalog_assets(ASSETS)
+
     groups = []
-    for asset in ASSETS:
+    for asset in catalog:
         g = asset.get("group", asset.get("class", "Outros"))
         if g not in groups:
             groups.append(g)
@@ -698,7 +702,7 @@ with st.sidebar:
 
     # O ticker entra nas opções se for da classe selecionada OU se já estiver
     # selecionado (permite comparar classes diferentes e tickers digitados).
-    for asset in ASSETS:
+    for asset in catalog:
         asset_group = asset.get("group", asset.get("class", "Outros"))
         is_in_group = (asset_group == selected_class)
         is_selected = (asset["ticker"] in previously_selected_tickers)
@@ -724,28 +728,30 @@ with st.sidebar:
         on_change=sync_comparison_symbols,
     )
 
-    with st.expander("⌨️ Digitar ticker (avançado)", expanded=False):
-        st.text_input(
-            "Ticker (código do Yahoo Finance)",
-            key=COMPARISON_CUSTOM_INPUT_KEY,
-            placeholder="Ex.: PETR4.SA, AAPL, BTC-USD",
-            help=(
-                "Para usuários avançados. Ações brasileiras terminam em .SA, "
-                "criptomoedas em -USD e câmbio em =X. A validação consulta a "
-                "fonte e pode levar alguns segundos."
-            ),
-        )
-        st.button(
-            "➕ Adicionar ao comparativo",
-            key="comparison_add_custom",
-            on_click=add_custom_ticker,
-            use_container_width=True,
-        )
-        custom_message = st.session_state.get(COMPARISON_CUSTOM_MSG_KEY)
-        if custom_message:
-            {"error": st.error, "success": st.success}.get(
-                custom_message[0], st.info
-            )(custom_message[1])
+    # Digitação livre fica oculta no modo demo (só existem os dados salvos).
+    if not is_demo_mode():
+        with st.expander("⌨️ Digitar ticker (avançado)", expanded=False):
+            st.text_input(
+                "Ticker (código do Yahoo Finance)",
+                key=COMPARISON_CUSTOM_INPUT_KEY,
+                placeholder="Ex.: PETR4.SA, AAPL, BTC-USD",
+                help=(
+                    "Para usuários avançados. Ações brasileiras terminam em .SA, "
+                    "criptomoedas em -USD e câmbio em =X. A validação consulta a "
+                    "fonte e pode levar alguns segundos."
+                ),
+            )
+            st.button(
+                "➕ Adicionar ao comparativo",
+                key="comparison_add_custom",
+                on_click=add_custom_ticker,
+                use_container_width=True,
+            )
+            custom_message = st.session_state.get(COMPARISON_CUSTOM_MSG_KEY)
+            if custom_message:
+                {"error": st.error, "success": st.success}.get(
+                    custom_message[0], st.info
+                )(custom_message[1])
 
     selected_tickers = st.session_state[COMPARISON_SYMBOLS_WIDGET_KEY]
     symbols_input = st.session_state[COMPARISON_SYMBOLS_STATE_KEY]

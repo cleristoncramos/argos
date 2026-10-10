@@ -116,6 +116,20 @@ def is_demo_asset(ticker: str, directory=None) -> bool:
     return str(ticker).strip().upper() in demo_tickers(directory)
 
 
+def catalog_assets(assets, directory=None) -> list:
+    """
+    Catálogo exibido ao usuário: no modo demo, somente os ativos do pacote
+    salvo. Sem modo demo (ou sem pacote legível) devolve o catálogo inteiro;
+    nesse caso o aviso de erro do modo demo explica o problema.
+    """
+    if not is_demo_mode():
+        return list(assets)
+    tickers = set(demo_tickers(directory))
+    if not tickers:
+        return list(assets)
+    return [a for a in assets if str(a.get("ticker", "")).upper() in tickers]
+
+
 @lru_cache(maxsize=64)
 def _hash_ok(path: str, mtime_ns: int, size: int, expected: str) -> bool:
     # mtime e tamanho entram na chave: o hash só é recalculado se o arquivo mudar.

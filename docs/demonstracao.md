@@ -53,7 +53,7 @@ ARGOS_DEMO_MODE=true
 | Manifesto | `data/demo/manifest.json`: ativos, período, frequência, data da coleta, fonte, versão do Argos e **hash SHA-256** de cada arquivo |
 | Gerador | `scripts/gerar_dados_demo.py` (baixa uma vez, com internet, e grava arquivos + manifesto) |
 | Ativação | Variável de ambiente `ARGOS_DEMO_MODE=true`; `core/data_loader.py` passa a ler de `data/demo/` e **nunca** chama o Yahoo Finance nesse modo |
-| Ativos fora do manifesto | Mensagem clara ("disponível apenas fora do modo de demonstração"); digitação livre de ticker desabilitada no modo demo |
+| Ativos fora do manifesto | No modo demo o catálogo mostra só os ativos do manifesto e a digitação livre de ticker fica oculta (barra lateral e Comparação) |
 | Aviso na tela | Faixa discreta em todas as páginas: "Versão congelada vX · dados salvos em dd/mm/aaaa" |
 | Respostas de LLM salvas | `data/demo/llm_respostas.json`: para cada análise da demo, texto aprovado, modelo, versão do prompt, data e resultado das validações; usadas antes de qualquer chamada. Sem resposta salva ou sem API, exibe o roteiro fixo de `core/chart_guides.py` |
 | Chamadas externas | Auditoria do código por qualquer acesso à rede (download de dados, logos remotos, fontes e CSS externos, API de LLM); no modo demo, ou são substituídas por recursos locais ou ficam desligadas |

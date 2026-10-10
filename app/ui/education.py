@@ -2,6 +2,7 @@
 
 import streamlit as st
 
+from core.edu_layer import edu_layer_enabled
 from core.glossary import GLOSSARY, get_glossary_entry
 
 
@@ -15,6 +16,8 @@ def _render_entry(entry, heading: bool) -> None:
 
 def render_what_it_means(key: str) -> None:
     """Expander compacto para um termo, posicionado perto da métrica/gráfico."""
+    if not edu_layer_enabled():
+        return
     entry = get_glossary_entry(key)
     if entry is None:
         return
@@ -24,6 +27,8 @@ def render_what_it_means(key: str) -> None:
 
 def render_glossary(keys: list[str] | None = None) -> None:
     """Glossário completo (ou parcial) em um expander."""
+    if not edu_layer_enabled():
+        return
     with st.expander("📚 Glossário", expanded=False):
         st.markdown(
             "Conceitos usados nesta página, em linguagem simples. "

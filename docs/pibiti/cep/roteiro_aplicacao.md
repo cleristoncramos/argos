@@ -5,7 +5,7 @@
 ## Preparação (antes de cada sessão)
 
 1. Computador com a tag congelada, `ARGOS_DEMO_MODE=true` e internet **desligada** (todos veem os mesmos dados).
-2. Abrir o app na condição sorteada: **com** ou **sem** camada educativa (interruptor da condição; ver `checklist_submissao_cep.md`, item técnico T1). Conferir que os avisos obrigatórios aparecem nas duas.
+2. Abrir o app na condição sorteada. **Com camada:** `$env:ARGOS_DEMO_MODE="true"; streamlit run app/main.py`. **Sem camada:** `$env:ARGOS_DEMO_MODE="true"; $env:ARGOS_EDU_LAYER="off"; streamlit run app/main.py`. Conferir que, na condição sem camada, não aparecem "O que significa?", "Como ler este gráfico" nem glossário, e que os avisos obrigatórios aparecem nas duas. Limpar a variável depois: `Remove-Item Env:ARGOS_EDU_LAYER`.
 3. Imprimir: TCLE (2 vias), ficha de perfil, questionário, SUS/clareza, ficha de observação. Conferir o código do participante e a condição na lista de aleatorização.
 4. Sala reservada, sem terceiros.
 

@@ -349,7 +349,7 @@ Bloco 9 — Protocolo ético e avaliação com usuários (O6):
 - [x] 9.3 Minutas do TCLE (participantes e avaliadores), dos instrumentos e do roteiro de aplicação (`docs/pibiti/cep/`), 10/10/2026; SUS a trocar pela versão validada em português
 - [x] 9.5 Avaliadores da 7A incluídos no mesmo protocolo (N25)
 - [ ] 9.4 Submeter ao CEP (meta: até 15/12/2026); **nenhuma coleta antes do parecer favorável**
-- [ ] 9.7 Interruptor `ARGOS_EDU_LAYER` (condição sem camada educativa) e teste, antes do congelamento
+- [x] 9.7 Interruptor `ARGOS_EDU_LAYER` (condição sem camada educativa) e teste implementados em 10/10/2026; falta a conferência no navegador
 - [ ] 9.8 Pré-teste dos instrumentos, só após o parecer
 - [ ] Aplicar sobre a versão congelada e registrar versão e data
 

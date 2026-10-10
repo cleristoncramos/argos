@@ -309,7 +309,7 @@ app/ui/llm_panel.py     → botão "✨ Explicar esta análise" e bloco expansí
 | 9.4 | Submeter ao CEP o quanto antes; **nenhuma coleta antes do parecer favorável** |
 | 9.5 | Definir se a avaliação humana da 7A (três avaliadores) exige tratamento ético próprio (N25) |
 | 9.6 | Aplicar a avaliação sobre a **versão congelada**; registrar versão e data |
-| 9.7 | Implementar o **interruptor da condição "sem camada educativa"** (variável `ARGOS_EDU_LAYER`) e seu teste automatizado, mantendo os avisos obrigatórios nas duas condições; antes do congelamento [D 10/10/2026] |
+| 9.7 | **Interruptor da condição "sem camada educativa"** (`ARGOS_EDU_LAYER=off`) e teste automatizado, mantendo os avisos obrigatórios nas duas condições [D 10/10/2026]. **Implementado em 10/10/2026**; falta a conferência no navegador |
 | 9.8 | Pré-teste dos instrumentos com 2 a 3 adultos, **somente após o parecer**, descrito no protocolo [D 10/10/2026] |
 
 **Estado (10/10/2026).** Tarefas 9.2, 9.3 e 9.5 com minutas em `docs/pibiti/cep/`: `protocolo_pesquisa.md`, `tcle_participantes.md`, `tcle_avaliadores.md`, `instrumentos.md`, `roteiro_aplicacao.md` e `checklist_submissao_cep.md` (perguntas ao orientador e ao CEP, documentos, datas-alvo). Decisões de delineamento [D, por delegação]: dois grupos independentes, 20 participantes (10 por grupo), sessão presencial individual de cerca de 60 minutos no modo demo, alocação em blocos de 4, análise exploratória (Mann-Whitney com tamanho de efeito e intervalos). Pendentes: 9.1 (confirmar procedimento com o orientador e o CEP/UFPI), revisão do orientador, documentos institucionais e a submissão (meta: **15/12/2026**).
