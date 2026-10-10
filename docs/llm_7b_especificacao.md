@@ -4,6 +4,8 @@
 
 **Estado:** a transição da 7A para a 7B foi informada como **aprovada pelo orientador, desde que todas as condições, limites e critérios deste documento sejam cumpridos**. A 7B **não** começa antes de a 7A atingir todos os limiares da seção 5. Guardar a evidência escrita da aprovação (N21).
 
+**Andamento da 7A (10/10/2026):** código de validação e infraestrutura do experimento prontos (`core/llm_*.py`, `experiments/llm_7a/`); prompt v0.1 em `docs/protocolo_prompts_llm.md`; roteiro em `docs/llm_7a_plano_execucao.md`. Falta rodar o experimento e fazer a avaliação humana. A 7B continua bloqueada.
+
 Marcação: **[D]** decidido · **[S]** sugestão ou ressalva do registro, sem aceite · **[V]** verificado em fonte externa.
 
 ---

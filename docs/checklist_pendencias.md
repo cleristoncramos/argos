@@ -332,9 +332,11 @@ Bloco 6 — Tendência:
 
 Bloco 7 — LLM:
 - [ ] 7A: avaliação humana por 3 avaliadores (leigo, técnico, neutralidade), calibração e kappa ponderado ≥ 0,60; aprovação registrada em `docs/pibiti/decisoes_orientador.md`
-- [ ] 7A: `docs/protocolo_prompts_llm.md`; `core/llm_context.py` e `core/llm_validation.py` (puros, testados); ≥ 12 casos, 2 modelos, 3 repetições; script de experimento fora do app; rubrica; casos negativos
+- [x] 7A: `docs/protocolo_prompts_llm.md` (v0.1); `core/llm_context.py`, `llm_prompts.py`, `llm_validation.py`, `llm_eval.py` (puros, testados); 18 casos, 2 modelos, 3 repetições; script de experimento fora do app (`experiments/llm_7a/`); rubrica (`docs/llm_7a_plano_execucao.md`); casos negativos — **código pronto em 10/10/2026; falta rodar o experimento**
 - [ ] 7A: confirmar na primeira chamada os parâmetros (temperatura, tokens de raciocínio) e verificar preços na página oficial
-- [ ] 7A: relatório de validação e aprovação do orientador registrada por escrito
+- [ ] 7A: relatório de validação (modelo em `docs/relatorio_validacao_7a.md`) e aprovação do orientador registrada por escrito em `docs/pibiti/decisoes_orientador.md`
+- [ ] 7A: definir os três avaliadores (N26), marcar a sessão de calibração e enviar o prompt v0.1 ao orientador para revisão
+- [ ] 7A: criar chave de API exclusiva (limite US$ 10), rodar `--probe` e depois o experimento completo
 - [ ] 7B (só com todos os limiares atingidos): prompts versionados, cliente com timeout e retentativas, auditoria, limites de uso, botão "✨ Explicar esta análise", fallback, segredos fora do Git, documentação
 
 Bloco 8 — Fechamento:
@@ -439,3 +441,4 @@ Em aberto:
   - [ ] Pendentes: teste de memória (Streamlit Cloud), decisão sobre publicar os dados em repositório público e respostas de LLM salvas (após 7B)
 - [x] 8.7 O que ficou fora, com motivo: `docs/fora_do_escopo.md`
 - [ ] Commit do Bloco 8
+

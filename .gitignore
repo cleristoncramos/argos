@@ -83,8 +83,17 @@ backup_encoding_*/
 htmlcov/
 
 # Evidências visuais locais de validação acadêmica
-/docs/evidencias/**/*.pnghtmlcov/
+# Evidências visuais locais de validação acadêmica
+/docs/evidencias/**/*.png
+
+# Cobertura
+htmlcov/
 .coverage
+
+# Dados de demonstração (não publicar sem decisão sobre os termos do Yahoo)
 data/demo/*.csv
 data/demo/manifest.json
 data/demo/llm_respostas.json
+
+# Experimento 7A: respostas dos modelos e avaliações humanas ficam locais
+experiments/llm_7a/results/
