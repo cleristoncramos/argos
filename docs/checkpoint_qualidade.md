@@ -1,7 +1,8 @@
 # Checkpoint de Qualidade e Testes — Fase 8
 
 Referência: ata de 30/09/2026, item 15 ("Qualidade e testes").
-Última execução registrada (07/10/2026): **393 testes passando; cobertura de `core/` em 100%**
+Última execução registrada (09/10/2026, fim do Bloco 1 do Plano 2): **405 testes passando; cobertura de `core/` em 100% (1081 instruções)**; pandas 3.0.5, Python 3.13.15.
+Bloco 2 (09/10/2026): 20 testes novos em `tests/test_seasonality.py` (total esperado: **425**); rodar `python -m pytest --cov=core --cov-report=term-missing` e registrar aqui o resultado real.
 (mínimo exigido: 80%; meta do projeto: manter próximo ou acima de 95%).
 
 > Este documento é um checkpoint, não um relatório automático. Reexecute
@@ -11,7 +12,7 @@ Referência: ata de 30/09/2026, item 15 ("Qualidade e testes").
 
 | Item da ata | Onde está coberto | Situação |
 | --- | --- | --- |
-| Manter todos os testes existentes | suíte completa | Atendido (393 passando) |
+| Manter todos os testes existentes | suíte completa | Atendido (405 passando no fim do Bloco 1) |
 | Testes para novos indicadores | `test_indicators_extra.py`, `test_indicators_validation.py`, `test_features.py` | Atendido |
 | Textos e componentes críticos | `test_disclaimers.py`, `test_ui_components.py`, `test_periods_glossary.py` | Atendido |
 | Catálogo de ativos | `test_assets.py`, `test_catalog_doc.py`, `test_catalog_notice.py` | Atendido |

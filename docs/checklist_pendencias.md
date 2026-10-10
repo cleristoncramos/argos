@@ -2,7 +2,7 @@
 
 Lista consolidada das deliberações da reunião com o orientador, organizada por prioridade e fase de execução. Ver `docs/ata_reuniao_2026-09-30.md` para o contexto completo.
 
-**Última atualização:** 07/10/2026 · **Testes:** 393 passando, cobertura de `core/` em 100% (execução de 07/10/2026, já com os arquivos da Fase 7, da revisão e da Fase 8).
+**Última atualização:** 09/10/2026 (adendo do Plano 2 ao final; testes e cobertura da execução de 07/10) · **Testes:** 405 passando, cobertura de `core/` em 100% (execução de 09/10/2026, fim do Bloco 1; o Bloco 2 acrescenta 20 testes, total esperado 425).
 
 ## Como usar este checklist
 
@@ -25,12 +25,13 @@ Decisões já tomadas (registro):
 - Anualização: √252 para dados diários (52 semanal, 12 mensal), aplicada a todas as classes de ativos para manter comparabilidade.
 - Tabelas sem separador de milhar (comportamento atual mantido).
 - Sistema posicionado como ferramenta de pesquisa e educação financeira; sem recomendação de investimento.
+- Pergunta de pesquisa: **opção A** (ferramenta de apoio à interpretação, compreensível para usuários sem formação em finanças), escolhida em 07/10/2026. Previsão e validação temporal de modelos ficam como trabalho futuro.
 
 ---
 
 ## Prioridade alta
 
-- [ ] Definir escopo acadêmico e pergunta de pesquisa (três formulações candidatas; escolha pendente com o orientador — ver aba/seção "Pendências acadêmicas")
+- [x] Definir escopo acadêmico e pergunta de pesquisa — opção A escolhida em 07/10/2026 (ver `docs/validacao_academica.md`)
 - [~] Adicionar explicações educativas às métricas de risco (Fase 2)
 - [~] Revisar e documentar indicadores técnicos (Fase 3) — descrições, fórmulas e limitações em `core/indicator_docs.py`; falta MACD com controles próprios
 - [~] Melhorar mensagens sobre histórico disponível (Fase 5)
@@ -82,7 +83,7 @@ Decisões já tomadas (registro):
 - [~] Exibir período efetivamente utilizado após a consulta
 - [~] Exibir quantidade real de observações
 - [~] Diferenciar "período solicitado" de "período disponível"
-- [ ] Documentar que criptos e ativos recentes podem ter histórico menor (Fase 9)
+- [x] Documentar que criptos e ativos recentes podem ter histórico menor — `docs/fontes_e_tratamento_de_dados.md`, seções 5 e 8
 - [~] Tratar corretamente ativos com datas de início diferentes — período comum e alinhamento por fim de período (PeriodEnd) aplicados em `core/`; integrado na página de comparação em 07/10; falta conferir no navegador
 - [ ] Avaliar frequências semestral e anual (a configuração atual tem apenas Diário, Semanal e Mensal; depende do orientador)
 
@@ -163,27 +164,31 @@ Decisões já tomadas (registro):
 - [~] Cálculos em `core/`, renderização em `app/` — `core/visualizations.py` ainda contém código de apresentação
 
 ### 13. Documentação técnica
-- [ ] Arquitetura do sistema
-- [x] Catálogo de ativos
-- [ ] Fontes de dados
-- [ ] Tratamento de dados
-- [ ] Cálculo de indicadores
-- [ ] Cálculo de risco
-- [ ] Limitações do yfinance
-- [ ] Ativos sem histórico completo
-- [ ] Tratamento de dados ausentes
-- [ ] Decisões sobre frequência
-- [ ] Hipóteses para previsão futura
-- [ ] Reforço de que histórico não é previsão
+- [x] Arquitetura do sistema — `docs/arquitetura.md`
+- [x] Catálogo de ativos — `docs/catalogo-de-ativos.md`
+- [x] Fontes de dados — `docs/fontes_e_tratamento_de_dados.md`, seção 1
+- [x] Tratamento de dados — `docs/fontes_e_tratamento_de_dados.md`, seções 2, 3 e 6
+- [x] Cálculo de indicadores — `docs/metodologia_de_calculo.md`, seção 3
+- [x] Cálculo de risco — `docs/metodologia_de_calculo.md`, seção 4
+- [x] Limitações do yfinance — `docs/fontes_e_tratamento_de_dados.md`, seção 8
+- [x] Ativos sem histórico completo — `docs/fontes_e_tratamento_de_dados.md`, seção 5
+- [x] Tratamento de dados ausentes — `docs/fontes_e_tratamento_de_dados.md`, seção 7
+- [x] Decisões sobre frequência — `docs/fontes_e_tratamento_de_dados.md`, seção 4
+- [~] Hipóteses para previsão futura — rascunho em `docs/metodologia_de_calculo.md`, seção 7; com a pergunta A, previsão passou a trabalho futuro (`docs/validacao_academica.md`, seção 8)
+- [x] Reforço de que histórico não é previsão — `docs/fontes_e_tratamento_de_dados.md`, seção 9, e `docs/metodologia_de_calculo.md`, seção 8
+- [ ] Revisar os 3 documentos com o orientador e conferir os pontos marcados como convenção (RSI de Wilder, Bollinger `ddof=1`, √252, taxa livre de risco)
 
 ### 14. Validação acadêmica
-- [ ] Revisão teórica sobre análise técnica
-- [ ] Relacionar indicadores a métodos de análise de dados
-- [ ] Formalizar pergunta de pesquisa (três candidatas; falta decidir com o orientador)
-- [ ] Definir hipóteses, variáveis-alvo, benchmarks
-- [ ] Protocolo de validação temporal
-- [ ] Registrar limitações e resultados negativos
-- [ ] Relatório metodológico para o orientador
+- [~] Revisão teórica sobre análise técnica — estrutura e plano de busca em `docs/validacao_academica.md`, seção 3; capítulo a escrever
+- [~] Relacionar indicadores a métodos de análise de dados — tabela em `docs/validacao_academica.md`, seção 3.2 (rascunho)
+- [x] Formalizar pergunta de pesquisa — opção A (ferramenta compreensível para leigos), com objetivos O1–O6 em `docs/validacao_academica.md`, seção 1; confirmar o texto com o orientador
+- [~] Definir hipóteses, variáveis-alvo, benchmarks — hipóteses H1–H4 em `docs/validacao_academica.md`, seção 2; variáveis-alvo e benchmarks de previsão ficam como trabalho futuro (seção 8)
+- [~] Protocolo de validação — técnica, de conteúdo, com usuários e de neutralidade em `docs/validacao_academica.md`, seção 5; validação temporal de modelos mantida como trabalho futuro (seção 8)
+- [~] Registrar limitações e resultados negativos — estrutura em `docs/validacao_academica.md`, seção 6; resultados a registrar após a avaliação
+- [~] Relatório metodológico para o orientador — esqueleto em `docs/validacao_academica.md`, seção 7
+- [ ] Testes de valores de referência independentes (cálculo manual, planilha ou outra biblioteca) para SMA, EMA, RSI, retorno, drawdown e Sharpe
+- [ ] Questionário de interpretação e roteiro da avaliação com usuários (objetivo O6)
+- [ ] Confirmar com o orientador a necessidade de CEP/TCLE para a avaliação com usuários
 
 ### 15. Qualidade e testes
 - [x] Testes para novos indicadores
@@ -204,17 +209,17 @@ Decisões já tomadas (registro):
 ### A. Pendências técnicas
 
 Fase 6 (comparação):
-- [x] Alinhamento por fim de período (`PeriodEnd`) em `data_processor.py` e `comparison.py` — aplicado e coberto por testes (393 passando)
+- [x] Alinhamento por fim de período (`PeriodEnd`) em `data_processor.py` e `comparison.py` — aplicado e coberto por testes (393 passando em 07/10; 405 em 09/10)
 - [~] Usar `PeriodEnd` na página de comparação quando a frequência for semanal ou mensal — já aplicado na página; falta conferir no navegador
 - [~] Proteção do Base 100 na página: ativos com preços ≤ 0 são excluídos com aviso (`calculate_drawdown` levanta `ValueError`); falta conferir no navegador com `CL=F`
 - [ ] Commit da Fase 6 após aplicar e testar
 
 Fase 7 e navegação:
 - [~] Registrar a página "Simulação de Aportes" em `app/main.py` (arquivo entregue; conferir no navegador)
-- [x] Rodar `python -m pytest` com os testes novos (`test_simulation.py`, `test_review_adjustments.py`, `test_visualizations_br.py`, `test_data_processor_edges.py`, `test_comparison_edges.py`) — 393 passando em 07/10/2026
+- [x] Rodar `python -m pytest` com os testes novos (`test_simulation.py`, `test_review_adjustments.py`, `test_visualizations_br.py`, `test_data_processor_edges.py`, `test_comparison_edges.py`) — 393 passando em 07/10/2026; 405 em 09/10/2026
 
 Correções da revisão de 07/10 (`risk_metrics.py`, `analyzer.py`, `visualizations.py`, `state.py`):
-- [x] Versões corrigidas aplicadas e testadas (393 passando); as integrações nas páginas estão listadas abaixo
+- [x] Versões corrigidas aplicadas e testadas (393 passando em 07/10; 405 em 09/10); as integrações nas páginas estão listadas abaixo
 - [~] Integrar `get_max_drawdown_date` à página de risco e retorno — feito; conferir no navegador
 - [~] Trocar `create_year_month_matrix` por `create_monthly_return_matrix` no mapa de calor — feito; conferir em frequência diária e mensal
 - [~] Passar a moeda do ativo (`price_label`) aos gráficos de preço — feito em Indicadores Técnicos; conferir no navegador
@@ -237,15 +242,15 @@ Qualidade (continuação da Fase 8):
 
 ### B. Pendências acadêmicas
 
-- [ ] 1. Revisão teórica sobre análise técnica (capítulo de 8 a 15 páginas com referências)
-- [ ] 2. Pergunta de pesquisa — escolher entre as formulações A (ferramenta compreensível para leigos), B (plataforma de educação financeira) e C (base reprodutível para análise e previsão); sugestão em discussão: uma como pergunta geral e outra como objetivo específico
-- [ ] 3. Matriz de literatura (20 a 30 trabalhos)
-- [ ] 4. Hipóteses, variáveis-alvo e horizontes de previsão
-- [ ] 5. Benchmarks e modelos simples (regressão, classificação, ARIMA, Random Forest)
-- [ ] 6. Protocolo de validação temporal (treino/validação/teste, fora da amostra)
-- [ ] 7. Relatório metodológico para o orientador
+- [~] 1. Revisão teórica sobre análise técnica (capítulo de 8 a 15 páginas com referências) — estrutura e plano de busca prontos; capítulo a escrever
+- [x] 2. Pergunta de pesquisa — **opção A escolhida em 07/10/2026**; B e C não foram adotadas; C (previsão) fica como trabalho futuro
+- [~] 3. Matriz de literatura (20 a 30 trabalhos) — colunas e pontos de partida em `docs/validacao_academica.md`, seções 3.4 e 3.5; busca a fazer
+- [~] 4. Hipóteses — reformuladas para a pergunta A (H1–H4); variáveis-alvo e horizontes de previsão passam a trabalho futuro
+- [ ] 5. Benchmarks e modelos simples (regressão, classificação, ARIMA, Random Forest) — trabalho futuro, fora do escopo da pergunta A
+- [~] 6. Protocolo de validação — reformulado em quatro frentes (técnica, conteúdo, usuários, neutralidade); validação temporal de modelos é trabalho futuro
+- [~] 7. Relatório metodológico para o orientador — esqueleto pronto; depende das demais pendências
 
-Ordem de dependência: 2 define 4; 1 e 3 alimentam 4; 4 define 5; 5 define 6; 7 reúne tudo.
+Ordem de dependência: 2 define 4; 1 e 3 alimentam 4; 7 reúne tudo. Com a pergunta A, o item 5 deixa de ser dependência do 6.
 
 ### C. Dúvidas para o orientador (registrar a resposta ao lado)
 
@@ -255,8 +260,128 @@ Ordem de dependência: 2 define 4; 1 e 3 alimentam 4; 4 define 5; 5 define 6; 7 
 - [ ] Incluir frequências semestral e anual? São estatisticamente adequadas?
 - [ ] Confirmar a convenção de anualização (√252 diário) e a taxa livre de risco do Sharpe
 - [ ] Aprovar RSI de Wilder, Bollinger com `ddof=1` e RSI plano = `NaN`
-- [ ] Quais indicadores serão features futuras de modelos?
-- [ ] Horizonte e alvo da previsão: retorno, direção ou volatilidade?
+- [ ] Quais indicadores serão features futuras de modelos? (trabalho futuro com a pergunta A)
+- [ ] Horizonte e alvo da previsão: retorno, direção ou volatilidade? (trabalho futuro com a pergunta A)
+- [ ] Confirmar que previsão e validação temporal de modelos ficam como trabalho futuro, fora do escopo da pergunta A
+- [ ] Avaliação da compreensão com usuários sem formação em finanças: aprovar o formato (questionário, SUS, versão com × sem camada educativa) ou a alternativa por especialistas
+- [x] A avaliação com usuários exige parecer do CEP e TCLE? — **Sim** (09/10/2026): o CEP exige parecer favorável antes da coleta; o TCLE não o substitui; só adultos (18+)
 - [ ] Simulação de aportes: formato aprovado? (aporte único × periódico, valor hipotético, janelas históricas, sem recomendação)
 - [ ] Estrutura esperada do relatório metodológico
 - [ ] Prazo da próxima entrega ou apresentação
+
+---
+
+## Adendo de 09/10/2026 — Plano de Ajustes 2
+
+Origem: reunião de 07/10/2026 e respostas de 09/10/2026 (duas rodadas). Detalhes em `docs/ata_reuniao_2026-10-07.md`, `docs/plano_de_ajustes_2.md` e `docs/llm_7b_especificacao.md`. Os itens abaixo seguem a legenda do início deste arquivo.
+
+Decisões registradas:
+
+- Home, "Get Started" e vídeo de abertura ficam para depois das funcionalidades, junto com a Fase 10 (Plano 3).
+- Sazonalidade: janela de retorno do fechamento do mês de entrada ao fechamento do mês de saída, composta; setembro→outubro é o retorno de outubro. Recorte por anos **só na Análise Individual**; exibir também mediana e proporção de anos positivos.
+- Simulação: manter apenas as janelas móveis históricas existentes; a janela sazonal por ano atende ao exemplo do orientador.
+- Comparação: sem tabela com mais de 5 ativos; sem recorte por anos.
+- Tendência: retorno móvel e razão de desempenho; sem regressão.
+- Linguagem descritiva em toda a interface.
+- LLM: componente de apoio à interpretação e à educação financeira no relatório da pergunta A, não núcleo metodológico. OpenAI, `gpt-5-mini` (principal) e `gpt-5-nano` (comparação). A 7B só começa depois que a 7A atingir todos os limiares; aprovação do orientador informada como condicional.
+- Avaliação O6 só com adultos (18+), com TCLE.
+- Relatórios do PIBITI registram a mudança de escopo (cronograma original, executado, alterações e justificativas, conexão com o objetivo geral).
+- Datas: Relatório Parcial até 31/03/2027; Relatório Final e Resumo Expandido até 28/08/2027; defesa do TCC até 31/10/2027. SBBD: chamada de demos até abril/2027, evento em setembro/2027.
+- Demonstração: ao vivo com dados salvos em cache; reserva obrigatória em screencast de até 5 min; reserva secundária em versão online pública.
+- Trabalho colaborativo e autoria: nada confirmado; **não registrar em contribuições**; tratar no próximo plano.
+- Não há defeitos de seleção de ativos ou logos.
+- CEP: parecer favorável obrigatório antes da coleta da O6 (adultos, com TCLE).
+- Limites de uso da LLM em três camadas (sessão, navegador, global persistente). Avaliação humana da 7A por três avaliadores independentes, com calibração e kappa ponderado ≥ 0,60.
+- Evidência escrita das decisões do orientador: `docs/pibiti/decisoes_orientador.md`.
+- Versão pública no Streamlit Community Cloud **sem** explicação assistida; explicação ativa só na demonstração ao vivo e no screencast (decidido por delegação).
+- Revisão por pessoa da área de educação: depois do congelamento da versão.
+
+### D. Plano 2 — tarefas por bloco
+
+Bloco 1 — Consolidação e contribuições:
+- [~] Executar o roteiro de navegador das 5 páginas e dos 4 downloads de CSV e converter os `[~]` em `[x]` — roteiro pronto em `docs/roteiro_conferencia_navegador.md`; falta executar
+- [~] Verificar a versão do pandas e tratar o preenchimento de lacunas em `pct_change` — ajuste aplicado com `core/returns_utils.py` (`simple_returns`) em `comparison.py`, `analyzer.py`, `indicators_extra.py` e `analise_individual.py`; 8 testes novos; falta rodar o `pytest` (405 esperados) e o diagnóstico de versão
+- [~] Criar `docs/contribuicoes.md` sem trabalho colaborativo não confirmado — criado; o autor revisa papéis e a declaração de uso de IA
+
+Bloco 2 — Sazonalidade por anos, meses e janela (só Análise Individual):
+- [ ] `core/seasonality.py`: filtro da matriz, resumo (média geral, média do recorte, diferença em p.p., mediana, proporção de anos positivos, N), retorno de janela composta
+- [ ] Testes: regressão com todos os anos, subconjunto, N, janela de 1 mês = retorno mensal, janela de 3 meses = produto, virada de ano, fechamento ausente, mês em andamento, mediana e proporção de positivos
+- [ ] Bloco "Recorte por anos e meses" com "Aplicar filtro" e texto metodológico
+
+Bloco 3 — Comparação (apenas lacunas):
+- [ ] Sazonalidade geral comparada entre ativos, com N por ativo
+- [ ] Verificar legenda interativa e aviso de uso
+- [ ] Verificar a hierarquia Classe → Subclasse → Mercado → Ativos na seleção
+- [ ] Textos descritivos (sem "melhor/pior")
+
+Bloco 4 — Simulação (revisão):
+- [ ] Texto obrigatório presente; "teria ocorrido"; sem "previsão" ou "quanto investir"
+- [ ] Renomear "pior/melhor janela" para rótulos descritivos
+- [ ] Avisos de preço sem dividendos, custos não incluídos e moeda
+- [ ] Teste de linguagem neutra na página
+
+Bloco 5 — Educação:
+- [ ] Inventário de gráficos sem texto e textos no roteiro (mede, mostra, cuidado, não permite concluir)
+- [ ] Botão "Como ler este gráfico" com texto fixo
+- [ ] Teste de linguagem neutra cobrindo todos os textos de `app/ui/`
+- [ ] Revisão por pessoa da área de educação
+
+Bloco 6 — Tendência:
+- [ ] `core/trend.py`: retorno móvel (3, 6 e 12 meses), razão de desempenho e diferença de retorno móvel
+- [ ] Janela visível, rótulo "tendência histórica" e aviso sobre a data inicial
+
+Bloco 7 — LLM:
+- [ ] 7A: avaliação humana por 3 avaliadores (leigo, técnico, neutralidade), calibração e kappa ponderado ≥ 0,60; aprovação registrada em `docs/pibiti/decisoes_orientador.md`
+- [ ] 7A: `docs/protocolo_prompts_llm.md`; `core/llm_context.py` e `core/llm_validation.py` (puros, testados); ≥ 12 casos, 2 modelos, 3 repetições; script de experimento fora do app; rubrica; casos negativos
+- [ ] 7A: confirmar na primeira chamada os parâmetros (temperatura, tokens de raciocínio) e verificar preços na página oficial
+- [ ] 7A: relatório de validação e aprovação do orientador registrada por escrito
+- [ ] 7B (só com todos os limiares atingidos): prompts versionados, cliente com timeout e retentativas, auditoria, limites de uso, botão "✨ Explicar esta análise", fallback, segredos fora do Git, documentação
+
+Bloco 8 — Fechamento:
+- [ ] Atualizar metodologia, arquitetura, checkpoint de qualidade, validação acadêmica (LLM como apoio; O6 só adultos) e este checklist
+- [ ] Rodar a suíte com cobertura e registrar
+- [ ] Quadro de escopo para o Relatório Parcial (até 31/03/2027)
+- [ ] Registrar a versão (tag), preparar dados em cache, screencast de até 5 min e versão pública
+
+Bloco 9 — Protocolo ético e avaliação com usuários (O6):
+- [ ] Confirmar com o orientador e com o CEP da UFPI procedimento, documentos, prazo e pesquisador responsável
+- [ ] Escrever o protocolo de pesquisa (objetivo, participantes adultos, recrutamento, procedimento, instrumentos, riscos e benefícios, dados)
+- [ ] Escrever o TCLE e os instrumentos (questionário de interpretação, SUS, versões com e sem camada educativa)
+- [ ] Submeter ao CEP; **nenhuma coleta antes do parecer favorável**
+- [ ] Aplicar sobre a versão congelada e registrar versão e data
+
+### E. Respostas e dúvidas
+
+Respondidas em 09/10/2026:
+- [x] N01 home e vídeo depois das funcionalidades · [x] N02 recorte só na Análise Individual · [x] N03 janela fechamento→fechamento · [x] N04 só janelas móveis · [x] N04b janela sazonal atende · [x] N05 mediana e proporção positiva · [x] N06 sem tabela > 5 · [x] N07 retorno móvel e razão · [x] N08 linguagem descritiva · [x] N09 LLM como apoio · [x] N10 SBBD · [x] N12 sem defeitos · [x] N13 relatórios registram escopo · [x] N14 só adultos com TCLE · [x] N15 datas · [x] N17 configuração da LLM · [x] N18 estratégia de demonstração
+
+Respondidas na terceira rodada (09/10/2026):
+- [x] N14b CEP exige parecer antes da coleta · [x] N16 trabalho colaborativo adiado · [x] N19 limites em três camadas · [x] N20 três avaliadores, calibração, kappa ≥ 0,60 · [x] N21 evidência em `docs/pibiti/decisoes_orientador.md` · [x] N22 versão pública sem explicação assistida (por delegação) · [x] N23 revisão da educação depois do congelamento · [x] N24 Streamlit Community Cloud (por delegação)
+
+Em aberto:
+- [ ] N16: trabalho colaborativo e autoria (Plano 3)
+- [ ] N25: os avaliadores humanos da 7A exigem tratamento ético próprio?
+- [ ] N26: quem são os três avaliadores; o técnico pode ser o desenvolvedor?
+- [ ] N27: procedimento, prazo e pesquisador responsável no CEP da UFPI
+- [ ] N28: como calcular o kappa ponderado com dimensões diferentes por avaliador (proposta: subconjunto de calibração avaliado por todos)
+- [ ] N29: regra por resposta (100% factual) × limiar agregado (≥ 95%): vale o mais rígido?
+- [ ] N30: confirmar que "depois" (N23) é depois do congelamento
+
+---
+
+## Andamento do Plano 2 — atualização de 09/10/2026
+
+### Bloco 1 — Consolidação (código concluído)
+- [x] Retorno por variação percentual sem preenchimento de lacunas (`core/returns_utils.py`, `simple_returns`; usado em `analyzer.py`, `indicators_extra.py`, `analise_individual.py`; `comparison.py` já usava fórmula equivalente) — 8 testes em `tests/test_returns_gap.py`
+- [x] Alinhamento por `PeriodEnd` coberto por `tests/test_comparison_align.py` (4 testes)
+- [x] `pytest`: 405 passando, 1081 instruções, `core/` em 100% (pandas 3.0.5)
+- [~] Roteiro de conferência no navegador (`docs/roteiro_conferencia_navegador.md`, S01–S20) — executar e registrar
+- [~] `docs/contribuicoes.md` — conferir o texto da seção de uso de IA ("a confirmar pelo autor")
+- [ ] Commit do Bloco 1
+
+### Bloco 2 — Sazonalidade por anos, meses e janela (código entregue)
+- [~] `core/seasonality.py` (`filter_monthly_matrix`, `seasonal_summary`, `window_returns`, `window_summary`, `monthly_closes`, `exclude_month_in_progress`) — 20 testes em `tests/test_seasonality.py`; rodar a suíte real
+- [~] Bloco "Recorte por anos e meses" na Análise Individual (anos, meses, janela, botão "Aplicar filtro", texto metodológico obrigatório) — conferir no navegador (cenários S21–S24)
+- [~] Médias do gráfico "Média Consolidada por Mês" passam a excluir o mês em andamento (o mapa de calor continua mostrando o mês, com aviso)
+- [ ] Conferir no navegador o caso do orientador: Bitcoin, setembro → outubro
+- [ ] Commit do Bloco 2

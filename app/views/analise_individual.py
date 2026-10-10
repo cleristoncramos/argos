@@ -45,6 +45,7 @@ from app.ui.tables import (
     render_table,
 )
 from core.analyzer import (
+    ORDERED_MONTHS,
     calculate_percentage_change,
     calculate_statistics,
     create_monthly_return_matrix,
@@ -58,8 +59,18 @@ from core.data_processor import (
     prepare_dataframe,
     select_primary_variable,
 )
+from core.seasonality import (
+    SEASONALITY_METHOD_TEXT,
+    SEASONALITY_WINDOW_NOTE,
+    exclude_month_in_progress,
+    filter_monthly_matrix,
+    seasonal_summary,
+    window_returns,
+    window_summary,
+)
 from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.formatters import format_number_br
+from core.returns_utils import simple_returns
 
 
 st.set_page_config(
@@ -199,12 +210,12 @@ if load_data:
         # -----------------------------------------------------------------
         # CÁLCULO DA VOLATILIDADE MENSAL ANUALIZADA
         # Desvio-padrão dos retornos diários de cada mês, anualizado com
-        # √252 (convenção do projeto, ver docs/catalogo-de-ativos.md, seção 26).
+        # √252 (convenção do projeto, ver docs/metodologia_de_calculo.md, seção 2).
         # -----------------------------------------------------------------
         df_vol = df_prepared[['Date', 'Close']].copy()
         df_vol['Date'] = pd.to_datetime(df_vol['Date'])
 
-        df_vol['Daily_Return'] = df_vol['Close'].pct_change()
+        df_vol['Daily_Return'] = simple_returns(df_vol['Close'])
         df_vol['YearMonth'] = df_vol['Date'].dt.to_period('M')
 
         monthly_std = df_vol.groupby('YearMonth')['Daily_Return'].std()
@@ -563,7 +574,8 @@ else:
 
     render_what_it_means("sazonalidade")
 
-    monthly_avg = df_matrix.mean(axis=0)
+    df_matrix_stats = exclude_month_in_progress(df_matrix)
+    monthly_avg = df_matrix_stats.mean(axis=0)
     bar_colors = ["#22c55e" if val >= 0 else "#ef4444" for val in monthly_avg]
     text_avg = [f"{val:.2f}%".replace(".", ",") if pd.notna(val) else "" for val in monthly_avg]
 
@@ -594,6 +606,247 @@ else:
         "A média por mês do calendário usa poucos anos de histórico; amostras curtas "
         "geram médias instáveis, e padrões passados não garantem repetição futura."
     )
+
+    if df_matrix.notna().sum().sum() != df_matrix_stats.notna().sum().sum():
+        st.caption(
+            "O mês em andamento aparece no mapa de calor, mas não entra nas médias, "
+            "porque ainda não está completo."
+        )
+
+    # -------------------------------------------------------
+    # Recorte por anos e meses (Plano 2, Bloco 2)
+    # -------------------------------------------------------
+    def _fmt_pct(value, signed=False):
+        if value is None or pd.isna(value):
+            return "—"
+        text = f"{value:+.2f}" if signed else f"{value:.2f}"
+        return text.replace(".", ",") + "%"
+
+    def _fmt_pp(value):
+        if value is None or pd.isna(value):
+            return "—"
+        return f"{value:+.2f}".replace(".", ",") + " p.p."
+
+    st.markdown("#### 🔎 Recorte por anos e meses")
+    st.caption(SEASONALITY_METHOD_TEXT)
+
+    available_years = sorted(int(year) for year in df_matrix_stats.index)
+    available_months = list(df_matrix_stats.columns)
+
+    with st.form("season_filter_form"):
+        col_years, col_months = st.columns(2)
+        with col_years:
+            selected_years = st.multiselect(
+                "Anos do recorte",
+                options=available_years,
+                default=[],
+                help="Compara o(s) ano(s) escolhido(s) com a média de todos os anos.",
+            )
+        with col_months:
+            selected_months = st.multiselect(
+                "Meses (opcional)",
+                options=available_months,
+                default=[],
+                help="Sem seleção, todos os meses são exibidos.",
+            )
+
+        col_entry, col_exit = st.columns(2)
+        with col_entry:
+            entry_choice = st.selectbox(
+                "Janela: mês de entrada (opcional)",
+                options=["—"] + ORDERED_MONTHS,
+            )
+        with col_exit:
+            exit_choice = st.selectbox(
+                "Janela: mês de saída (opcional)",
+                options=["—"] + ORDERED_MONTHS,
+            )
+
+        apply_clicked = st.form_submit_button("Aplicar filtro")
+
+    if apply_clicked:
+        if (entry_choice == "—") != (exit_choice == "—"):
+            st.warning("Para usar a janela, escolha o mês de entrada e o mês de saída.")
+            st.session_state["season_filter"] = None
+        elif entry_choice != "—" and entry_choice == exit_choice:
+            st.warning("Os meses de entrada e de saída devem ser diferentes.")
+            st.session_state["season_filter"] = None
+        elif not selected_years and entry_choice == "—":
+            st.warning("Escolha ao menos um ano ou uma janela de entrada e saída.")
+            st.session_state["season_filter"] = None
+        else:
+            st.session_state["season_filter"] = {
+                "symbol": symbol,
+                "years": list(selected_years),
+                "months": list(selected_months),
+                "entry": entry_choice,
+                "exit": exit_choice,
+            }
+
+    applied_filter = st.session_state.get("season_filter")
+
+    if applied_filter and applied_filter.get("symbol") == symbol:
+        years_cut = [y for y in applied_filter["years"] if y in available_years]
+        months_cut = applied_filter["months"] or None
+
+        if years_cut:
+            base_matrix = filter_monthly_matrix(df_matrix_stats, months=months_cut)
+            summary = seasonal_summary(base_matrix, years=years_cut)
+            years_label = ", ".join(str(y) for y in years_cut)
+
+            fig_cut = go.Figure()
+            fig_cut.add_trace(
+                go.Bar(
+                    x=summary.index,
+                    y=summary["Média geral"],
+                    name="Média de todos os anos",
+                    marker_color="#94a3b8",
+                    customdata=[
+                        [_fmt_pct(v), int(n)]
+                        for v, n in zip(summary["Média geral"], summary["N geral"])
+                    ],
+                    hovertemplate="Mês: %{x}<br>Média geral: %{customdata[0]}"
+                    "<br>Anos com dado: %{customdata[1]}<extra></extra>",
+                )
+            )
+            fig_cut.add_trace(
+                go.Bar(
+                    x=summary.index,
+                    y=summary["Média do recorte"],
+                    name=f"Média do recorte ({years_label})",
+                    marker_color="#3b82f6",
+                    customdata=[
+                        [_fmt_pct(v), int(n)]
+                        for v, n in zip(summary["Média do recorte"], summary["N do recorte"])
+                    ],
+                    hovertemplate="Mês: %{x}<br>Média do recorte: %{customdata[0]}"
+                    "<br>Anos com dado: %{customdata[1]}<extra></extra>",
+                )
+            )
+            fig_cut = apply_custom_layout(fig_cut)
+            fig_cut.update_layout(
+                barmode="group",
+                margin=dict(l=40, r=20, t=40, b=20),
+                xaxis_title=None,
+                yaxis_title="Variação mensal (%)",
+                legend=dict(orientation="h", y=1.12),
+            )
+
+            with st.container(border=True):
+                st.markdown(
+                    "<h5 style='text-align: center; color: #334155; margin-bottom: 10px; font-size: 1rem;'>"
+                    "Média de todos os anos × média do recorte</h5>",
+                    unsafe_allow_html=True,
+                )
+                st.plotly_chart(fig_cut, use_container_width=True, config=PLOTLY_CONFIG)
+
+            summary_table = pd.DataFrame(
+                {
+                    "Mês": summary.index,
+                    "Média de todos os anos": summary["Média geral"].map(_fmt_pct).values,
+                    "Média do recorte": summary["Média do recorte"].map(_fmt_pct).values,
+                    "Diferença": summary["Diferença (p.p.)"].map(_fmt_pp).values,
+                    "Mediana do recorte": summary["Mediana do recorte"].map(_fmt_pct).values,
+                    "Anos positivos no recorte": summary["Anos positivos recorte (%)"]
+                    .map(lambda v: "—" if pd.isna(v) else f"{v:.0f}%")
+                    .values,
+                    "Anos (todos)": summary["N geral"].astype(int).values,
+                    "Anos (recorte)": summary["N do recorte"].astype(int).values,
+                }
+            )
+            st.dataframe(summary_table, hide_index=True, use_container_width=True)
+
+            if (summary["N do recorte"] < 3).any():
+                st.caption(
+                    "Alguns meses têm menos de 3 anos no recorte. Médias e medianas "
+                    "calculadas com tão poucos anos variam bastante de uma amostra para outra."
+                )
+
+        if applied_filter["entry"] != "—":
+            entry_name, exit_name = applied_filter["entry"], applied_filter["exit"]
+            window_all = window_returns(df, entry_name, exit_name, value_col="Value")
+            window_cut = (
+                window_returns(df, entry_name, exit_name, years=years_cut, value_col="Value")
+                if years_cut
+                else window_all
+            )
+            stats_all = window_summary(window_all)
+            stats_cut = window_summary(window_cut)
+
+            st.markdown(f"##### Janela: fechamento de {entry_name} → fechamento de {exit_name}")
+            st.caption(SEASONALITY_WINDOW_NOTE)
+
+            if window_all.empty:
+                st.info(
+                    "Nenhum ano tem os dois fechamentos disponíveis para essa janela "
+                    "no período selecionado."
+                )
+            else:
+                metric_cols = st.columns(4)
+                metric_cols[0].metric("Média de todos os anos", _fmt_pct(stats_all["Média"]))
+                metric_cols[1].metric("Mediana de todos os anos", _fmt_pct(stats_all["Mediana"]))
+                metric_cols[2].metric(
+                    "Anos com retorno positivo",
+                    "—" if pd.isna(stats_all["Anos positivos (%)"])
+                    else f"{stats_all['Anos positivos (%)']:.0f}%",
+                )
+                metric_cols[3].metric("Anos com dado (N)", stats_all["N"])
+
+                if years_cut:
+                    st.caption(
+                        f"Recorte ({', '.join(str(y) for y in years_cut)}): média "
+                        f"{_fmt_pct(stats_cut['Média'])}, mediana {_fmt_pct(stats_cut['Mediana'])}, "
+                        f"N = {stats_cut['N']}."
+                    )
+
+                bar_years = window_all["Ano"].astype(str)
+                highlight = set(years_cut)
+                fig_window = go.Figure(
+                    data=go.Bar(
+                        x=bar_years,
+                        y=window_all["Retorno (%)"],
+                        marker_color=[
+                            "#3b82f6" if int(year) in highlight else "#94a3b8"
+                            for year in window_all["Ano"]
+                        ],
+                        customdata=[_fmt_pct(v) for v in window_all["Retorno (%)"]],
+                        hovertemplate="Ano de entrada: %{x}<br>Retorno da janela: %{customdata}<extra></extra>",
+                    )
+                )
+                if pd.notna(stats_all["Média"]):
+                    fig_window.add_hline(
+                        y=stats_all["Média"],
+                        line_dash="dash",
+                        line_color="#475569",
+                        annotation_text=f"Média: {_fmt_pct(stats_all['Média'])}",
+                    )
+                fig_window = apply_custom_layout(fig_window)
+                fig_window.update_layout(
+                    margin=dict(l=40, r=20, t=40, b=20),
+                    xaxis_title="Ano de entrada",
+                    yaxis_title="Retorno da janela (%)",
+                )
+
+                with st.container(border=True):
+                    st.plotly_chart(fig_window, use_container_width=True, config=PLOTLY_CONFIG)
+
+                shown = window_cut if years_cut else window_all
+                window_table = pd.DataFrame(
+                    {
+                        "Ano de entrada": shown["Ano"].astype(int).values,
+                        "Fechamento de entrada": shown["Fechamento de entrada"].map(
+                            lambda v: f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+                        ).values,
+                        "Fechamento de saída": shown["Fechamento de saída"].map(
+                            lambda v: f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+                        ).values,
+                        "Retorno da janela": shown["Retorno (%)"].map(_fmt_pct).values,
+                        "Diferença para a média": (
+                            shown["Retorno (%)"] - stats_all["Média"]
+                        ).map(_fmt_pp).values,
+                    }
+                )
+                st.dataframe(window_table, hide_index=True, use_container_width=True)
 
 
 # =====================

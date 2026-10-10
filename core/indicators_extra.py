@@ -3,6 +3,8 @@
 import numpy as np
 import pandas as pd
 
+from core.returns_utils import simple_returns
+
 
 def add_atr(
     df: pd.DataFrame,
@@ -43,7 +45,7 @@ def add_rolling_volatility(
         raise ValueError("A janela da volatilidade móvel deve ser >= 2.")
 
     out = df.copy()
-    returns = out[value_col].pct_change()
+    returns = simple_returns(out[value_col])
     vol = returns.rolling(window, min_periods=window).std()
     if annualization_factor:
         vol = vol * np.sqrt(annualization_factor)
