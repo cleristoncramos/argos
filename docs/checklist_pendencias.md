@@ -403,7 +403,7 @@ Em aberto:
 - [ ] Commit do Bloco 4
 
 ### Bloco 5 — Educação: textos por gráfico (código entregue em 09/10/2026)
-- [~] 5.1 Inventário dos gráficos: `docs/inventario_graficos.md` (22 gráficos/blocos)
+- [~] 5.1 Inventário dos gráficos: `docs/inventario_graficos.md` (22 gráficos/blocos; 24 com o Bloco 6)
 - [~] 5.2 Roteiro padrão (mede · mostra · cuidado · não permite concluir) para os 22 gráficos: `core/chart_guides.py`
 - [~] 5.3 Textos dos recursos novos: Blocos 2, 3 e 4 já incluídos (`recorte_anos`, `janela_retorno`, `sazonalidade_comparada`, `simulacao_*`); o Bloco 6 acrescenta os seus
 - [~] 5.4 Os 10 termos no glossário: conferido por teste (`test_glossary_covers_the_ten_required_terms`); se falhar, ele lista os termos ausentes
@@ -411,3 +411,11 @@ Em aberto:
 - [ ] 5.6 Revisão por pessoa da área de educação — depois do congelamento (N23); registro em `docs/pibiti/revisao_textos_educativos.md`
 - [~] 5.7 Teste de linguagem neutra em todos os textos de `app/ui/` e nos roteiros
 - [ ] Commit do Bloco 5
+
+### Bloco 6 — Tendência histórica: retorno móvel e razão de desempenho (código entregue em 09/10/2026)
+- [~] `core/trend.py` (`rolling_return`, `rolling_return_gap`, `performance_ratio`, `rebase_common_start`, `monthly_close_table`), em decimal — 19 testes em `tests/test_trend.py` (inclui: série que dobra em 12 meses = 1,0; razão de séries idênticas = 0; históricos diferentes; janela maior que a série = vazio; dependência da data inicial)
+- [~] Aba "📐 Tendência" na Comparação: janelas de 3, 6 e 12 meses, ativo de referência escolhido pelo usuário, gráfico de retorno móvel, gráfico de razão de desempenho e tabela com a diferença em pontos percentuais; roteiros `tendencia_retorno_movel` e `tendencia_razao`
+- [~] Rótulo "tendência histórica"; janela no título; aviso de que a razão depende da data inicial e de que a tendência passada pode mudar
+- [ ] Conferir no navegador com dois ativos (S38–S42)
+- [ ] Commit do Bloco 6
+- Decisões minhas por delegação (N25–N30 em aberto): retorno móvel sobre **fechamentos mensais**; mês em andamento fora; razão calculada por par com início na primeira data em que os dois têm dados; sem regressão e sem detecção de cruzamentos [D N07]

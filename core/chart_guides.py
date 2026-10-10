@@ -156,6 +156,19 @@ CHART_GUIDES: Dict[str, Dict[str, str]] = {
         "cuidado": "As janelas se sobrepõem, então não são observações independentes.",
         "nao_permite": "Tratar os extremos como limites do que pode ocorrer.",
     },
+    # ---------------------------------------------------------------- Tendência histórica (Comparação)
+    "tendencia_retorno_movel": {
+        "mede": "O quanto cada ativo variou nos últimos meses da janela escolhida, a cada mês, pelo último fechamento mensal.",
+        "mostra": "Como o retorno de curto, médio ou longo prazo de cada ativo evoluiu e quando ficou positivo ou negativo.",
+        "cuidado": "O resultado depende do tamanho da janela, e meses sem observações suficientes ficam vazios.",
+        "nao_permite": "Concluir que a tendência observada continuará ou que um ativo seguirá acima do outro.",
+    },
+    "tendencia_razao": {
+        "mede": "A razão entre o desempenho de um ativo e o do ativo de referência desde a data inicial comum (0 indica desempenho igual).",
+        "mostra": "Se, desde o início, o ativo acumulou mais ou menos que a referência, e como essa diferença mudou.",
+        "cuidado": "A razão depende da data inicial, e um cruzamento por zero pode mudar se o período mudar.",
+        "nao_permite": "Concluir que a diferença vista continuará ou prever quando ela se inverterá.",
+    },
 }
 
 

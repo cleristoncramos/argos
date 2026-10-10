@@ -122,3 +122,16 @@ Página: **Comparação de Ativos**. Use `BTC-USD`, `AAPL`, `GC=F` (ou 5 ativos 
 | S35 | Em cada página (Análise Individual, Comparação, Risco e Retorno, Indicadores Técnicos, Simulação), abrir o botão "ℹ️ Como ler este gráfico" abaixo de cada gráfico | Quatro linhas: O que mede, O que mostra, Principal cuidado, O que não permite concluir; texto coerente com o gráfico visto |
 | S36 | Indicadores Técnicos: ligar RSI, MACD, ATR, volume e volatilidade móvel | Cada gráfico tem o seu botão, com o texto do indicador correspondente |
 | S37 | Conferir o layout dentro e fora das caixas com borda | O botão não quebra o layout nem repete o texto da caixa "O que significa?" de forma confusa |
+
+## Anexo — Bloco 6 (Tendência histórica)
+
+Página: **Comparação de Ativos**, aba "📐 Tendência". Use `BTC-USD` e `AAPL`, período de 5 anos, frequência Diária.
+
+| ID | Passos | Resultado esperado |
+| --- | --- | --- |
+| S38 | Abrir a aba; janela de 12 meses | Texto "Tendência histórica..." no topo; título "Retorno móvel de 12 meses — tendência histórica"; os primeiros 12 meses da série ficam sem ponto (vazios, não zero) |
+| S39 | Trocar a janela para 3 e para 6 meses | O gráfico e o título mudam; a linha começa mais cedo |
+| S40 | Trocar o ativo de referência | A razão de desempenho é recalculada contra o novo ativo; o ativo escolhido some da lista de linhas da razão |
+| S41 | Conferir a tabela | "Início comum" é o primeiro mês em que os dois ativos têm dado; a razão do último mês e a diferença em p.p. batem com o fim das linhas |
+| S42 | Mudar o período da comparação (ex.: 3 anos) e comparar | A razão muda (depende da data inicial); o aviso sobre isso está visível; botões "Como ler este gráfico" abrem os roteiros de tendência |
+| S43 | Ativos com históricos diferentes (um recente, como um criptoativo novo) | Sem erro; o início comum acompanha o ativo mais recente |

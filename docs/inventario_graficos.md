@@ -18,6 +18,8 @@ da explicação assistida (Bloco 7).
 | Comparação | Evolução em Base 100 | `base_100` | `base_100`, `retorno` |
 | Comparação | Mapa de correlação | `correlacao` | `correlacao` |
 | Comparação | Sazonalidade comparada (Bloco 3) | `sazonalidade_comparada` | — |
+| Comparação | Retorno móvel (Bloco 6) | `tendencia_retorno_movel` | `retorno` |
+| Comparação | Razão de desempenho (Bloco 6) | `tendencia_razao` | — |
 | Risco e Retorno | Retorno acumulado | `retorno_acumulado` | — |
 | Risco e Retorno | Drawdown | `drawdown` | `drawdown` |
 | Risco e Retorno | Distribuição de retornos | `distribuicao_retornos` | — |
@@ -31,8 +33,7 @@ da explicação assistida (Bloco 7).
 | Simulação Histórica | Caminho do valor hipotético | `simulacao_caminho` | — |
 | Simulação Histórica | Retorno de cada janela histórica | `simulacao_janelas` | — |
 
-Recursos futuros (Bloco 6, tendência) recebem o roteiro junto com a
-implementação (item 5.3).
+Os recursos do Bloco 6 (tendência) já têm roteiro (item 5.3).
 
 Verificação automática: `tests/test_chart_guides.py` falha se uma página tiver
 mais chamadas de `st.plotly_chart` do que roteiros, ou se um roteiro citado não
