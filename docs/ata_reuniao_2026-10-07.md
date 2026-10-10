@@ -427,6 +427,6 @@ Proposta para discussão, não decisão:
 | N21 | A evidência escrita fica em `docs/pibiti/decisoes_orientador.md` | Arquivo criado com modelo preenchido; as evidências a anexar são suas |
 | N22 | "Faça o que achar mais recomendado" | Decidido por delegação: versão pública sem explicação assistida; ativa só na demonstração ao vivo e no screencast |
 | N23 | "Depois" | Interpretado como depois do congelamento da versão; confirmar (N30) |
-| N24 | "Faça o que achar mais recomendado" | Decidido por delegação: Streamlit Community Cloud |
+| N24 | "Faça o que achar mais recomendado" | Decidido por delegação: Streamlit Community Cloud. **Atualizado em 10/10/2026:** limites verificados; o serviço é acesso público complementar, e a demonstração principal é o modo offline local com dados salvos (obrigatório antes do congelamento) |
 
 **Perguntas que continuam abertas:** N25 a N30 (Plano 2, seção 7). N16 fica para o Plano 3.

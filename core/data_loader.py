@@ -1,10 +1,20 @@
 from typing import Optional
+import logging
 import time
 from datetime import datetime, timedelta
 
 import pandas as pd
 import streamlit as st
 import yfinance as yf
+
+from core.demo_mode import (
+    DemoDataError,
+    demo_dir,
+    is_demo_mode,
+    load_demo_frame,
+)
+
+logger = logging.getLogger(__name__)
 
 
 class DataUnavailable(Exception):
@@ -43,6 +53,15 @@ def download_active_data(
     if not normalized_symbol:
         return None
 
+    # Modo de demonstração: somente dados salvos, nenhuma consulta externa.
+    if is_demo_mode():
+        return _download_demo_data(
+            normalized_symbol,
+            normalized_start_date,
+            normalized_end_date,
+            normalized_interval,
+        )
+
     try:
         return _download_active_data_cached(
             symbol=normalized_symbol,
@@ -54,8 +73,45 @@ def download_active_data(
         return None
 
 
+def _download_demo_data(
+    symbol: str,
+    start_date: str,
+    end_date: str,
+    interval: str,
+) -> Optional[pd.DataFrame]:
+    """Lê o ativo dos dados salvos; None se não estiver no pacote da demo."""
+    try:
+        return _load_demo_data_cached(
+            symbol,
+            start_date,
+            end_date,
+            interval,
+            str(demo_dir()),
+        )
+    except DemoDataError as exc:
+        logger.warning("Modo de demonstração: %s", exc)
+        return None
+
+
 @st.cache_data(
     ttl=3600,
+    max_entries=16,
+    show_spinner=False,
+)
+def _load_demo_data_cached(
+    symbol: str,
+    start_date: str,
+    end_date: str,
+    interval: str,
+    directory: str,
+) -> pd.DataFrame:
+    """Versão cacheada da leitura local (a pasta entra na chave do cache)."""
+    return load_demo_frame(symbol, start_date, end_date, interval, directory)
+
+
+@st.cache_data(
+    ttl=3600,
+    max_entries=64,
     show_spinner=False,
 )
 def _download_active_data_cached(

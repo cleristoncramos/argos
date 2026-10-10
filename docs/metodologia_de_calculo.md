@@ -1,6 +1,6 @@
 # Metodologia de Cálculo — Argos DataLab
 
-**Atualizado em:** 07/10/2026 · Módulos: `core/analyzer.py`, `core/indicators.py`, `core/indicators_extra.py`, `core/risk_metrics.py`, `core/comparison.py`, `core/simulation.py`, `core/features.py`
+**Atualizado em:** 10/10/2026 (Plano 2, blocos 1 a 6) · Módulos: `core/analyzer.py`, `core/returns_utils.py`, `core/seasonality.py`, `core/trend.py`, `core/indicators.py`, `core/indicators_extra.py`, `core/risk_metrics.py`, `core/comparison.py`, `core/simulation.py`, `core/features.py`
 
 Este documento descreve **o que cada número significa e como é calculado**. Os parâmetros que o usuário pode alterar estão indicados. Os dados de entrada e seu tratamento estão em `docs/fontes_e_tratamento_de_dados.md`.
 
@@ -17,7 +17,9 @@ Este documento descreve **o que cada número significa e como é calculado**. Os
 | `k` | Fator de anualização: 252 (diário), 52 (semanal), 12 (mensal) |
 | `N` | Janela do indicador, em períodos da frequência escolhida |
 
-**Unidades.** `analyzer.py` trabalha em **percentual** (5,0 = 5%); `risk_metrics.py`, `comparison.py` e `simulation.py` em **decimal** (0,05 = 5%). A conversão para texto ocorre somente na interface.
+**Unidades.** `analyzer.py` e `seasonality.py` trabalham em **percentual** (5,0 = 5%); `risk_metrics.py`, `comparison.py`, `simulation.py` e `trend.py` em **decimal** (0,05 = 5%). A conversão para texto ocorre somente na interface.
+
+**Retorno simples e lacunas de calendário.** Todo retorno percentual é calculado por `simple_returns(x) = x / x.shift(1) − 1` (`core/returns_utils.py`). Um valor ausente produz retorno **vazio** (NaN) naquele ponto e no seguinte; ele **não** é preenchido com o valor anterior. Essa fórmula não depende do parâmetro `fill_method` do pandas, cujo comportamento padrão mudou entre as versões 2.x e 3.x (a versão 2.x preenchia lacunas; a 3.x não). Testes em `tests/test_returns_gap.py`.
 
 **Sem informação futura.** Cada indicador, em cada data `t`, usa apenas dados até `t`. Isso é verificado por testes automatizados.
 
@@ -39,6 +41,32 @@ Este documento descreve **o que cada número significa e como é calculado**. Os
 **Matriz de retorno mensal (mapa de calor).** Para cada mês, `retorno = último valor do mês / último valor do mês anterior − 1`, em %. Usa o último fechamento de cada mês, **independentemente da frequência escolhida**, de modo que dados diários e mensais produzem o mesmo resultado. Ficam vazios: o primeiro mês da série, meses sem dados e o mês seguinte a uma lacuna.
 
 **Média por mês do calendário.** Média, por mês (janeiro a dezembro), dos retornos mensais da matriz. Com poucos anos de histórico, a média é instável e não indica padrão que se repetirá.
+
+---
+
+## 2.1 Sazonalidade por anos, meses e janela de retorno (`seasonality.py`)
+
+Todas as funções trabalham em **percentual** e usam o **último fechamento de cada mês** (independente da frequência escolhida), como a matriz de retorno mensal da seção 2.
+
+| Medida | Definição |
+| --- | --- |
+| Média por mês do calendário | Média, nos anos disponíveis, do retorno daquele mês. É a visão padrão ("todos os anos") |
+| Média do recorte | A mesma média, restrita aos anos escolhidos pelo usuário (só na Análise Individual) |
+| Diferença | `média do recorte − média de todos os anos`, em **pontos percentuais** |
+| Mediana | Mediana dos retornos do mês (N par: média dos dois valores centrais), nos anos considerados |
+| Anos positivos (%) | `anos com retorno > 0 / anos com dado × 100`. Retorno exatamente zero **não** conta como positivo |
+| N | Número de anos com dado naquele mês. Sempre exibido; mediana e % de anos positivos usam o mesmo N |
+| Janela de retorno | `P(fechamento do mês de saída) / P(fechamento do mês de entrada) − 1`, por ano |
+
+Regras da janela:
+
+- **Setembro → outubro** é o fechamento de setembro até o de outubro, isto é, o **retorno de outubro**. Janelas mais longas são **compostas**, `(1+r₁)(1+r₂)(1+r₃) − 1`, nunca somadas (exemplo de teste: +10%, −10% e +20% compõem +18,8%, e não +20%).
+- **Virada de ano** (entrada em novembro, saída em fevereiro): a saída pertence ao ano seguinte; o rótulo é o **ano da entrada**.
+- **Dados ausentes:** se um dos dois fechamentos não existe, o ano fica fora da média e do N. Não há interpolação. Fechamento menor ou igual a zero também exclui o ano.
+- **Mês em andamento:** o mês do calendário corrente não entra nas médias nem nas janelas, porque ainda não está completo. Ele continua visível no mapa de calor.
+- Meses de entrada e de saída devem ser diferentes.
+
+A média histórica representa o comportamento agregado dos anos disponíveis; um ano específico pode divergir significativamente dela, e a sazonalidade é evidência histórica descritiva, não padrão determinístico (texto obrigatório exibido na interface).
 
 ---
 
@@ -116,9 +144,26 @@ Sharpe         = média(excesso) / desvio-padrão(excesso, ddof=1) × √k
 - **Tabela de preços.** Junção externa por data (ou por fim de período, ver `docs/fontes_e_tratamento_de_dados.md`), de modo que ativos com calendários diferentes permanecem na mesma tabela.
 - **Retornos e correlação.** Retornos simples de cada ativo; correlação de Pearson entre os retornos. A matriz exibida é triangular (sem diagonal nem pares repetidos). A correlação mede associação linear no período, **não causalidade** e não garante comportamento futuro.
 - **Resumo comparativo.** Observações, primeiro e último valor, retorno total e retorno médio por ativo, somados às métricas de risco da seção 4.
-- **Destaques.** "Maior retorno", "menor retorno", "menor queda máxima" e "maior Sharpe" **descrevem o período analisado**; não indicam qual ativo é melhor.
+- **Destaques.** "Maior/menor retorno acumulado no período analisado", "menor queda máxima observada" e "maior Sharpe no período analisado" **descrevem o período analisado**; não indicam qual ativo é melhor.
+- **Sazonalidade comparada.** Média do retorno mensal de cada mês do calendário, por ativo, com todos os anos disponíveis de cada um (`compare_monthly_averages`). Sem recorte por anos na Comparação. Ativos com históricos de tamanhos diferentes têm N diferentes, sempre exibidos.
 - **Períodos divergentes.** Quando os ativos têm históricos de tamanhos diferentes, as métricas de cada um valem para o período dele, a menos que a opção "Comparar apenas o período comum" esteja ativa.
 - **Taxas de juros.** Variações de nível de taxa não equivalem a retornos de preço e vêm com nota explicativa.
+
+---
+
+### 5.1 Tendência histórica: retorno móvel e razão de desempenho (`trend.py`)
+
+Em **decimal**. Só estes dois recursos: sem regressão de tendência e sem detecção automática de cruzamentos. Os rótulos dizem "tendência histórica", e a interface avisa que a tendência passada pode mudar.
+
+| Medida | Definição |
+| --- | --- |
+| Fechamento mensal | Último valor de cada mês, em calendário mensal contínuo; mês sem dado e mês em andamento são vazios |
+| Retorno móvel de `w` meses | `P_t / P_{t−w} − 1`, com `w` = 3, 6 ou 12. Antes de haver `w` meses de histórico, o valor é **vazio**, não zero. Base menor ou igual a zero também dá vazio |
+| Base 100 comum | Para cada par de ativos, ambas as séries são recolocadas em 100 na **primeira data em que as duas têm dado** |
+| Razão de desempenho | `I_A,t / I_B,t − 1`, com `I` em base 100 comum. Zero significa desempenho igual desde o início comum. Com mais de dois ativos, cada ativo é comparado com um ativo de referência escolhido pelo usuário |
+| Diferença de retorno móvel | `retorno móvel de A − retorno móvel de B` (em decimal; 0,05 = 5 pontos percentuais) |
+
+Cuidados: a janela fica visível no título; a razão acumulada **depende da data inicial**, e um cruzamento da linha por zero pode mudar se o período mudar; o retorno móvel é menos sensível ao ponto de partida e deve ser lido junto com a razão; os dados não permitem concluir que um ativo continuará acima do outro.
 
 ---
 
@@ -134,11 +179,11 @@ Simulação **educacional**, com valor hipotético informado pelo usuário. Não
 | Comparação | O aporte único usa o **mesmo total investido** dos aportes periódicos |
 | Quantidade | Frações são permitidas |
 | Resultado | Total investido, valor final, resultado, retorno sobre o investido e menor retorno ao longo do caminho |
-| Janelas históricas | Para cada data inicial possível, o resultado de um horizonte fixo; resumo com pior, mediana, melhor e proporção de janelas positivas |
+| Janelas históricas | Para cada data inicial possível, o resultado de um horizonte fixo; resumo com menor retorno histórico, mediana, maior retorno histórico e proporção de janelas positivas (rótulos descritivos; não há "melhor" nem "pior" janela) |
 | Não simuláveis | `^IRX`, `^FVX`, `^TNX`, `^TYX`, `^VIX` (taxas e indicadores, não ativos negociáveis) |
 | Não considerado | Dividendos, taxas, impostos, câmbio e inflação |
 
-O resumo das janelas não classifica nenhuma como "boa" ou "ruim" para investir; apenas descreve o que ocorreu. O texto exibido ao usuário é `SIMULATION_DISCLAIMER`.
+O resumo das janelas não classifica nenhuma como "boa" ou "ruim" para investir; apenas descreve o que ocorreu. O texto obrigatório no topo da página é `SIMULATION_MANDATORY_TEXT`, e as premissas (fechamento sem ajuste por dividendos, sem custos, taxas ou impostos, valores na moeda do ativo) vêm de `SIMULATION_ASSUMPTIONS` (`core/simulation_texts.py`). O aviso completo continua em `SIMULATION_DISCLAIMER`.
 
 ---
 

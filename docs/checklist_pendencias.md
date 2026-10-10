@@ -2,7 +2,7 @@
 
 Lista consolidada das deliberações da reunião com o orientador, organizada por prioridade e fase de execução. Ver `docs/ata_reuniao_2026-09-30.md` para o contexto completo.
 
-**Última atualização:** 09/10/2026 (adendo do Plano 2 ao final; testes e cobertura da execução de 07/10) · **Testes:** 405 passando, cobertura de `core/` em 100% (execução de 09/10/2026, fim do Bloco 1; o Bloco 2 acrescenta 20 testes, total esperado 425).
+**Última atualização:** 10/10/2026 (adendo do Plano 2 ao final; testes e cobertura da execução de 07/10) · **Testes:** 487 passando, cobertura de `core/` em 100% (execução de 10/10/2026, fim do Bloco 6).
 
 ## Como usar este checklist
 
@@ -419,3 +419,20 @@ Em aberto:
 - [ ] Conferir no navegador com dois ativos (S38–S42)
 - [ ] Commit do Bloco 6
 - Decisões minhas por delegação (N25–N30 em aberto): retorno móvel sobre **fechamentos mensais**; mês em andamento fora; razão calculada por par com início na primeira data em que os dois têm dados; sem regressão e sem detecção de cruzamentos [D N07]
+
+### Bloco 8 — Documentação, relatórios e congelamento (entregue em 10/10/2026, em parte aguardando decisões)
+- [~] 8.1 Atualizados: `metodologia_de_calculo.md` (lacunas, sazonalidade 2.1, tendência 5.1, rótulos), `arquitetura.md` (módulos, páginas, decisões, testes, camada planejada), `checkpoint_qualidade.md` (487 testes, evolução por bloco) e este checklist
+- [~] 8.2 `validacao_academica.md`: LLM como componente de apoio (5.5, N09); O6 só com adultos, TCLE e parecer favorável do CEP antes da coleta (5.3, N14/N14b); casos de referência do recorte e da tendência (5.1); protocolo de prompts na frente 4
+- [x] 8.3 `python -m pytest` com cobertura: 487 passando, `core/` em 100% (1251 instruções), em 10/10/2026
+- [~] 8.4 Quadro de escopo para o Relatório Parcial: `docs/pibiti/escopo_relatorios.md` — **falta colar o cronograma original aprovado** (coluna 1)
+- [ ] 8.5 Congelamento da versão: procedimento e registro em `docs/versao_congelada.md`; a tag definitiva só depois dos Blocos 7 e 9 (previsão: fev/2027)
+- [~] 8.6 Estratégia de demonstração: `docs/demonstracao.md` (camadas, roteiro do screencast, limites e ajustes do Streamlit Community Cloud, contingência)
+- [~] 8.8 **Modo de demonstração com dados salvos — requisito obrigatório do congelamento** (`docs/demonstracao.md`, seção 2): `scripts/gerar_dados_demo.py`, manifesto com hash, `ARGOS_DEMO_MODE`, bloqueio de chamadas externas, aviso de versão congelada, respostas de LLM salvas e validadas, texto fixo de reserva, teste automatizado e execução uma vez sem internet
+  - [x] Código: `core/demo_mode.py`, `data_loader`, `assets_logos`, aviso em `app/main.py`, `scripts/gerar_dados_demo.py`, `tests/test_demo_mode.py`
+  - [ ] Gerar e versionar `data/demo/` (rodar o gerador com internet; `.gitattributes`: `data/demo/* -text`)
+  - [ ] Rodar o pytest e corrigir o que a auditoria de recursos remotos apontar
+  - [ ] Conferir o aviso e as 5 análises no navegador com `ARGOS_DEMO_MODE=true`
+  - [ ] Executar a demo uma vez com a internet desativada
+  - [ ] Teste de memória (Streamlit Cloud) e respostas de LLM salvas (após 7B)
+- [x] 8.7 O que ficou fora, com motivo: `docs/fora_do_escopo.md`
+- [ ] Commit do Bloco 8

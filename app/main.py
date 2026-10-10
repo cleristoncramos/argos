@@ -1,6 +1,15 @@
 import os
+import sys
+
 import streamlit as st
 import streamlit.components.v1 as components
+
+# Permite importar app/ e core/ ao executar `streamlit run app/main.py`
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+from app.ui.demo_banner import render_demo_banner
 
 # ==========================================================
 # 0. Bloqueio do tradutor via injeção JS no documento pai
@@ -128,6 +137,12 @@ if pg != home_page:
 
 
 # ==========================================================
-# 5. Executa a Página Selecionada
+# 5. Aviso do modo de demonstração (versão congelada, dados salvos)
+# ==========================================================
+render_demo_banner()
+
+
+# ==========================================================
+# 6. Executa a Página Selecionada
 # ==========================================================
 pg.run()

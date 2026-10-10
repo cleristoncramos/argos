@@ -1,6 +1,6 @@
 # Arquitetura do Sistema — Argos DataLab
 
-**Status:** protótipo evolutivo · **Atualizado em:** 07/10/2026 · **Testes:** 393 passando, cobertura de `core/` em 100%
+**Status:** protótipo evolutivo · **Atualizado em:** 10/10/2026 (Plano 2, blocos 1 a 6) · **Testes:** 487 passando, cobertura de `core/` em 100% (1251 instruções)
 
 Este documento descreve como o Argos DataLab é organizado: camadas, módulos, fluxo de dados e convenções. Os cálculos estão detalhados em `docs/metodologia_de_calculo.md`; as fontes e o tratamento dos dados, em `docs/fontes_e_tratamento_de_dados.md`; o catálogo de ativos, em `docs/catalogo-de-ativos.md`.
 
@@ -39,6 +39,7 @@ argos/
 │   │   └── simulacao_aportes.py
 │   └── ui/                 # Componentes reutilizáveis
 │       ├── asset_cards.py      # Cards e logos dos ativos (com fallback)
+│       ├── chart_guide.py      # Botão "Como ler este gráfico"
 │       ├── colors.py           # Cores e ícones de retorno positivo/negativo
 │       ├── comparison_info.py  # Avisos de comparabilidade
 │       ├── data_info.py        # Fonte, disponibilidade e aviso de catálogo
@@ -94,6 +95,12 @@ Exceção conhecida: `core/data_loader.py` importa `streamlit` apenas para usar 
 | `comparison.py` | Base 100, tabelas de preços e retornos, correlação e resumo comparativo |
 | `comparison_checks.py` | Períodos divergentes entre ativos e notas de comparabilidade |
 | `simulation.py` | Simulação histórica de aportes (aporte único × periódico, janelas móveis) |
+| `simulation_texts.py` | Texto obrigatório, premissas e rótulos descritivos da simulação |
+| `returns_utils.py` | `simple_returns`: retorno simples sem preenchimento de lacunas, independente da versão do pandas |
+| `seasonality.py` | Sazonalidade por anos, meses e janela de retorno composta; mediana, % de anos positivos e N; comparação entre ativos |
+| `trend.py` | Tendência histórica: retorno móvel, razão de desempenho e diferença de retorno móvel |
+| `comparison_texts.py` | Rótulos descritivos dos destaques e dicas da página de Comparação |
+| `chart_guides.py` | Roteiro fixo por gráfico (o que mede, mostra, cuidado, o que não permite concluir); também é o conteúdo de reserva da explicação assistida |
 | `visualizations.py` | Construção dos gráficos Plotly (formato numérico brasileiro, rótulos de contexto) |
 | `exports.py` | Geração de CSV para download e nomes de arquivo seguros |
 | `glossary.py` | Definições do glossário educativo |
@@ -103,13 +110,13 @@ Exceção conhecida: `core/data_loader.py` importa `streamlit` apenas para usar 
 
 | Página | Arquivo | O que faz |
 | --- | --- | --- |
-| Análise Individual | `views/analise_individual.py` | Série temporal, estatísticas, volatilidade mensal anualizada, variação por período, padrões sazonais |
+| Análise Individual | `views/analise_individual.py` | Série temporal, estatísticas, volatilidade mensal anualizada, variação por período, padrões sazonais e recorte por anos, meses e janela de retorno |
 | Indicadores Técnicos | `views/indicadores_tecnicos.py` | Médias móveis, Bollinger, RSI, MACD, ATR, volatilidade móvel e volume |
 | Risco e Retorno | `views/risco_retorno.py` | Retorno, volatilidade, Sharpe, drawdown (com data), distribuição de retornos |
-| Comparação de Ativos | `views/comparacao_ativos.py` | Até 5 ativos: Base 100, risco, correlação e dados tabulares |
+| Comparação de Ativos | `views/comparacao_ativos.py` | Até 5 ativos: Base 100, risco, correlação, sazonalidade comparada, tendência histórica (retorno móvel e razão) e dados tabulares |
 | Simulação de Aportes | `views/simulacao_aportes.py` | Simulação histórica com valor hipotético; não é recomendação nem previsão |
 
-Todas as páginas exibem, ao final, o aviso de catálogo e o rodapé legal.
+Todas as páginas exibem, ao final, o aviso de catálogo e o rodapé legal, e cada gráfico tem o botão "Como ler este gráfico" (`app/ui/chart_guide.py`).
 
 ## 7. Fluxo de dados
 
@@ -166,17 +173,27 @@ Cada página só recalcula quando o usuário clica no botão de análise. O resu
 | Valores ≤ 0 não entram em retorno percentual, drawdown e Base 100 | Esses cálculos exigem preço positivo (ex.: petróleo WTI fechou negativo em 20/04/2020); as páginas exibem mensagem clara |
 | Simulação com valor hipotético, sem perfil do usuário | Evita configurar recomendação individual |
 | Features separadas da visualização | Impede que um gráfico vire sinal de negociação e prepara o uso futuro em modelos |
+| Retorno por `x / x.shift(1) − 1`, sem `pct_change()` | O padrão do pandas para lacunas mudou entre as versões 2.x e 3.x; a fórmula explícita dá o mesmo resultado em ambas |
+| Janela de sazonalidade como retorno composto fechamento a fechamento | "Setembro → outubro" é o retorno de outubro; janelas longas compõem, não somam (decisão de 09/10/2026) |
+| Recorte por anos só na Análise Individual | Decisão do orientador (N02); a Comparação mostra a média de todos os anos |
+| Tendência limitada a retorno móvel e razão de desempenho | Decisão N07: sem regressão e sem detecção automática de cruzamentos |
+| Texto fixo por gráfico em `core/chart_guides.py` | Garante explicação sem depender de modelo de linguagem; serve de conteúdo de reserva |
 
 ## 11. Testes e qualidade
 
-- **393 testes**, cobertura de `core/` em **100%** (meta mínima de 80%).
-- `app/` **não** tem testes automatizados: páginas e componentes são conferidos manualmente no navegador. A cobertura mede apenas `core/`.
+- **487 testes**, cobertura de `core/` em **100%** (1251 instruções; meta mínima de 80%).
+- `app/` **não** tem testes de renderização: páginas e componentes são conferidos manualmente no navegador (roteiro em `docs/roteiro_conferencia_navegador.md`). Há, porém, **testes estruturais** que leem o código-fonte das páginas e de `app/ui/` (`test_chart_guides.py`, `test_simulation_texts.py`): todo gráfico tem roteiro de leitura, os textos novos usam linguagem neutra e o texto obrigatório da simulação está presente. A cobertura mede apenas `core/`.
 - Testes verificam, entre outros: ausência de informação futura nos indicadores, linguagem neutra nos textos, catálogo (120 ativos, tickers únicos, campos obrigatórios), disponibilidade de dados e bordas de agregação.
 - O acompanhamento por fase está em `docs/checkpoint_qualidade.md`; as pendências, em `docs/checklist_pendencias.md`.
+
+### Camada planejada: interpretação assistida (Bloco 7)
+
+Ainda **não implementada**. Se a validação da 7A cumprir todos os limiares e o orientador aprovar a 7B, a camada ficará **fora de `core/`** (módulo `services/`), com o provedor, o modelo, a chave e os limites em configuração; o botão "✨ Explicar esta análise" só chama o modelo por clique explícito; toda resposta passa por validações antes de ser exibida, e há texto fixo de reserva (`core/chart_guides.py`). A versão pública não terá a explicação assistida (`LLM_ENABLED=false`). Detalhes em `docs/llm_7b_especificacao.md`.
 
 ### Limitações conhecidas da arquitetura
 
 - `core/data_loader.py` depende de `streamlit` (cache). Para isolar totalmente `core/`, o cache poderia ser movido para a camada `app/`.
 - Cada página repete o helper `apply_custom_layout` e parte do CSS do tema; há oportunidade de centralizar em `app/ui`.
 - A terminologia "grupos" (código) × "classes" (interface) ainda não está padronizada.
+- O seletor da Comparação oferece Classe → Ativos; os campos `subcategory` e `market` do catálogo existem, mas ainda não são filtros (candidato ao Plano 3).
 - Frequências semestral e anual não estão implementadas (decisão pendente com o orientador).
