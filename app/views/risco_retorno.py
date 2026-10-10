@@ -22,6 +22,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.chart_guide import render_chart_guide
 from app.ui.asset_cards import render_asset_hero_logo
 from app.ui.data_info import (
     render_availability_messages,
@@ -537,6 +538,7 @@ with st.container(border=True):
         use_container_width=True,
         config=PLOTLY_CONFIG,
     )
+    render_chart_guide("retorno_acumulado")
 
 st.caption(
     "Os marcadores indicam o maior e o menor valor acumulado dentro do "
@@ -580,6 +582,7 @@ with st.container(border=True):
         use_container_width=True,
         config=PLOTLY_CONFIG,
     )
+    render_chart_guide("drawdown")
 
 
 # =====================
@@ -623,6 +626,7 @@ if not rets.empty:
             use_container_width=True,
             config=PLOTLY_CONFIG,
         )
+        render_chart_guide("distribuicao_retornos")
 
     st.caption(
         "A distribuição mostra a frequência histórica de retornos em cada "

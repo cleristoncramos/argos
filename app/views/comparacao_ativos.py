@@ -16,6 +16,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.chart_guide import render_chart_guide
 from app.ui.asset_cards import render_selected_asset_cards
 from app.ui.colors import tone_icon, tone_of
 from app.ui.comparison_info import render_comparison_notes
@@ -625,6 +626,7 @@ def render_correlation_heatmap(correlation_matrix: pd.DataFrame) -> None:
             use_container_width=True,
             config=PLOTLY_CONFIG,
         )
+        render_chart_guide("correlacao")
 
 
 # ==========================================================
@@ -1217,6 +1219,7 @@ with tab_performance:
                 use_container_width=True,
                 config=PLOTLY_CONFIG,
             )
+            render_chart_guide("base_100")
 
         st.caption(
             "Na Base 100, todos os ativos partem de 100 na data inicial. "
@@ -1309,6 +1312,7 @@ with tab_seasonality:
 
         with st.container(border=True):
             st.plotly_chart(fig_season, use_container_width=True, config=PLOTLY_CONFIG)
+            render_chart_guide("sazonalidade_comparada")
         st.caption(LEGEND_HINT)
 
         season_table = pd.DataFrame({"Mês": season_means.index})

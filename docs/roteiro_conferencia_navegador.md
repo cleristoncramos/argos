@@ -114,3 +114,11 @@ Página: **Comparação de Ativos**. Use `BTC-USD`, `AAPL`, `GC=F` (ou 5 ativos 
 | S32 | Carregar `BTC-USD`, 5 anos, mensal; abrir "Histórico carregado" | Premissas: preço de fechamento, sem ajuste por dividendos, sem corretagem, taxas ou impostos, valores na moeda do ativo |
 | S33 | Seção "Como terminaram as diferentes janelas" | Colunas: Menor retorno histórico, Início da janela de menor retorno, Mediana, Maior retorno histórico, Início da janela de maior retorno, Janelas com retorno positivo; nenhuma palavra "pior" ou "melhor" |
 | S34 | Tentar `^TNX` | Mensagem de que é uma taxa de juros e não pode ser simulada |
+
+## Anexo — Bloco 5 (Como ler este gráfico)
+
+| ID | Passos | Resultado esperado |
+| --- | --- | --- |
+| S35 | Em cada página (Análise Individual, Comparação, Risco e Retorno, Indicadores Técnicos, Simulação), abrir o botão "ℹ️ Como ler este gráfico" abaixo de cada gráfico | Quatro linhas: O que mede, O que mostra, Principal cuidado, O que não permite concluir; texto coerente com o gráfico visto |
+| S36 | Indicadores Técnicos: ligar RSI, MACD, ATR, volume e volatilidade móvel | Cada gráfico tem o seu botão, com o texto do indicador correspondente |
+| S37 | Conferir o layout dentro e fora das caixas com borda | O botão não quebra o layout nem repete o texto da caixa "O que significa?" de forma confusa |

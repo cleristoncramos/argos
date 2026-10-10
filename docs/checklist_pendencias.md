@@ -401,3 +401,13 @@ Em aberto:
 - [x] 4.5 `^IRX`, `^FVX`, `^TNX`, `^TYX` seguem fora da simulação (teste novo)
 - [~] 4.6 Teste de linguagem neutra estendido à página (`tests/test_simulation_texts.py`, 6 testes; total esperado 435)
 - [ ] Commit do Bloco 4
+
+### Bloco 5 — Educação: textos por gráfico (código entregue em 09/10/2026)
+- [~] 5.1 Inventário dos gráficos: `docs/inventario_graficos.md` (22 gráficos/blocos)
+- [~] 5.2 Roteiro padrão (mede · mostra · cuidado · não permite concluir) para os 22 gráficos: `core/chart_guides.py`
+- [~] 5.3 Textos dos recursos novos: Blocos 2, 3 e 4 já incluídos (`recorte_anos`, `janela_retorno`, `sazonalidade_comparada`, `simulacao_*`); o Bloco 6 acrescenta os seus
+- [~] 5.4 Os 10 termos no glossário: conferido por teste (`test_glossary_covers_the_ten_required_terms`); se falhar, ele lista os termos ausentes
+- [~] 5.5 Botão "Como ler este gráfico" (`app/ui/chart_guide.py`) em todas as páginas com gráfico
+- [ ] 5.6 Revisão por pessoa da área de educação — depois do congelamento (N23); registro em `docs/pibiti/revisao_textos_educativos.md`
+- [~] 5.7 Teste de linguagem neutra em todos os textos de `app/ui/` e nos roteiros
+- [ ] Commit do Bloco 5

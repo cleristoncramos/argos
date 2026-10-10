@@ -27,6 +27,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.chart_guide import render_chart_guide
 from app.ui.asset_cards import render_asset_hero_logo
 from app.ui.data_info import (
     render_availability_messages,
@@ -432,6 +433,7 @@ fig_line = apply_custom_layout(fig_line)
 
 with st.container(border=True):
     st.plotly_chart(fig_line, use_container_width=True, config=PLOTLY_CONFIG)
+    render_chart_guide("evolucao_temporal")
 
 
 # =====================
@@ -473,6 +475,7 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
 
     with st.container(border=True):
         st.plotly_chart(fig_vol, use_container_width=True, config=PLOTLY_CONFIG)
+        render_chart_guide("volatilidade_mensal")
 
     if currency.kind == "rate":
         st.caption(
@@ -512,6 +515,7 @@ fig_bar.update_traces(
 
 with st.container(border=True):
     st.plotly_chart(fig_bar, use_container_width=True, config=PLOTLY_CONFIG)
+    render_chart_guide("variacao_percentual")
 
 
 # =====================
@@ -571,6 +575,7 @@ else:
     with st.container(border=True):
         st.markdown("<h5 style='text-align: center; color: #334155; margin-bottom: 10px; font-size: 1rem;'>Variação Mensal Histórica</h5>", unsafe_allow_html=True)
         st.plotly_chart(fig_heatmap, use_container_width=True, config=PLOTLY_CONFIG)
+        render_chart_guide("mapa_sazonal")
 
     render_what_it_means("sazonalidade")
 
@@ -601,6 +606,7 @@ else:
     with st.container(border=True):
         st.markdown("<h5 style='text-align: center; color: #334155; margin-top: 10px; margin-bottom: 10px; font-size: 1rem;'>Média Consolidada por Mês do Calendário</h5>", unsafe_allow_html=True)
         st.plotly_chart(fig_bar_season, use_container_width=True, config=PLOTLY_CONFIG)
+        render_chart_guide("media_mensal")
 
     st.caption(
         "A média por mês do calendário usa poucos anos de histórico; amostras curtas "
@@ -739,6 +745,7 @@ else:
                     unsafe_allow_html=True,
                 )
                 st.plotly_chart(fig_cut, use_container_width=True, config=PLOTLY_CONFIG)
+                render_chart_guide("recorte_anos")
 
             summary_table = pd.DataFrame(
                 {
@@ -829,6 +836,7 @@ else:
 
                 with st.container(border=True):
                     st.plotly_chart(fig_window, use_container_width=True, config=PLOTLY_CONFIG)
+                    render_chart_guide("janela_retorno")
 
                 shown = window_cut if years_cut else window_all
                 window_table = pd.DataFrame(

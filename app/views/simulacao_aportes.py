@@ -20,6 +20,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.chart_guide import render_chart_guide
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
 from core.data_loader import download_active_data
@@ -401,6 +402,7 @@ st.plotly_chart(
     build_path_chart(paths, symbol.upper()),
     width="stretch",
 )
+render_chart_guide("simulacao_caminho")
 
 st.caption(SIMULATION_STRATEGY_CAPTION)
 
@@ -468,6 +470,7 @@ st.plotly_chart(
     build_windows_chart(outcomes, symbol.upper()),
     width="stretch",
 )
+render_chart_guide("simulacao_janelas")
 
 st.caption(
     "As janelas se sobrepõem, então não são observações independentes. "

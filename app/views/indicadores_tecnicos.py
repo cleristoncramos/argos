@@ -21,6 +21,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.chart_guide import render_chart_guide
 from app.ui.asset_cards import render_asset_hero_logo
 from app.ui.data_info import (
     render_availability_messages,
@@ -648,6 +649,7 @@ if chart_type == "Candles":
         candle_figure,
         width="stretch",
     )
+    render_chart_guide("candles")
 
     st.caption(
         "Cada candle apresenta abertura, máxima, mínima e fechamento "
@@ -678,6 +680,7 @@ st.plotly_chart(
     price_figure,
     width="stretch",
 )
+render_chart_guide("preco_indicadores")
 
 st.caption(
     "Preço exibido na moeda de origem do ativo. "
@@ -728,6 +731,7 @@ if show_volume and "Volume" in df.columns:
             use_container_width=True,
             config=PLOTLY_CONFIG,
         )
+        render_chart_guide("volume")
 
     render_indicator_note("volume")
 
@@ -753,6 +757,7 @@ if show_rsi:
         rsi_figure,
         width="stretch",
     )
+    render_chart_guide("rsi")
 
     st.caption(
         "O RSI varia entre 0 e 100. Os níveis de referência ajudam a "
@@ -780,6 +785,7 @@ if show_macd:
         macd_figure,
         width="stretch",
     )
+    render_chart_guide("macd")
 
     st.caption(
         f"O MACD desta análise usa EMA curta de {ema_short_window} e EMA longa "
@@ -806,6 +812,7 @@ if show_atr and f"ATR_{atr_window}" in df.columns:
             use_container_width=True,
             config=PLOTLY_CONFIG,
         )
+        render_chart_guide("atr")
 
     render_indicator_note("atr")
 
@@ -829,6 +836,7 @@ if show_vol and f"VOL_{vol_window}" in df.columns:
             use_container_width=True,
             config=PLOTLY_CONFIG,
         )
+        render_chart_guide("volatilidade_movel")
 
     render_indicator_note("volatilidade_movel")
 
