@@ -427,12 +427,12 @@ Em aberto:
 - [~] 8.4 Quadro de escopo para o Relatório Parcial: `docs/pibiti/escopo_relatorios.md` — **falta colar o cronograma original aprovado** (coluna 1)
 - [ ] 8.5 Congelamento da versão: procedimento e registro em `docs/versao_congelada.md`; a tag definitiva só depois dos Blocos 7 e 9 (previsão: fev/2027)
 - [~] 8.6 Estratégia de demonstração: `docs/demonstracao.md` (camadas, roteiro do screencast, limites e ajustes do Streamlit Community Cloud, contingência)
-- [~] 8.8 **Modo de demonstração com dados salvos — requisito obrigatório do congelamento** (`docs/demonstracao.md`, seção 2): `scripts/gerar_dados_demo.py`, manifesto com hash, `ARGOS_DEMO_MODE`, bloqueio de chamadas externas, aviso de versão congelada, respostas de LLM salvas e validadas, texto fixo de reserva, teste automatizado e execução uma vez sem internet
+- [~] 8.8 (núcleo concluído; restam itens abaixo) **Modo de demonstração com dados salvos — requisito obrigatório do congelamento** (`docs/demonstracao.md`, seção 2): `scripts/gerar_dados_demo.py`, manifesto com hash, `ARGOS_DEMO_MODE`, bloqueio de chamadas externas, aviso de versão congelada, respostas de LLM salvas e validadas, texto fixo de reserva, teste automatizado e execução uma vez sem internet
   - [x] Código: `core/demo_mode.py`, `data_loader`, `assets_logos`, aviso em `app/main.py`, `scripts/gerar_dados_demo.py`, `tests/test_demo_mode.py`
-  - [ ] Gerar e versionar `data/demo/` (rodar o gerador com internet; `.gitattributes`: `data/demo/* -text`)
-  - [ ] Rodar o pytest e corrigir o que a auditoria de recursos remotos apontar
-  - [ ] Conferir o aviso e as 5 análises no navegador com `ARGOS_DEMO_MODE=true`
-  - [ ] Executar a demo uma vez com a internet desativada
-  - [ ] Teste de memória (Streamlit Cloud) e respostas de LLM salvas (após 7B)
+  - [x] Gerar `data/demo/` (10/10/2026); dados fora do Git por ora (termos do Yahoo); cópia em .zip para a apresentação; `.gitattributes`: `data/demo/* -text`
+  - [x] pytest: 518 testes, `core/` a 100% (10/10/2026); auditoria de recursos remotos sem apontamentos
+  - [x] Aviso e análises conferidos no navegador com `ARGOS_DEMO_MODE=true` (10/10/2026)
+  - [x] Demo executada com a internet desativada, sem falhas (10/10/2026)
+  - [ ] Pendentes: teste de memória (Streamlit Cloud), decisão sobre publicar os dados em repositório público e respostas de LLM salvas (após 7B)
 - [x] 8.7 O que ficou fora, com motivo: `docs/fora_do_escopo.md`
 - [ ] Commit do Bloco 8

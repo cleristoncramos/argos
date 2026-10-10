@@ -78,12 +78,13 @@ Ativos propostos para o manifesto (ajustar):
 | `core/demo_mode.py` (ambiente, manifesto, hash, leitura diária/semanal/mensal, respostas salvas, aviso) | Implementado e testado |
 | `core/data_loader.py` (rota local no modo demo, cache com `max_entries`) | Implementado e testado |
 | `core/assets_logos.py` (sem imagens remotas no modo demo) | Implementado e testado |
-| `app/ui/demo_banner.py` + `app/main.py` (aviso de versão congelada) | Implementado; conferir no navegador |
-| `scripts/gerar_dados_demo.py` | Implementado; **executar uma vez com internet** |
-| `data/demo/` (CSV, manifesto) | **Pendente: gerar e versionar** |
+| `app/ui/demo_banner.py` + `app/main.py` (aviso de versão congelada) | Implementado e conferido no navegador |
+| `scripts/gerar_dados_demo.py` | Implementado; executado em 10/10/2026 |
+| `data/demo/` (CSV, manifesto) | Gerado em 10/10/2026; **fora do Git** por ora (termos do Yahoo); cópia em .zip |
 | Respostas de LLM salvas e validadas | Pendente (dependem da 7A/7B); sem elas, texto fixo |
-| Auditoria de recursos remotos nas páginas (home, sobre) | Teste automatizado criado; rodar e corrigir o que apontar |
-| Teste de memória e execução sem internet | Pendente |
+| Auditoria de recursos remotos nas páginas | Teste automatizado passando (518 testes, `core/` a 100%) |
+| Execução sem internet | **Concluída em 10/10/2026**, sem falhas |
+| Teste de memória (Streamlit Cloud) | Pendente |
 
 ### 2.4 Critério de aceite (condição para congelar)
 
