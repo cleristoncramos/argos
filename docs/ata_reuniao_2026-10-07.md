@@ -429,4 +429,4 @@ Proposta para discussão, não decisão:
 | N23 | "Depois" | Interpretado como depois do congelamento da versão; confirmar (N30) |
 | N24 | "Faça o que achar mais recomendado" | Decidido por delegação: Streamlit Community Cloud. **Atualizado em 10/10/2026:** limites verificados; o serviço é acesso público complementar, e a demonstração principal é o modo offline local com dados salvos (obrigatório antes do congelamento) |
 
-**Perguntas que continuam abertas:** N25 a N30 (Plano 2, seção 7). N16 fica para o Plano 3.
+**Perguntas que continuam abertas:** N26 a N30 (Plano 2, seção 7); N25 foi decidido em 10/10/2026 (avaliadores da 7A no mesmo protocolo do CEP). N16 fica para o Plano 3.

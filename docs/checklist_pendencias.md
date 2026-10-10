@@ -344,10 +344,13 @@ Bloco 8 — Fechamento:
 - [ ] Registrar a versão (tag), preparar dados em cache, screencast de até 5 min e versão pública
 
 Bloco 9 — Protocolo ético e avaliação com usuários (O6):
-- [ ] Confirmar com o orientador e com o CEP da UFPI procedimento, documentos, prazo e pesquisador responsável
-- [ ] Escrever o protocolo de pesquisa (objetivo, participantes adultos, recrutamento, procedimento, instrumentos, riscos e benefícios, dados)
-- [ ] Escrever o TCLE e os instrumentos (questionário de interpretação, SUS, versões com e sem camada educativa)
-- [ ] Submeter ao CEP; **nenhuma coleta antes do parecer favorável**
+- [ ] 9.1 Confirmar com o orientador e com o CEP da UFPI procedimento, documentos, prazo e pesquisador responsável (perguntas prontas em `docs/pibiti/cep/checklist_submissao_cep.md`; meta: até 17/10/2026)
+- [x] 9.2 Minuta do protocolo de pesquisa (`docs/pibiti/cep/protocolo_pesquisa.md`), 10/10/2026; falta revisão do orientador
+- [x] 9.3 Minutas do TCLE (participantes e avaliadores), dos instrumentos e do roteiro de aplicação (`docs/pibiti/cep/`), 10/10/2026; SUS a trocar pela versão validada em português
+- [x] 9.5 Avaliadores da 7A incluídos no mesmo protocolo (N25)
+- [ ] 9.4 Submeter ao CEP (meta: até 15/12/2026); **nenhuma coleta antes do parecer favorável**
+- [ ] 9.7 Interruptor `ARGOS_EDU_LAYER` (condição sem camada educativa) e teste, antes do congelamento
+- [ ] 9.8 Pré-teste dos instrumentos, só após o parecer
 - [ ] Aplicar sobre a versão congelada e registrar versão e data
 
 ### E. Respostas e dúvidas

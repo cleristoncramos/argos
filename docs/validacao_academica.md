@@ -181,8 +181,8 @@ A validação tem quatro frentes. As três primeiras podem ser feitas sem partic
 
 **Delineamento proposto (exploratório).**
 
-- **Participantes:** pessoas sem formação em finanças, economia, contabilidade ou áreas afins (critério de inclusão: **adultos, 18 anos ou mais** [N14]; sem menores). Amostra pequena (por exemplo, 8 a 20 pessoas), adequada a estudo exploratório.
-- **Condições:** versão **com** a camada educativa × versão **sem** (textos explicativos, "O que significa?" e glossário ocultos). Distribuição entre grupos ou medidas repetidas, a definir.
+- **Participantes:** pessoas sem formação em finanças, economia, contabilidade ou áreas afins (critério de inclusão: **adultos, 18 anos ou mais** [N14]; sem menores). Amostra exploratória de **20 pessoas, 10 por grupo** (até 24), definida no protocolo (`docs/pibiti/cep/protocolo_pesquisa.md`).
+- **Condições:** versão **com** a camada educativa × versão **sem** (textos explicativos, "O que significa?", roteiro e glossário ocultos; avisos obrigatórios mantidos). **Grupos independentes, alocação aleatória em blocos de 4**, sessão individual presencial no modo demo (decisão de 10/10/2026).
 - **Tarefas:** após breve contexto, o participante usa as páginas Análise Individual, Risco e Retorno e Indicadores Técnicos com um ativo definido e responde a questões de interpretação.
 - **Instrumentos:**
   1. **Questionário de interpretação** (cerca de 10 questões de múltipla escolha, com gabarito), cobrindo retorno total × retorno do período, volatilidade, drawdown, Sharpe, leitura do mapa de calor, RSI e Bollinger, e a diferença entre "histórico" e "previsão".

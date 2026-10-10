@@ -35,6 +35,7 @@
 | 06/10/2026 | Reunião de planejamento; escolha da pergunta de pesquisa A (interpretação por pessoas sem formação em finanças) | `docs/validacao_academica.md` |
 | 07 a 09/10/2026 | Reunião com o orientador; decisões registradas; Plano 2 elaborado | `docs/ata_reuniao_2026-10-07.md`, `docs/plano_de_ajustes_2.md`, `docs/pibiti/decisoes_orientador.md` |
 | 09 e 10/10/2026 | Plano 2, blocos 1 a 6: consolidação; sazonalidade por anos, meses e janela; comparação ampliada; revisão da simulação; roteiros de leitura por gráfico; tendência histórica | 487 testes, `core/` a 100%; `docs/checkpoint_qualidade.md` |
+| 10/10/2026 | Modo de demonstração com dados salvos implementado e validado sem internet; minutas do protocolo, TCLE e instrumentos para o CEP (Bloco 9) | 518 testes, `core/` a 100%; `docs/pibiti/cep/` |
 | Previsto: out/2026 a fev/2027 | Blocos 7A/7B (explicação assistida, condicionada à validação), 9 (protocolo do CEP); congelamento da versão | `docs/plano_de_ajustes_2.md`, seção 5.3 |
 | Previsto: até o congelamento da versão | Implementação e validação do modo de demonstração com dados salvos (`demo mode`), conforme `demonstracao.md`, seção 2.1. O modo deve permitir executar análises, gráficos, filtros e explicações sem dependência de internet. | `demonstracao.md`, seção 2.1; `docs/plano_de_ajustes_2.md` |
 | Previsto: mar/2027 | Relatório Parcial | — |
