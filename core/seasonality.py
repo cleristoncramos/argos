@@ -13,12 +13,12 @@ Regras de método:
 - O mês em andamento (o mês de `as_of`) nunca entra como mês completo.
 """
 
-from typing import Iterable, Optional, Union
+from typing import Dict, Iterable, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 
-from core.analyzer import ORDERED_MONTHS
+from core.analyzer import ORDERED_MONTHS, create_monthly_return_matrix
 
 MonthRef = Union[int, str]
 
@@ -250,3 +250,40 @@ def window_summary(window: pd.DataFrame) -> dict:
         "Mediana": float(values.median()),
         "Anos positivos (%)": float((values > 0).sum() / len(values) * 100),
     }
+
+
+def compare_monthly_averages(
+    asset_data: Dict[str, pd.DataFrame],
+    value_col: str = "Value",
+    date_col: str = "Date",
+    as_of: Optional[pd.Timestamp] = None,
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Média do retorno mensal por mês do calendário, lado a lado, por ativo.
+
+    Usa todos os anos disponíveis de cada ativo (sem recorte por anos) e
+    deixa de fora o mês em andamento. Devolve duas tabelas indexadas pelos
+    12 meses (ordem do calendário) com um ativo por coluna:
+    (médias em %, N de anos com dado). Ativos com históricos de tamanhos
+    diferentes têm N diferentes; mês sem dado fica com média NaN e N = 0.
+    """
+    means, counts = {}, {}
+
+    for symbol, frame in asset_data.items():
+        matrix = create_monthly_return_matrix(frame, value_col, date_col)
+
+        if matrix.empty:
+            continue
+
+        matrix = exclude_month_in_progress(matrix, as_of=as_of)
+        means[symbol] = matrix.mean(axis=0)
+        counts[symbol] = matrix.notna().sum(axis=0)
+
+    if not means:
+        return pd.DataFrame(), pd.DataFrame()
+
+    mean_table = pd.DataFrame(means).reindex(ORDERED_MONTHS)
+    count_table = pd.DataFrame(counts).reindex(ORDERED_MONTHS).fillna(0).astype(int)
+    mean_table.index.name = count_table.index.name = "Mês"
+
+    return mean_table, count_table
