@@ -392,3 +392,12 @@ Em aberto:
 - [x] 3.3 Hierarquia do seletor — **achado:** a barra lateral oferece **Classe (13 grupos) → Ativos** (mais digitação livre de ticker). O catálogo (`core/assets.py`) já tem os campos `subcategory` e `market`, mas eles **não** são filtros na Comparação. A hierarquia completa Classe → Subclasse → Mercado → Ativos **não está presente**. Proposta (não implementada, depende de decisão): dois filtros opcionais "Mercado" e "Subclasse" abaixo da classe, que apenas reduzem a lista do `multiselect`. Fica como candidato do Plano 3, para não mexer nos callbacks do seletor agora
 - [~] 3.4 Rótulos dos destaques em redação descritiva (`core/comparison_texts.py`): "Maior/Menor retorno acumulado no período analisado", "Menor queda máxima observada", "Maior Sharpe no período analisado"; teste de linguagem neutra
 - [ ] Commit do Bloco 3
+
+### Bloco 4 — Simulação histórica: revisão e texto (código entregue em 09/10/2026)
+- [~] 4.1 Texto obrigatório palavra por palavra (`SIMULATION_MANDATORY_TEXT`), exibido no topo da página; o aviso anterior continua abaixo e no rodapé
+- [~] 4.2 Redação no passado ("teria ocorrido"); sem "vai ocorrer", "quanto investir" (teste varre os textos literais da página)
+- [~] 4.3 Rótulos da tabela de janelas: "Menor retorno histórico", "Maior retorno histórico", "Mediana" (antes: pior/melhor janela); a frase "terminou melhor" virou "terminou com maior valor final". Chaves internas de `core/simulation.py` não mudaram
+- [~] 4.4 Premissas explícitas (`SIMULATION_ASSUMPTIONS`): preço de fechamento, sem ajuste por dividendos, sem corretagem, taxas e impostos, valores na moeda do ativo
+- [x] 4.5 `^IRX`, `^FVX`, `^TNX`, `^TYX` seguem fora da simulação (teste novo)
+- [~] 4.6 Teste de linguagem neutra estendido à página (`tests/test_simulation_texts.py`, 6 testes; total esperado 435)
+- [ ] Commit do Bloco 4

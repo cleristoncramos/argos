@@ -29,6 +29,12 @@ from core.data_processor import (
     select_primary_variable,
 )
 from core.formatters import format_return_pct
+from core.simulation_texts import (
+    SIMULATION_ASSUMPTIONS,
+    SIMULATION_MANDATORY_TEXT,
+    SIMULATION_STRATEGY_CAPTION,
+    SIMULATION_WINDOW_LABELS,
+)
 from core.simulation import (
     SIMULATION_DISCLAIMER,
     compare_strategies,
@@ -61,7 +67,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.warning(SIMULATION_DISCLAIMER, icon="⚠️")
+st.warning(SIMULATION_MANDATORY_TEXT, icon="⚠️")
+st.caption(SIMULATION_DISCLAIMER)
 
 
 # ==========================================================
@@ -355,10 +362,7 @@ with st.expander(
         f"{format_date(last_date)} | **Frequência:** {frequency}"
     )
     st.markdown(f"**Observações:** {len(paths['periodic'])}")
-    st.markdown(
-        "**Premissas:** compra ao preço de fechamento da observação, "
-        "frações permitidas, sem dividendos, taxas, impostos ou câmbio."
-    )
+    st.markdown("**Premissas:** " + SIMULATION_ASSUMPTIONS)
 
 
 # ==========================================================
@@ -398,12 +402,7 @@ st.plotly_chart(
     width="stretch",
 )
 
-st.caption(
-    "Os dois cenários investem o mesmo total. No aporte único, todo o valor "
-    "entra na primeira data; nos periódicos, ele é dividido ao longo do "
-    "tempo. Qual deles terminou melhor depende do período escolhido e não "
-    "indica o que ocorrerá no futuro."
-)
+st.caption(SIMULATION_STRATEGY_CAPTION)
 
 
 # ==========================================================
@@ -442,14 +441,22 @@ for label, column in (
         {
             "Estratégia": label,
             "Janelas analisadas": summary["Janelas analisadas"],
-            "Pior janela": format_return_pct(summary["Pior janela"]),
-            "Início da pior": format_date(summary["Início da pior janela"]),
-            "Mediana": format_return_pct(summary["Mediana"]),
-            "Melhor janela": format_return_pct(summary["Melhor janela"]),
-            "Início da melhor": format_date(
+            SIMULATION_WINDOW_LABELS["Pior janela"]: format_return_pct(
+                summary["Pior janela"]
+            ),
+            SIMULATION_WINDOW_LABELS["Início da pior janela"]: format_date(
+                summary["Início da pior janela"]
+            ),
+            SIMULATION_WINDOW_LABELS["Mediana"]: format_return_pct(
+                summary["Mediana"]
+            ),
+            SIMULATION_WINDOW_LABELS["Melhor janela"]: format_return_pct(
+                summary["Melhor janela"]
+            ),
+            SIMULATION_WINDOW_LABELS["Início da melhor janela"]: format_date(
                 summary["Início da melhor janela"]
             ),
-            "Janelas positivas": format_return_pct(
+            SIMULATION_WINDOW_LABELS["Janelas com retorno positivo"]: format_return_pct(
                 summary["Janelas com retorno positivo"]
             ),
         }

@@ -105,3 +105,12 @@ Página: **Comparação de Ativos**. Use `BTC-USD`, `AAPL`, `GC=F` (ou 5 ativos 
 | S28 | Frequência Mensal e Semanal | A aba Sazonalidade continua funcionando (médias iguais às de frequência diária, salvo diferenças de fechamento) |
 | S29 | "Destaques do Período" | Rótulos: "Maior retorno acumulado no período analisado", "Menor retorno acumulado no período analisado", "Menor queda máxima observada", "Maior Sharpe no período analisado" |
 | S30 | 5 ativos de classes diferentes em tela padrão | Todas as abas legíveis, sem corte horizontal |
+
+## Anexo — Bloco 4 (Simulação Histórica)
+
+| ID | Passos | Resultado esperado |
+| --- | --- | --- |
+| S31 | Abrir a página "Simulação Histórica de Aportes" | No topo, o aviso com o texto exato: "Esta é uma simulação histórica hipotética. Ela mostra como um valor teria evoluído no período selecionado, sem representar previsão, recomendação ou garantia de resultado futuro." |
+| S32 | Carregar `BTC-USD`, 5 anos, mensal; abrir "Histórico carregado" | Premissas: preço de fechamento, sem ajuste por dividendos, sem corretagem, taxas ou impostos, valores na moeda do ativo |
+| S33 | Seção "Como terminaram as diferentes janelas" | Colunas: Menor retorno histórico, Início da janela de menor retorno, Mediana, Maior retorno histórico, Início da janela de maior retorno, Janelas com retorno positivo; nenhuma palavra "pior" ou "melhor" |
+| S34 | Tentar `^TNX` | Mensagem de que é uma taxa de juros e não pode ser simulada |
