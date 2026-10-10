@@ -52,6 +52,11 @@ from core.comparison import (
     create_comparison_summary,
     format_return_pct,
 )
+from core.comparison_texts import (
+    HIGHLIGHT_LABELS,
+    LEGEND_HINT,
+    SEASONALITY_COMPARISON_NOTE,
+)
 from core.comparison_checks import (
     build_spans,
     check_period_divergence,
@@ -74,6 +79,7 @@ from core.periods import (
     period_start_date,
 )
 from core.risk_metrics import build_risk_summary, calculate_drawdown
+from core.seasonality import SEASONALITY_METHOD_TEXT, compare_monthly_averages
 from core.ticker_input import validate_ticker
 
 
@@ -1103,28 +1109,28 @@ if not summary_numeric.empty:
     highlight_cols = st.columns(4)
     with highlight_cols[0]:
         render_highlight(
-            "Maior retorno histórico",
+            HIGHLIGHT_LABELS["max_return"],
             extreme_row(summary_numeric, "Retorno total", largest=True),
             "Retorno total",
             format_return_pct,
         )
     with highlight_cols[1]:
         render_highlight(
-            "Menor retorno histórico",
+            HIGHLIGHT_LABELS["min_return"],
             extreme_row(summary_numeric, "Retorno total", largest=False),
             "Retorno total",
             format_return_pct,
         )
     with highlight_cols[2]:
         render_highlight(
-            "Menor queda máxima histórica",
+            HIGHLIGHT_LABELS["min_drawdown"],
             extreme_row(summary_numeric, "Drawdown máximo", largest=True),
             "Drawdown máximo",
             format_return_pct,
         )
     with highlight_cols[3]:
         render_highlight(
-            "Maior Sharpe histórico",
+            HIGHLIGHT_LABELS["max_sharpe"],
             extreme_row(summary_numeric, "Sharpe", largest=True),
             "Sharpe",
             lambda v: f"Sharpe: {format_number_br(v)}",
@@ -1143,10 +1149,11 @@ st.markdown("<br>", unsafe_allow_html=True)
 # ==========================================================
 # Seções: Desempenho, Risco, Correlação e Dados
 # ==========================================================
-tab_performance, tab_risk, tab_correlation, tab_data = st.tabs([
+tab_performance, tab_risk, tab_correlation, tab_seasonality, tab_data = st.tabs([
     "📈 Desempenho",
     "🛡️ Risco",
     "🔗 Correlação",
+    "🗓️ Sazonalidade",
     "📋 Dados",
 ])
 
@@ -1215,6 +1222,7 @@ with tab_performance:
             "Na Base 100, todos os ativos partem de 100 na data inicial. "
             "Compara trajetórias, não preços, e não incorpora variação cambial."
         )
+        st.caption(LEGEND_HINT)
 
     render_what_it_means("base_100")
     render_what_it_means("retorno")
@@ -1251,6 +1259,75 @@ with tab_correlation:
     render_what_it_means("correlacao")
 
 
+# ---------- Sazonalidade ----------
+with tab_seasonality:
+    st.markdown("### Sazonalidade Mensal Comparada")
+    st.caption(SEASONALITY_METHOD_TEXT)
+    st.caption(SEASONALITY_COMPARISON_NOTE)
+
+    season_means, season_counts = compare_monthly_averages(asset_data)
+
+    if season_means.empty:
+        st.info(
+            "Os ativos selecionados não têm meses suficientes para calcular a "
+            "variação mensal. Escolha um período mais longo."
+        )
+    else:
+        def _fmt_season(value):
+            if pd.isna(value):
+                return "—"
+            return f"{value:.2f}".replace(".", ",") + "%"
+
+        fig_season = go.Figure()
+        for ticker in season_means.columns:
+            fig_season.add_trace(
+                go.Bar(
+                    x=season_means.index,
+                    y=season_means[ticker],
+                    name=get_asset_full_name(ticker),
+                    marker_color=color_map.get(ticker),
+                    customdata=[
+                        [_fmt_season(v), int(n)]
+                        for v, n in zip(season_means[ticker], season_counts[ticker])
+                    ],
+                    hovertemplate=(
+                        "Mês: %{x}<br>Média: %{customdata[0]}"
+                        "<br>Anos com dado: %{customdata[1]}<extra>"
+                        + escape(ticker)
+                        + "</extra>"
+                    ),
+                )
+            )
+        fig_season = apply_custom_layout(fig_season)
+        fig_season.update_layout(
+            barmode="group",
+            margin=dict(l=40, r=20, t=40, b=20),
+            xaxis_title=None,
+            yaxis_title="Média do retorno mensal (%)",
+            legend={"title": "", "orientation": "h", "y": 1.12},
+        )
+
+        with st.container(border=True):
+            st.plotly_chart(fig_season, use_container_width=True, config=PLOTLY_CONFIG)
+        st.caption(LEGEND_HINT)
+
+        season_table = pd.DataFrame({"Mês": season_means.index})
+        for ticker in season_means.columns:
+            season_table[ticker] = [
+                f"{_fmt_season(value)} (N={int(n)})"
+                for value, n in zip(season_means[ticker], season_counts[ticker])
+            ]
+        st.dataframe(season_table, hide_index=True, use_container_width=True)
+
+        if (season_counts.replace(0, np.nan).min().min() < 3):
+            st.caption(
+                "Alguns meses têm menos de 3 anos de dados em algum ativo; "
+                "médias com tão poucos anos variam bastante de uma amostra para outra."
+            )
+
+    render_what_it_means("sazonalidade")
+
+
 # ---------- Dados ----------
 with tab_data:
     st.markdown("### Resumo Comparativo")
@@ -1277,6 +1354,7 @@ render_methodology_limitations([
     "Taxas de juros (yields) medem o nível da taxa; seus retornos não são equivalentes aos de preços de ativos.",
     f"O fator de anualização usado foi {annualization_factor} (frequência {frequency}) e a taxa livre de risco anual foi {risk_free_rate_pct:.2f}%; alterar esses parâmetros altera Sharpe e volatilidade.",
     "Os destaques descrevem desempenho histórico no período analisado e não indicam qual ativo é melhor, nem compra ou venda.",
+    "A sazonalidade comparada usa todos os anos disponíveis de cada ativo; ativos com históricos mais curtos têm menos anos (N) e médias menos estáveis.",
 ])
 
 render_catalog_notice()

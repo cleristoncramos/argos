@@ -385,3 +385,10 @@ Em aberto:
 - [~] Médias do gráfico "Média Consolidada por Mês" passam a excluir o mês em andamento (o mapa de calor continua mostrando o mês, com aviso)
 - [ ] Conferir no navegador o caso do orientador: Bitcoin, setembro → outubro
 - [ ] Commit do Bloco 2
+
+### Bloco 3 — Comparação ampliada (código entregue em 09/10/2026)
+- [~] 3.1 Sazonalidade comparada: `compare_monthly_averages` em `core/seasonality.py`, nova aba "Sazonalidade" em `comparacao_ativos.py` (gráfico por mês e ativo, tabela com média e N por ativo) — 4 testes em `tests/test_seasonality_compare.py`
+- [~] 3.2 Legenda: o gráfico Base 100 usa a legenda padrão do Plotly (clicar oculta/exibe a série, dois cliques isolam); adicionada uma linha de ajuda (`LEGEND_HINT`) — confirmar no navegador (S25)
+- [x] 3.3 Hierarquia do seletor — **achado:** a barra lateral oferece **Classe (13 grupos) → Ativos** (mais digitação livre de ticker). O catálogo (`core/assets.py`) já tem os campos `subcategory` e `market`, mas eles **não** são filtros na Comparação. A hierarquia completa Classe → Subclasse → Mercado → Ativos **não está presente**. Proposta (não implementada, depende de decisão): dois filtros opcionais "Mercado" e "Subclasse" abaixo da classe, que apenas reduzem a lista do `multiselect`. Fica como candidato do Plano 3, para não mexer nos callbacks do seletor agora
+- [~] 3.4 Rótulos dos destaques em redação descritiva (`core/comparison_texts.py`): "Maior/Menor retorno acumulado no período analisado", "Menor queda máxima observada", "Maior Sharpe no período analisado"; teste de linguagem neutra
+- [ ] Commit do Bloco 3

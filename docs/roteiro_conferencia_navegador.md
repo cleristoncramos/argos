@@ -92,3 +92,16 @@ Página: **Análise Individual**, seção "Padrões Sazonais", bloco "Recorte po
 | S24 | Aplicar sem ano e sem janela; depois só a entrada sem a saída; depois entrada igual à saída | Aviso claro em cada caso, sem erro na tela; trocar de ativo não mantém o filtro do ativo anterior |
 
 Conferências adicionais: (a) o mês em andamento não entra nas médias e há uma linha de aviso; (b) com todos os anos selecionados, a "média do recorte" é igual à "média de todos os anos"; (c) nenhum texto novo usa "melhor mês", "pior mês", recomendação ou previsão.
+
+## Anexo — Bloco 3 (Comparação)
+
+Página: **Comparação de Ativos**. Use `BTC-USD`, `AAPL`, `GC=F` (ou 5 ativos de classes diferentes), período de 5 anos, frequência Diária.
+
+| ID | Passos | Resultado esperado |
+| --- | --- | --- |
+| S25 | Aba "Desempenho": clicar uma vez no nome de um ativo na legenda; depois dois cliques em outro | O primeiro some/volta; o segundo isola; a linha "Dica: clique no nome de um ativo..." aparece abaixo do gráfico |
+| S26 | Aba "Sazonalidade" | Gráfico de barras agrupadas (12 meses × ativos), tabela com "média (N=...)" por ativo e mês, textos metodológicos visíveis; ativo de histórico curto mostra N menor |
+| S27 | Comparar com "Comparar apenas o período comum" ligado e desligado | N por ativo na aba Sazonalidade muda coerentemente; nenhum erro |
+| S28 | Frequência Mensal e Semanal | A aba Sazonalidade continua funcionando (médias iguais às de frequência diária, salvo diferenças de fechamento) |
+| S29 | "Destaques do Período" | Rótulos: "Maior retorno acumulado no período analisado", "Menor retorno acumulado no período analisado", "Menor queda máxima observada", "Maior Sharpe no período analisado" |
+| S30 | 5 ativos de classes diferentes em tela padrão | Todas as abas legíveis, sem corte horizontal |
