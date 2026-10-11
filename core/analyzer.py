@@ -15,6 +15,8 @@ from typing import Any, Dict, Iterable
 import numpy as np
 import pandas as pd
 
+from core.returns_utils import simple_returns
+
 
 MONTH_NAMES = {
     1: "Jan",
@@ -85,7 +87,7 @@ def calculate_percentage_change(df: pd.DataFrame, value_col: str = "Value") -> p
     A coluna Pct_Change está em PERCENTUAL (não em decimal).
     """
     df_calc = df.copy()
-    df_calc['Pct_Change'] = df_calc[value_col].pct_change() * 100
+    df_calc['Pct_Change'] = simple_returns(df_calc[value_col]) * 100
     return df_calc
 
 
@@ -241,7 +243,7 @@ def calculate_returns(
     """
     result = df.copy()
 
-    result["Simple_Return"] = result[value_col].pct_change()
+    result["Simple_Return"] = simple_returns(result[value_col])
     result["Log_Return"] = np.log(
         result[value_col] / result[value_col].shift(1)
     )

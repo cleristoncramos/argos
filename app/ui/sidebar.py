@@ -6,6 +6,7 @@ import streamlit.components.v1 as components
 from core.assets import ASSETS
 from core.config import config
 from core.data_loader import download_active_data
+from core.demo_mode import catalog_assets, is_demo_mode
 from core.date_validation import validate_date_range
 from core.periods import (
     DEFAULT_PERIOD,
@@ -264,8 +265,11 @@ def render_asset_controls(
     with st.sidebar:
         st.header(title)
 
+        # No modo demo, o catálogo mostra só os ativos dos dados salvos.
+        catalog = catalog_assets(ASSETS)
+
         groups = []
-        for asset in ASSETS:
+        for asset in catalog:
             group = asset.get(
                 "group",
                 asset.get("class", "Outros"),
@@ -284,16 +288,20 @@ def render_asset_controls(
                 "submitted": False,
             }
 
-        input_mode = st.radio(
-            "Como escolher o ativo",
-            options=["Catálogo", "Digitar ticker"],
-            horizontal=True,
-            key=f"{button_key}_input_mode",
-            help=(
-                "O catálogo é o caminho guiado. Digitar ticker é opcional, "
-                "para usuários avançados."
-            ),
-        )
+        if is_demo_mode():
+            # Sem digitação livre: tickers fora dos dados salvos não existem aqui.
+            input_mode = "Catálogo"
+        else:
+            input_mode = st.radio(
+                "Como escolher o ativo",
+                options=["Catálogo", "Digitar ticker"],
+                horizontal=True,
+                key=f"{button_key}_input_mode",
+                help=(
+                    "O catálogo é o caminho guiado. Digitar ticker é opcional, "
+                    "para usuários avançados."
+                ),
+            )
 
         symbol = ""
 
@@ -338,7 +346,7 @@ def render_asset_controls(
             else:
                 filtered_assets = [PLACEHOLDER_ASSET] + [
                     asset
-                    for asset in ASSETS
+                    for asset in catalog
                     if asset.get(
                         "group",
                         asset.get("class", "Outros"),

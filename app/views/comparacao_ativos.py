@@ -16,6 +16,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.chart_guide import render_chart_guide
 from app.ui.asset_cards import render_selected_asset_cards
 from app.ui.colors import tone_icon, tone_of
 from app.ui.comparison_info import render_comparison_notes
@@ -44,6 +45,7 @@ from app.ui.tables import (
 
 from core.analyzer import calculate_returns
 from core.assets import ASSETS
+from core.demo_mode import catalog_assets, is_demo_mode
 from core.comparison import (
     build_base_100_table,
     build_price_table,
@@ -51,6 +53,11 @@ from core.comparison import (
     calculate_returns_table,
     create_comparison_summary,
     format_return_pct,
+)
+from core.comparison_texts import (
+    HIGHLIGHT_LABELS,
+    LEGEND_HINT,
+    SEASONALITY_COMPARISON_NOTE,
 )
 from core.comparison_checks import (
     build_spans,
@@ -74,6 +81,19 @@ from core.periods import (
     period_start_date,
 )
 from core.risk_metrics import build_risk_summary, calculate_drawdown
+from core.seasonality import SEASONALITY_METHOD_TEXT, compare_monthly_averages
+from core.trend import (
+    RATIO_START_NOTE,
+    ROLLING_NOTE,
+    TREND_DISCLAIMER,
+    TREND_WINDOWS,
+    monthly_close_table,
+    performance_ratio,
+    rebase_common_start,
+    rolling_label,
+    rolling_return,
+    rolling_return_gap,
+)
 from core.ticker_input import validate_ticker
 
 
@@ -619,6 +639,7 @@ def render_correlation_heatmap(correlation_matrix: pd.DataFrame) -> None:
             use_container_width=True,
             config=PLOTLY_CONFIG,
         )
+        render_chart_guide("correlacao")
 
 
 # ==========================================================
@@ -651,8 +672,11 @@ with st.sidebar:
 
     st.header("⚙️ Parâmetros da Comparação")
 
+    # No modo demo, o catálogo mostra só os ativos dos dados salvos.
+    catalog = catalog_assets(ASSETS)
+
     groups = []
-    for asset in ASSETS:
+    for asset in catalog:
         g = asset.get("group", asset.get("class", "Outros"))
         if g not in groups:
             groups.append(g)
@@ -678,7 +702,7 @@ with st.sidebar:
 
     # O ticker entra nas opções se for da classe selecionada OU se já estiver
     # selecionado (permite comparar classes diferentes e tickers digitados).
-    for asset in ASSETS:
+    for asset in catalog:
         asset_group = asset.get("group", asset.get("class", "Outros"))
         is_in_group = (asset_group == selected_class)
         is_selected = (asset["ticker"] in previously_selected_tickers)
@@ -704,28 +728,30 @@ with st.sidebar:
         on_change=sync_comparison_symbols,
     )
 
-    with st.expander("⌨️ Digitar ticker (avançado)", expanded=False):
-        st.text_input(
-            "Ticker (código do Yahoo Finance)",
-            key=COMPARISON_CUSTOM_INPUT_KEY,
-            placeholder="Ex.: PETR4.SA, AAPL, BTC-USD",
-            help=(
-                "Para usuários avançados. Ações brasileiras terminam em .SA, "
-                "criptomoedas em -USD e câmbio em =X. A validação consulta a "
-                "fonte e pode levar alguns segundos."
-            ),
-        )
-        st.button(
-            "➕ Adicionar ao comparativo",
-            key="comparison_add_custom",
-            on_click=add_custom_ticker,
-            use_container_width=True,
-        )
-        custom_message = st.session_state.get(COMPARISON_CUSTOM_MSG_KEY)
-        if custom_message:
-            {"error": st.error, "success": st.success}.get(
-                custom_message[0], st.info
-            )(custom_message[1])
+    # Digitação livre fica oculta no modo demo (só existem os dados salvos).
+    if not is_demo_mode():
+        with st.expander("⌨️ Digitar ticker (avançado)", expanded=False):
+            st.text_input(
+                "Ticker (código do Yahoo Finance)",
+                key=COMPARISON_CUSTOM_INPUT_KEY,
+                placeholder="Ex.: PETR4.SA, AAPL, BTC-USD",
+                help=(
+                    "Para usuários avançados. Ações brasileiras terminam em .SA, "
+                    "criptomoedas em -USD e câmbio em =X. A validação consulta a "
+                    "fonte e pode levar alguns segundos."
+                ),
+            )
+            st.button(
+                "➕ Adicionar ao comparativo",
+                key="comparison_add_custom",
+                on_click=add_custom_ticker,
+                use_container_width=True,
+            )
+            custom_message = st.session_state.get(COMPARISON_CUSTOM_MSG_KEY)
+            if custom_message:
+                {"error": st.error, "success": st.success}.get(
+                    custom_message[0], st.info
+                )(custom_message[1])
 
     selected_tickers = st.session_state[COMPARISON_SYMBOLS_WIDGET_KEY]
     symbols_input = st.session_state[COMPARISON_SYMBOLS_STATE_KEY]
@@ -1103,28 +1129,28 @@ if not summary_numeric.empty:
     highlight_cols = st.columns(4)
     with highlight_cols[0]:
         render_highlight(
-            "Maior retorno histórico",
+            HIGHLIGHT_LABELS["max_return"],
             extreme_row(summary_numeric, "Retorno total", largest=True),
             "Retorno total",
             format_return_pct,
         )
     with highlight_cols[1]:
         render_highlight(
-            "Menor retorno histórico",
+            HIGHLIGHT_LABELS["min_return"],
             extreme_row(summary_numeric, "Retorno total", largest=False),
             "Retorno total",
             format_return_pct,
         )
     with highlight_cols[2]:
         render_highlight(
-            "Menor queda máxima histórica",
+            HIGHLIGHT_LABELS["min_drawdown"],
             extreme_row(summary_numeric, "Drawdown máximo", largest=True),
             "Drawdown máximo",
             format_return_pct,
         )
     with highlight_cols[3]:
         render_highlight(
-            "Maior Sharpe histórico",
+            HIGHLIGHT_LABELS["max_sharpe"],
             extreme_row(summary_numeric, "Sharpe", largest=True),
             "Sharpe",
             lambda v: f"Sharpe: {format_number_br(v)}",
@@ -1143,10 +1169,12 @@ st.markdown("<br>", unsafe_allow_html=True)
 # ==========================================================
 # Seções: Desempenho, Risco, Correlação e Dados
 # ==========================================================
-tab_performance, tab_risk, tab_correlation, tab_data = st.tabs([
+tab_performance, tab_risk, tab_correlation, tab_seasonality, tab_trend, tab_data = st.tabs([
     "📈 Desempenho",
     "🛡️ Risco",
     "🔗 Correlação",
+    "🗓️ Sazonalidade",
+    "📐 Tendência",
     "📋 Dados",
 ])
 
@@ -1210,11 +1238,13 @@ with tab_performance:
                 use_container_width=True,
                 config=PLOTLY_CONFIG,
             )
+            render_chart_guide("base_100")
 
         st.caption(
             "Na Base 100, todos os ativos partem de 100 na data inicial. "
             "Compara trajetórias, não preços, e não incorpora variação cambial."
         )
+        st.caption(LEGEND_HINT)
 
     render_what_it_means("base_100")
     render_what_it_means("retorno")
@@ -1251,6 +1281,224 @@ with tab_correlation:
     render_what_it_means("correlacao")
 
 
+# ---------- Sazonalidade ----------
+with tab_seasonality:
+    st.markdown("### Sazonalidade Mensal Comparada")
+    st.caption(SEASONALITY_METHOD_TEXT)
+    st.caption(SEASONALITY_COMPARISON_NOTE)
+
+    season_means, season_counts = compare_monthly_averages(asset_data)
+
+    if season_means.empty:
+        st.info(
+            "Os ativos selecionados não têm meses suficientes para calcular a "
+            "variação mensal. Escolha um período mais longo."
+        )
+    else:
+        def _fmt_season(value):
+            if pd.isna(value):
+                return "—"
+            return f"{value:.2f}".replace(".", ",") + "%"
+
+        fig_season = go.Figure()
+        for ticker in season_means.columns:
+            fig_season.add_trace(
+                go.Bar(
+                    x=season_means.index,
+                    y=season_means[ticker],
+                    name=get_asset_full_name(ticker),
+                    marker_color=color_map.get(ticker),
+                    customdata=[
+                        [_fmt_season(v), int(n)]
+                        for v, n in zip(season_means[ticker], season_counts[ticker])
+                    ],
+                    hovertemplate=(
+                        "Mês: %{x}<br>Média: %{customdata[0]}"
+                        "<br>Anos com dado: %{customdata[1]}<extra>"
+                        + escape(ticker)
+                        + "</extra>"
+                    ),
+                )
+            )
+        fig_season = apply_custom_layout(fig_season)
+        fig_season.update_layout(
+            barmode="group",
+            margin=dict(l=40, r=20, t=40, b=20),
+            xaxis_title=None,
+            yaxis_title="Média do retorno mensal (%)",
+            legend={"title": "", "orientation": "h", "y": 1.12},
+        )
+
+        with st.container(border=True):
+            st.plotly_chart(fig_season, use_container_width=True, config=PLOTLY_CONFIG)
+            render_chart_guide("sazonalidade_comparada")
+        st.caption(LEGEND_HINT)
+
+        season_table = pd.DataFrame({"Mês": season_means.index})
+        for ticker in season_means.columns:
+            season_table[ticker] = [
+                f"{_fmt_season(value)} (N={int(n)})"
+                for value, n in zip(season_means[ticker], season_counts[ticker])
+            ]
+        st.dataframe(season_table, hide_index=True, use_container_width=True)
+
+        if (season_counts.replace(0, np.nan).min().min() < 3):
+            st.caption(
+                "Alguns meses têm menos de 3 anos de dados em algum ativo; "
+                "médias com tão poucos anos variam bastante de uma amostra para outra."
+            )
+
+    render_what_it_means("sazonalidade")
+
+
+# ---------- Tendência ----------
+with tab_trend:
+    st.markdown("### Tendência Histórica")
+    st.caption(TREND_DISCLAIMER)
+
+    trend_closes = monthly_close_table(asset_data)
+
+    trend_ref_col, trend_window_col = st.columns(2)
+    with trend_ref_col:
+        trend_reference = st.selectbox(
+            "Ativo de referência",
+            options=compared_tickers,
+            format_func=get_asset_full_name,
+            help="Os demais ativos são comparados com este na razão de desempenho.",
+        )
+    with trend_window_col:
+        trend_window = st.selectbox(
+            "Janela do retorno móvel",
+            options=list(TREND_WINDOWS),
+            index=len(TREND_WINDOWS) - 1,
+            format_func=lambda months: f"{months} meses",
+            key="trend_window",
+        )
+
+    def _fmt_trend_pct(value):
+        if value is None or pd.isna(value):
+            return "—"
+        return f"{value * 100:+.2f}".replace(".", ",") + "%"
+
+    def _fmt_trend_pp(value):
+        if value is None or pd.isna(value):
+            return "—"
+        return f"{value * 100:+.2f}".replace(".", ",") + " p.p."
+
+    def _last_valid(series):
+        valid = series.dropna()
+        return valid.iloc[-1] if not valid.empty else np.nan
+
+    rolling_table = (
+        rolling_return(trend_closes, trend_window) if not trend_closes.empty else pd.DataFrame()
+    )
+
+    if rolling_table.empty or rolling_table.isna().all().all():
+        st.info(
+            f"Não há meses suficientes para calcular o {rolling_label(trend_window)}. "
+            "Escolha uma janela menor ou um período mais longo."
+        )
+    else:
+        st.markdown(f"#### {rolling_label(trend_window).capitalize()} — tendência histórica")
+        st.caption(ROLLING_NOTE)
+
+        fig_rolling = go.Figure()
+        for ticker in rolling_table.columns:
+            valid = rolling_table[ticker].dropna()
+            if valid.empty:
+                continue
+            fig_rolling.add_trace(
+                go.Scatter(
+                    x=valid.index.to_timestamp(how="end"),
+                    y=valid * 100,
+                    mode="lines",
+                    name=get_asset_full_name(ticker),
+                    line=dict(color=color_map.get(ticker), width=2.2),
+                    customdata=[_fmt_trend_pct(v) for v in valid],
+                    hovertemplate="%{x|%m/%Y}<br>%{customdata}<extra>" + escape(ticker) + "</extra>",
+                )
+            )
+        fig_rolling.add_hline(y=0, line_color="#475569", line_width=1)
+        fig_rolling = apply_custom_layout(fig_rolling)
+        fig_rolling.update_layout(
+            hovermode="x unified",
+            yaxis_title=f"Variação em {trend_window} meses (%)",
+            legend={"title": "", "orientation": "h", "y": 1.12},
+        )
+        with st.container(border=True):
+            st.plotly_chart(fig_rolling, use_container_width=True, config=PLOTLY_CONFIG)
+            render_chart_guide("tendencia_retorno_movel")
+        st.caption(LEGEND_HINT)
+
+        st.markdown(f"#### Razão de desempenho contra {get_asset_full_name(trend_reference)}")
+        st.caption(RATIO_START_NOTE)
+
+        fig_ratio = go.Figure()
+        ratio_rows = []
+        skipped = []
+
+        for ticker in trend_closes.columns:
+            if ticker == trend_reference:
+                continue
+
+            try:
+                pair = rebase_common_start(trend_closes[[trend_reference, ticker]])
+            except ValueError:
+                skipped.append(ticker)
+                continue
+
+            ratio = performance_ratio(pair[ticker], pair[trend_reference]).dropna()
+            gap = rolling_return_gap(
+                trend_closes[ticker], trend_closes[trend_reference], trend_window
+            )
+
+            fig_ratio.add_trace(
+                go.Scatter(
+                    x=ratio.index.to_timestamp(how="end"),
+                    y=ratio * 100,
+                    mode="lines",
+                    name=get_asset_full_name(ticker),
+                    line=dict(color=color_map.get(ticker), width=2.2),
+                    customdata=[_fmt_trend_pct(v) for v in ratio],
+                    hovertemplate="%{x|%m/%Y}<br>%{customdata}<extra>" + escape(ticker) + "</extra>",
+                )
+            )
+            ratio_rows.append(
+                {
+                    "Ativo": get_asset_full_name(ticker),
+                    "Início comum": pair.index[0].strftime("%m/%Y"),
+                    "Razão de desempenho (último mês)": _fmt_trend_pct(_last_valid(ratio)),
+                    f"Diferença do {rolling_label(trend_window)} (último mês)": _fmt_trend_pp(
+                        _last_valid(gap)
+                    ),
+                }
+            )
+
+        if ratio_rows:
+            fig_ratio.add_hline(y=0, line_color="#475569", line_width=1)
+            fig_ratio = apply_custom_layout(fig_ratio)
+            fig_ratio.update_layout(
+                hovermode="x unified",
+                yaxis_title="Razão de desempenho (%)",
+                legend={"title": "", "orientation": "h", "y": 1.12},
+            )
+            with st.container(border=True):
+                st.plotly_chart(fig_ratio, use_container_width=True, config=PLOTLY_CONFIG)
+                render_chart_guide("tendencia_razao")
+            st.dataframe(pd.DataFrame(ratio_rows), hide_index=True, use_container_width=True)
+            st.caption(
+                "A razão compara o desempenho acumulado desde o início comum de cada par; "
+                "o valor 0 indica desempenho igual ao do ativo de referência."
+            )
+
+        if skipped:
+            st.info(
+                "Sem período em comum com o ativo de referência: " + ", ".join(skipped) + "."
+            )
+
+    render_what_it_means("retorno")
+
+
 # ---------- Dados ----------
 with tab_data:
     st.markdown("### Resumo Comparativo")
@@ -1277,6 +1525,8 @@ render_methodology_limitations([
     "Taxas de juros (yields) medem o nível da taxa; seus retornos não são equivalentes aos de preços de ativos.",
     f"O fator de anualização usado foi {annualization_factor} (frequência {frequency}) e a taxa livre de risco anual foi {risk_free_rate_pct:.2f}%; alterar esses parâmetros altera Sharpe e volatilidade.",
     "Os destaques descrevem desempenho histórico no período analisado e não indicam qual ativo é melhor, nem compra ou venda.",
+    "A sazonalidade comparada usa todos os anos disponíveis de cada ativo; ativos com históricos mais curtos têm menos anos (N) e médias menos estáveis.",
+    "A tendência é histórica: o retorno móvel usa fechamentos mensais, a razão de desempenho depende da data inicial comum e nenhum dos dois indica o que ocorrerá depois.",
 ])
 
 render_catalog_notice()

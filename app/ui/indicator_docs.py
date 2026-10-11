@@ -2,11 +2,14 @@
 
 import streamlit as st
 
+from core.edu_layer import edu_layer_enabled
 from core.indicator_docs import INDICATOR_DOCS, get_indicator_doc
 
 
 def render_indicator_note(key: str) -> None:
     """Legenda curta (o que mede + limitação) logo abaixo de um gráfico."""
+    if not edu_layer_enabled():
+        return
     doc = get_indicator_doc(key)
     if doc is None:
         return
@@ -15,6 +18,8 @@ def render_indicator_note(key: str) -> None:
 
 def render_indicator_glossary(keys: list[str] | None = None) -> None:
     """Expander com ficha completa dos indicadores (fórmula, parâmetros, limitações)."""
+    if not edu_layer_enabled():
+        return
     keys = keys or list(INDICATOR_DOCS)
     with st.expander("📘 O que significa cada indicador?", expanded=False):
         st.markdown(

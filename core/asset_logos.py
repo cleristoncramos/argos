@@ -7,10 +7,15 @@ Fontes usadas (gratuitas, sem necessidade de chave de API):
 - Ações/ETFs/REITs/FIIs: Financial Modeling Prep (logos públicos por ticker).
 - Índices, Forex, Commodities, Treasury: sem fonte confiável de logo --
   o chamador deve usar o emoji de fallback já presente em ASSETS["icon"].
+
+No modo de demonstração (ARGOS_DEMO_MODE=true) nenhum logo remoto é usado:
+a função devolve None e o chamador exibe o emoji de fallback, sem rede.
 """
 
 from functools import lru_cache
 from typing import Optional
+
+from core.demo_mode import is_demo_mode
 
 
 # ==========================================================
@@ -54,12 +59,7 @@ SPECIAL_LOGO_MAP = {
 
 
 @lru_cache(maxsize=256)
-def get_asset_logo_url(ticker: str, group: str) -> Optional[str]:
-    """
-    Retorna a URL do logo/ícone do ativo, ou None se não houver uma
-    fonte confiável para esse grupo/ticker. Nesse caso, o chamador deve
-    usar o emoji de fallback do próprio ativo (campo "icon" em ASSETS).
-    """
+def _remote_logo_url(ticker: str, group: str) -> Optional[str]:
     ticker_upper = ticker.upper()
 
     if ticker_upper in SPECIAL_LOGO_MAP:
@@ -76,3 +76,21 @@ def get_asset_logo_url(ticker: str, group: str) -> Optional[str]:
 
     # indexes, forex, commodities, treasury/rates: sem fonte confiável
     return None
+
+
+def get_asset_logo_url(ticker: str, group: str) -> Optional[str]:
+    """
+    Retorna a URL do logo/ícone do ativo, ou None se não houver uma
+    fonte confiável para esse grupo/ticker. Nesse caso, o chamador deve
+    usar o emoji de fallback do próprio ativo (campo "icon" em ASSETS).
+
+    No modo de demonstração devolve sempre None (sem imagens remotas).
+    """
+    if is_demo_mode():
+        return None
+    return _remote_logo_url(ticker, group)
+
+
+# Compatibilidade com quem consultava/limpava o cache da função original.
+get_asset_logo_url.cache_clear = _remote_logo_url.cache_clear
+get_asset_logo_url.cache_info = _remote_logo_url.cache_info
