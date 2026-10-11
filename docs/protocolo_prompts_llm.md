@@ -1,6 +1,6 @@
 # Protocolo de prompts da explicação assistida — versão v0.5
 
-**Situação:** rascunho para a etapa 7A · **Impressão digital do prompt (sistema + instruções + esquema):** `122195ceb320`
+**Situação:** congelado em 11/10/2026 para a etapa 7A · **Impressão digital do prompt (sistema + instruções + esquema):** `122195ceb320`
 **Código:** `core/llm_prompts.py` (texto), `core/llm_context.py` (contexto), `core/llm_validation.py` (validação)
 
 > **Aviso de origem.** Os prompts "v0" comentados na reunião de 07/10/2026 não estavam disponíveis ao redigir este documento. Esta versão **v0.1 é um rascunho do desenvolvedor**, escrito a partir das regras da ata e da especificação (`llm_7b_especificacao.md`). Se existir um v0 anterior, ele deve ser comparado a esta versão e a diferença registrada aqui.
@@ -224,4 +224,6 @@ Pelos limiares da especificação, valem **100%** (por resposta bruta do modelo)
 4. **Um modelo basta:** basta um modelo aprovado para liberar a 7B. O gpt-5 mini é o principal e o único habilitado inicialmente na interface; o gpt-5 nano fica como alternativa de menor custo ou para testes exploratórios, e só entraria na interface depois de validado separadamente.
 5. **Frases de recusa:** as três frases do orientador (geral, previsão, recomendação). O aplicativo usa as duas específicas conforme o tipo do pedido; a frase geral ("O Argos DataLab não fornece previsões ou recomendações de investimento. Posso, entretanto, explicar os dados históricos, as métricas calculadas e as limitações da análise.") fica reservada para pedidos de decisão que não sejam nem previsão nem recomendação claras.
 
-Ainda sem resposta: avaliadores (N26).
+6. **Congelamento (11/10/2026):** o orientador aprovou o congelamento da v0.5 (`122195ceb320`) para a execução da 7A. Qualquer mudança no prompt, no esquema, nas instruções ou nas regras do validador exige nova versão, nova impressão digital e nova execução da 7A.
+
+Ainda pendente: avaliador de neutralidade (N26).

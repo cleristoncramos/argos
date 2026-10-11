@@ -73,7 +73,7 @@
 
 ## 6. O que precisa de você (e do orientador)
 
-1. Definir os três avaliadores (N26) e confirmar que o desenvolvedor não é o técnico.
+1. Avaliadores (N26): leigo e técnico confirmados em 11/10/2026 (`docs/pibiti/avaliadores_7a.md`); falta o avaliador de neutralidade.
 2. Enviar o prompt v0.1 (`docs/protocolo_prompts_llm.md`) ao orientador, junto com o v0 original, se existir.
 3. Aprovar a frase de recusa de previsão.
 4. Definir a chave com limite de US$ 10 e rodar a sonda.
