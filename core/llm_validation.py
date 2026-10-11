@@ -106,6 +106,13 @@ SOFT_PREDICTION = (
 
 NEGATIONS = ("nao", "nem", "sem", "nunca", "nenhum", "nenhuma", "jamais", "tampouco")
 
+# A negação precisa ser explícita e próxima do termo (decisão do orientador, 10/10/2026):
+# no máximo NEGATION_WINDOW palavras antes, sem conjunção adversativa no meio, e
+# expressões como "sem dúvida" não contam como negação.
+NEGATION_WINDOW = 16
+CONTRAST = ("mas", "porem", "contudo", "entretanto", "todavia")
+NOT_NEGATIONS = (r"sem duvidas?", r"nao ha duvidas?", r"nao tenha duvidas?", r"nao resta duvidas?")
+
 
 @dataclass
 class Check:
@@ -164,14 +171,25 @@ def _forbidden_hits(folded: str) -> list:
     return hits
 
 
+def _negated(before: str) -> bool:
+    """Há negação explícita e próxima antes do termo, na mesma oração?"""
+    for expression in NOT_NEGATIONS:
+        before = re.sub(rf"\b{expression}\b", " ", before)
+    words = re.findall(r"\w+", before)[-NEGATION_WINDOW:]
+    for index in range(len(words) - 1, -1, -1):
+        if words[index] in CONTRAST:
+            words = words[index + 1:]
+            break
+    return any(w in NEGATIONS for w in words)
+
+
 def _soft_hits(folded: str, patterns: Iterable[str]) -> list:
     """(termo, frase) das ocorrências sem negação anterior ao termo na frase."""
     hits = []
     for sentence in _sentences(folded):
         for pattern in patterns:
             for match in re.finditer(pattern, sentence):
-                before = sentence[: match.start()]
-                if not any(re.search(rf"\b{n}\b", before) for n in NEGATIONS):
+                if not _negated(sentence[: match.start()]):
                     hits.append((match.group(0), sentence.strip()))
     return hits
 

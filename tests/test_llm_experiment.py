@@ -411,3 +411,29 @@ def test_holdout_cases_are_new_and_valid():
     gerador.build_package(_fake_fetch, gerador.DEFAULT_ASSETS[:4], "2020-01-02", "2026-10-10", small, "v1", "2026-10-10")
     with pytest.raises(SystemExit):
         holdout_cases.build_holdout(small)
+
+
+# ---------------------------------------------------------------- revalidação offline
+def test_revalidate_changes_only_validation_and_cli():
+    from experiments.llm_7a import revalidar
+
+    payload = _cases()
+    case = payload["casos"][0]
+    good = json.dumps(runner.canned_answer(case["contexto"]), ensure_ascii=False)
+    bad = json.dumps({**runner.canned_answer(case["contexto"]), "resumo": "Compre agora."}, ensure_ascii=False)
+    records = [
+        {"model": "m", "case_id": case["id"], "repetition": 1, "raw": good, "validation": {"ok": False}},
+        {"model": "m", "case_id": case["id"], "repetition": 2, "raw": bad, "validation": {"ok": True}},
+    ]
+    out, (now_fail, now_pass) = revalidar.revalidate(payload, records)
+    assert (now_fail, now_pass) == (1, 1)
+    assert out[0]["raw"] == good and out[0]["validation"]["ok"] and not out[1]["validation"]["ok"]
+    with pytest.raises(SystemExit):
+        revalidar.revalidate(payload, [{"case_id": "inexistente", "raw": ""}])
+
+    directory = _tmp()
+    cases_path, src, dst = directory / "cases.json", directory / "in.jsonl", directory / "sub" / "out.jsonl"
+    cases_path.write_text(json.dumps(payload), encoding="utf-8")
+    src.write_text("\n".join(json.dumps(r) for r in records) + "\n\n", encoding="utf-8")
+    assert revalidar.main(["--cases", str(cases_path), "--responses", str(src), "--out", str(dst)]) == 0
+    assert len(dst.read_text(encoding="utf-8").splitlines()) == 2

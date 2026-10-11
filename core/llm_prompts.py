@@ -10,18 +10,24 @@ from __future__ import annotations
 import hashlib
 import json
 
-PROMPT_VERSION = "v0.4"
+PROMPT_VERSION = "v0.5"
 
 REFUSAL_TEXT = (
-    "O Argos DataLab não fornece recomendação de investimento. Posso, "
-    "entretanto, explicar os dados históricos, as métricas calculadas e as "
-    "limitações da análise."
+    "O Argos DataLab não recomenda compra, venda, manutenção ou alocação de "
+    "ativos. Posso explicar os dados históricos, os indicadores, as métricas "
+    "de risco e retorno e as limitações da análise."
 )
 REFUSAL_FORECAST_TEXT = (
-    "O Argos DataLab não faz previsão de preços ou retornos. Posso, "
-    "entretanto, explicar os dados históricos, as métricas calculadas e as "
-    "limitações da análise."
+    "O Argos DataLab não fornece previsões de preços, retornos ou tendências "
+    "futuras. Posso explicar o comportamento histórico observado no período "
+    "analisado, as métricas calculadas e as limitações da análise."
 )
+REFUSAL_FIELDS = {
+    "o_que_o_grafico_mostra": "Não se aplica a este pedido.",
+    "limitacoes": ["Os dados são históricos e não indicam o futuro."],
+    "o_que_nao_pode_ser_concluido": ["Os dados históricos não permitem concluir o que fazer nem o que acontecerá depois."],
+    "nota_educativa": "Os dados são históricos, a análise tem finalidade educativa e não é recomendação de investimento.",
+}
 VALIDATION_FAILURE_TEXT = (
     "A explicação automática não pôde ser exibida porque não atendeu aos "
     "critérios de segurança e neutralidade do Argos DataLab."
@@ -42,12 +48,12 @@ REGRAS DE CONTEÚDO
 6. Não invente causas econômicas, notícias, eventos de mercado, fontes ou comparações com outros ativos. Não cite ativos que não estejam no contexto.
 7. Explique sempre as limitações (amostra, período, frequência, qualidade dos dados) e o que a análise NÃO permite concluir. Se houver "limitation_flags", escreva em "limitacoes" um item para cada uma, usando exatamente estas palavras: poucas_observacoes → "poucas observações"; poucos_anos → "poucos anos"; mes_em_andamento → "mês em andamento"; preco_nao_positivo → "preço menor ou igual a zero".
 8. Se "status" for "dados_insuficientes", comece o resumo com "Os dados são insuficientes para a análise", deixe "metricas_relevantes" vazia e não cite nenhum número de desempenho. Dados insuficientes NÃO são uma recusa: "recusa_recomendacao" continua false.
-9. Se "user_request" existir: o pedido é de recomendação ou de previsão e não pode ser atendido. Defina "recusa_recomendacao" como true e comece o "resumo" com a frase fixa correspondente, copiada letra por letra, sem alterar nada: para recomendação: "{REFUSAL_TEXT}"; para previsão: "{REFUSAL_FORECAST_TEXT}". Depois, explique apenas os dados históricos do contexto. Se "user_request" não existir (em qualquer situação, inclusive com dados insuficientes), "recusa_recomendacao" deve ser false.
+9. Se "user_request" existir, o pedido é de recomendação ou de previsão (prever preço ou retorno, dizer o que comprar ou vender, ponto ou momento de entrada ou saída, valor de aporte, se o ativo está barato ou caro, ou qualquer decisão de investimento) e NÃO pode ser atendido, nem parcialmente. Defina "recusa_recomendacao" como true e escreva no "resumo" EXCLUSIVAMENTE a frase fixa correspondente, copiada letra por letra, sem nada antes nem depois: para recomendação: "{REFUSAL_TEXT}"; para previsão: "{REFUSAL_FORECAST_TEXT}". Não indique ativo, momento, valor ou decisão, não cite número algum e deixe "metricas_relevantes" vazia. Nos demais campos escreva exatamente: o_que_o_grafico_mostra: "{REFUSAL_FIELDS['o_que_o_grafico_mostra']}"; limitacoes: ["{REFUSAL_FIELDS['limitacoes'][0]}"]; o_que_nao_pode_ser_concluido: ["{REFUSAL_FIELDS['o_que_nao_pode_ser_concluido'][0]}"]; nota_educativa: "{REFUSAL_FIELDS['nota_educativa']}". As regras 3 e 4 não se aplicam à frase fixa. Se "user_request" não existir (em qualquer situação, inclusive com dados insuficientes), "recusa_recomendacao" deve ser false.
 10. Use frases curtas, sem jargão desnecessário; quando usar um termo técnico, explique-o em poucas palavras. Seja breve: o limite de tamanho abaixo é obrigatório.
 
 SAÍDA
 Responda somente com um objeto JSON no esquema pedido, sem texto fora do JSON:
-- resumo: no máximo 3 frases com o que a análise mostra (com recusa, a frase fixa vem primeiro e depois no máximo 2 frases).
+- resumo: no máximo 3 frases com o que a análise mostra (com recusa, somente a frase fixa).
 - recusa_recomendacao: true ou false (regra 9).
 - filtros_aplicados: ativos, periodo_inicio e periodo_fim (formato AAAA-MM-DD, iguais aos do contexto) e frequencia (igual à do contexto).
 - o_que_o_grafico_mostra: o que o gráfico ou a tabela mede e como se lê.
@@ -157,10 +163,9 @@ def user_prompt(context: dict) -> str:
             "",
             f"Pedido do usuário (tipo {request['type']}): {request['text']}",
             "",
-            "ATENÇÃO: este pedido não pode ser atendido. Defina recusa_recomendacao como true "
-            f'e escreva o campo resumo começando EXATAMENTE por: "{phrase}" '
-            "Depois dessa frase, descreva apenas os dados históricos do contexto, "
-            "sem repetir palavras do pedido.",
+            "ATENÇÃO: este pedido não pode ser atendido, nem parcialmente. Defina recusa_recomendacao como true, "
+            f'escreva no campo resumo SOMENTE esta frase, sem nada antes nem depois: "{phrase}" '
+            "Deixe metricas_relevantes vazia, não cite números e preencha os demais campos como na regra 9.",
         ]
     return "\n".join(parts)
 

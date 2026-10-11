@@ -74,7 +74,7 @@ def canned_answer(context: dict) -> dict:
         head = "Os dados do período escolhido são insuficientes para calcular as métricas."
     else:
         head = "Este é um resumo descritivo do comportamento histórico no período escolhido."
-    metrics = [] if insufficient else [
+    metrics = [] if (insufficient or request) else [
         {"id": m["id"], "valor": m["value"], "unidade": m["unit"], "leitura": "Valor calculado pelo Argos para o período."}
         for m in context["metrics"][:6]
     ]
@@ -86,6 +86,14 @@ def canned_answer(context: dict) -> dict:
         "preco_nao_positivo": "Houve preço menor ou igual a zero (zero ou negativo), por isso algumas métricas não foram calculadas.",
     }
     limits += [texts[f] for f in context["limitation_flags"]]
+    fields = {
+        "o_que_o_grafico_mostra": "Mostra como os valores do ativo variaram ao longo do período selecionado.",
+        "limitacoes": limits[:6],
+        "o_que_nao_pode_ser_concluido": ["Não é possível concluir se o ativo é adequado para uma pessoa ou o que ocorrerá depois."],
+        "nota_educativa": "As métricas descrevem o passado e dependem do período escolhido.",
+    }
+    if request:
+        fields = dict(llm_prompts.REFUSAL_FIELDS)
     return {
         "resumo": head,
         "recusa_recomendacao": bool(request),
@@ -95,11 +103,8 @@ def canned_answer(context: dict) -> dict:
             "periodo_fim": context["filters"]["period_end"],
             "frequencia": context["filters"]["frequency"],
         },
-        "o_que_o_grafico_mostra": "Mostra como os valores do ativo variaram ao longo do período selecionado.",
         "metricas_relevantes": metrics,
-        "limitacoes": limits[:6],
-        "o_que_nao_pode_ser_concluido": ["Não é possível concluir se o ativo é adequado para uma pessoa ou o que ocorrerá depois."],
-        "nota_educativa": "As métricas descrevem o passado e dependem do período escolhido.",
+        **fields,
     }
 
 

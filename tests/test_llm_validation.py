@@ -331,6 +331,21 @@ def test_negation_must_precede_the_term():
     assert "sem_recomendacao" in _fails(_good(resumo="Recomendo isso, não há dúvida."))
 
 
+@pytest.mark.parametrize("phrase", [
+    "Sem dúvida, o ativo está barato.",
+    "Não há dúvida de que o ativo está barato.",
+    "Isso não é previsão, mas o ativo está caro.",
+    "Não faz previsão e fala de muitas coisas diferentes entre dados, gráficos, tabelas e médias, de modo que o ativo está caro.",
+])
+def test_negation_must_be_explicit_and_close(phrase):
+    assert "sem_termos_proibidos" in _fails(_good(resumo=phrase))
+
+
+def test_negation_close_but_with_distance_is_allowed():
+    resumo = "Não é possível concluir, com base apenas nestes dados históricos, se o ativo está barato."
+    assert "sem_termos_proibidos" not in _fails(_good(resumo=resumo))
+
+
 def test_limitation_flags_required():
     ctx = _context(limitation_flags=["poucos_anos", "mes_em_andamento", "preco_nao_positivo", "poucas_observacoes"])
     result = lv.validate_response(json.dumps(_good()), ctx, TICKERS)
