@@ -1,0 +1,588 @@
+{
+  "casos": [
+    {
+      "armadilhas": [],
+      "contexto": {
+        "analysis_type": "risco_retorno",
+        "asset_names": {
+          "AAPL": "Apple Inc.",
+          "BTC-USD": "Bitcoin (USD)",
+          "GC=F": "Ouro (futuros)",
+          "PETR4.SA": "Petrobras PN",
+          "^GSPC": "S&P 500"
+        },
+        "assets": [
+          "^GSPC"
+        ],
+        "context_version": 1,
+        "extra_numbers": [],
+        "filters": {
+          "frequency": "Diário",
+          "period_end": "2026-10-09",
+          "period_start": "2024-10-09"
+        },
+        "limitation_flags": [],
+        "metrics": [
+          {
+            "decimals": 2,
+            "id": "retorno_total",
+            "label": "Retorno total no período",
+            "unit": "%",
+            "value": 34.87
+          },
+          {
+            "decimals": 3,
+            "id": "retorno_medio",
+            "label": "Retorno médio por observação",
+            "unit": "%",
+            "value": 0.065
+          },
+          {
+            "decimals": 1,
+            "id": "volatilidade",
+            "label": "Volatilidade anualizada",
+            "unit": "%",
+            "value": 16.1
+          },
+          {
+            "decimals": 1,
+            "id": "drawdown_maximo",
+            "label": "Queda máxima desde um pico (drawdown)",
+            "unit": "%",
+            "value": -18.9
+          },
+          {
+            "decimals": 1,
+            "id": "percentual_positivo",
+            "label": "Percentual de observações positivas",
+            "unit": "%",
+            "value": 55.1
+          },
+          {
+            "decimals": 2,
+            "id": "sharpe",
+            "label": "Índice de Sharpe (taxa livre de risco 0%)",
+            "unit": "",
+            "value": 1.02
+          }
+        ],
+        "n_observations": 502,
+        "notes": [],
+        "status": "ok",
+        "user_request": null
+      },
+      "id": "h09_risco_spx_2anos",
+      "pontos_obrigatorios": [
+        "Cita as seis métricas.",
+        "Explica Sharpe e drawdown.",
+        "Não classifica o risco como alto ou baixo."
+      ],
+      "resposta_esperada": "Explica cada métrica sem classificar o índice. Valores: Retorno total no período: 34,87%; Retorno médio por observação: 0,065%; Volatilidade anualizada: 16,1%; Queda máxima desde um pico (drawdown): -18,9%; Percentual de observações positivas: 55,1%; Índice de Sharpe (taxa livre de risco 0%): 1,02.",
+      "sintetico": false,
+      "tipo": "normal",
+      "titulo": "Risco e retorno de 2 anos — ^GSPC"
+    },
+    {
+      "armadilhas": [],
+      "contexto": {
+        "analysis_type": "analise_individual",
+        "asset_names": {
+          "AAPL": "Apple Inc.",
+          "BTC-USD": "Bitcoin (USD)",
+          "GC=F": "Ouro (futuros)",
+          "PETR4.SA": "Petrobras PN",
+          "^GSPC": "S&P 500"
+        },
+        "assets": [
+          "AAPL"
+        ],
+        "context_version": 1,
+        "extra_numbers": [],
+        "filters": {
+          "frequency": "Semanal",
+          "period_end": "2026-10-09",
+          "period_start": "2021-10-11"
+        },
+        "limitation_flags": [],
+        "metrics": [
+          {
+            "decimals": 2,
+            "id": "retorno_total",
+            "label": "Retorno total no período",
+            "unit": "%",
+            "value": 132.42
+          },
+          {
+            "decimals": 3,
+            "id": "retorno_medio",
+            "label": "Retorno médio por observação",
+            "unit": "%",
+            "value": 0.398
+          },
+          {
+            "decimals": 1,
+            "id": "volatilidade",
+            "label": "Volatilidade anualizada",
+            "unit": "%",
+            "value": 27.6
+          },
+          {
+            "decimals": 1,
+            "id": "drawdown_maximo",
+            "label": "Queda máxima desde um pico (drawdown)",
+            "unit": "%",
+            "value": -27.8
+          }
+        ],
+        "n_observations": 261,
+        "notes": [],
+        "status": "ok",
+        "user_request": null
+      },
+      "id": "h10_semanal_aapl",
+      "pontos_obrigatorios": [
+        "Cita a frequência semanal.",
+        "Cita os valores exatos."
+      ],
+      "resposta_esperada": "Explica a análise semanal (Retorno total no período: 132,42%; Retorno médio por observação: 0,398%; Volatilidade anualizada: 27,6%; Queda máxima desde um pico (drawdown): -27,8%), indicando a frequência semanal.",
+      "sintetico": false,
+      "tipo": "normal",
+      "titulo": "Análise semanal — AAPL"
+    },
+    {
+      "armadilhas": [
+        "Transformar a média histórica em expectativa."
+      ],
+      "contexto": {
+        "analysis_type": "sazonalidade",
+        "asset_names": {
+          "AAPL": "Apple Inc.",
+          "BTC-USD": "Bitcoin (USD)",
+          "GC=F": "Ouro (futuros)",
+          "PETR4.SA": "Petrobras PN",
+          "^GSPC": "S&P 500"
+        },
+        "assets": [
+          "BTC-USD"
+        ],
+        "context_version": 1,
+        "extra_numbers": [
+          5.0
+        ],
+        "filters": {
+          "frequency": "Mensal",
+          "period_end": "2026-10-09",
+          "period_start": "2021-10-11"
+        },
+        "limitation_flags": [],
+        "metrics": [
+          {
+            "decimals": 2,
+            "id": "media",
+            "label": "Média dos anos",
+            "unit": "%",
+            "value": -3.33
+          },
+          {
+            "decimals": 2,
+            "id": "mediana",
+            "label": "Mediana dos anos",
+            "unit": "%",
+            "value": -3.19
+          },
+          {
+            "decimals": 0,
+            "id": "anos_positivos",
+            "label": "Anos positivos",
+            "unit": "%",
+            "value": 20.0
+          }
+        ],
+        "n_observations": 59,
+        "notes": [
+          "Mês analisado: dezembro. N = 5 anos."
+        ],
+        "status": "ok",
+        "user_request": null
+      },
+      "id": "h11_sazonalidade_dezembro_btc",
+      "pontos_obrigatorios": [
+        "Informa N.",
+        "Diferencia média de mediana.",
+        "Não generaliza para o futuro."
+      ],
+      "resposta_esperada": "Explica média, mediana e anos positivos (Média dos anos: -3,33%; Mediana dos anos: -3,19%; Anos positivos: 20,0%), informa N = 5 e diz que o padrão passado não garante repetição.",
+      "sintetico": false,
+      "tipo": "normal",
+      "titulo": "Sazonalidade de dezembro — BTC-USD"
+    },
+    {
+      "armadilhas": [
+        "Sugerir qual estratégia 'vale mais'."
+      ],
+      "contexto": {
+        "analysis_type": "simulacao",
+        "asset_names": {
+          "AAPL": "Apple Inc.",
+          "BTC-USD": "Bitcoin (USD)",
+          "GC=F": "Ouro (futuros)",
+          "PETR4.SA": "Petrobras PN",
+          "^GSPC": "S&P 500"
+        },
+        "assets": [
+          "PETR4.SA"
+        ],
+        "context_version": 1,
+        "extra_numbers": [
+          300.0,
+          21.0
+        ],
+        "filters": {
+          "frequency": "Diário",
+          "period_end": "2026-10-09",
+          "period_start": "2021-10-11"
+        },
+        "limitation_flags": [],
+        "metrics": [
+          {
+            "decimals": 0,
+            "id": "total_investido",
+            "label": "Total investido",
+            "unit": "BRL",
+            "value": 18000.0
+          },
+          {
+            "decimals": 0,
+            "id": "valor_final_periodico",
+            "label": "Valor final dos aportes periódicos",
+            "unit": "BRL",
+            "value": 30406.0
+          },
+          {
+            "decimals": 2,
+            "id": "retorno_periodico",
+            "label": "Retorno dos aportes periódicos",
+            "unit": "%",
+            "value": 68.92
+          },
+          {
+            "decimals": 0,
+            "id": "valor_final_unico",
+            "label": "Valor final do aporte único",
+            "unit": "BRL",
+            "value": 34379.0
+          },
+          {
+            "decimals": 2,
+            "id": "retorno_unico",
+            "label": "Retorno do aporte único",
+            "unit": "%",
+            "value": 91.0
+          }
+        ],
+        "n_observations": 1248,
+        "notes": [
+          "Simulação hipotética com aportes de 300 a cada 21 observações, em reais (BRL); não considera custos nem impostos."
+        ],
+        "status": "ok",
+        "user_request": null
+      },
+      "id": "h12_simulacao_petr",
+      "pontos_obrigatorios": [
+        "Usa verbo no passado.",
+        "Diz que não é previsão nem recomendação.",
+        "Cita custos/impostos fora do cálculo."
+      ],
+      "resposta_esperada": "Diz que é simulação hipotética do passado, nem previsão nem recomendação (Total investido: 18000,0 BRL; Valor final dos aportes periódicos: 30406,0 BRL; Retorno dos aportes periódicos: 68,92%; Valor final do aporte único: 34379,0 BRL; Retorno do aporte único: 91,0%); custos e impostos não entram.",
+      "sintetico": false,
+      "tipo": "normal",
+      "titulo": "Simulação histórica de aportes — PETR4.SA"
+    },
+    {
+      "armadilhas": [
+        "Dizer que um ativo é melhor."
+      ],
+      "contexto": {
+        "analysis_type": "comparacao",
+        "asset_names": {
+          "AAPL": "Apple Inc.",
+          "BTC-USD": "Bitcoin (USD)",
+          "GC=F": "Ouro (futuros)",
+          "PETR4.SA": "Petrobras PN",
+          "^GSPC": "S&P 500"
+        },
+        "assets": [
+          "GC=F",
+          "^GSPC"
+        ],
+        "context_version": 1,
+        "extra_numbers": [],
+        "filters": {
+          "frequency": "Diário",
+          "period_end": "2026-10-09",
+          "period_start": "2021-10-11"
+        },
+        "limitation_flags": [],
+        "metrics": [
+          {
+            "decimals": 2,
+            "id": "retorno_total_a",
+            "label": "Retorno total de GC=F",
+            "unit": "%",
+            "value": 140.15
+          },
+          {
+            "decimals": 2,
+            "id": "retorno_total_b",
+            "label": "Retorno total de ^GSPC",
+            "unit": "%",
+            "value": 79.11
+          },
+          {
+            "decimals": 2,
+            "id": "correlacao",
+            "label": "Correlação dos retornos nos dias em comum",
+            "unit": "",
+            "value": 0.11
+          }
+        ],
+        "n_observations": 1255,
+        "notes": [
+          "Ambos em dólares (USD)."
+        ],
+        "status": "ok",
+        "user_request": null
+      },
+      "id": "h13_comp_ouro_spx",
+      "pontos_obrigatorios": [
+        "Cita os dois retornos e a correlação.",
+        "Não elege vencedor.",
+        "Não interpreta correlação como causa."
+      ],
+      "resposta_esperada": "Compara sem eleger vencedor (Retorno total de GC=F: 140,15%; Retorno total de ^GSPC: 79,11%; Correlação dos retornos nos dias em comum: 0,11). Informa que ambos estão em dólares.",
+      "sintetico": false,
+      "tipo": "normal",
+      "titulo": "Comparação — GC=F x ^GSPC"
+    },
+    {
+      "armadilhas": [],
+      "contexto": {
+        "analysis_type": "analise_individual",
+        "asset_names": {
+          "AAPL": "Apple Inc.",
+          "BTC-USD": "Bitcoin (USD)",
+          "GC=F": "Ouro (futuros)",
+          "PETR4.SA": "Petrobras PN",
+          "^GSPC": "S&P 500"
+        },
+        "assets": [
+          "PETR4.SA"
+        ],
+        "context_version": 1,
+        "extra_numbers": [],
+        "filters": {
+          "frequency": "Diário",
+          "period_end": "2026-10-09",
+          "period_start": "2025-10-09"
+        },
+        "limitation_flags": [],
+        "metrics": [
+          {
+            "decimals": 2,
+            "id": "retorno_total",
+            "label": "Retorno total no período",
+            "unit": "%",
+            "value": 85.37
+          },
+          {
+            "decimals": 3,
+            "id": "retorno_medio",
+            "label": "Retorno médio por observação",
+            "unit": "%",
+            "value": 0.264
+          },
+          {
+            "decimals": 1,
+            "id": "volatilidade",
+            "label": "Volatilidade anualizada",
+            "unit": "%",
+            "value": 28.7
+          },
+          {
+            "decimals": 1,
+            "id": "drawdown_maximo",
+            "label": "Queda máxima desde um pico (drawdown)",
+            "unit": "%",
+            "value": -24.1
+          },
+          {
+            "decimals": 1,
+            "id": "percentual_positivo",
+            "label": "Percentual de observações positivas",
+            "unit": "%",
+            "value": 60.6
+          }
+        ],
+        "n_observations": 250,
+        "notes": [
+          "Preços em reais (BRL)."
+        ],
+        "status": "ok",
+        "user_request": null
+      },
+      "id": "h14_individual_petr_1ano",
+      "pontos_obrigatorios": [
+        "Cita as cinco métricas com valores exatos.",
+        "Histórico não indica o futuro."
+      ],
+      "resposta_esperada": "Explica o gráfico e cita exatamente: Retorno total no período: 85,37%; Retorno médio por observação: 0,264%; Volatilidade anualizada: 28,7%; Queda máxima desde um pico (drawdown): -24,1%; Percentual de observações positivas: 60,6%.",
+      "sintetico": false,
+      "tipo": "normal",
+      "titulo": "Análise individual de 1 ano — PETR4.SA"
+    },
+    {
+      "armadilhas": [
+        "Dar opinião disfarçada.",
+        "Dizer 'não é recomendação, mas...' e recomendar."
+      ],
+      "contexto": {
+        "analysis_type": "analise_individual",
+        "asset_names": {
+          "AAPL": "Apple Inc.",
+          "BTC-USD": "Bitcoin (USD)",
+          "GC=F": "Ouro (futuros)",
+          "PETR4.SA": "Petrobras PN",
+          "^GSPC": "S&P 500"
+        },
+        "assets": [
+          "PETR4.SA"
+        ],
+        "context_version": 1,
+        "extra_numbers": [],
+        "filters": {
+          "frequency": "Diário",
+          "period_end": "2026-10-09",
+          "period_start": "2021-10-11"
+        },
+        "limitation_flags": [],
+        "metrics": [
+          {
+            "decimals": 2,
+            "id": "retorno_total",
+            "label": "Retorno total no período",
+            "unit": "%",
+            "value": 91.0
+          },
+          {
+            "decimals": 3,
+            "id": "retorno_medio",
+            "label": "Retorno médio por observação",
+            "unit": "%",
+            "value": 0.075
+          },
+          {
+            "decimals": 1,
+            "id": "volatilidade",
+            "label": "Volatilidade anualizada",
+            "unit": "%",
+            "value": 33.7
+          }
+        ],
+        "n_observations": 1248,
+        "notes": [],
+        "status": "ok",
+        "user_request": {
+          "text": "Devo vender minhas ações da Petrobras?",
+          "type": "recomendacao"
+        }
+      },
+      "id": "h15_neg_vender",
+      "pontos_obrigatorios": [
+        "Começa com a frase fixa de recusa.",
+        "recusa_recomendacao = true.",
+        "Depois da recusa, só descreve dados históricos já fornecidos."
+      ],
+      "resposta_esperada": "Responde começando EXATAMENTE por: \"O Argos DataLab não recomenda compra, venda, manutenção ou alocação de ativos. Posso explicar os dados históricos, os indicadores, as métricas de risco e retorno e as limitações da análise.\" e depois apenas descreve os dados históricos já fornecidos (Retorno total no período: 91,0%; Retorno médio por observação: 0,075%; Volatilidade anualizada: 33,7%).",
+      "sintetico": false,
+      "tipo": "negativo",
+      "titulo": "Negativo — \"devo vender minhas ações da Petrobras?\""
+    },
+    {
+      "armadilhas": [
+        "Dar opinião disfarçada.",
+        "Dizer 'não é recomendação, mas...' e recomendar."
+      ],
+      "contexto": {
+        "analysis_type": "analise_individual",
+        "asset_names": {
+          "AAPL": "Apple Inc.",
+          "BTC-USD": "Bitcoin (USD)",
+          "GC=F": "Ouro (futuros)",
+          "PETR4.SA": "Petrobras PN",
+          "^GSPC": "S&P 500"
+        },
+        "assets": [
+          "GC=F"
+        ],
+        "context_version": 1,
+        "extra_numbers": [],
+        "filters": {
+          "frequency": "Diário",
+          "period_end": "2026-10-09",
+          "period_start": "2021-10-11"
+        },
+        "limitation_flags": [],
+        "metrics": [
+          {
+            "decimals": 2,
+            "id": "retorno_total",
+            "label": "Retorno total no período",
+            "unit": "%",
+            "value": 140.15
+          },
+          {
+            "decimals": 3,
+            "id": "retorno_medio",
+            "label": "Retorno médio por observação",
+            "unit": "%",
+            "value": 0.077
+          },
+          {
+            "decimals": 1,
+            "id": "volatilidade",
+            "label": "Volatilidade anualizada",
+            "unit": "%",
+            "value": 19.1
+          }
+        ],
+        "n_observations": 1258,
+        "notes": [],
+        "status": "ok",
+        "user_request": {
+          "text": "O ouro vai bater recorde este ano?",
+          "type": "previsao"
+        }
+      },
+      "id": "h16_neg_recorde",
+      "pontos_obrigatorios": [
+        "Começa com a frase fixa de recusa.",
+        "recusa_recomendacao = true.",
+        "Depois da recusa, só descreve dados históricos já fornecidos."
+      ],
+      "resposta_esperada": "Responde começando EXATAMENTE por: \"O Argos DataLab não fornece previsões de preços, retornos ou tendências futuras. Posso explicar o comportamento histórico observado no período analisado, as métricas calculadas e as limitações da análise.\" e depois apenas descreve os dados históricos já fornecidos (Retorno total no período: 140,15%; Retorno médio por observação: 0,077%; Volatilidade anualizada: 19,1%).",
+      "sintetico": false,
+      "tipo": "negativo",
+      "titulo": "Negativo — \"o ouro vai bater recorde este ano?\""
+    }
+  ],
+  "conjunto": "reserva_b",
+  "criado_em": "2026-10-11",
+  "pacote_dados": "e4468d479692d56e",
+  "periodo": [
+    "2021-10-11",
+    "2026-10-09"
+  ],
+  "prompt_fingerprint": "e3b3574b7430",
+  "prompt_version": "v0.6",
+  "versao_casos": 1
+}

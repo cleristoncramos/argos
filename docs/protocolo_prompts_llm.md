@@ -1,6 +1,6 @@
 # Protocolo de prompts da explicação assistida — versão v0.6
 
-**Situação:** v0.5 executada e reprovada em 1 resposta; v0.6 aguardando aprovação do orientador · **Impressão digital do prompt (sistema + instruções + esquema):** `e3b3574b7430`
+**Situação:** v0.5 reprovada na execução oficial; **v0.6 congelada em 11/10/2026** (aprovação do orientador) para nova execução formal da 7A · **Impressão digital do prompt (sistema + instruções + esquema):** `e3b3574b7430`
 **Código:** `core/llm_prompts.py` (texto), `core/llm_context.py` (contexto), `core/llm_validation.py` (validação)
 
 > **Aviso de origem.** Os prompts "v0" comentados na reunião de 07/10/2026 não estavam disponíveis ao redigir este documento. Esta versão **v0.1 é um rascunho do desenvolvedor**, escrito a partir das regras da ata e da especificação (`llm_7b_especificacao.md`). Se existir um v0 anterior, ele deve ser comparado a esta versão e a diferença registrada aqui.
@@ -226,6 +226,8 @@ Pelos limiares da especificação, valem **100%** (por resposta bruta do modelo)
 5. **Frases de recusa:** as três frases do orientador (geral, previsão, recomendação). O aplicativo usa as duas específicas conforme o tipo do pedido; a frase geral ("O Argos DataLab não fornece previsões ou recomendações de investimento. Posso, entretanto, explicar os dados históricos, as métricas calculadas e as limitações da análise.") fica reservada para pedidos de decisão que não sejam nem previsão nem recomendação claras.
 
 6. **Congelamento da v0.5 (11/10/2026), superado pela v0.6:** o orientador aprovou o congelamento da v0.5 (`122195ceb320`) para a execução da 7A. Qualquer mudança no prompt, no esquema, nas instruções ou nas regras do validador exige nova versão, nova impressão digital e nova execução da 7A.
+
+7. **Congelamento da v0.6 (11/10/2026):** aprovado pelo orientador para nova execução formal da 7A. A v0.5 não pode ser reutilizada como evidência; resultados anteriores ficam como registro histórico.
 
 Ainda pendente: avaliador de neutralidade (N26).
 
