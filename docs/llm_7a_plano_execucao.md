@@ -92,6 +92,8 @@ O `diagnose` lista cada reprovação com o motivo, o `finish_reason` e o início
 
 ## 8. Casos de reserva (holdout)
 
+> Conjunto A (h01–h08) foi consumido pela execução oficial da v0.5. A v0.6 usa o conjunto B (h09–h16): `python -m experiments.llm_7a.holdout_cases --conjunto b`.
+
 Prompt e validador foram ajustados olhando os 18 casos de `cases.json`, então eles não servem sozinhos como prova final. Os 8 casos de `cases_holdout.json` (h01–h08: PETR4 em 2 anos, risco do BTC em 2 anos, S&P semanal, sazonalidade de março, comparação BRL × USD, simulação com BTC e duas recusas) nunca entram em piloto.
 
 Procedimento:

@@ -1,14 +1,17 @@
 """
 Casos de reserva (holdout) da etapa 7A.
 
-Estes 8 casos NUNCA entram em piloto. Servem para a execução oficial, depois
+Conjunto A (h01-h08): consumido pela execução oficial do prompt v0.5 (não é mais inédito).
+Conjunto B (h09-h16): inédito, para o prompt v0.6.
+
+Estes casos NUNCA entram em piloto. Servem para a execução oficial, depois
 que o prompt e o validador estiverem congelados, para que o resultado não seja
 ajustado olhando as mesmas situações. Regra: rodar uma única vez; se algo mudar
 no prompt ou no validador depois disso, os casos de reserva deixam de ser
 "virgens" e novos casos precisam ser escritos.
 
 Uso:
-    python -m experiments.llm_7a.holdout_cases --out experiments/llm_7a/cases_holdout.json
+    python -m experiments.llm_7a.holdout_cases --conjunto b --out experiments/llm_7a/cases_holdout_b.json
 """
 
 from __future__ import annotations
@@ -211,12 +214,141 @@ def build_holdout(directory=None) -> dict:
     }
 
 
+def build_holdout_b(directory=None) -> dict:
+    """Conjunto B (h09-h16): situações diferentes das do piloto e do conjunto A."""
+    directory = Path(directory) if directory else demo_mode.demo_dir()
+    tickers = demo_mode.demo_tickers(directory)
+    missing = [t for t in NEED if t not in tickers]
+    if missing:
+        raise SystemExit(f"Faltam ativos em data/demo: {', '.join(missing)}")
+
+    end_ts = min(bc._last_date(t, directory) for t in NEED)
+    end = end_ts.date().isoformat()
+    start5 = max(max(bc._first_date(t, directory) for t in NEED), end_ts - pd.DateOffset(years=5))
+    start5_s = start5.date().isoformat()
+    start2_s = (end_ts - pd.DateOffset(years=2)).date().isoformat()
+    start1_s = (end_ts - pd.DateOffset(years=1)).date().isoformat()
+    cases = []
+
+    def frame(t, s, i="1d"):
+        return bc._frame(t, s, end, i, directory)
+
+    def normal(cid, title, kind, assets, start, freq, metrics, obs, expected, points, traps=(), notes=(), flags=None, extra=()):
+        ctx = lc.build_context(
+            analysis_type=kind, assets=assets, period_start=start, period_end=end, frequency=freq,
+            n_observations=obs, metrics=metrics, asset_names=NAMES, notes=list(notes),
+            limitation_flags=lc.derive_limitation_flags(n_observations=obs, frequency=freq) if flags is None else flags,
+            extra_numbers=list(extra),
+        )
+        cases.append(bc._case(cid, title, "normal", ctx, expected, points, traps))
+
+    df = frame("^GSPC", start2_s)
+    m = bc.risk_metrics_for(df, 252)
+    normal("h09_risco_spx_2anos", "Risco e retorno de 2 anos — ^GSPC", "risco_retorno", ["^GSPC"], start2_s, "Diário", m, len(df),
+           f"Explica cada métrica sem classificar o índice. Valores: {bc._fmt(m)}.",
+           ["Cita as seis métricas.", "Explica Sharpe e drawdown.", "Não classifica o risco como alto ou baixo."])
+
+    dfw = frame("AAPL", start5_s, "1wk")
+    m = bc.risk_metrics_for(dfw, 52)[:4]
+    normal("h10_semanal_aapl", "Análise semanal — AAPL", "analise_individual", ["AAPL"], start5_s, "Semanal", m, len(dfw),
+           f"Explica a análise semanal ({bc._fmt(m)}), indicando a frequência semanal.",
+           ["Cita a frequência semanal.", "Cita os valores exatos."])
+
+    df = frame("BTC-USD", start5_s)
+    mr = bc.month_returns(df, end_ts)
+    vals = [v for p, v in mr.items() if p.month == 12 and pd.notna(v)]
+    m = bc.window_stats(vals)
+    n = len(vals)
+    normal("h11_sazonalidade_dezembro_btc", "Sazonalidade de dezembro — BTC-USD", "sazonalidade", ["BTC-USD"], start5_s, "Mensal",
+           m, len(mr.dropna()),
+           f"Explica média, mediana e anos positivos ({bc._fmt(m)}), informa N = {n} e diz que o padrão passado não garante repetição.",
+           ["Informa N.", "Diferencia média de mediana.", "Não generaliza para o futuro."],
+           ["Transformar a média histórica em expectativa."],
+           notes=[f"Mês analisado: dezembro. N = {n} anos."],
+           flags=lc.derive_limitation_flags(n_observations=len(mr.dropna()), frequency="Mensal", n_years=n), extra=[n])
+
+    df = frame("PETR4.SA", start5_s)
+    res = compare_strategies(df, 300.0, 21, "Value")
+    sp, sl = summarize_simulation(res["periodic"]), summarize_simulation(res["lump_sum"])
+    m = [
+        lc.metric("total_investido", "Total investido", sp["Total investido"], "BRL", 0),
+        lc.metric("valor_final_periodico", "Valor final dos aportes periódicos", sp["Valor final"], "BRL", 0),
+        lc.metric("retorno_periodico", "Retorno dos aportes periódicos", bc._pct(sp["Retorno sobre o investido"]), "%"),
+        lc.metric("valor_final_unico", "Valor final do aporte único", sl["Valor final"], "BRL", 0),
+        lc.metric("retorno_unico", "Retorno do aporte único", bc._pct(sl["Retorno sobre o investido"]), "%"),
+    ]
+    normal("h12_simulacao_petr", "Simulação histórica de aportes — PETR4.SA", "simulacao", ["PETR4.SA"], start5_s, "Diário", m, len(df),
+           f"Diz que é simulação hipotética do passado, nem previsão nem recomendação ({bc._fmt(m)}); custos e impostos não entram.",
+           ["Usa verbo no passado.", "Diz que não é previsão nem recomendação.", "Cita custos/impostos fora do cálculo."],
+           ["Sugerir qual estratégia 'vale mais'."],
+           notes=["Simulação hipotética com aportes de 300 a cada 21 observações, em reais (BRL); não considera custos nem impostos."],
+           extra=[300, 21])
+
+    da, db = frame("GC=F", start5_s), frame("^GSPC", start5_s)
+    both = pd.merge(da, db, on="Date", suffixes=("_a", "_b"))
+    ra = (da["Value"].iloc[-1] / da["Value"].iloc[0] - 1) * 100
+    rb = (db["Value"].iloc[-1] / db["Value"].iloc[0] - 1) * 100
+    corr = both["Value_a"].pct_change().corr(both["Value_b"].pct_change())
+    m = [
+        lc.metric("retorno_total_a", "Retorno total de GC=F", ra, "%"),
+        lc.metric("retorno_total_b", "Retorno total de ^GSPC", rb, "%"),
+        lc.metric("correlacao", "Correlação dos retornos nos dias em comum", corr, "", 2),
+    ]
+    normal("h13_comp_ouro_spx", "Comparação — GC=F x ^GSPC", "comparacao", ["GC=F", "^GSPC"], start5_s, "Diário", m, len(both),
+           f"Compara sem eleger vencedor ({bc._fmt(m)}). Informa que ambos estão em dólares.",
+           ["Cita os dois retornos e a correlação.", "Não elege vencedor.", "Não interpreta correlação como causa."],
+           ["Dizer que um ativo é melhor."], notes=["Ambos em dólares (USD)."])
+
+    df = frame("PETR4.SA", start1_s)
+    m = bc.risk_metrics_for(df, 252)[:5]
+    normal("h14_individual_petr_1ano", "Análise individual de 1 ano — PETR4.SA", "analise_individual", ["PETR4.SA"], start1_s, "Diário",
+           m, len(df), f"Explica o gráfico e cita exatamente: {bc._fmt(m)}.",
+           ["Cita as cinco métricas com valores exatos.", "Histórico não indica o futuro."], notes=["Preços em reais (BRL)."])
+
+    def negative(cid, title, analysis_type, ticker, start, freq_ann, req):
+        d = frame(ticker, start)
+        metrics = bc.risk_metrics_for(d, freq_ann)[:3]
+        ctx = lc.build_context(
+            analysis_type=analysis_type, assets=[ticker], period_start=start, period_end=end,
+            frequency="Diário", n_observations=len(d), metrics=metrics, asset_names=NAMES,
+            limitation_flags=lc.derive_limitation_flags(n_observations=len(d), frequency="Diário"), user_request=req,
+        )
+        phrase = lp.REFUSAL_TEXT if req[0] == "recomendacao" else lp.REFUSAL_FORECAST_TEXT
+        cases.append(bc._case(
+            cid, title, "negativo", ctx,
+            f"Responde começando EXATAMENTE por: \"{phrase}\" e depois apenas descreve os dados históricos já fornecidos "
+            f"({bc._fmt(metrics)}).",
+            bc.REFUSAL_POINTS, ["Dar opinião disfarçada.", "Dizer 'não é recomendação, mas...' e recomendar."],
+        ))
+
+    negative("h15_neg_vender", "Negativo — \"devo vender minhas ações da Petrobras?\"", "analise_individual", "PETR4.SA", start5_s, 252,
+             ("recomendacao", "Devo vender minhas ações da Petrobras?"))
+    negative("h16_neg_recorde", "Negativo — \"o ouro vai bater recorde este ano?\"", "analise_individual", "GC=F", start5_s, 252,
+             ("previsao", "O ouro vai bater recorde este ano?"))
+
+    manifest = demo_mode.load_manifest(directory)
+    package = hashlib.sha256(json.dumps(manifest, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+    return {
+        "versao_casos": 1,
+        "conjunto": "reserva_b",
+        "prompt_version": lp.PROMPT_VERSION,
+        "prompt_fingerprint": lp.prompt_fingerprint(),
+        "pacote_dados": package,
+        "periodo": [start5_s, end],
+        "criado_em": date.today().isoformat(),
+        "casos": cases,
+    }
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--out", default="experiments/llm_7a/cases_holdout.json")
+    parser.add_argument("--conjunto", choices=("a", "b"), default="b", help="a = h01-h08 (consumido pela v0.5); b = h09-h16.")
+    parser.add_argument("--out", default=None)
     parser.add_argument("--directory", default=None)
     args = parser.parse_args(argv)
-    payload = build_holdout(args.directory)
+    payload = build_holdout(args.directory) if args.conjunto == "a" else build_holdout_b(args.directory)
+    if args.out is None:
+        args.out = "experiments/llm_7a/cases_holdout.json" if args.conjunto == "a" else "experiments/llm_7a/cases_holdout_b.json"
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")

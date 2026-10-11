@@ -437,3 +437,27 @@ def test_revalidate_changes_only_validation_and_cli():
     src.write_text("\n".join(json.dumps(r) for r in records) + "\n\n", encoding="utf-8")
     assert revalidar.main(["--cases", str(cases_path), "--responses", str(src), "--out", str(dst)]) == 0
     assert len(dst.read_text(encoding="utf-8").splitlines()) == 2
+
+
+def test_holdout_b_is_new_and_valid():
+    from experiments.llm_7a import holdout_cases, runner
+
+    directory = _package()
+    used = {c["id"] for c in _cases(directory)["casos"]} | {c["id"] for c in holdout_cases.build_holdout(directory)["casos"]}
+    payload = holdout_cases.build_holdout_b(directory)
+    cases = payload["casos"]
+    assert len(cases) == 8 and payload["conjunto"] == "reserva_b"
+    assert not used & {c["id"] for c in cases}
+    assert {c["tipo"] for c in cases} == {"normal", "negativo"}
+    for case in cases:
+        answer = runner.canned_answer(case["contexto"])
+        assert llm_validation.validate_response(json.dumps(answer), case["contexto"], ["AAPL", "BTC-USD"]).passed
+    out = _tmp() / "b.json"
+    assert holdout_cases.main(["--directory", str(directory), "--out", str(out)]) == 0
+    assert json.loads(out.read_text(encoding="utf-8"))["conjunto"] == "reserva_b"
+    out_a = _tmp() / "a.json"
+    assert holdout_cases.main(["--conjunto", "a", "--directory", str(directory), "--out", str(out_a)]) == 0
+    small = _tmp()
+    gerador.build_package(_fake_fetch, gerador.DEFAULT_ASSETS[:4], "2020-01-02", "2026-10-10", small, "v1", "2026-10-10")
+    with pytest.raises(SystemExit):
+        holdout_cases.build_holdout_b(small)

@@ -71,6 +71,6 @@ def test_user_prompt_forces_the_exact_refusal_phrase():
 
 
 def test_version_and_length_limits_are_stated():
-    assert lp.PROMPT_VERSION == "v0.5"
-    for text in ("vírgula decimal", "no máximo 3 frases", "20 palavras", "poucas observações", "Os dados são insuficientes", "nunca vazia", "Não indica se o ativo está barato ou caro", "NÃO são uma recusa", "nem parcialmente", "EXCLUSIVAMENTE", "As regras 3 e 4 não se aplicam"):
+    assert lp.PROMPT_VERSION == "v0.6"
+    for text in ("vírgula decimal", "no máximo 3 frases", "20 palavras", "poucas observações", "Os dados são insuficientes", "nunca vazia", "Não indica se o ativo está barato ou caro", "NÃO são uma recusa", "nem parcialmente", "EXCLUSIVAMENTE", "As regras 3 e 4 não se aplicam", "Nenhum item pode ser texto vazio", "nunca copie o nome técnico", "nenhum item vazio", "24/7"):
         assert text in lp.SYSTEM_PROMPT

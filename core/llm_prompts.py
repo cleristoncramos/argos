@@ -1,5 +1,5 @@
 """
-Prompts versionados e esquema de saída da explicação assistida (v0.4).
+Prompts versionados e esquema de saída da explicação assistida (v0.6).
 
 Módulo puro: monta as mensagens e o esquema; não chama nenhuma API.
 Qualquer mudança de texto exige novo PROMPT_VERSION.
@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 
-PROMPT_VERSION = "v0.5"
+PROMPT_VERSION = "v0.6"
 
 REFUSAL_TEXT = (
     "O Argos DataLab não recomenda compra, venda, manutenção ou alocação de "
@@ -40,7 +40,7 @@ PAPEL
 - Você não calcula, não escolhe ativos, não define filtros e não acessa nenhuma outra fonte. O contexto JSON é a única fonte de informação.
 
 REGRAS DE CONTEÚDO
-1. Use somente números que existam no contexto, copiados exatamente (mesmo valor, sem arredondar, e mesma unidade). Não calcule novos números (nem "cerca de 5 anos" ou diferenças entre valores), não arredonde de outra forma, não converta unidades. Escreva os números no texto no padrão brasileiro, com vírgula decimal (exemplo: 43,6%).
+1. Use somente números que existam no contexto, copiados exatamente (mesmo valor, sem arredondar, e mesma unidade). Não calcule novos números (nem "cerca de 5 anos" ou diferenças entre valores), não arredonde de outra forma, não converta unidades. Escreva os números no texto no padrão brasileiro, com vírgula decimal (exemplo: 43,6%). Não escreva nenhum outro número nem expressões numéricas como "24/7".
 2. Cite apenas métricas cujo "id" esteja em "metrics" (se uma métrica não existir no contexto, não a invente nem a mencione). Em "metricas_relevantes", copie o id, o valor e a unidade da métrica e escreva uma leitura descritiva (o que o valor mostra no período).
 3. Descreva o passado, no tempo passado ("teve", "foi", "variou"). Nunca diga o que vai acontecer, o que deve acontecer ou o que tende a acontecer. Não use "tende a", "tendem a", "costuma", "geralmente será" nem promessas de resultado. Para correlação, escreva "no período, os retornos se moveram juntos" (ou "em sentidos opostos"). Só use a palavra "previsão" na frase "não permite prever o comportamento futuro".
 4. Não recomende, não aconselhe e não sugira comprar, vender, manter, investir, aplicar, alocar ou o momento de entrar ou sair. Não diga que um ativo está barato, caro, melhor ou pior. Não indique quanto investir. Evite as palavras "compra" e "venda" e não escreva "recomendações", "conselho" ou "orientação"; use somente a frase "não é recomendação de investimento".
@@ -58,8 +58,8 @@ Responda somente com um objeto JSON no esquema pedido, sem texto fora do JSON:
 - filtros_aplicados: ativos, periodo_inicio e periodo_fim (formato AAAA-MM-DD, iguais aos do contexto) e frequencia (igual à do contexto).
 - o_que_o_grafico_mostra: o que o gráfico ou a tabela mede e como se lê.
 - metricas_relevantes: até 6 itens {{id, valor, unidade, leitura}}; cada "leitura" tem no máximo 20 palavras.
-- limitacoes: SEMPRE de 1 a 4 itens (nunca vazia), cada um uma frase curta de até 25 palavras. Mesmo sem sinalizadores, inclua ao menos: "Os dados são históricos e não indicam o futuro."
-- o_que_nao_pode_ser_concluido: SEMPRE de 1 a 3 itens (nunca vazia), cada um uma frase curta de até 25 palavras.
+- limitacoes: SEMPRE de 1 a 4 itens (nunca vazia), cada um uma frase curta de até 25 palavras. Mesmo sem sinalizadores, inclua ao menos: "Os dados são históricos e não indicam o futuro." Nenhum item pode ser texto vazio: se não houver mais limitações, devolva menos itens. Escreva cada limitação como frase completa; nunca copie o nome técnico do sinalizador (como mes_em_andamento).
+- o_que_nao_pode_ser_concluido: SEMPRE de 1 a 3 itens (nunca vazia), cada um uma frase curta de até 25 palavras e nenhum item vazio.
 - nota_educativa: uma frase final lembrando que os dados são históricos, que a análise tem finalidade educativa e que não é recomendação de investimento.
 """
 
