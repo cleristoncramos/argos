@@ -101,3 +101,15 @@ Procedimento:
 2. `python -m experiments.llm_7a.holdout_cases` e `run_experiment --cases experiments/llm_7a/cases_holdout.json --out experiments/llm_7a/results/reserva`.
 3. Rodar **uma vez**. Se prompt ou validador mudarem depois, os casos de reserva deixam de ser inéditos e é preciso escrever outros.
 4. O relatório oficial apresenta os resultados dos 18 casos e dos 8 de reserva separadamente.
+
+
+## 9. Planilhas cegas e avaliação humana (revisão técnica interna)
+
+Condições do orientador (11/10/2026): avaliadores adultos; registro mínimo; sem dados pessoais, sensíveis ou financeiros; materiais por código; sem gravação; uso interno para ajuste técnico; não apresentar como evidência científica antes do enquadramento ético; avaliador pode interromper a qualquer momento.
+
+1. Juntar os 18 casos e os 8 de reserva B só com o gpt-5-mini (modelo aprovado):
+   `python -m experiments.llm_7a.combinar --responses experiments/llm_7a/results/respostas.jsonl experiments/llm_7a/results/respostas_reserva_b.jsonl --cases experiments/llm_7a/cases.json experiments/llm_7a/cases_holdout_b.json --models gpt-5-mini --out-dir experiments/llm_7a/results/final`
+2. Gerar as planilhas: `python -m experiments.llm_7a.make_rating_sheets --responses experiments/llm_7a/results/final/respostas_combinado.jsonl --cases experiments/llm_7a/results/final/cases_combinado.json --out experiments/llm_7a/results/final/avaliacao`
+3. Entregar só `leigo.csv`, `tecnico.csv` e `neutro.csv`; `chave_cegamento.csv` fica com o desenvolvedor.
+4. Calibração (cerca de 20%): os três avaliam todas as dimensões; depois o kappa ponderado é calculado.
+5. `python -m experiments.llm_7a.analyze --responses .../final/respostas_combinado.jsonl --cases .../final/cases_combinado.json --ratings .../final/avaliacao --out .../final/relatorio_final.md`

@@ -461,3 +461,44 @@ def test_holdout_b_is_new_and_valid():
     gerador.build_package(_fake_fetch, gerador.DEFAULT_ASSETS[:4], "2020-01-02", "2026-10-10", small, "v1", "2026-10-10")
     with pytest.raises(SystemExit):
         holdout_cases.build_holdout_b(small)
+
+
+# ---------------------------------------------------------------- combinar execuções
+def test_combine_merges_sets_and_filters_models():
+    from experiments.llm_7a import combinar, holdout_cases
+
+    directory = _package()
+    main_payload = _cases(directory)
+    other = holdout_cases.build_holdout_b(directory)
+    fp = main_payload["prompt_fingerprint"]
+
+    def rec(case, model):
+        return {"model": model, "case_id": case["id"], "repetition": 1, "prompt_fingerprint": fp, "validation": {"ok": True}}
+
+    a = [rec(main_payload["casos"][0], "gpt-5-mini"), rec(main_payload["casos"][0], "gpt-5-nano")]
+    b = [rec(other["casos"][0], "gpt-5-mini")]
+    payload, records = combinar.combine([main_payload, other], [a, b], ["gpt-5-mini"])
+    assert len(payload["casos"]) == len(main_payload["casos"]) + len(other["casos"]) and len(records) == 2
+    assert len(combinar.combine([main_payload, other], [a, b])[1]) == 3
+
+    with pytest.raises(SystemExit):
+        combinar.combine([main_payload, {**other, "prompt_fingerprint": "outro"}], [a, b])
+    with pytest.raises(SystemExit):
+        combinar.combine([main_payload, main_payload], [a, b])
+    with pytest.raises(SystemExit):
+        combinar.combine([main_payload], [[{**a[0], "case_id": "nao_existe"}]])
+    with pytest.raises(SystemExit):
+        combinar.combine([main_payload], [[{**a[0], "prompt_fingerprint": "antigo"}]])
+
+    folder = _tmp()
+    cases_a, cases_b = folder / "a.json", folder / "b.json"
+    cases_a.write_text(json.dumps(main_payload), encoding="utf-8")
+    cases_b.write_text(json.dumps(other), encoding="utf-8")
+    resp_a, resp_b = folder / "ra.jsonl", folder / "rb.jsonl"
+    resp_a.write_text("\n".join(json.dumps(r) for r in a) + "\n\n", encoding="utf-8")
+    resp_b.write_text(json.dumps(b[0]) + "\n", encoding="utf-8")
+    out = folder / "final"
+    assert combinar.main(["--responses", str(resp_a), str(resp_b), "--cases", str(cases_a), str(cases_b),
+                          "--models", "gpt-5-mini", "--out-dir", str(out)]) == 0
+    assert len((out / "respostas_combinado.jsonl").read_text(encoding="utf-8").splitlines()) == 2
+    assert json.loads((out / "cases_combinado.json").read_text(encoding="utf-8"))["conjunto"] == "combinado"

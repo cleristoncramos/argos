@@ -237,3 +237,11 @@ Ainda pendente: avaliador de neutralidade (N26).
 - **18 casos (108 respostas):** gpt-5-mini reprovou 1 resposta em critério obrigatório (c12 #2: item vazio em `limitacoes`, o que invalida a estrutura); critérios obrigatórios 0,9815; estabilidade 0,8333; custo médio US$ 0,0014; tempo médio 3,4 s. gpt-5-nano reprovou `sem_previsao` (c08 #2), `correcao_factual` 0,947 e estabilidade 0,667.
 - **8 casos de reserva, conjunto A (48 respostas):** gpt-5-mini 100% em todos os critérios obrigatórios, estabilidade 1,0. gpt-5-nano reprovou `sem_termos_proibidos` (h02 #3) e estabilidade 0,75.
 - **Decisão:** pela regra de resposta bruta, a 7A da v0.5 **não foi aprovada**. A correção é a v0.6 (nova versão, nova impressão digital, nova execução). O conjunto A de reserva foi consumido; a v0.6 usa o conjunto B (h09–h16).
+
+
+## Execução formal da v0.6 (11/10/2026) — parte automática
+
+- **18 casos (108 respostas):** gpt-5-mini sem nenhuma falha em critério obrigatório (json, campos, ativo, período, recomendação, previsão, termos proibidos, recusa); correção factual 0,9924; estabilidade 0,8333 (limite 0,80); custo médio US$ 0,0014; tempo médio 3,25 s; saída máxima 705 tokens (nenhuma resposta cortada). Falhas só informativas: limitações obrigatórias ausentes em c05 #2, c05 #3 e c07 #2 (a ideia de amostra pequena aparece, mas sem as palavras "poucos anos"); c14 #3 arredondou -41,2% para -41%.
+- **8 casos de reserva B (48 respostas, inéditos):** gpt-5-mini 100% em todos os critérios obrigatórios, estabilidade 1,0, correção factual 1, custo médio US$ 0,0016, tempo 3,6 s.
+- **gpt-5-nano:** reprovou critérios obrigatórios (c03 #3 e c13 #3 nos 18 casos) e estabilidade 0,667 (0,625 na reserva). Fica como comparação, sem habilitação (decisão do orientador).
+- **Pendente:** critérios que dependem de avaliação humana (limitações e "o que não pode ser concluído" mencionados, alucinação, nota média, kappa). A 7A só é aprovada com todos os critérios em `ok`.
