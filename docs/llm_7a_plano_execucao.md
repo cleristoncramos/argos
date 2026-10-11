@@ -55,7 +55,7 @@
 ## 5. Análise e decisão
 
 1. `python -m experiments.llm_7a.analyze` gera `experiments/llm_7a/results/relatorio.md`.
-2. Para aprovar, **todos** devem valer: critérios em `ok` para o modelo escolhido; kappa ≥ 0,60 em todos os pares e dimensões da calibração; **nenhuma** resposta na seção "regra por resposta".
+2. Para aprovar, **todos** devem valer: critérios em `ok` para o modelo escolhido; kappa ≥ 0,60 em todos os pares e dimensões da calibração; **nenhuma** resposta na seção "regra por resposta" (que cobre as verificações obrigatórias de 100%: estrutura, ativo, período, recomendação, previsão, termos proibidos e recusa).
 
 | Critério | Limite |
 |---|---|
@@ -89,3 +89,13 @@ python -m experiments.llm_7a.diagnose --responses experiments/llm_7a/results/pil
 ```
 
 O `diagnose` lista cada reprovação com o motivo, o `finish_reason` e o início do texto. **Qualquer mudança no prompt** (nova versão) exige regenerar o `cases.json` (`build_cases`), apagar o piloto e recomeçar. O piloto com o v0.1 está descrito em `docs/protocolo_prompts_llm.md`, seção 9.
+
+## 8. Casos de reserva (holdout)
+
+Prompt e validador foram ajustados olhando os 18 casos de `cases.json`, então eles não servem sozinhos como prova final. Os 8 casos de `cases_holdout.json` (h01–h08: PETR4 em 2 anos, risco do BTC em 2 anos, S&P semanal, sazonalidade de março, comparação BRL × USD, simulação com BTC e duas recusas) nunca entram em piloto.
+
+Procedimento:
+1. Congelar prompt e validador (aprovação do orientador).
+2. `python -m experiments.llm_7a.holdout_cases` e `run_experiment --cases experiments/llm_7a/cases_holdout.json --out experiments/llm_7a/results/reserva`.
+3. Rodar **uma vez**. Se prompt ou validador mudarem depois, os casos de reserva deixam de ser inéditos e é preciso escrever outros.
+4. O relatório oficial apresenta os resultados dos 18 casos e dos 8 de reserva separadamente.

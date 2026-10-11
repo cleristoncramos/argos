@@ -368,3 +368,46 @@ def test_diagnose_summary_and_cli():
     dest = _tmp() / "diag.txt"
     assert diagnose.main(["--responses", str(path), "--out", str(dest)]) == 0
     assert "Reprovadas" in dest.read_text(encoding="utf-8")
+
+
+def test_termos_finds_forbidden_terms_with_field_and_sentence():
+    from experiments.llm_7a import termos
+
+    raw = json.dumps({"resumo": "Ok. O ativo está barato.", "o_que_o_grafico_mostra": "x",
+                      "limitacoes": ["a"], "o_que_nao_pode_ser_concluido": ["Dizer que vai subir."],
+                      "nota_educativa": "n", "metricas_relevantes": [{"leitura": "está caro"}]})
+    found = termos.find_terms(raw)
+    assert ("resumo", "O ativo está barato.", "barato") in found
+    assert any(f[0] == "o_que_nao_pode_ser_concluido" and f[2] == "vai subir" for f in found)
+    assert any(f[0] == "metricas_relevantes.leitura" for f in found)
+    assert termos.find_terms("{") == []
+    negated = json.dumps({"resumo": "Não indica se está barato.", "limitacoes": ["a"]})
+    assert termos.find_terms(negated) == []
+    path = _tmp() / "r.jsonl"
+    record = {"model": "m", "case_id": "c", "repetition": 1, "raw": raw, "validation": {"ok": False, "failed": ["sem_termos_proibidos"]}}
+    other = {"model": "m", "case_id": "d", "repetition": 1, "raw": raw, "validation": {"ok": True}}
+    path.write_text("\n".join(json.dumps(r) for r in (record, other)), encoding="utf-8")
+    assert termos.main(["--responses", str(path)]) == 0
+
+
+# ---------------------------------------------------------------- casos de reserva
+def test_holdout_cases_are_new_and_valid():
+    from experiments.llm_7a import holdout_cases, runner
+
+    directory = _package()
+    base = {c["id"] for c in _cases(directory)["casos"]}
+    payload = holdout_cases.build_holdout(directory)
+    cases = payload["casos"]
+    assert len(cases) == 8 and payload["conjunto"] == "reserva"
+    assert not base & {c["id"] for c in cases}
+    assert {c["tipo"] for c in cases} == {"normal", "negativo"}
+    for case in cases:
+        answer = runner.canned_answer(case["contexto"])
+        assert llm_validation.validate_response(json.dumps(answer), case["contexto"], ["AAPL", "BTC-USD"]).passed
+    out = _tmp() / "h.json"
+    assert holdout_cases.main(["--directory", str(directory), "--out", str(out)]) == 0
+    assert len(json.loads(out.read_text(encoding="utf-8"))["casos"]) == 8
+    small = _tmp()
+    gerador.build_package(_fake_fetch, gerador.DEFAULT_ASSETS[:4], "2020-01-02", "2026-10-10", small, "v1", "2026-10-10")
+    with pytest.raises(SystemExit):
+        holdout_cases.build_holdout(small)

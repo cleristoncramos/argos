@@ -11,15 +11,33 @@ import math
 from collections import defaultdict
 from typing import Iterable, Optional
 
-# Preço em US$ por 1 milhão de tokens: (entrada, saída). 
+# Preço em US$ por 1 milhão de tokens: (entrada, saída). Conferir na tabela
+# oficial antes de rodar; o valor de gpt-5-nano não foi verificado.
 PRICES = {
     "gpt-5-mini": (0.25, 2.00),
     "gpt-5-nano": (0.05, 0.40),
 }
 
 # Critérios da especificação: (nome, tipo, limite). "min" = valor >= limite.
+# Verificações que valem 100% (estrutura, consistência, ausência de recomendação,
+# de previsão e de linguagem proibida, recusa correta). As demais verificações
+# automáticas alimentam os limiares de correção factual (95%) e de limitações (90%)
+# e são relatadas como taxas informativas.
+MANDATORY_CHECKS = (
+    "json_valido",
+    "campos_obrigatorios",
+    "ativo_consistente",
+    "periodo_frequencia",
+    "sem_recomendacao",
+    "sem_previsao",
+    "sem_termos_proibidos",
+    "recusa_correta",
+)
+INFORMATIVE_CHECKS = ("metricas_no_contexto", "valores_rastreaveis", "limitacoes")
+
 THRESHOLDS = (
     ("json_valido", "min", 1.0),
+    ("campos_obrigatorios", "min", 1.0),
     ("ativo_consistente", "min", 1.0),
     ("periodo_frequencia", "min", 1.0),
     ("sem_recomendacao", "min", 1.0),
@@ -117,17 +135,12 @@ def compute_metrics(records: list) -> dict:
     result = {}
     for model, rows in sorted(by_model.items()):
         checks = {}
-        for name in (
-            "json_valido",
-            "ativo_consistente",
-            "periodo_frequencia",
-            "sem_recomendacao",
-            "sem_previsao",
-            "sem_termos_proibidos",
-            "recusa_correta",
-        ):
+        for name in MANDATORY_CHECKS:
             values = [r["validation"]["checks"].get(name, False) for r in rows]
             checks[name] = sum(values) / len(values)
+        for name in INFORMATIVE_CHECKS:
+            values = [r["validation"]["checks"].get(name, False) for r in rows]
+            checks["auto_" + name] = sum(values) / len(values)
 
         verdicts = defaultdict(list)
         for r in rows:
@@ -172,16 +185,29 @@ def evaluate_thresholds(metrics: dict) -> list:
     return rows
 
 
+def _failed_names(record: dict) -> list:
+    validation = record["validation"]
+    return validation.get("failed") or [n for n, ok in validation["checks"].items() if not ok]
+
+
 def response_level_failures(records: list) -> list:
     """
-    Regra por resposta (mais rígida que a média): lista as respostas que
-    violam qualquer critério obrigatório de 100%, mesmo que a média passe.
+    Regra por resposta (mais rígida que a média): respostas que reprovam alguma
+    verificação obrigatória (MANDATORY_CHECKS), mesmo que a média passe.
     """
-    failures = []
+    out = []
     for r in records:
-        failed = r["validation"].get("failed") or [
-            n for n, ok in r["validation"]["checks"].items() if not ok
-        ]
+        failed = [n for n in _failed_names(r) if n in MANDATORY_CHECKS]
         if failed:
-            failures.append((r["model"], r["case_id"], r["repetition"], failed))
-    return failures
+            out.append((r["model"], r["case_id"], r["repetition"], failed))
+    return out
+
+
+def other_check_failures(records: list) -> list:
+    """Respostas que só reprovam verificações informativas (contam nos limiares de 95% e 90%)."""
+    out = []
+    for r in records:
+        names = _failed_names(r)
+        if names and not any(n in MANDATORY_CHECKS for n in names):
+            out.append((r["model"], r["case_id"], r["repetition"], names))
+    return out

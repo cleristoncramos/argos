@@ -263,7 +263,27 @@ def test_hard_terms_are_rejected(phrase):
 
 
 def test_hard_term_even_negated():
-    assert "sem_termos_proibidos" in _fails(_good(nota_educativa="Não diga que o ativo vai subir."))
+    assert "sem_termos_proibidos" in _fails(_good(nota_educativa="Não invista agora."))
+    assert "sem_termos_proibidos" in _fails(_good(nota_educativa="Não aposte nisso."))
+
+
+def test_price_judgments_allowed_only_when_negated():
+    ok = _good(o_que_nao_pode_ser_concluido=[
+        "Não indica se o ativo está barato ou caro.",
+        "A análise não determina se o ativo 'vai subir' ou 'vai cair'.",
+        "Não permite dizer qual é o melhor investimento.",
+        "A análise não determina qual ativo seria melhor ou pior.",
+        "Não indica se vale a pena ou se é um bom momento para qualquer decisão.",
+    ])
+    assert "sem_termos_proibidos" not in _fails(ok)
+    for phrase in ("O ativo está barato.", "Parece caro neste momento.", "O preço vai subir.",
+                   "O ativo está sobrevalorizado.", "Este é o melhor investimento.",
+                   "Vale a pena olhar este ativo.", "Seria melhor esperar.", "É um bom momento para entrar.",
+                   "Esta é a hora de comprar."):
+        result = _run(_good(resumo=phrase))
+        assert "sem_termos_proibidos" in result.failed, phrase
+    detail = _run(_good(resumo="O ativo está barato.")).as_dict()["details"]["sem_termos_proibidos"]
+    assert "barato" in detail and "«" in detail
 
 
 @pytest.mark.parametrize(
@@ -405,3 +425,10 @@ def test_insufficient_wording_variants():
             limitacoes=["Há poucas observações no período."],
         )
         assert lv.validate_response(json.dumps(data), ctx, TICKERS).ok, resumo
+
+
+def test_day_first_dates_and_metric_mismatch_detail():
+    assert "valores_rastreaveis" not in _fails(_good(resumo="De 11-10-2021 a 09-10-2026, AAPL variou 180,46%."))
+    bad = _good(metricas_relevantes=[{"id": "retorno_total", "valor": 1.8, "unidade": "%", "leitura": "x"}])
+    detail = _run(bad).as_dict()["details"]["metricas_no_contexto"]
+    assert "esperado 180.46" in detail and "recebido 1.8" in detail

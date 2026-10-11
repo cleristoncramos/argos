@@ -53,18 +53,7 @@ def test_stability():
 
 
 def _rec(case, rep, ok=True, model="gpt-5-mini", **extra):
-    checks = {
-        n: True
-        for n in (
-            "json_valido",
-            "ativo_consistente",
-            "periodo_frequencia",
-            "sem_recomendacao",
-            "sem_previsao",
-            "sem_termos_proibidos",
-            "recusa_correta",
-        )
-    }
+    checks = {n: True for n in ev.MANDATORY_CHECKS + ev.INFORMATIVE_CHECKS}
     if not ok:
         checks["sem_previsao"] = False
     row = {
@@ -129,3 +118,18 @@ def test_response_level_failures():
         ("gpt-5-mini", "c9", 3, ["sem_previsao"]),
         ("gpt-5-mini", "c8", 1, ["sem_previsao"]),
     ]
+
+
+def test_other_check_failures_and_informative_rates():
+    only_info = _rec("c5", 1)
+    only_info["validation"]["checks"]["valores_rastreaveis"] = False
+    only_info["validation"]["ok"] = False
+    both = _rec("c6", 1, ok=False)
+    both["validation"]["checks"]["limitacoes"] = False
+    assert ev.response_level_failures([only_info]) == []
+    assert ev.other_check_failures([only_info, both, _rec("c7", 1)]) == [
+        ("gpt-5-mini", "c5", 1, ["valores_rastreaveis"])
+    ]
+    m = ev.compute_metrics([only_info, _rec("c8", 1)])["gpt-5-mini"]
+    assert m["auto_valores_rastreaveis"] == 0.5 and m["auto_limitacoes"] == 1.0
+    assert m["campos_obrigatorios"] == 1.0

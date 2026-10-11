@@ -57,22 +57,26 @@ HARD_TERMS = (
     r"\binvistam\b",
     r"\baposte\b",
     r"\bapostem\b",
+    r"\bdeve investir\b",
+    r"\bdeveria investir\b",
+)
+
+# Julgamentos de preço, de momento ou promessas de movimento: aceitos apenas em frase
+# negada ("não indica se o ativo está barato ou caro", "não determina qual seria melhor").
+SOFT_JUDGMENT = (
     r"\bbarat[oa]s?\b",
     r"\bcar[oa]s?\b",
     r"\bmelhor investimento\b",
     r"\bpior investimento\b",
-    r"\bvai (subir|cair)\b",
-    r"\bvao (subir|cair)\b",
-    r"\bdeve investir\b",
-    r"\bdeveria investir\b",
+    r"\b(vai|vao) (subir|cair)\b",
+    r"\bpreco justo\b",
+    r"\b(sub|sobre)valorizad[oa]s?\b",
     r"\bvale a pena\b",
-    r"\bseria (bom|ideal|melhor|recomendavel|aconselhavel)\b",
+    r"\bseria (bom|ideal|melhor|pior|recomendavel|aconselhavel)\b",
     r"\bbom momento\b",
     r"\bboa hora\b",
     r"\bhora de (comprar|vender|investir|entrar|sair)\b",
     r"\boportunidade de (compra|investimento)\b",
-    r"\bpreco justo\b",
-    r"\b(sub|sobre)valorizad[oa]s?\b",
 )
 
 # Recomendação: aceita apenas dentro de frase negada ("não é recomendação...").
@@ -151,6 +155,15 @@ def _hard_hits(folded: str) -> list:
     return [m.group(0) for p in HARD_TERMS for m in re.finditer(p, folded)]
 
 
+def _forbidden_hits(folded: str) -> list:
+    """(termo, frase): termos rígidos em qualquer frase e julgamentos sem negação."""
+    hits = []
+    for sentence in _sentences(folded):
+        hits.extend((term, sentence.strip()) for term in _hard_hits(sentence))
+    hits.extend(_soft_hits(folded, SOFT_JUDGMENT))
+    return hits
+
+
 def _soft_hits(folded: str, patterns: Iterable[str]) -> list:
     """(termo, frase) das ocorrências sem negação anterior ao termo na frase."""
     hits = []
@@ -164,7 +177,7 @@ def _soft_hits(folded: str, patterns: Iterable[str]) -> list:
 
 
 _NUMBER = re.compile(r"\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+(?:[.,]\d+)?")
-_DATE = re.compile(r"\d{4}-\d{2}-\d{2}|\d{1,2}/\d{1,2}/\d{2,4}|\d{4}-\d{2}(?!\d)|\d{1,2}/\d{4}")
+_DATE = re.compile(r"\d{4}-\d{2}-\d{2}|\d{1,2}/\d{1,2}/\d{2,4}|\d{1,2}-\d{1,2}-\d{2,4}|\d{4}-\d{2}(?!\d)|\d{1,2}/\d{4}")
 _THOUSANDS = re.compile(r"[1-9]\d{0,2}(?:\.\d{3})+(?:,\d+)?")
 
 
@@ -339,7 +352,10 @@ def validate_response(
             continue
         tolerance = 0.5 * 10 ** (-min(ref.get("decimals", 2), 2)) + 1e-9
         if abs(float(item["valor"]) - ref["value"]) > tolerance or fold(item["unidade"]) != fold(ref["unit"]):
-            problems.append(f"valor ou unidade diferente: {item['id']}")
+            problems.append(
+                f"valor ou unidade diferente: {item['id']} (esperado {ref['value']} '{ref['unit']}', "
+                f"recebido {item['valor']} '{item['unidade']}')"
+            )
             continue
         result.metrics_correct += 1
     if context["status"] == "dados_insuficientes":
@@ -370,8 +386,12 @@ def validate_response(
     add("sem_recomendacao", not rec, "" if not rec else f"recomendação: '{rec[0][0]}' em «{rec[0][1][:140]}»")
     pred = _soft_hits(folded, SOFT_PREDICTION)
     add("sem_previsao", not pred, "" if not pred else f"previsão: '{pred[0][0]}' em «{pred[0][1][:140]}»")
-    hard = _hard_hits(folded)
-    add("sem_termos_proibidos", not hard, "" if not hard else f"termo proibido: '{hard[0]}'")
+    hard = _forbidden_hits(folded)
+    add(
+        "sem_termos_proibidos",
+        not hard,
+        "" if not hard else f"termo proibido: '{hard[0][0]}' em «{hard[0][1][:140]}»",
+    )
 
     # 10. Limitações ----------------------------------------------------------------
     lim_text = fold(" ".join(data["limitacoes"]))

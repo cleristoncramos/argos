@@ -140,11 +140,23 @@ def build_report(records: list, kappas: dict, cases_by_id: dict, meta: dict) -> 
                 lines.append(f"| {dim} | {pair} | {value} | {'ok' if value >= llm_eval.KAPPA_MIN else 'abaixo de 0,60'} |")
     else:
         lines.append("Pendente: sem notas de calibração dos três avaliadores.")
+    lines += ["", "## Taxas das verificações automáticas informativas", "",
+              "| Modelo | métricas no contexto | números rastreáveis | limitações obrigatórias |", "|---|---|---|---|"]
+    for model, m in metrics.items():
+        lines.append(f"| {model} | {_fmt(m['auto_metricas_no_contexto'])} | {_fmt(m['auto_valores_rastreaveis'])} | {_fmt(m['auto_limitacoes'])} |")
     lines += ["", "## Respostas que violam critério obrigatório (regra por resposta)", ""]
     failures = llm_eval.response_level_failures(records)
     if failures:
         lines += ["| Modelo | Caso | Repetição | Verificações reprovadas |", "|---|---|---|---|"]
         for model, case, rep, failed in failures:
+            lines.append(f"| {model} | {case} | {rep} | {', '.join(failed)} |")
+    else:
+        lines.append("Nenhuma.")
+    lines += ["", "## Respostas que reprovam só verificações informativas", ""]
+    others = llm_eval.other_check_failures(records)
+    if others:
+        lines += ["| Modelo | Caso | Repetição | Verificações reprovadas |", "|---|---|---|---|"]
+        for model, case, rep, failed in others:
             lines.append(f"| {model} | {case} | {rep} | {', '.join(failed)} |")
     else:
         lines.append("Nenhuma.")
