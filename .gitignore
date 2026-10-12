@@ -109,3 +109,7 @@ logs/
 logs/
 
 logs/
+
+logs/
+.streamlit/secrets.toml
+docs/pibiti/avaliadores_7a.md
