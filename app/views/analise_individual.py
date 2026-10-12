@@ -36,6 +36,7 @@ from app.ui.data_info import (
 )
 from app.ui.disclaimers import render_footer_disclaimer
 from app.ui.education import render_glossary, render_what_it_means
+from app.ui.llm_explain import asset_name, render_explain_section
 from app.ui.metric_card import render_metric_card
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
@@ -52,6 +53,7 @@ from core.analyzer import (
     create_monthly_return_matrix,
 )
 from core.assets import ASSETS
+from core.config import ANNUALIZATION_FACTORS
 from core.currency import currency_info
 from core.data_availability import assess_availability
 from core.data_loader import download_active_data, validate_data
@@ -71,6 +73,7 @@ from core.seasonality import (
 )
 from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.formatters import format_number_br
+from core.llm_builders import individual_context
 from core.returns_utils import simple_returns
 
 
@@ -394,6 +397,21 @@ if currency.kind == "rate":
         "Este ativo é uma taxa de juros: o \"Retorno Total\" mede a variação do "
         "nível da taxa, e não o retorno de um título."
     )
+
+_llm_notes = [f"Unidade de cotação: {currency.label}."]
+if currency.kind == "rate":
+    _llm_notes.append("Este ativo é uma taxa de juros: o retorno total mede a variação do nível da taxa.")
+render_explain_section(
+    lambda: individual_context(
+        df,
+        symbol.upper(),
+        frequency,
+        float(ANNUALIZATION_FACTORS.get(frequency, DAILY_ANNUALIZATION_FACTOR)),
+        name=asset_name(symbol),
+        notes=_llm_notes,
+    ),
+    key="analise_individual",
+)
 
 st.markdown("<br>", unsafe_allow_html=True)
 

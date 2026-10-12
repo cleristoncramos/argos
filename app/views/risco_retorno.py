@@ -35,6 +35,7 @@ from app.ui.disclaimers import (
     render_profile_limitation_notice,
 )
 from app.ui.education import render_what_it_means
+from app.ui.llm_explain import asset_name, render_explain_section
 from app.ui.metric_card import render_metric_card
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
@@ -55,6 +56,7 @@ from core.data_processor import (
     select_primary_variable,
 )
 from core.exports import csv_filename, dataframe_to_csv_bytes
+from core.llm_builders import risk_context
 from core.risk_metrics import (
     build_risk_summary,
     calculate_drawdown,
@@ -484,6 +486,19 @@ st.caption(f"📅 Data do pior drawdown no período: **{worst_drawdown_date_str}
 
 render_what_it_means("drawdown")
 render_what_it_means("sharpe")
+
+render_explain_section(
+    lambda: risk_context(
+        df_risk,
+        symbol.upper(),
+        frequency,
+        float(annualization_factor),
+        risk_free_pct,
+        summary=metrics,
+        name=asset_name(symbol),
+    ),
+    key="risco_retorno",
+)
 
 st.markdown("<br>", unsafe_allow_html=True)
 

@@ -21,9 +21,12 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from app.ui.chart_guide import render_chart_guide
+from app.ui.llm_explain import asset_name, render_explain_section
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
+from core.currency import currency_info
 from core.data_loader import download_active_data
+from core.llm_builders import simulation_context
 from core.data_processor import (
     aggregate_by_frequency,
     prepare_dataframe,
@@ -405,6 +408,22 @@ st.plotly_chart(
 render_chart_guide("simulacao_caminho")
 
 st.caption(SIMULATION_STRATEGY_CAPTION)
+
+_currency = currency_info(symbol)
+render_explain_section(
+    lambda: simulation_context(
+        paths,
+        symbol.upper(),
+        frequency,
+        _currency.prefix.strip() or _currency.label,
+        float(amount),
+        int(every),
+        periodic_summary,
+        lump_summary,
+        name=asset_name(symbol),
+    ),
+    key="simulacao_aportes",
+)
 
 
 # ==========================================================
