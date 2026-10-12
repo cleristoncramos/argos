@@ -398,3 +398,30 @@ def test_api_address_lives_only_in_the_client_module():
         if "api.openai.com" in p.read_text(encoding="utf-8")
     ]
     assert holders == ["core/llm_client.py"]
+
+
+def test_record_demo_entry_creates_updates_and_is_replayed(tmp_path):
+    ctx_a, ctx_b = _ctx(), _ctx(n_observations=61)
+    path = tmp_path / "dados" / "demo.json"
+    key = svc.record_demo_entry(path, ctx_a, runner.canned_answer(ctx_a))
+    assert key == svc.context_key(ctx_a)
+    svc.record_demo_entry(path, ctx_b, runner.canned_answer(ctx_b))
+    saved = svc.load_demo_store(path)
+    assert set(saved) == {svc.context_key(ctx_a), svc.context_key(ctx_b)}
+    header = json.loads(path.read_text(encoding="utf-8"))
+    assert header["prompt_fingerprint"] == svc.APPROVED_FINGERPRINT and header["modelo"] == "gpt-5-mini"
+    out = svc.explain(ctx_a, mode=svc.MODE_DEMO, demo_store=saved)
+    assert out.status == svc.STATUS_DEMO and out.shown
+
+
+def test_record_demo_entry_recovers_from_broken_file(tmp_path):
+    ctx = _ctx()
+    path = tmp_path / "demo.json"
+    path.write_text("{ não é json", encoding="utf-8")
+    svc.record_demo_entry(path, ctx, runner.canned_answer(ctx))
+    assert list(svc.load_demo_store(path)) == [svc.context_key(ctx)]
+    path.write_text("[1, 2]", encoding="utf-8")
+    svc.record_demo_entry(path, ctx, runner.canned_answer(ctx))
+    path.write_text(json.dumps({"respostas": "x"}), encoding="utf-8")
+    svc.record_demo_entry(path, ctx, runner.canned_answer(ctx))
+    assert list(svc.load_demo_store(path)) == [svc.context_key(ctx)]

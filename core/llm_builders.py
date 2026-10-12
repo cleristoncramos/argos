@@ -173,3 +173,99 @@ def simulation_context(
         limitation_flags=lc.derive_limitation_flags(n_observations=n_obs, frequency=frequency),
         extra_numbers=[float(amount), float(every)],
     )
+
+
+def _pct_or_nan(value) -> float:
+    try:
+        return _pct(value)
+    except (TypeError, ValueError):
+        return float("nan")
+
+
+def _pair_correlation(matrix, a: str, b: str) -> float:
+    try:
+        return float(matrix.loc[a, b])
+    except (KeyError, TypeError, ValueError, AttributeError):
+        return float("nan")
+
+
+def comparison_context(
+    summary: pd.DataFrame,
+    correlation_matrix,
+    asset_data: dict,
+    frequency: str,
+    *,
+    names: Optional[dict] = None,
+    notes: Iterable[str] = (),
+) -> Optional[dict]:
+    """
+    Comparação de EXATAMENTE dois ativos (o formato validado na 7A): retorno total
+    de cada um e correlação. Com outra quantidade de ativos devolve None.
+    """
+    tickers = [str(t) for t in summary["Ativo"].tolist()]
+    if len(tickers) != 2:
+        return None
+    a, b = tickers
+    returns = dict(zip(summary["Ativo"].astype(str), summary["Retorno total"]))
+    metrics = _metrics([
+        ("retorno_total_a", f"Retorno total de {a}", _pct_or_nan(returns[a]), "%", 2),
+        ("retorno_total_b", f"Retorno total de {b}", _pct_or_nan(returns[b]), "%", 2),
+        ("correlacao", "Correlação dos retornos nos dias em comum", _pair_correlation(correlation_matrix, a, b), "", 2),
+    ])
+    if not metrics:
+        return None
+    starts = [pd.Timestamp(asset_data[t]["Date"].iloc[0]) for t in tickers]
+    ends = [pd.Timestamp(asset_data[t]["Date"].iloc[-1]) for t in tickers]
+    n_obs = int(summary["Observações"].min())
+    return lc.build_context(
+        analysis_type="comparacao",
+        assets=tickers,
+        period_start=_iso(min(starts)),
+        period_end=_iso(max(ends)),
+        frequency=frequency,
+        n_observations=n_obs,
+        metrics=metrics,
+        asset_names={t: n for t, n in (names or {}).items() if n} or None,
+        notes=notes,
+        limitation_flags=lc.derive_limitation_flags(n_observations=n_obs, frequency=frequency),
+    )
+
+
+def window_context(
+    stats: dict,
+    entry: str,
+    exit_: str,
+    symbol: str,
+    period_start,
+    period_end,
+    n_closes: int,
+    *,
+    incomplete_month: bool = False,
+    name: Optional[str] = None,
+) -> Optional[dict]:
+    """Janela sazonal (fechamento de um mês até o fechamento de outro): média, mediana e anos positivos."""
+    n_years = int(stats["N"])
+    if n_years == 0:
+        return None
+    metrics = _metrics([
+        ("media", "Média dos anos", stats["Média"], "%", 2),
+        ("mediana", "Mediana dos anos", stats["Mediana"], "%", 2),
+        ("anos_positivos", "Anos positivos", stats["Anos positivos (%)"], "%", 0),
+    ])
+    if not metrics:
+        return None
+    return lc.build_context(
+        analysis_type="sazonalidade",
+        assets=[symbol],
+        period_start=_iso(period_start),
+        period_end=_iso(period_end),
+        frequency="Mensal",
+        n_observations=int(n_closes),
+        metrics=metrics,
+        asset_names=_names(symbol, name),
+        notes=[f"Janela: fechamento de {str(entry).lower()} até o fechamento de {str(exit_).lower()}. N = {n_years} anos."],
+        limitation_flags=lc.derive_limitation_flags(
+            n_observations=int(n_closes), frequency="Mensal", n_years=n_years, incomplete_month=incomplete_month,
+        ),
+        extra_numbers=[n_years],
+    )

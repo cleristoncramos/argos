@@ -27,6 +27,7 @@ from app.ui.disclaimers import (
     render_profile_limitation_notice,
 )
 from app.ui.education import render_what_it_means
+from app.ui.llm_explain import render_explain_section
 from app.ui.metric_card import render_metric_card
 from app.ui.sidebar import (
     GROUP_MAPPING,
@@ -74,6 +75,7 @@ from core.data_processor import (
 )
 from core.date_validation import validate_date_range
 from core.exports import csv_filename, dataframe_to_csv_bytes
+from core.llm_builders import comparison_context
 from core.formatters import format_number_br
 from core.periods import (
     DEFAULT_PERIOD,
@@ -1162,6 +1164,30 @@ if not summary_numeric.empty:
     )
 
 render_profile_limitation_notice()
+
+render_explain_section(
+    lambda: comparison_context(
+        summary_numeric,
+        correlation_matrix,
+        asset_data,
+        frequency,
+        names={t: (asset_meta(t) or {}).get("name") for t in compared_tickers},
+        notes=[
+            text
+            for _, text in (
+                comparison_notes(
+                    period_check,
+                    compared_tickers,
+                    frequency,
+                    aligned_to_common=aligned_to_common,
+                )
+                if period_check is not None
+                else []
+            )
+        ],
+    ),
+    key="comparacao_ativos",
+)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
