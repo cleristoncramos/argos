@@ -113,3 +113,24 @@ Condições do orientador (11/10/2026): avaliadores adultos; registro mínimo; s
 3. Entregar só `leigo.csv`, `tecnico.csv` e `neutro.csv`; `chave_cegamento.csv` fica com o desenvolvedor.
 4. Calibração (cerca de 20%): os três avaliam todas as dimensões; depois o kappa ponderado é calculado.
 5. `python -m experiments.llm_7a.analyze --responses .../final/respostas_combinado.jsonl --cases .../final/cases_combinado.json --ratings .../final/avaliacao --out .../final/relatorio_final.md`
+
+### Notas sem variação (regra de leitura do relatório)
+
+Se um avaliador der a mesma nota a quase tudo, o kappa entre ele e os demais fica **indeterminado** (n/d) e não conta como concordância. O relatório traz a seção "Variação das notas humanas": um avaliador com 95% ou mais das notas iguais (e ao menos 10 notas) recebe ALERTA. Nesse caso a calibração não demonstrou que a rubrica discrimina respostas; é preciso rever com os avaliadores (sem alterar notas já dadas sem registro) antes de usar o resultado.
+
+## 9.1 Segunda rodada de calibração (clareza)
+
+Se o kappa da primeira rodada ficar abaixo de 0,60, os avaliadores combinam o significado das notas e fazem uma segunda rodada **com respostas novas** (nunca as mesmas planilhas):
+
+```
+python -m experiments.llm_7a.make_rating_sheets --responses <respostas.jsonl> --cases <cases.json> \
+  --out experiments/llm_7a/results/final/avaliacao2 --segunda-rodada 20 \
+  --excluir-chave experiments/llm_7a/results/final/avaliacao/chave_cegamento.csv
+```
+
+As planilhas da primeira rodada são mantidas intactas. O kappa oficial de concordância é o da segunda rodada; a primeira fica registrada em `decisoes_orientador.md`.
+
+### Terceira rodada e correção da resposta esperada
+
+- Rodadas extras usam `--terceira-rodada N --prefixo T` (apelidos de `--segunda-rodada`); ids cegos com prefixo próprio.
+- Na planilha do avaliador técnico, os casos negativos mostram a resposta esperada conforme a regra 9 do prompt v0.6: **exclusivamente a frase fixa, sem métricas**. O arquivo de casos não é alterado (impressão digital e histórico preservados); a substituição é feita só na exibição (`expected_view`). Registrado em `docs/pibiti/decisoes_orientador.md`.
