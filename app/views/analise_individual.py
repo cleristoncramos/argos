@@ -67,13 +67,14 @@ from core.seasonality import (
     SEASONALITY_WINDOW_NOTE,
     exclude_month_in_progress,
     filter_monthly_matrix,
+    monthly_closes,
     seasonal_summary,
     window_returns,
     window_summary,
 )
 from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.formatters import format_number_br
-from core.llm_builders import individual_context
+from core.llm_builders import individual_context, window_context
 from core.returns_utils import simple_returns
 
 
@@ -823,6 +824,23 @@ else:
                         f"{_fmt_pct(stats_cut['Média'])}, mediana {_fmt_pct(stats_cut['Mediana'])}, "
                         f"N = {stats_cut['N']}."
                     )
+
+                render_explain_section(
+                    lambda: window_context(
+                        stats_all,
+                        entry_name,
+                        exit_name,
+                        symbol.upper(),
+                        df["Date"].iloc[0],
+                        df["Date"].iloc[-1],
+                        len(monthly_closes(df, "Value", "Date")),
+                        incomplete_month=bool(
+                            df_matrix.notna().sum().sum() != df_matrix_stats.notna().sum().sum()
+                        ),
+                        name=asset_name(symbol),
+                    ),
+                    key="janela_sazonal",
+                )
 
                 bar_years = window_all["Ano"].astype(str)
                 highlight = set(years_cut)

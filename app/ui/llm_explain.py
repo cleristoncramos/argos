@@ -8,6 +8,8 @@ passa pelo validador e, em qualquer falha, mostra o texto educativo fixo.
 Configuração (segredos do Streamlit ou variáveis de ambiente):
   ARGOS_LLM_MODE   off (padrão) | demo | live
   OPENAI_API_KEY   necessário só no modo live; nunca fica no repositório
+  ARGOS_LLM_RECORD 1 para, no modo live, gravar cada resposta validada em
+                   data/llm_demo.json (uso do pesquisador, para montar o modo demo)
 """
 
 from __future__ import annotations
@@ -43,6 +45,10 @@ def _setting(name: str) -> Optional[str]:
 def llm_mode() -> str:
     mode = (_setting("ARGOS_LLM_MODE") or llm_service.MODE_OFF).lower()
     return mode if mode in llm_service.MODES else llm_service.MODE_OFF
+
+
+def _recording() -> bool:
+    return (_setting("ARGOS_LLM_RECORD") or "").lower() in ("1", "true", "sim")
 
 
 @st.cache_data(show_spinner=False)
@@ -122,6 +128,12 @@ def render_explain_section(build_context: Callable[[], Optional[dict]], key: str
                 log_sink=_log_writer(key),
             )
         st.session_state[state_key] = (context_key, result)
+        if mode == llm_service.MODE_LIVE and result.status == llm_service.STATUS_OK and _recording():
+            try:
+                llm_service.record_demo_entry(DEMO_PATH, context, result.data)
+                _demo_store.clear()
+            except OSError:
+                st.caption("Não foi possível gravar a resposta de demonstração neste ambiente.")
 
     saved = st.session_state.get(state_key)
     if saved and saved[0] == context_key:  # só mostra se os dados da tela não mudaram

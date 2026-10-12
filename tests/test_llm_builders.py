@@ -135,3 +135,71 @@ def test_non_numeric_metric_values_are_skipped():
                "Drawdown máximo": -0.3, "Percentual positivo": 0.55, "Sharpe": None}
     ctx = lb.risk_context(_df(), "AAPL", "Diário", 252, 0, summary=summary)
     assert "sharpe" not in [m["id"] for m in ctx["metrics"]]
+
+
+# ---------------------------------------------------------------- comparação (2 ativos) e janela sazonal
+def _compare_inputs(n_b=300):
+    a, b = _df(300, seed=1), _df(n_b, seed=2)
+    summary = pd.DataFrame({
+        "Ativo": ["AAPL", "^GSPC"], "Observações": [300, n_b],
+        "Retorno total": [a["Value"].iloc[-1] / a["Value"].iloc[0] - 1, b["Value"].iloc[-1] / b["Value"].iloc[0] - 1],
+    })
+    corr = pd.DataFrame([[1.0, 0.71], [0.71, 1.0]], index=["AAPL", "^GSPC"], columns=["AAPL", "^GSPC"])
+    return summary, corr, {"AAPL": a, "^GSPC": b}
+
+
+def test_comparison_context_for_two_assets():
+    summary, corr, data = _compare_inputs(n_b=40)
+    ctx = lb.comparison_context(summary, corr, data, "Diário", names={"AAPL": "Apple Inc.", "^GSPC": None}, notes=["Ambos em dólares (USD)."])
+    assert ctx["analysis_type"] == "comparacao" and ctx["assets"] == ["AAPL", "^GSPC"]
+    assert [m["id"] for m in ctx["metrics"]] == ["retorno_total_a", "retorno_total_b", "correlacao"]
+    assert ctx["metrics"][2]["value"] == 0.71 and ctx["metrics"][0]["label"] == "Retorno total de AAPL"
+    assert ctx["n_observations"] == 40 and ctx["limitation_flags"] == ["poucas_observacoes"]
+    assert ctx["asset_names"] == {"AAPL": "Apple Inc."} and ctx["notes"] == ["Ambos em dólares (USD)."]
+    assert ctx["filters"]["period_start"] == "2024-01-01" and ctx["filters"]["period_end"] == "2024-10-26"
+    assert _accepts(ctx)
+
+
+def test_comparison_context_without_correlation_and_without_names():
+    summary, _, data = _compare_inputs()
+    ctx = lb.comparison_context(summary, pd.DataFrame(), data, "Diário")
+    assert [m["id"] for m in ctx["metrics"]] == ["retorno_total_a", "retorno_total_b"]
+    assert ctx["asset_names"] == {}
+
+
+def test_comparison_context_only_for_two_assets_and_finite_metrics():
+    summary, corr, data = _compare_inputs()
+    three = pd.concat([summary, summary.iloc[[0]].assign(Ativo="BTC-USD")], ignore_index=True)
+    assert lb.comparison_context(three, corr, data, "Diário") is None
+    assert lb.comparison_context(summary.iloc[:1], corr, data, "Diário") is None
+    broken = summary.assign(**{"Retorno total": [None, float("nan")]})
+    assert lb.comparison_context(broken, pd.DataFrame(), data, "Diário") is None
+
+
+_STATS = {"N": 4, "Média": 1.77, "Mediana": 0.64, "Anos positivos (%)": 50.0}
+
+
+def test_window_context_matches_validated_shape():
+    ctx = lb.window_context(_STATS, "Setembro", "Outubro", "^GSPC", "2021-10-11", "2026-10-09", 60, name="S&P 500")
+    assert ctx["analysis_type"] == "sazonalidade" and ctx["filters"]["frequency"] == "Mensal"
+    assert [m["id"] for m in ctx["metrics"]] == ["media", "mediana", "anos_positivos"]
+    assert ctx["metrics"][2]["decimals"] == 0
+    assert ctx["notes"] == ["Janela: fechamento de setembro até o fechamento de outubro. N = 4 anos."]
+    assert ctx["extra_numbers"] == [4.0] and ctx["limitation_flags"] == ["poucos_anos"]
+    assert ctx["n_observations"] == 60 and ctx["asset_names"] == {"^GSPC": "S&P 500"}
+    assert _accepts(ctx)
+
+
+def test_window_context_flags_and_none_cases():
+    many = {**_STATS, "N": 6}
+    ctx = lb.window_context(many, "novembro", "fevereiro", "AAPL", "2020-01-01", "2026-09-15", 80, incomplete_month=True)
+    assert ctx["limitation_flags"] == ["mes_em_andamento"] and ctx["asset_names"] == {}
+    assert lb.window_context({**_STATS, "N": 0}, "setembro", "outubro", "AAPL", "2020-01-01", "2026-01-01", 10) is None
+    nan = {"N": 3, "Média": NAN, "Mediana": NAN, "Anos positivos (%)": NAN}
+    assert lb.window_context(nan, "setembro", "outubro", "AAPL", "2020-01-01", "2026-01-01", 10) is None
+
+
+def test_pct_or_nan_handles_missing_values():
+    assert lb._pct_or_nan(0.5) == 50.0
+    assert lb._pct_or_nan(None) != lb._pct_or_nan(None)  # NaN
+    assert lb._pct_or_nan("x") != lb._pct_or_nan("x")

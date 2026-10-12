@@ -236,3 +236,31 @@ def _finish(raw: str, context: dict, known_tickers, log: dict, log_sink, ok_stat
         log["failed_checks"] = result.failed
         return _result(STATUS_BLOCKED, None, "validacao_reprovada", log, log_sink)
     return _result(ok_status, json.loads(raw), "", log, log_sink)
+
+
+def record_demo_entry(path, context: dict, data: dict) -> str:
+    """
+    Grava (ou substitui) uma resposta JÁ VALIDADA no arquivo de demonstração,
+    na chave do contexto. Usado só pelo pesquisador, para gravar respostas das
+    telas reais. Devolve a chave.
+    """
+    path = Path(path)
+    saved: dict = {}
+    if path.exists():
+        try:
+            loaded = json.loads(path.read_text(encoding="utf-8"))
+        except ValueError:
+            loaded = {}
+        if isinstance(loaded, dict) and isinstance(loaded.get("respostas"), dict):
+            saved = loaded["respostas"]
+    key = context_key(context)
+    saved[key] = json.dumps(data, ensure_ascii=False)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "prompt_version": APPROVED_PROMPT_VERSION,
+        "prompt_fingerprint": APPROVED_FINGERPRINT,
+        "modelo": llm_client.MODEL,
+        "respostas": saved,
+    }
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
+    return key
