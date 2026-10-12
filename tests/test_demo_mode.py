@@ -543,7 +543,9 @@ def test_full_demo_flow_offline(monkeypatch):
 # Estrutura do código: sem rede fora dos pontos previstos
 # ----------------------------------------------------------------------
 NETWORK_MODULES = r"^\s*(?:import|from)\s+(requests|urllib|urllib3|httpx|aiohttp|http\.client|socket|yfinance)\b"
-NETWORK_ALLOWED = {"core/data_loader.py", "scripts/gerar_dados_demo.py"}
+# core/llm_client.py é o único ponto de acesso à API do modelo de linguagem (etapa 7B);
+# o resto do código só o usa por injeção (transport) e nunca abre conexões por conta própria.
+NETWORK_ALLOWED = {"core/data_loader.py", "scripts/gerar_dados_demo.py", "core/llm_client.py"}
 REMOTE_RESOURCE_PATTERNS = [
     r"""src\s*=\s*["']https?://""",
     r"""<link[^>]+href\s*=\s*["']https?://""",
@@ -569,7 +571,7 @@ def test_network_libraries_only_where_expected():
         for number, line in enumerate(text.splitlines(), 1):
             if re.search(NETWORK_MODULES, line):
                 offenders.append(f"{rel}:{number}: {line.strip()}")
-    assert offenders == [], "Acesso à rede fora de data_loader/gerador:\n" + "\n".join(offenders)
+    assert offenders == [], "Acesso à rede fora de data_loader/gerador/llm_client:\n" + "\n".join(offenders)
 
 
 def test_no_remote_resources_in_pages():
