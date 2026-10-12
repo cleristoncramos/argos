@@ -502,3 +502,166 @@ def test_combine_merges_sets_and_filters_models():
                           "--models", "gpt-5-mini", "--out-dir", str(out)]) == 0
     assert len((out / "respostas_combinado.jsonl").read_text(encoding="utf-8").splitlines()) == 2
     assert json.loads((out / "cases_combinado.json").read_text(encoding="utf-8"))["conjunto"] == "combinado"
+
+
+# ---------------------------------------------------------------- sinais de alerta nas notas
+def test_constant_ratings_are_flagged_and_kappa_is_indeterminate():
+    payload = _cases()
+    cases = {c["id"]: c for c in payload["casos"]}
+    flat = {f"R{i:03d}": {"nota_clareza": "5"} for i in range(1, 13)}
+    varied = {f"R{i:03d}": {"nota_correcao": str(3 + i % 3)} for i in range(1, 13)}
+    few = {"R001": {"nota_neutralidade": "5"}}
+    empty = {"R001": {"nota_neutralidade": ""}}
+    alerts = analyze.rater_alerts({"leigo": flat, "tecnico": varied, "neutro": few})
+    by = {a["avaliador"]: a for a in alerts}
+    assert by["leigo"]["alerta"] and by["leigo"]["parcela"] == 1.0
+    assert not by["tecnico"]["alerta"] and not by["neutro"]["alerta"]  # poucas notas: sem alerta
+    assert analyze.rater_alerts({"neutro": empty}) == []
+
+    kappas = {"clareza": {"leigo-neutro": float("nan"), "leigo-tecnico": 0.8, "neutro-tecnico": 0.2}}
+    text = analyze.build_report([], kappas, cases, payload, alerts)
+    assert "indeterminado" in text and "n/d" in text and "abaixo de 0,60" in text
+    assert "ALERTA: quase sem variação" in text and "não demonstram qualidade" in text
+    text_ok = analyze.build_report([], {}, cases, payload, [by["tecnico"]])
+    assert "ALERTA" not in text_ok and "ok" in text_ok
+
+
+def test_second_round_excludes_rated_items_and_is_all_calibration():
+    payload, out, _, _ = _run_dry()
+    records = [json.loads(x) for x in out.read_text(encoding="utf-8").splitlines()]
+    for r in records:
+        r["dry_run"] = False
+    real = _tmp() / "real.jsonl"
+    real.write_text("\n".join(json.dumps(r) for r in records), encoding="utf-8")
+    cases_path = _tmp() / "cases.json"
+    cases_path.write_text(json.dumps(payload), encoding="utf-8")
+    first = _tmp()
+    assert make_rating_sheets.main(["--responses", str(real), "--cases", str(cases_path), "--out", str(first)]) == 0
+    second = _tmp()
+    argv = ["--responses", str(real), "--cases", str(cases_path), "--out", str(second),
+            "--segunda-rodada", "5", "--excluir-chave", str(first / "chave_cegamento.csv")]
+    assert make_rating_sheets.main(argv) == 0
+    k1 = list(csv.DictReader((first / "chave_cegamento.csv").open(encoding="utf-8"), delimiter=";"))
+    k2 = list(csv.DictReader((second / "chave_cegamento.csv").open(encoding="utf-8"), delimiter=";"))
+    ids1 = {(r["model"], r["case_id"], r["repetition"]) for r in k1}
+    ids2 = {(r["model"], r["case_id"], r["repetition"]) for r in k2}
+    assert len(k2) == min(5, len(records) - len(k1)) and not (ids1 & ids2)
+    assert all(r["calibracao"] == "sim" and r["id_cego"].startswith("S") for r in k2)
+
+
+def test_expected_view_for_refusals_and_third_round_alias():
+    normal = {"tipo": "normal", "resposta_esperada": "x", "pontos_obrigatorios": ["a"]}
+    assert make_rating_sheets.expected_view(normal) == ("x", ["a"])
+    neg = {"tipo": "negativo", "resposta_esperada": 'Responde começando EXATAMENTE por: "Frase fixa." e depois descreve (1).',
+           "pontos_obrigatorios": ["velho"]}
+    expected, points = make_rating_sheets.expected_view(neg)
+    assert "EXCLUSIVAMENTE" in expected and "Frase fixa." in expected and "descreve" not in expected
+    assert points == make_rating_sheets.REFUSAL_POINTS_V06
+    odd = {"tipo": "negativo", "resposta_esperada": "sem aspas", "pontos_obrigatorios": ["p"]}
+    assert make_rating_sheets.expected_view(odd) == ("sem aspas", ["p"])
+
+    payload, out, _, _ = _run_dry()
+    records = [json.loads(x) for x in out.read_text(encoding="utf-8").splitlines()]
+    for r in records:
+        r["dry_run"] = False
+    real = _tmp() / "real.jsonl"
+    real.write_text("\n".join(json.dumps(r) for r in records), encoding="utf-8")
+    cases_path = _tmp() / "cases.json"
+    cases_path.write_text(json.dumps(payload), encoding="utf-8")
+    third = _tmp()
+    argv = ["--responses", str(real), "--cases", str(cases_path), "--out", str(third), "--terceira-rodada", "4", "--prefixo", "T"]
+    assert make_rating_sheets.main(argv) == 0
+    key = list(csv.DictReader((third / "chave_cegamento.csv").open(encoding="utf-8"), delimiter=";"))
+    assert len(key) == 4 and all(r["id_cego"].startswith("T") and r["calibracao"] == "sim" for r in key)
+
+
+def test_report_has_complementary_agreement_and_distribution():
+    payload, out, _, _ = _run_dry()
+    records = [json.loads(x) for x in out.read_text(encoding="utf-8").splitlines()]
+    for r in records:
+        r["dry_run"] = False
+    real = _tmp() / "real.jsonl"
+    real.write_text("\n".join(json.dumps(r) for r in records), encoding="utf-8")
+    cases_path = _tmp() / "cases.json"
+    cases_path.write_text(json.dumps(payload), encoding="utf-8")
+    sheets = _tmp()
+    assert make_rating_sheets.main(["--responses", str(real), "--cases", str(cases_path), "--out", str(sheets),
+                                    "--terceira-rodada", "6", "--prefixo", "T"]) == 0
+    for rater, score in (("leigo", 5), ("tecnico", 4), ("neutro", 5)):
+        _fill(sheets / f"{rater}.csv", rater, fill_all=True, score=score)
+    report = _tmp() / "rel.md"
+    assert analyze.main(["--responses", str(real), "--cases", str(cases_path), "--ratings", str(sheets), "--out", str(report)]) == 0
+    text = report.read_text(encoding="utf-8")
+    assert "Concordância complementar" in text and "Distribuição das notas" in text
+    assert "| clareza | leigo-tecnico | 6 | 0% | 100% |" in text
+    assert "| clareza | leigo | 5: 6 |" in text
+
+
+def test_verificar_rodada_detects_problems_and_passes_clean_sheets():
+    from experiments.llm_7a import verificar_rodada as vr
+
+    payload, out, _, _ = _run_dry()
+    records = [json.loads(x) for x in out.read_text(encoding="utf-8").splitlines()]
+    for r in records:
+        r["dry_run"] = False
+    real = _tmp() / "real.jsonl"
+    real.write_text("\n".join(json.dumps(r) for r in records), encoding="utf-8")
+    cases_path = _tmp() / "cases.json"
+    cases_path.write_text(json.dumps(payload), encoding="utf-8")
+    first = _tmp()
+    argv = ["--responses", str(real), "--cases", str(cases_path), "--out", str(first), "--terceira-rodada", str(len(records)), "--prefixo", "T"]
+    assert make_rating_sheets.main(argv) == 0
+    assert vr.check(first, "T", []) == []
+    assert vr.main(["--planilhas", str(first), "--prefixo", "T"]) == 0
+    problems = vr.check(first, "S", [first])
+    assert any("prefixo" in p for p in problems) and any("idênticas" in p for p in problems)
+    assert vr.main(["--planilhas", str(first), "--prefixo", "S"]) == 1
+    # resposta esperada antiga e recusa sem EXCLUSIVAMENTE
+    path = first / "tecnico.csv"
+    rows = list(csv.DictReader(path.open(encoding="utf-8-sig"), delimiter=";"))
+    for row in rows:
+        if row["caso"].startswith("Negativo"):
+            row["resposta_esperada"] = "Responde e depois apenas descreve os dados."
+    with path.open("w", newline="", encoding="utf-8-sig") as fh:
+        writer = csv.DictWriter(fh, fieldnames=list(rows[0]), delimiter=";")
+        writer.writeheader()
+        writer.writerows(rows)
+    problems = vr.check(first, "T", [])
+    assert any("EXCLUSIVAMENTE" in p for p in problems) and any("antiga" in p for p in problems)
+    # notas já preenchidas
+    _fill(first / "leigo.csv", "leigo", fill_all=True, score=5)
+    assert any("notas preenchidas" in p for p in vr.check(first, "T", []))
+    # ids diferentes, itens fora da calibração, planilha vazia e arquivo ausente
+    other = _tmp()
+    make_rating_sheets.main(["--responses", str(real), "--cases", str(cases_path), "--out", str(other)])
+    assert any("calibração" in p for p in vr.check(other, "R", []))
+    (other / "leigo.csv").write_text(
+        (other / "leigo.csv").read_text(encoding="utf-8-sig").splitlines()[0] + "\n", encoding="utf-8-sig")
+    problems = vr.check(other, "R", [])
+    assert any("mesmos ids" in p for p in problems)
+    empty = _tmp()
+    assert vr.check(empty, "T", []) == ["Falta leigo.csv", "Falta neutro.csv", "Falta tecnico.csv"]
+    blank = _tmp()
+    for name in ("leigo", "neutro", "tecnico"):
+        (blank / f"{name}.csv").write_text("id_cego;calibracao;caso;resposta_do_sistema;resposta_esperada\n", encoding="utf-8-sig")
+    assert "Planilhas vazias." in vr.check(blank, "T", [])
+
+
+def test_exclude_sheets_removes_identical_responses():
+    payload, out, _, _ = _run_dry()
+    records = [json.loads(x) for x in out.read_text(encoding="utf-8").splitlines()]
+    for r in records:
+        r["dry_run"] = False
+    real = _tmp() / "real.jsonl"
+    real.write_text("\n".join(json.dumps(r) for r in records), encoding="utf-8")
+    cases_path = _tmp() / "cases.json"
+    cases_path.write_text(json.dumps(payload), encoding="utf-8")
+    first = _tmp()
+    base = ["--responses", str(real), "--cases", str(cases_path)]
+    assert make_rating_sheets.main(base + ["--out", str(first), "--terceira-rodada", "4", "--prefixo", "T"]) == 0
+    seen = {r["resposta_do_sistema"].strip() for r in csv.DictReader((first / "leigo.csv").open(encoding="utf-8-sig"), delimiter=";")}
+    second = _tmp()
+    assert make_rating_sheets.main(base + ["--out", str(second), "--terceira-rodada", "50", "--prefixo", "U",
+                                           "--excluir-planilhas", str(first), str(_tmp())]) == 0
+    now = {r["resposta_do_sistema"].strip() for r in csv.DictReader((second / "leigo.csv").open(encoding="utf-8-sig"), delimiter=";")}
+    assert seen and not (seen & now)

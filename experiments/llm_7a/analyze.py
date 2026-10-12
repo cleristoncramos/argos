@@ -12,8 +12,9 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 from core import llm_eval
@@ -108,6 +109,36 @@ def merge(records: list, key_rows: list, ratings: dict) -> tuple:
     return merged, kappas
 
 
+def complementary(key_rows: list, ratings: dict) -> dict:
+    """
+    Indicadores que complementam o kappa (itens de calibração):
+    concordância exata e dentro de 1 ponto por par, e distribuição das notas por avaliador.
+    """
+    series = defaultdict(lambda: defaultdict(dict))
+    for row in key_rows:
+        if row["calibracao"] != "sim":
+            continue
+        for rater, rows in ratings.items():
+            line = rows.get(row["id_cego"])
+            if line is None:
+                continue
+            for dim in ("clareza", "correcao", "neutralidade"):
+                value = _num(line.get(f"nota_{dim}"))
+                if value is not None:
+                    series[dim][rater][row["id_cego"]] = value
+    pairs, distribution = {}, {}
+    for dim, per_rater in series.items():
+        distribution[dim] = {rater: dict(sorted(Counter(vals.values()).items())) for rater, vals in sorted(per_rater.items())}
+        raters = sorted(per_rater)
+        for i, a in enumerate(raters):
+            for b in raters[i + 1:]:
+                common = sorted(set(per_rater[a]) & set(per_rater[b]))
+                if common:
+                    exact, within = llm_eval.agreement([per_rater[a][k] for k in common], [per_rater[b][k] for k in common])
+                    pairs.setdefault(dim, {})[f"{a}-{b}"] = (exact, within, len(common))
+    return {"pares": pairs, "distribuicao": distribution}
+
+
 def _fmt(value):
     if value is None:
         return "—"
@@ -116,7 +147,28 @@ def _fmt(value):
     return str(value)
 
 
-def build_report(records: list, kappas: dict, cases_by_id: dict, meta: dict) -> str:
+ALERT_SHARE = 0.95
+ALERT_MIN_NOTES = 10
+
+
+def rater_alerts(ratings: dict) -> list:
+    """Por avaliador, quanto as notas variam. Alerta se quase todas forem iguais."""
+    out = []
+    for rater, rows in sorted(ratings.items()):
+        dim = RATERS[rater]["dimensao"]
+        values = [v for v in (_num(r.get(f"nota_{dim}")) for r in rows.values()) if v is not None]
+        if not values:
+            continue
+        share = llm_eval.dominant_share(values)
+        out.append({
+            "avaliador": rater, "dimensao": dim, "n": len(values), "media": sum(values) / len(values),
+            "mais_frequente": max(set(values), key=values.count), "parcela": share,
+            "alerta": len(values) >= ALERT_MIN_NOTES and share >= ALERT_SHARE,
+        })
+    return out
+
+
+def build_report(records: list, kappas: dict, cases_by_id: dict, meta: dict, alerts=None, extra=None) -> str:
     metrics = llm_eval.compute_metrics(records)
     lines = [
         "# Relatório de validação 7A (gerado automaticamente)",
@@ -137,9 +189,33 @@ def build_report(records: list, kappas: dict, cases_by_id: dict, meta: dict) -> 
         lines += ["| Dimensão | Par | Kappa | Situação |", "|---|---|---|---|"]
         for dim, pairs in sorted(kappas.items()):
             for pair, value in sorted(pairs.items()):
-                lines.append(f"| {dim} | {pair} | {value} | {'ok' if value >= llm_eval.KAPPA_MIN else 'abaixo de 0,60'} |")
+                if math.isnan(value):
+                    status, shown = "indeterminado: sem variação nas notas (não prova concordância)", "n/d"
+                else:
+                    status, shown = ("ok" if value >= llm_eval.KAPPA_MIN else "abaixo de 0,60"), value
+                lines.append(f"| {dim} | {pair} | {shown} | {status} |")
     else:
         lines.append("Pendente: sem notas de calibração dos três avaliadores.")
+    if extra and extra.get("pares"):
+        lines += ["", "## Concordância complementar (não substitui o kappa)", "",
+                  "| Dimensão | Par | Itens | Concordância exata | Dentro de 1 ponto |", "|---|---|---|---|---|"]
+        for dim, pairs in sorted(extra["pares"].items()):
+            for pair, (exact, within, n) in sorted(pairs.items()):
+                lines.append(f"| {dim} | {pair} | {n} | {exact:.0%} | {within:.0%} |")
+        lines += ["", "### Distribuição das notas (calibração)", "", "| Dimensão | Avaliador | Distribuição (nota: quantidade) |", "|---|---|---|"]
+        for dim, per_rater in sorted(extra["distribuicao"].items()):
+            for rater, dist in per_rater.items():
+                lines.append(f"| {dim} | {rater} | " + ", ".join(f"{k:g}: {v}" for k, v in dist.items()) + " |")
+    if alerts:
+        lines += ["", "## Variação das notas humanas (sinal de alerta)", "",
+                  "| Avaliador | Dimensão | Notas | Média | Nota mais frequente | Parcela dessa nota | Situação |", "|---|---|---|---|---|---|---|"]
+        for a in alerts:
+            flag = "ALERTA: quase sem variação" if a["alerta"] else "ok"
+            lines.append(f"| {a['avaliador']} | {a['dimensao']} | {a['n']} | {_fmt(a['media'])} | {_fmt(a['mais_frequente'])} | "
+                         f"{a['parcela']:.0%} | {flag} |")
+        if any(a["alerta"] for a in alerts):
+            lines += ["", "> Notas quase todas iguais não demonstram qualidade: a rubrica pode não ter discriminado respostas. "
+                          "Rever com os avaliadores antes de usar este resultado."]
     lines += ["", "## Taxas das verificações automáticas informativas", "",
               "| Modelo | métricas no contexto | números rastreáveis | limitações obrigatórias |", "|---|---|---|---|"]
     for model, m in metrics.items():
@@ -191,10 +267,12 @@ def main(argv=None) -> int:
     ratings_dir = Path(args.ratings)
     ratings = load_ratings(ratings_dir)
     key_path = ratings_dir / "chave_cegamento.csv"
-    kappas = {}
+    kappas, extra = {}, None
     if ratings and key_path.exists():
-        records, kappas = merge(records, _read_csv(key_path), ratings)
-    report = build_report(records, kappas, cases, cases_payload)
+        key_rows = _read_csv(key_path)
+        records, kappas = merge(records, key_rows, ratings)
+        extra = complementary(key_rows, ratings)
+    report = build_report(records, kappas, cases, cases_payload, rater_alerts(ratings), extra)
     Path(args.out).write_text(report, encoding="utf-8")
     print(f"Relatório gravado em {args.out}")
     return 0

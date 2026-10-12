@@ -493,7 +493,7 @@ render_explain_section(
         symbol.upper(),
         frequency,
         float(annualization_factor),
-        risk_free_pct,
+        risk_free_rate_pct,
         summary=metrics,
         name=asset_name(symbol),
     ),
@@ -703,4 +703,4 @@ render_catalog_notice()
 # =====================
 # Rodapé
 # =====================
-render_footer_disclaimer()
+render_footer_disclaimer()

@@ -25,7 +25,7 @@ def test_kappa_partial_between_zero_and_one():
 
 
 def test_kappa_degenerate():
-    assert ev.weighted_kappa([4, 4, 4], [4, 4, 4]) == 1.0
+    assert math.isnan(ev.weighted_kappa([4, 4, 4], [4, 4, 4]))  # sem variação: indeterminado
     assert ev.weighted_kappa([4, 4, 4], [5, 5, 5]) == 0.0
 
 
@@ -133,3 +133,17 @@ def test_other_check_failures_and_informative_rates():
     m = ev.compute_metrics([only_info, _rec("c8", 1)])["gpt-5-mini"]
     assert m["auto_valores_rastreaveis"] == 0.5 and m["auto_limitacoes"] == 1.0
     assert m["campos_obrigatorios"] == 1.0
+
+
+def test_dominant_share():
+    assert ev.dominant_share([5, 5, 5, 5]) == 1.0
+    assert ev.dominant_share([5, 5, 4, 3]) == 0.5
+    assert math.isnan(ev.dominant_share([]))
+
+
+def test_agreement_exact_and_within_one():
+    assert ev.agreement([5, 5, 4, 3], [5, 4, 4, 5]) == (0.5, 0.75)
+    with pytest.raises(ValueError):
+        ev.agreement([1], [1, 2])
+    with pytest.raises(ValueError):
+        ev.agreement([], [])
