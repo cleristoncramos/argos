@@ -106,3 +106,26 @@ Execução oficial da v0.6 (gpt-5 mini, 78 respostas): custo médio de US$ 0,001
 - [ ] Cada tela com botão testada nos três modos.
 - [ ] `data/llm_demo.json` conferido (somente respostas aprovadas, sem texto inadequado).
 - [ ] `python -m pytest -q` sem falhas e com 100% de cobertura em `core/`.
+
+**Gravação realizada:** em 12/10/2026, no modo `live` com `ARGOS_LLM_RECORD=1`, foram gravadas as respostas das 5 telas com período fixo (04/01/2021 a 31/12/2025, frequência diária), totalizando 38 respostas em `data/llm_demo.json` (26 derivadas dos casos da 7A e 12 gravadas em telas reais). Alterar ativo, período, frequência ou parâmetros muda a chave do contexto e faz a tela mostrar o texto fixo com o motivo `demo_sem_resposta_salva`.
+**Teste do modo demonstração:** em 12/10/2026, sem chave e sem acesso à API, as 5 telas exibiram as respostas gravadas, com status `demo` e custo zero (ver seção 8).
+
+
+## 8. Verificação manual das telas
+
+Os testes automáticos cobrem `core/` (730 testes, 100% de cobertura em 12/10/2026) mas não executam o Streamlit. Esta tabela registra a verificação manual das telas. Parâmetros usados na demonstração: período de 04/01/2021 a 31/12/2025, frequência diária, taxa livre de risco 0%, ativo AAPL (comparação: AAPL e ^GSPC; janela sazonal: entrada em setembro, saída em outubro).
+
+| Tela | Modo `off` | Modo `live` | Modo `demo` | Observação |
+|---|---|---|---|---|
+| Análise Individual | pendente | OK (12/10/2026) | OK (12/10/2026) | |
+| Janela sazonal | pendente | OK (12/10/2026) | OK (12/10/2026) | |
+| Risco e Retorno | pendente | OK (12/10/2026) | OK (12/10/2026) | |
+| Simulação de Aportes | pendente | OK (12/10/2026) | OK (12/10/2026) | |
+| Comparação de 2 ativos | pendente | OK (12/10/2026) | OK (12/10/2026) | |
+
+Critérios de aprovação por tela e modo:
+- `off`: o botão "Explicar com IA" não aparece e o restante da tela funciona normalmente.
+- `live`: a explicação aparece com o aviso educativo, o registro de uso mostra `status: ok` e `logs/llm_uso.jsonl` não contém a chave nem o texto gerado.
+- `demo`: a explicação aparece igual à gravada, o registro mostra `status: demo`, `input_tokens: 0` e `cost_usd: 0.0`, sem rede e sem chave.
+
+Falha de qualquer critério, ou texto fixo de contingência, é registrada na coluna Observação com o `reason` do registro de uso.
