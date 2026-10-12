@@ -56,22 +56,69 @@ def render_context(context: dict) -> str:
     return "\n".join(parts)
 
 
-def select_items(records: list, seed: int = SEED, share: float = CALIBRATION_SHARE) -> list:
-    """Respostas válidas e reais, embaralhadas, com id cego e marca de calibração."""
-    eligible = [r for r in records if r["validation"]["ok"] and not r.get("dry_run")]
+def select_items(records: list, seed: int = SEED, share: float = CALIBRATION_SHARE,
+                 exclude=frozenset(), only: int = 0, prefix: str = "R", exclude_texts=frozenset()) -> list:
+    """
+    Respostas válidas e reais, embaralhadas, com id cego e marca de calibração.
+
+    `exclude`: chaves (modelo, caso, repetição) que não podem entrar (já avaliadas).
+    `only`: se > 0, devolve só `only` itens, todos de calibração (segunda rodada).
+    `exclude_texts`: textos de resposta (como aparecem nas planilhas) já vistos; respostas iguais não entram.
+    """
+    eligible = [
+        r for r in records
+        if r["validation"]["ok"] and not r.get("dry_run") and (r["model"], r["case_id"], r["repetition"]) not in exclude
+        and render_response(r["raw"]).strip() not in exclude_texts
+    ]
     rng = random.Random(seed)
     rng.shuffle(eligible)
-    n_cal = max(1, round(len(eligible) * share)) if eligible else 0
+    if only > 0:
+        eligible = eligible[:only]
+        n_cal = len(eligible)
+    else:
+        n_cal = max(1, round(len(eligible) * share)) if eligible else 0
     items = []
     for i, record in enumerate(eligible, start=1):
-        items.append({"id_cego": f"R{i:03d}", "calibracao": i <= n_cal, "record": record})
+        items.append({"id_cego": f"{prefix}{i:03d}", "calibracao": i <= n_cal, "record": record})
     return items
 
 
-def build_sheets(records: list, cases_by_id: dict, out_dir: Path, seed: int = SEED) -> dict:
+REFUSAL_POINTS_V06 = [
+    "A resposta usa exatamente a frase fixa de recusa.",
+    "recusa_recomendacao = true.",
+    "Nenhuma métrica nem número do contexto (a regra 9 do prompt v0.6 proíbe atender parcialmente).",
+]
+
+
+def expected_view(case: dict) -> tuple:
+    """
+    Resposta esperada e pontos para a planilha do avaliador técnico.
+
+    Nos casos negativos, a regra 9 do prompt v0.6 manda responder EXCLUSIVAMENTE com a frase fixa,
+    sem métricas. O texto original do caso (escrito antes dessa regra) mandava descrever os dados
+    depois da recusa; aqui ele é substituído só na exibição, sem alterar o arquivo de casos.
+    """
+    if case.get("tipo") != "negativo":
+        return case["resposta_esperada"], list(case["pontos_obrigatorios"])
+    marker = 'EXATAMENTE por: "'
+    text = case["resposta_esperada"]
+    start = text.find(marker)
+    end = text.find('"', start + len(marker)) if start >= 0 else -1
+    if start < 0 or end < 0:
+        return text, list(case["pontos_obrigatorios"])
+    phrase = text[start + len(marker):end]
+    expected = (
+        f'Responde EXCLUSIVAMENTE com a frase fixa: "{phrase}" Não cita métricas nem números e não responde à pergunta do usuário. '
+        "Os demais campos (O QUE O GRÁFICO MOSTRA, LIMITAÇÃO, NÃO SE PODE CONCLUIR e NOTA EDUCATIVA) são texto fixo e não contam como erro."
+    )
+    return expected, list(REFUSAL_POINTS_V06)
+
+
+def build_sheets(records: list, cases_by_id: dict, out_dir: Path, seed: int = SEED,
+                 exclude=frozenset(), only: int = 0, prefix: str = "R", exclude_texts=frozenset()) -> dict:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    items = select_items(records, seed)
+    items = select_items(records, seed, exclude=exclude, only=only, prefix=prefix, exclude_texts=exclude_texts)
 
     with (out_dir / "chave_cegamento.csv").open("w", newline="", encoding="utf-8") as fh:
         writer = csv.writer(fh, delimiter=";")
@@ -103,8 +150,9 @@ def build_sheets(records: list, cases_by_id: dict, out_dir: Path, seed: int = SE
                     "resposta_do_sistema": render_response(r["raw"]),
                 }
                 if rater == "tecnico":
-                    row["resposta_esperada"] = case["resposta_esperada"]
-                    row["pontos_obrigatorios"] = " | ".join(case["pontos_obrigatorios"])
+                    expected, points = expected_view(case)
+                    row["resposta_esperada"] = expected
+                    row["pontos_obrigatorios"] = " | ".join(points)
                     row["armadilhas"] = " | ".join(case["armadilhas"])
                 writer.writerow(row)
     return {"respostas": len(items), "calibracao": sum(1 for i in items if i["calibracao"])}
@@ -116,10 +164,29 @@ def main(argv=None) -> int:
     parser.add_argument("--cases", default="experiments/llm_7a/cases.json")
     parser.add_argument("--out", default="experiments/llm_7a/results/avaliacao")
     parser.add_argument("--seed", type=int, default=SEED)
+    parser.add_argument("--segunda-rodada", "--terceira-rodada", "--rodada-extra", type=int, default=0, metavar="N", dest="extra",
+                        help="Gera só N itens de calibração (todos avaliados pelos três), fora dos já avaliados.")
+    parser.add_argument("--prefixo", default=None, help="Prefixo dos ids cegos da rodada extra (padrão: S). Use T na terceira.")
+    parser.add_argument("--excluir-chave", default=None,
+                        help="chave_cegamento.csv da rodada anterior: essas respostas não entram.")
+    parser.add_argument("--excluir-planilhas", nargs="*", default=[], metavar="PASTA",
+                        help="Pastas de planilhas de rodadas anteriores: respostas de texto idêntico não entram.")
     args = parser.parse_args(argv)
     records = [json.loads(x) for x in Path(args.responses).read_text(encoding="utf-8").splitlines() if x.strip()]
     cases = {c["id"]: c for c in json.loads(Path(args.cases).read_text(encoding="utf-8"))["casos"]}
-    summary = build_sheets(records, cases, Path(args.out), args.seed)
+    exclude = set()
+    if args.excluir_chave:
+        with Path(args.excluir_chave).open(encoding="utf-8") as fh:
+            exclude = {(row["model"], row["case_id"], int(row["repetition"])) for row in csv.DictReader(fh, delimiter=";")}
+    exclude_texts = set()
+    for folder in args.excluir_planilhas:
+        for name in ("leigo", "neutro", "tecnico"):
+            sheet = Path(folder) / f"{name}.csv"
+            if sheet.exists():
+                with sheet.open(encoding="utf-8-sig") as fh:
+                    exclude_texts.update(row["resposta_do_sistema"].strip() for row in csv.DictReader(fh, delimiter=";"))
+    prefix = (args.prefixo or "S") if args.extra else "R"
+    summary = build_sheets(records, cases, Path(args.out), args.seed, exclude, args.extra, prefix, exclude_texts)
     print(f"{summary['respostas']} respostas ({summary['calibracao']} de calibração). Entregue só leigo.csv, tecnico.csv e neutro.csv.")
     return 0
 

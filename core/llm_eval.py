@@ -86,9 +86,27 @@ def weighted_kappa(a: Iterable[int], b: Iterable[int], levels: Iterable[int] = R
     num = sum(weight(i, j) * observed[i][j] for i in range(k) for j in range(k))
     den = sum(weight(i, j) * row[i] * col[j] for i in range(k) for j in range(k))
     if den == 0:
-        # Ambos os avaliadores deram sempre a mesma nota: concordância total.
-        return 1.0
+        # Sem variação nas notas de pelo menos um avaliador (por exemplo, só 5): o kappa
+        # é indeterminado. Não vale como "concordância perfeita".
+        return float("nan")
     return 1 - num / den
+
+
+def dominant_share(values: Iterable[float]) -> float:
+    """Fração das notas que repetem o valor mais frequente (1.0 = nenhuma variação)."""
+    vals = list(values)
+    if not vals:
+        return float("nan")
+    return max(vals.count(v) for v in set(vals)) / len(vals)
+
+
+def agreement(a: Iterable[int], b: Iterable[int]) -> tuple:
+    """(concordância exata, diferença de no máximo 1 ponto) entre duas séries de notas."""
+    x, y = list(a), list(b)
+    if len(x) != len(y) or not x:
+        raise ValueError("As séries devem ter o mesmo tamanho e não ser vazias.")
+    n = len(x)
+    return (sum(u == v for u, v in zip(x, y)) / n, sum(abs(u - v) <= 1 for u, v in zip(x, y)) / n)
 
 
 def pairwise_kappa(ratings: dict) -> dict:
