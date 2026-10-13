@@ -62,3 +62,17 @@ Nota sobre as dimensões: o parecer de 12/10/2026 cita "clareza, completude e ne
 | 12/10/2026 | Relatório da rodada 4 da 7A | Foi entregue ao orientador o relatório da rodada 4, incluindo resultados automáticos, avaliação humana, valores de kappa, concordância dentro de um ponto, baixa variação das notas, item T010 e limitação metodológica registrada. | Encaminhado |
 
 Fonte da política de dados: https://developers.openai.com/api/docs/guides/your-data
+
+## Prioridades para a continuidade do Argos DataLab (12/10/2026)
+
+| Ordem | Prioridade | Observação |
+|---|---|---|
+| 1 | Implementar e estabilizar a 7B: integração controlada da API, validação das respostas, limites de uso, logs, fallback educativo e funcionamento nos modos offline, demonstração e live | Checklist em `docs/checklists/verificacao_manual_telas.md` |
+| 2 | Implementar o modo de dados salvos e concluir o congelamento da versão de demonstração, para apresentar o Argos sem internet, fonte externa de dados ou API | |
+| 3 | Iniciar já a preparação documental do O6: protocolo, instrumentos, TCLE, plano de recrutamento, tratamento de dados e materiais para eventual submissão à Plataforma Brasil e ao CEP/UFPI | Não autoriza coleta com usuários; a coleta depende do enquadramento ético, do TCLE e do parecer favorável aplicável |
+| 4 | Somente após estabilizar a 7B e preparar o O6: comparação de três a cinco ativos, com sazonalidade comparada, alinhamento temporal e textos explicativos | |
+| 5 | Prompt v0.7 e nova melhoria do protocolo de avaliação humana: registradas como melhoria futura, salvo problema técnico, de segurança ou de neutralidade que exija correção imediata | |
+
+Sequência do próximo ciclo: 7B controlada, modo demo com dados salvos, preparação documental do O6 em paralelo, comparação de três a cinco ativos, congelamento da demo e documentação final.
+
+Status: recebida em 12/10/2026. Original da mensagem: a arquivar fora do repositório.
