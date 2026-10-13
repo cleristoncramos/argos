@@ -20,7 +20,7 @@ from typing import Callable, Optional
 
 import streamlit as st
 
-from core import llm_service
+from core import demo_mode, llm_mode, llm_service
 from core.assets import ASSETS
 from core.llm_render import explanation_view
 
@@ -42,9 +42,10 @@ def _setting(name: str) -> Optional[str]:
     return str(value).strip() if value else None
 
 
-def llm_mode() -> str:
-    mode = (_setting("ARGOS_LLM_MODE") or llm_service.MODE_OFF).lower()
-    return mode if mode in llm_service.MODES else llm_service.MODE_OFF
+def current_mode() -> str:
+    return llm_mode.resolve_mode(
+        _setting("ARGOS_LLM_MODE"), demo_mode.is_demo_mode(), _recording()
+    )
 
 
 def _recording() -> bool:
@@ -103,7 +104,7 @@ def render_explain_section(build_context: Callable[[], Optional[dict]], key: str
     `build_context` só é chamado se o recurso estiver ligado, para não gastar
     processamento nem expor nada no modo desativado (padrão).
     """
-    mode = llm_mode()
+    mode = current_mode()
     if mode == llm_service.MODE_OFF:
         return
     context = build_context()
