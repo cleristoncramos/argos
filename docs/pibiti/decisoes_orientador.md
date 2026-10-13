@@ -52,3 +52,13 @@ Consequências registradas:
 5. Os textos originais das mensagens do orientador e dos aceites dos avaliadores ficam em registro privado, fora do repositório público.
 
 Nota sobre as dimensões: o parecer de 12/10/2026 cita "clareza, completude e neutralidade". A rubrica usada nas planilhas e no `analyze` é **clareza, correção e neutralidade** ("os números e conceitos estão corretos?"). Até confirmação por escrito do orientador, a sessão usa a rubrica vigente (correção); se ele quiser avaliar "completude" no lugar, a rubrica, as planilhas e o relatório precisam mudar antes da sessão.
+
+## Encaminhamentos ao orientador (12/10/2026)
+
+| Data | Assunto | Registro | Status |
+|---|---|---|---|
+| 12/10/2026 | Limites de uso da LLM | Foram apresentados ao orientador os limites propostos para a integração: até 20 chamadas por sessão e teto estimado de US$ 0,50 por sessão, com bloqueio e fallback educativo após o limite. Não há limite global nesta versão. | Encaminhado |
+| 12/10/2026 | Política de dados do provedor | Foi apresentada ao orientador a política de uso de dados da API. A integração enviará somente contexto estruturado e dados públicos/agregados da análise, sem dados pessoais, financeiros, patrimoniais ou identificadores de usuários. Segundo a documentação do provedor (consulta em 12/10/2026), dados enviados à API não são usados para treinar modelos por padrão, salvo adesão explícita ao compartilhamento, e os registros de monitoramento de abuso são retidos por até 30 dias. | Encaminhado |
+| 12/10/2026 | Relatório da rodada 4 da 7A | Foi entregue ao orientador o relatório da rodada 4, incluindo resultados automáticos, avaliação humana, valores de kappa, concordância dentro de um ponto, baixa variação das notas, item T010 e limitação metodológica registrada. | Encaminhado |
+
+Fonte da política de dados: https://developers.openai.com/api/docs/guides/your-data
