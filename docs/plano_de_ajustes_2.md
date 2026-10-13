@@ -1,10 +1,98 @@
 # Plano de Ajustes 2 — Argos DataLab
 
-**Elaborado em:** 09/10/2026 · **Atualizado em:** 09/10/2026 (terceira rodada de respostas) · **Situação:** pronto para execução; a passagem à API (Bloco 7B) depende dos resultados da 7A · **Base:** `docs/ata_reuniao_2026-10-07.md`, `docs/checklist_pendencias.md` e `docs/llm_7b_especificacao.md`
+**Elaborado em:** 09/10/2026 · **Atualizado em:** 12/10/2026 (relatório de acompanhamento na seção 0) · **Situação:** 7A encerrada para progressão; 7B implementada em modo controlado (blocos 1 a 3) e em estabilização; modo de demonstração com dados salvos e preparação do O6 em andamento · **Base:** `docs/ata_reuniao_2026-10-07.md`, `docs/checklist_pendencias.md` e `docs/llm_7b_especificacao.md`
 
 **O que este plano cobre:** as melhorias funcionais decididas na reunião de 07/10/2026, na ordem em que devem ser feitas. **O que ele não cobre:** Fase 10 (nome e identidade visual), home, "Get Started", vídeo de abertura e a definição de autoria de trabalhos colaborativos. Esses itens formam o **Plano 3**.
 
 Convenções: **[D]** decisão tomada · **[S]** sugestão deste plano, ainda sem aceite · **[?]** depende de resposta (seção 7).
+
+---
+
+## 0. Situação em 12/10/2026 (relatório de acompanhamento)
+
+**Legenda de evidência.** **[C]** confirmado com log, teste, commit ou arquivo; **[I]** indício: o módulo e seus testes existem na cobertura de `core/`, mas a tela não foi conferida no navegador; **[?]** não verificado, a conferir antes da reunião.
+
+**Estado do código [C].** 730 testes passando; `core/` com 100% de cobertura (12/10/2026). Ramo `main`, em dia com `origin/main` (HEAD `26b9e09`); último commit de código com as respostas de demonstração da IA: `e7a5777`. Tags de checkpoint existentes: `plano2-bloco3`, `plano2-bloco4`, `plano2-bloco5`, `prompt-v0.5-congelado` e `prompt-v0.6-congelado`; não há tag para o bloco 6, a 7B nem a versão congelada da demonstração. Chave de API: a anterior foi revogada em 12/10/2026 após exposição acidental em um log; a atual fica só no terminal da sessão e no `OPENAI_API_KEY`, fora do repositório.
+
+### 0.1 Resumo por bloco
+
+| Bloco | Situação | Evidência | O que falta |
+| --- | --- | --- | --- |
+| 1 Consolidação | Parcial | `tests/test_returns_gap.py` existe [I] (1.3); `docs/contribuicoes.md` existe [C] (1.4) | Conferir no navegador (1.1, 1.2); conferir que `contribuicoes.md` não registra trabalho colaborativo não confirmado |
+| 2 Sazonalidade | Implementado [I] | `core/seasonality.py` e testes; janela sazonal na Análise Individual com explicação por IA [C] | Conferência no navegador; N, mediana e proporção de anos positivos na tela |
+| 3 Comparação | Implementado em grande parte; tag `plano2-bloco3` [C] | `core/comparison*.py`, `tests/test_seasonality_compare.py`; comparação de 2 ativos com explicação por IA [C] | 3.2 a 3.4 [?]; explicação por IA para 3 a 5 ativos (prioridade 4 do orientador) |
+| 4 Simulação | Implementado; tag `plano2-bloco4` [C] | `core/simulation*.py`, `tests/test_simulation_texts.py`; explicação por IA [C] | 4.3 rótulos descritivos [?]; aviso sobre índices em pontos (`^IXIC`) |
+| 5 Educação | Implementado; tag `plano2-bloco5` [C] | `core/chart_guides.py`, `glossary.py`, `edu_layer.py` e testes; `docs/pibiti/revisao_textos_educativos.md` existe [C] | 5.6 revisão pedagógica, depois do congelamento (N23) |
+| 6 Tendência | Núcleo implementado [I]; sem tag de checkpoint [C] | `core/trend.py`, `tests/test_trend.py` | Tela e conferência no navegador [?]; tag `plano2-bloco6` quando concluído |
+| 7A Validação de prompts | **Concluída para progressão** [C] | Execução oficial da v0.6: 78 respostas, 0/78 falhas obrigatórias; 4 rodadas de avaliação humana; relatório em `docs/relatorio_validacao_7a.md` | Kappa < 0,60: limitação metodológica registrada (seção 2.4); arquivar o original da decisão; regenerar `relatorio_rodada4.md` com as planilhas preenchidas [?] |
+| 7B Interpretação assistida | **Implementada em modo controlado (blocos 1 a 3); em estabilização** [C] | Seção 0.2 | Seção 0.4 (prioridade 1) |
+| 8 Documentação e congelamento | Parcial | `docs/llm_7b_implementacao.md` [C]; `docs/checklists/verificacao_manual_telas.md` [C, `ee2d19a`]; `docs/demonstracao.md`, `docs/llm_7b_especificacao.md` e `docs/pibiti/escopo_relatorios.md` (8.4) existem [C]; 8.8 em andamento | 8.5 (tag da versão congelada), 8.1 a 8.3, 8.6, 8.7 [?]; 8.8 (seção 0.4, prioridade 2) |
+| 9 Protocolo ético (O6) | Minutas versionadas [C]; `ARGOS_EDU_LAYER=off` implementado (plano de 10/10/2026) | `docs/pibiti/cep/` com protocolo, dois TCLE, instrumentos, roteiro e checklist de submissão | 9.1, revisão do orientador, documentos institucionais e submissão (meta 15/12/2026); preparação documental passou a prioridade 3 |
+
+### 0.2 7B: o que está implantado [C]
+
+- **Modelo e prompt:** `gpt-5-mini`; prompt v0.6 congelado (impressão digital `e3b3574b7430`), conferido em toda chamada; `gpt-5-nano` fora da interface.
+- **Entrada:** apenas contexto JSON estruturado gerado pelo Argos (`core/llm_builders.py`); sem entrada livre; a LLM não usa ferramentas, navegação nem código.
+- **Saída:** JSON Schema estrito; 1.400 tokens; timeout de 20 s; até 2 retentativas (429, 5xx e falhas de rede; erros 4xx não são repetidos).
+- **Segurança:** validação automática antes de exibir (também no modo demo); texto educativo fixo em caso de falha, bloqueio, indisponibilidade ou limite.
+- **Telas com o botão "Explicar com IA":** Análise Individual, janela sazonal, Risco e Retorno, Simulação de Aportes e Comparação com exatamente 2 ativos. Sem botão: comparação de 3 a 5 ativos, mapa sazonal completo e Indicadores Técnicos.
+- **Modos (`ARGOS_LLM_MODE`):** `off` (padrão), `demo` (respostas salvas, sem chave e sem rede) e `live`.
+- **Registro de uso:** `logs/llm_uso.jsonl` (modelo, versão e impressão digital do prompt, tokens, custo, tempo, tentativas, status, motivo, verificações reprovadas, chave do contexto, hash da resposta e tela); sem chave e sem texto gerado; `logs/` fora do git.
+- **Limites:** 20 chamadas e US$ 0,50 estimados por sessão do navegador.
+- **Demonstração da IA:** `data/llm_demo.json` com 38 respostas (26 derivadas dos casos da 7A e 12 gravadas em telas reais), versionado em `e7a5777`; testado em 12/10/2026 nas 5 telas, sem chave e sem rede (`status: demo`, custo zero).
+- **Documentos:** `docs/llm_7b_implementacao.md` e `docs/checklists/verificacao_manual_telas.md` (ambos versionados).
+
+### 0.3 Onde a implementação difere do plano
+
+| Item | Plano | Implementação | Ação |
+| --- | --- | --- | --- |
+| Tokens de saída | 900 (N17) | 1.400 (condição de 12/10/2026) | Atualizado na seção 4 |
+| Limites de uso | Três camadas (N19): sessão, navegador e **global persistente**; 20 por usuário/dia, 50 por sessão, 200 globais/dia; US$ 5/mês; US$ 10 na validação | **Apenas por sessão**: 20 chamadas e US$ 0,50 | Decidir com o orientador: implementar o contador persistente ou aceitar o escopo menor (N31) |
+| Versão pública | Sem a LLM (N22) | A configuração padrão já é `off`; falta marcar e testar a versão pública | Testar a implantação pública sem chave |
+| Arquivos | `services/llm_*.py`, `app/ui/llm_panel.py` | `core/llm_client.py`, `core/llm_service.py`, `core/llm_builders.py`, `core/llm_render.py`, `app/ui/llm_explain.py` | Documentado na seção 4; a rede em `core/` fica restrita a `llm_client.py` por teste |
+| Botão | "✨ Explicar esta análise" | "Explicar com IA" | Alinhar nomes no checklist e nos textos |
+| Mensagem de bloqueio | Texto específico para validação reprovada | Um único texto de contingência para todos os casos | Opcional: diferenciar a mensagem |
+| Temperatura | 0 a 0,2 | Omitida; esforço de raciocínio mínimo | Registrado na especificação |
+
+### 0.4 Pendências, na ordem de prioridade do orientador (12/10/2026)
+
+**Prioridade 1: estabilizar a 7B**
+
+1. Concluir `docs/checklists/verificacao_manual_telas.md`: modo `off` (botão não aparece), modo offline sem internet, navegação geral, telas sem IA, exportações, mensagens de erro e leitura das 38 respostas quanto à neutralidade.
+2. Decidir o escopo dos limites de uso (N31) e, se a exigência da N19 permanecer, implementar o contador persistente e os limites diários.
+3. Falso positivo conhecido do validador ("aplicar"): pode bloquear a explicação da simulação. Evitar na demonstração e registrar; correção só com a v0.7 (prioridade 5).
+4. Atualizar `docs/llm_7b_especificacao.md` para refletir a configuração implementada.
+5. Registrar a verificação manual com data e commit; arquivar os originais das decisões do orientador e o pacote de evidências da 7A fora da pasta sincronizada do trabalho.
+
+**Prioridade 2: modo de dados salvos e congelamento**
+
+1. Versionar o pacote `data/demo/` (CSVs, `manifest.json`, README): hoje só existe no computador, pois o `.gitignore` ignora `data/`.
+2. Unificar as duas fontes de resposta da IA (`data/demo/llm_respostas.json`, quase vazio, e `data/llm_demo.json`); com `ARGOS_DEMO_MODE=true`, a explicação da IA usa sempre o modo `demo`, mesmo que exista chave.
+3. Regravar as respostas com os dados congelados, para as chaves dos contextos coincidirem com o pacote; manter período fixo (04/01/2021 a 31/12/2025).
+4. Testes automáticos desse comportamento; execução completa com a internet desativada e sem chave; aviso de versão congelada na interface.
+5. Marcar a versão no git e registrar a data (8.5); as tags existentes são de checkpoint (`plano2-bloco3` a `plano2-bloco5`, `prompt-v0.5-congelado`, `prompt-v0.6-congelado`) e a da versão congelada da demonstração ainda não existe.
+
+**Prioridade 3: preparação documental do O6** (sem autorizar coleta)
+
+Concluir as minutas em `docs/pibiti/cep/` (protocolo, TCLE, instrumentos, plano de recrutamento, tratamento de dados, cronograma), confirmar o procedimento com o CEP/UFPI (9.1) e preparar os materiais da Plataforma Brasil. A coleta continua condicionada ao parecer favorável.
+
+**Prioridade 4: comparação de 3 a 5 ativos**
+
+Interpretação a confirmar com o orientador: formato de contexto e validação da explicação por IA para 3 a 5 ativos, sazonalidade comparada, alinhamento temporal e textos explicativos.
+
+**Prioridade 5: melhoria futura**
+
+Prompt v0.7 e melhoria do protocolo de avaliação humana (reancorar a escala com exemplos, ampliar e diversificar o conjunto de itens), salvo problema técnico, de segurança ou de neutralidade que exija correção imediata.
+
+### 0.5 Critério para considerar o assistente de IA estabilizado
+
+- [ ] Checklist de verificação manual concluído, sem itens `PENDENTE` nas telas com o botão.
+- [ ] Modos `off`, `demo` e `live` verificados em cada tela; falhas de API simuladas exibem o texto fixo.
+- [ ] Demonstração completa sem internet e sem chave, com respostas regravadas sobre os dados congelados.
+- [ ] Limites de uso: decisão registrada e implementação compatível com ela.
+- [ ] Nenhuma chave no repositório, nos logs nem na documentação; `logs/` ignorado.
+- [ ] Testes: tudo passando, `core/` com 100%.
+- [ ] Documentação da 7B alinhada ao que está implantado; versão marcada no git.
 
 ---
 
@@ -71,6 +159,17 @@ Convenções: **[D]** decisão tomada · **[S]** sugestão deste plano, ainda se
 **Nota sobre N02.** Na reunião de 07/10 o orientador queria ver, para dois ativos, "o de 2025 e 2024 dos dois" (D12 do registro da reunião). Com N02, o recorte por anos não aparece na Comparação. A Comparação continua mostrando a sazonalidade geral (média de todos os anos) de cada ativo. Se o orientador sentir falta da comparação por anos, a lógica de `core/seasonality.py` já a comporta, e ela pode entrar no Plano 3.
 
 **Nota sobre a aprovação da 7B.** A aprovação é **condicional**: não autoriza integrar a API antes de a 7A cumprir os limiares. O registro dessa aprovação é um dos entregáveis da 7B; convém guardar a evidência por escrito (mensagem ou ata) [S].
+
+### 2.4 Decisões de 12/10/2026
+
+Texto recebido pelo desenvolvedor em 12/10/2026; o original da mensagem deve ser arquivado fora do repositório (data e remetente). Enquanto isso não estiver arquivado, tratar as linhas abaixo como "propostas, aguardando confirmação do orientador".
+
+| ID | Decisão | Efeito no plano |
+| --- | --- | --- |
+| D30 | **[D]** Etapa 7A encerrada para progressão. O kappa ponderado da avaliação humana ficou abaixo de 0,60 e é registrado como **limitação metodológica**, não como aprovação estatística; o limiar de 0,60 é mantido; a melhoria do protocolo fica como trabalho futuro | Bloco 7A; `docs/relatorio_validacao_7a.md` |
+| D31 | **[D]** 7B liberada com condições: `gpt-5-mini`; `gpt-5-nano` fora da interface; prompt v0.6 congelado; só contexto estruturado do Argos; sem entrada livre nem ferramentas; JSON Schema estrito; validação automática; fallback educativo; 1.400 tokens, timeout de 20 s e até 2 retentativas; registro de uso; segredo fora do repositório; limites de custo e uso; modo demonstração com respostas salvas | Bloco 7B; `docs/llm_7b_implementacao.md` |
+| D32 | **[D]** Ordem de prioridade: (1) estabilizar a 7B; (2) modo de dados salvos e congelamento da demonstração; (3) preparação documental do O6, sem coleta; (4) comparação de 3 a 5 ativos; (5) v0.7 e nova melhoria do protocolo de avaliação humana como melhoria futura | Seção 0.4 |
+| D33 | **[D]** Encaminhado ao orientador em 12/10/2026: limites de uso propostos (20 chamadas e US$ 0,50 por sessão), política de dados do provedor e relatório da rodada 4 | `docs/pibiti/decisoes_orientador.md`; N31 |
 
 ---
 
@@ -225,9 +324,11 @@ Especificação completa, parâmetros, custos, limites, limiares e rubrica em **
 
 **Posicionamento [D]:** a LLM é uma **camada de linguagem natural sobre resultados calculados de forma determinística pelo Argos**. Não calcula métricas, não escolhe ativos nem filtros, não acessa internet, banco de dados, arquivos ou ferramentas, não recomenda, não prevê. Para a pesquisa, é um **componente de apoio à interpretação e à educação financeira**, não o núcleo metodológico [D N09].
 
-**Configuração aprovada [D N17]:** OpenAI; `gpt-5-mini` (principal) e `gpt-5-nano` (comparação); saída em JSON Schema; máximo de 900 tokens de saída; timeout de 20 s; no máximo 2 retentativas; sem entrada livre do usuário na primeira versão; ferramentas, navegação e execução de código desabilitadas.
+**Configuração aprovada [D N17]:** OpenAI; `gpt-5-mini` (principal) e `gpt-5-nano` (comparação, fora da interface na 7B); saída em JSON Schema; máximo de 1.400 tokens de saída [valor alterado de 900 para 1.400 na liberação de 12/10/2026]; timeout de 20 s; no máximo 2 retentativas; sem entrada livre do usuário na primeira versão; ferramentas, navegação e execução de código desabilitadas.
 
 **Limites aprovados:** US$ 10,00 para a validação inicial; US$ 5,00 por mês em uso ou demonstração; 20 interpretações por usuário por dia; 50 por sessão; 200 globais por dia. Ao atingir qualquer limite: conteúdo educativo fixo e aviso de indisponibilidade temporária.
+
+**[Situação 12/10/2026]** Implementados apenas os limites **por sessão** (20 chamadas e US$ 0,50 estimados). Não implementados: limite por navegador, limite diário por usuário, contador global persistente e limite mensal. Decisão pendente (N31).
 
 #### 7A — Validação de prompts (antes da API no aplicativo)
 
@@ -239,38 +340,42 @@ Os limiares de custo (≤ US$ 0,002 por explicação) e de tempo (≤ 8 s) **só
 | 7A.2 | Implementar `core/llm_context.py` (monta o pacote de contexto a partir de resultados já calculados) e `core/llm_validation.py` (valida esquema, ticker, período, frequência, métricas citadas, valores rastreáveis, linguagem proibida, limitações). Ambos puros, sem rede, com testes. Servem à 7A e à 7B [S] **[Situação 10/10/2026: `core/llm_context.py`, `llm_prompts.py`, `llm_validation.py` e `llm_eval.py` prontos, testados, 100% de cobertura]** |
 | 7A.3 | Montar **no mínimo 12 casos**: análise individual, sazonalidade (incluindo poucos anos e mês incompleto), comparação de ativos, simulação histórica, dados insuficientes e pedidos de recomendação; mais o caso setembro→outubro e um ativo com preço ≤ 0 [S] **[Situação 10/10/2026: 18 casos gerados por `experiments/llm_7a/build_cases.py` a partir de `data/demo`]** |
 | 7A.4 | Escrever a **resposta esperada** de cada caso antes de rodar **[Situação 10/10/2026: respostas esperadas escritas pelo gerador, gravadas em `cases.json` antes de rodar]** |
-| 7A.5 | Rodar com **pelo menos 2 modelos** (`gpt-5-mini` e `gpt-5-nano`), **3 repetições por caso** (no mínimo 72 respostas); registrar modelo, versão do prompt, tokens, custo e tempo de cada chamada **[Situação 10/10/2026: executor pronto (`run_experiment.py`, com `--dry-run`, `--probe` e teto de custo); **falta rodar** com a chave]** |
-| 7A.6 | **Avaliação humana por três avaliadores independentes** [D N20]: (1) **leigo**, sem formação em finanças: clareza, vocabulário e compreensibilidade; (2) **técnico**: completude, correção factual e aderência ao contexto; (3) **neutralidade**: linguagem prescritiva, recomendações implícitas, previsões e adequação das limitações. Antes, uma **sessão de calibração** com casos exemplares; concordância mínima por **kappa ponderado ≥ 0,60**. As verificações automáticas (formato, consistência, termos proibidos) ficam com o desenvolvedor, que **não** é o único avaliador humano das dimensões subjetivas. Regras de aprovação em `docs/llm_7b_especificacao.md`, seção 5 **[Situação 10/10/2026: planilhas cegas e análise prontas; **falta definir os avaliadores (N26)** e a calibração]** |
+| 7A.5 | Rodar com **pelo menos 2 modelos** (`gpt-5-mini` e `gpt-5-nano`), **3 repetições por caso** (no mínimo 72 respostas); registrar modelo, versão do prompt, tokens, custo e tempo de cada chamada **[Situação 10/10/2026: executor pronto (`run_experiment.py`, com `--dry-run`, `--probe` e teto de custo); **Situação 12/10/2026: executada; execução oficial da v0.6 com 78 respostas e 0/78 falhas obrigatórias, relatório em `docs/relatorio_validacao_7a.md`**]** |
+| 7A.6 | **Avaliação humana por três avaliadores independentes** [D N20]: (1) **leigo**, sem formação em finanças: clareza, vocabulário e compreensibilidade; (2) **técnico**: completude, correção factual e aderência ao contexto; (3) **neutralidade**: linguagem prescritiva, recomendações implícitas, previsões e adequação das limitações. Antes, uma **sessão de calibração** com casos exemplares; concordância mínima por **kappa ponderado ≥ 0,60**. As verificações automáticas (formato, consistência, termos proibidos) ficam com o desenvolvedor, que **não** é o único avaliador humano das dimensões subjetivas. Regras de aprovação em `docs/llm_7b_especificacao.md`, seção 5 **[Situação 10/10/2026: planilhas cegas e análise prontas; **Situação 12/10/2026: avaliadores definidos e quatro rodadas realizadas; o critério de kappa ≥ 0,60 não foi atingido em todas as dimensões e pares em nenhuma das rodadas; registrado como limitação metodológica (D30)**]** |
 | 7A.7 | Incluir **casos negativos**, entre eles a frase falada na reunião ("seria bom investir em setembro") como saída que o validador deve rejeitar **[Situação 10/10/2026: 4 casos negativos, incluindo "seria bom investir em setembro"]** |
-| 7A.8 | Escrever o **relatório de validação da 7A** (incluindo a calibração, o kappa e as decisões) e registrar a aprovação do orientador para a transição em `docs/pibiti/decisoes_orientador.md` [D N21] **[Situação 10/10/2026: modelo do relatório e registro `docs/pibiti/decisoes_orientador.md` criados; **falta o preenchimento**]** |
+| 7A.8 | Escrever o **relatório de validação da 7A** (incluindo a calibração, o kappa e as decisões) e registrar a aprovação do orientador para a transição em `docs/pibiti/decisoes_orientador.md` [D N21] **[Situação 10/10/2026: modelo do relatório e registro `docs/pibiti/decisoes_orientador.md` criados; **Situação 12/10/2026: relatório preenchido (seções 6 e 7) e decisão registrada; falta arquivar o original da mensagem do orientador**]** |
 
 **Condição de passagem para a 7B [D N17]:** todos os limiares da tabela de `docs/llm_7b_especificacao.md` atingidos (100% em estrutura, consistência, ausência de recomendação, de previsão e de linguagem proibida, e na recusa correta; ≥ 95% em correção factual; ≥ 90% em limitações e em "o que não pode ser concluído"; ≥ 80% de estabilidade; ≤ 5% de alucinação; nota média ≥ 4,0; custo médio ≤ US$ 0,002; tempo médio ≤ 8 s). Uma única violação de recomendação, previsão ou linguagem proibida reprova o caso; ele só é reaprovado depois de ajuste do prompt, do validador ou do contexto.
 
+**Situação em 12/10/2026:** os limiares automáticos foram atingidos na execução oficial da v0.6 (0/78 falhas obrigatórias). O critério humano (kappa ponderado ≥ 0,60) não foi atingido e foi registrado como limitação metodológica, com a transição para a 7B liberada sob as condições da decisão D31.
+
 #### 7B — Integração por API (somente após a condição de passagem)
 
-**Arquitetura [S]:**
+**Arquitetura implementada [C 12/10/2026]** (o plano original previa `services/` e `app/ui/llm_panel.py`):
 
 ```
-core/llm_context.py     → monta o pacote de contexto (puro, testado) — criado na 7A
-core/llm_validation.py  → valida a resposta (puro, testado)        — criado na 7A
-core/llm_prompts.py     → prompts versionados (texto, versão)
-services/llm_client.py  → chama a API (timeout, retentativas, erro); fora de core/
-services/llm_audit.py   → registro mínimo de auditoria
-services/llm_limits.py  → contagem e limites de uso
-app/ui/llm_panel.py     → botão "✨ Explicar esta análise" e bloco expansível
+core/llm_context.py     → monta o pacote de contexto (puro, testado) — 7A
+core/llm_prompts.py     → prompt v0.6 congelado (impressão digital e3b3574b7430)
+core/llm_validation.py  → valida a resposta (puro, testado) — 7A
+core/llm_builders.py    → contexto por tela (individual, risco, simulação, comparação de 2 ativos, janela sazonal)
+core/llm_client.py      → chama a API (timeout 20 s, até 2 retentativas); único arquivo de `core/` com rede
+core/llm_service.py     → pipeline explain(): modos off/demo/live, limites, registro de uso, fallback
+core/llm_render.py      → formatação em padrão brasileiro e escape do texto
+app/ui/llm_explain.py   → botão "Explicar com IA", aviso fixo e resultado
+experiments/llm_7b/make_demo_store.py → gera o arquivo de respostas de demonstração
 ```
 
-`core/` continua sem rede e sem importar `app/`. O cliente é testado com cliente falso.
+`core/` continua sem importar `app/`; a única exceção de rede em `core/` é `core/llm_client.py`, permitida por teste explícito. O cliente é testado com transporte falso.
 
 **Entregáveis da 7B:** os 10 itens da especificação (contexto, prompt versionado, cliente, validador, auditoria, botão, fallback, testes, documentação de arquitetura/custo/limites/segurança, relatório da 7A com a aprovação do orientador).
 
 **Validação antes de exibir:** 10 verificações (JSON válido; campos obrigatórios; ticker; período e frequência; métricas existentes no contexto; valores rastreáveis; sem recomendação; sem previsão determinística; sem termos proibidos; limitações e "o que não pode ser concluído" presentes). Se qualquer uma falhar, **a resposta não é exibida** e aparece: *"A explicação automática não pôde ser exibida porque não atendeu aos critérios de segurança e neutralidade do Argos DataLab."*
 
-**Interface:** botão discreto "✨ Explicar esta análise", acionado só por ação explícita. Nunca gerar ao carregar a página. A resposta aparece em bloco expansível (resumo, filtros aplicados, o que o gráfico mostra, interpretação das métricas, limitações, o que não pode ser concluído, nota educativa). O usuário pode ver o contexto enviado [S].
+**Interface** [implementada com o rótulo "Explicar com IA"]**:** botão discreto "✨ Explicar esta análise", acionado só por ação explícita. Nunca gerar ao carregar a página. A resposta aparece em bloco expansível (resumo, filtros aplicados, o que o gráfico mostra, interpretação das métricas, limitações, o que não pode ser concluído, nota educativa). O usuário pode ver o contexto enviado [S].
 
-**Segredos:** chave em `.streamlit/secrets.toml` (local) e no segredo do ambiente de deploy; `.streamlit/secrets.toml` no `.gitignore`; `.streamlit/secrets.toml.example` sem chave real.
+**Segredos:** chave em `.streamlit/secrets.toml` (local) e no segredo do ambiente de deploy; `.streamlit/secrets.toml` no `.gitignore`; `.streamlit/secrets.toml.example` sem chave real. **[Situação 12/10/2026: chave lida de `OPENAI_API_KEY` (variável de ambiente) ou de `st.secrets`; `logs/` e `.streamlit/secrets.toml` no `.gitignore`.]**
 
-**Auditoria mínima:** data e hora, tipo de análise, modelo, versão do prompt, tokens de entrada e saída, custo estimado, resultado da validação, motivo de rejeição. Sem dados pessoais, sem chave, sem prompt completo com segredos.
+**Auditoria mínima:** data e hora, tipo de análise, modelo, versão do prompt, tokens de entrada e saída, custo estimado, resultado da validação, motivo de rejeição. Sem dados pessoais, sem chave, sem prompt completo com segredos. **[Situação 12/10/2026: implementada em `logs/llm_uso.jsonl`, com chave do contexto e hash da resposta; o texto gerado não é gravado.]**
 
 **Pontos técnicos a resolver antes de implementar [S]** (detalhes em `docs/llm_7b_especificacao.md`):
 
@@ -290,9 +395,9 @@ app/ui/llm_panel.py     → botão "✨ Explicar esta análise" e bloco expansí
 | 8.2 | Atualizar `validacao_academica.md`: camada educativa e LLM como **componente de apoio** (N09); O6 só com adultos e TCLE (N14); protocolo de prompts na frente 4; casos de referência do recorte por anos na frente 1 |
 | 8.3 | Rodar `python -m pytest` com cobertura; registrar a contagem |
 | 8.4 | **Registro de escopo para os relatórios do PIBITI** (N13): preparar o quadro com (1) cronograma original, (2) cronograma efetivamente executado, (3) alterações e justificativas, (4) conexão com o objetivo geral do plano aprovado. Primeira entrega: Relatório Parcial |
-| 8.5 | Registrar **a versão do sistema** (tag no Git) e a data; é a versão usada em qualquer demonstração |
+| 8.5 | Registrar **a versão do sistema** (tag no Git) e a data; é a versão usada em qualquer demonstração **[Situação 12/10/2026: a tag da versão congelada será criada após o congelamento; existem apenas as tags de checkpoint `plano2-bloco3` a `plano2-bloco5` e dos prompts v0.5 e v0.6]** |
 | 8.6 | Preparar a estratégia de demonstração (seção 5.1): camadas, roteiro, screencast e **versão pública no Streamlit Community Cloud em modo de demonstração**, sem chamadas ao modelo [D N22, N24] |
-| 8.8 | **Modo de demonstração com dados salvos** (`ARGOS_DEMO_MODE`): requisito **obrigatório** do congelamento. Requisitos, comportamento e critério de aceite em `docs/demonstracao.md`, seção 2 [D 10/10/2026] |
+| 8.8 | **Modo de demonstração com dados salvos** (`ARGOS_DEMO_MODE`): requisito **obrigatório** do congelamento. Requisitos, comportamento e critério de aceite em `docs/demonstracao.md`, seção 2 [D 10/10/2026] **[Situação 12/10/2026: `core/demo_mode.py` e `data/demo/` (5 ativos) existem e têm testes; o pacote `data/demo/` ainda não está no git; falta unificar as respostas da IA, regravá-las sobre os dados congelados e testar sem internet]** |
 | 8.7 | Registrar o que ficou fora, com motivo |
 
 ---
@@ -311,6 +416,8 @@ app/ui/llm_panel.py     → botão "✨ Explicar esta análise" e bloco expansí
 | 9.6 | Aplicar a avaliação sobre a **versão congelada**; registrar versão e data |
 | 9.7 | **Interruptor da condição "sem camada educativa"** (`ARGOS_EDU_LAYER=off`) e teste automatizado, mantendo os avisos obrigatórios nas duas condições [D 10/10/2026]. **Implementado em 10/10/2026**; falta a conferência no navegador |
 | 9.8 | Pré-teste dos instrumentos com 2 a 3 adultos, **somente após o parecer**, descrito no protocolo [D 10/10/2026] |
+
+**Estado (12/10/2026).** Por decisão do orientador, a preparação documental do O6 é a prioridade 3 e começa imediatamente; isso não autoriza coleta com usuários.
 
 **Estado (10/10/2026).** Tarefas 9.2, 9.3 e 9.5 com minutas em `docs/pibiti/cep/`: `protocolo_pesquisa.md`, `tcle_participantes.md`, `tcle_avaliadores.md`, `instrumentos.md`, `roteiro_aplicacao.md` e `checklist_submissao_cep.md` (perguntas ao orientador e ao CEP, documentos, datas-alvo). Decisões de delineamento [D, por delegação]: dois grupos independentes, 20 participantes (10 por grupo), sessão presencial individual de cerca de 60 minutos no modo demo, alocação em blocos de 4, análise exploratória (Mann-Whitney com tamanho de efeito e intervalos). Pendentes: 9.1 (confirmar procedimento com o orientador e o CEP/UFPI), revisão do orientador, documentos institucionais e a submissão (meta: **15/12/2026**).
 **Critério de aceite:** protocolo e TCLE prontos e submetidos; parecer registrado em `docs/pibiti/decisoes_orientador.md` antes da coleta.
@@ -363,6 +470,8 @@ O modo de demonstração será ativado por variável de ambiente (`ARGOS_DEMO_MO
 
 **Critério de aceite:** modo implementado; todas as análises da demo rodando sem internet; nenhuma chamada externa nos fluxos principais; datasets versionados ou no pacote da demo; respostas de LLM salvas validadas; texto fixo de reserva funcionando; aviso de versão congelada na interface; teste automatizado; demonstração executada uma vez sem internet. Detalhes em `docs/demonstracao.md`, seção 2.4.
 
+**Situação em 12/10/2026:** o módulo e o pacote de dados existem; faltam versionar o pacote, unificar e regravar as respostas da IA sobre os dados congelados, o aviso de versão congelada, o teste sem internet e a tag (seção 0.4, prioridade 2).
+
 ### 5.2 Autoria e contribuições
 
 - **Nada está confirmado** sobre trabalho colaborativo com outra pessoa; o orientador apenas deu uma sugestão [D N16]. **Não se registra nada sobre isso** em `docs/contribuicoes.md` agora. O tema volta no **próximo plano**.
@@ -381,6 +490,8 @@ O modo de demonstração será ativado por variável de ambiente (`ARGOS_DEMO_MO
 | Relatório Final e Resumo Expandido | até 28/08/2027 |
 | SBBD | setembro/2027 |
 | Defesa do TCC | até 31/10/2027 |
+
+**Observação (12/10/2026):** a ordem de trabalho definida pelo orientador (7B, dados salvos, O6 em paralelo, comparação de 3 a 5 ativos, congelamento) prevalece sobre a distribuição abaixo, que deve ser revista.
 
 **Proposta de distribuição [S]** (não conheço a sua disponibilidade semanal; ajustar):
 
@@ -414,11 +525,15 @@ Fase 10 (nome e identidade visual), home com frase de efeito e botão "Começar"
 | --- | --- | --- |
 | N16 | Trabalho colaborativo e autoria: adiado, confirmado para o próximo plano | Plano 3 |
 | N25 | ~~Os três avaliadores humanos da 7A exigem tratamento ético próprio?~~ **[D por delegação, 10/10/2026]** Serão incluídos no mesmo protocolo, como avaliadores especialistas, com TCLE próprio (`tcle_avaliadores.md`); o CEP confirma na apreciação | 7A, 9 |
-| N26 | **[Aberto, bloqueia a 7A.6]** Quem são os três avaliadores? O avaliador técnico pode ser o próprio desenvolvedor? (recomendação: não, para evitar autoavaliação) | 7A |
+| N26 | ~~Quem são os três avaliadores?~~ **[Resolvido]** Avaliadores definidos e quatro rodadas realizadas; identificação em arquivo local não versionado | 7A |
 | N27 | Qual é o procedimento, o prazo e o pesquisador responsável no CEP da UFPI? Perguntas prontas em `docs/pibiti/cep/checklist_submissao_cep.md` | 9 |
 | N28 | Como obter o kappa ponderado se cada avaliador pontua dimensões diferentes? Proposta [S]: subconjunto de calibração (por exemplo, 20% dos casos) avaliado por **todos** em **todas** as dimensões; o kappa é calculado sobre ele, aos pares | 7A |
 | N29 | A regra por resposta (100% de correção factual) e o limiar agregado (≥ 95% das métricas citadas) coexistem? Proposta [S]: vale o mais rígido na aprovação da resposta; o agregado é indicador | 7A |
 | N30 | Confirmar que "depois" (N23) significa depois do congelamento da versão | 5, 8 |
+| N31 | **[Aberto]** Limites de uso: manter o escopo implementado (20 chamadas e US$ 0,50 por sessão) ou implementar as três camadas da N19 (navegador, diário por usuário, global persistente, US$ 5/mês)? | 7B |
+| N32 | **[Aberto]** Prioridade 4: "comparação entre três e cinco ativos" inclui a explicação por IA para esse formato? | Comparação, 7B |
+| N33 | **[Aberto]** Confirmar com o orientador que a versão pública fica sem a LLM e que a demonstração principal usa o modo `ARGOS_DEMO_MODE=true` com a IA em modo `demo` | 8 |
+| N34 | **[Aberto]** Arquivar o original das mensagens do orientador (decisões de 12/10/2026) | Documentação |
 
 ## 8. Riscos
 
@@ -436,6 +551,11 @@ Fase 10 (nome e identidade visual), home com frase de efeito e botão "Começar"
 | Parecer do CEP tardio (prazo externo) | A coleta da O6 não ocorre a tempo | Escrever o protocolo já em out–nov/2026; submeter em dez/2026 (Bloco 9); alternativa por especialistas (`validacao_academica.md`) se o parecer não sair |
 | Avaliadores humanos da 7A sem concordância | Resultado da 7A inválido | Calibração com casos exemplares; kappa ponderado ≥ 0,60 em subconjunto comum; reavaliar após ajuste |
 | Regras de aprovação divergentes (por resposta × agregado) | Dúvida sobre a passagem à 7B | Registrar a regra mais rígida como vigente (N29) |
+| Chave da API exposta (ocorrido em 12/10/2026, em um log) | Gasto indevido | Chave revogada e substituída; lição: nunca digitar a chave no texto do comando; entrada só pelo prompt do terminal; teto de gasto no provedor |
+| Limites de uso só por sessão | Uso repetido em várias sessões | Decidir a N31; teto de gasto no provedor; versão pública sem a LLM |
+| Pacote `data/demo/` fora do git | A demonstração não roda em outra máquina; versão não congelada | Versionar o pacote com os hashes do manifesto e marcar a versão |
+| Respostas da IA gravadas sobre dados diferentes dos congelados | Demonstração mostra o texto fixo | Regravar sobre os dados congelados, com período fixo |
+| Falso positivo do validador ("aplicar") | Explicação bloqueada na simulação | Evitar o cenário na demonstração; correção só com a v0.7 |
 | Seis páginas para tudo | Artigo disperso | Decidir cedo o recorte do artigo |
 
 ---
@@ -448,8 +568,10 @@ Fase 10 (nome e identidade visual), home com frase de efeito e botão "Começar"
 4. Simulação com texto obrigatório e rótulos descritivos.
 5. Todo gráfico com texto educativo; glossário com os 10 termos.
 6. Tendência (retorno móvel e razão) com janela visível e aviso de data inicial.
-7. 7A concluída, com relatório e avaliação por três avaliadores independentes (kappa ponderado ≥ 0,60 na calibração); 7B concluída **somente** se todos os limiares da 7A foram atingidos e a aprovação do orientador está registrada em `docs/pibiti/decisoes_orientador.md`.
+7. 7A concluída, com relatório e avaliação por três avaliadores independentes (kappa ponderado ≥ 0,60 na calibração; **não atingido, registrado como limitação metodológica em 12/10/2026**); 7B concluída **somente** se todos os limiares da 7A foram atingidos e a aprovação do orientador está registrada em `docs/pibiti/decisoes_orientador.md`.
 8. Nenhuma recomendação direta em qualquer página, coberto por teste.
 9. Documentação atualizada, quadro de escopo para o Relatório Parcial pronto, versão registrada.
 10. `docs/contribuicoes.md` criado, sem registro de trabalho colaborativo não confirmado.
 11. Protocolo e TCLE da O6 prontos e submetidos ao CEP; nenhuma coleta antes do parecer favorável.
+
+**Situação dos critérios em 12/10/2026:** o critério 7 está parcial (7A concluída com limitação; 7B em estabilização); o 8 está parcial (validação automática ativa, conferência manual em curso); os critérios 1 a 6, 9, 10 e 11 dependem das conferências indicadas na seção 0.1.
