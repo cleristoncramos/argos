@@ -1,8 +1,12 @@
 """Bloco de informações sobre a fonte e a disponibilidade dos dados."""
 
 from datetime import datetime
+from html import escape
+from typing import Iterable, Mapping, Optional
 
 import streamlit as st
+
+from app.ui.asset_cards import render_asset_hero_logo
 
 from core.data_availability import (
     DataAvailability,
@@ -28,6 +32,7 @@ def render_data_availability(
     availability: DataAvailability,
     fetched_at: datetime | None = None,
     source: str = DATA_SOURCE,
+    show_messages: bool = True,
 ) -> None:
     summary = availability_summary(availability)
 
@@ -44,7 +49,50 @@ def render_data_availability(
             "disponível é a data final do período disponível."
         )
 
-    render_availability_messages(availability)
+    if show_messages:
+        render_availability_messages(availability)
+
+
+def build_processing_details_html(details: Iterable[tuple[str, str]]) -> str:
+    """
+    Grade compacta de rótulo e valor para os detalhes do processamento.
+    Valores longos (mais de 60 caracteres) ocupam a linha inteira.
+    """
+    cells = []
+    for label, value in details:
+        wide = " pd-wide" if len(str(value)) > 60 else ""
+        cells.append(
+            f'<div class="pd-cell{wide}"><span>{escape(str(label))}</span>'
+            f"<b>{escape(str(value))}</b></div>"
+        )
+    return f'<div class="pd-grid">{"".join(cells)}</div>'
+
+
+def render_analysis_summary(
+    asset: Optional[Mapping[str, str]],
+    availability: Optional[DataAvailability],
+    fetched_at: datetime | None,
+    details: Iterable[tuple[str, str]],
+    details_label: str = "Detalhes do processamento",
+) -> None:
+    """
+    Topo das páginas de análise: cartão do ativo ao lado do resumo de
+    disponibilidade (alturas parecidas) e, abaixo, em largura total, os
+    avisos e um expansor compacto com os detalhes do processamento.
+    """
+    col_logo, col_info = st.columns([1, 3], vertical_alignment="center")
+    with col_logo:
+        if asset:
+            render_asset_hero_logo(asset)
+    with col_info:
+        if availability is not None:
+            render_data_availability(availability, fetched_at, show_messages=False)
+
+    if availability is not None:
+        render_availability_messages(availability)
+
+    with st.expander(details_label, expanded=False):
+        st.markdown(build_processing_details_html(details), unsafe_allow_html=True)
 
 
 def render_catalog_notice() -> None:

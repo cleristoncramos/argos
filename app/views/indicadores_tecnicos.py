@@ -23,11 +23,10 @@ import streamlit as st
 
 from app.ui.page_header import render_page_header
 from app.ui.chart_guide import render_chart_guide
-from app.ui.asset_cards import render_asset_hero_logo
 from app.ui.data_info import (
     render_availability_messages,
     render_catalog_notice,
-    render_data_availability,
+    render_analysis_summary,
 )
 from app.ui.disclaimers import (
     render_footer_disclaimer,
@@ -563,34 +562,23 @@ price_label = price_axis_label(symbol)
 # =====================
 current_asset = next((a for a in ASSETS if a["ticker"] == symbol), None)
 
-col_logo, col_expander = st.columns([1, 3], vertical_alignment="center")
-
-with col_logo:
-    if current_asset:
-        render_asset_hero_logo(current_asset)
-
-with col_expander:
-    with st.expander(f"✅ Análise gerada para {symbol.upper()}. Clique para visualizar os detalhes do processamento.", expanded=False):
-        st.markdown(f"**Ativo Analisado:** {symbol.upper()}")
-        st.markdown(f"**Período Selecionado:** {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}")
-        st.markdown(f"**Observações Processadas:** {len(df)} períodos válidos calculados com sucesso.")
-        st.markdown(
-            "**Tratamento:** As médias móveis, RSI, MACD, Bandas de Bollinger, ATR e volatilidade móvel são calculados somente com dados disponíveis até cada data. "
-            "As médias, o RSI, o MACD e a volatilidade usam o preço de **fechamento**; o ATR usa também máxima e mínima."
-        )
-
-st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
-
-
-# =====================
-# Disponibilidade dos dados: solicitado x disponível, fonte e consulta
-# =====================
-availability = st.session_state.get("indicators_availability")
-if availability is not None:
-    render_data_availability(
-        availability,
-        st.session_state.get("indicators_fetched_at"),
-    )
+render_analysis_summary(
+    current_asset,
+    st.session_state.get("indicators_availability"),
+    st.session_state.get("indicators_fetched_at"),
+    [
+        ("Ativo", symbol.upper()),
+        ("Frequência", frequency),
+        ("Observações processadas", f"{len(df)} períodos"),
+        (
+            "Tratamento",
+            "Médias móveis, RSI, MACD, Bandas de Bollinger, ATR e volatilidade móvel usam "
+            "somente dados disponíveis até cada data. As médias, o RSI, o MACD e a "
+            "volatilidade usam o preço de fechamento; o ATR usa também máxima e mínima.",
+        ),
+    ],
+    details_label="Detalhes do processamento",
+)
 
 st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
 

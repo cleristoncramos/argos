@@ -25,11 +25,10 @@ import streamlit as st
 from app.ui.page_header import render_page_header
 from app.ui.charts import apply_custom_layout
 from app.ui.chart_guide import render_chart_guide
-from app.ui.asset_cards import render_asset_hero_logo
 from app.ui.data_info import (
     render_availability_messages,
     render_catalog_notice,
-    render_data_availability,
+    render_analysis_summary,
 )
 from app.ui.disclaimers import (
     render_footer_disclaimer,
@@ -348,34 +347,19 @@ context = format_context(
 # =====================
 current_asset = next((a for a in ASSETS if a["ticker"] == symbol), None)
 
-col_logo, col_expander = st.columns([1, 3], vertical_alignment="center")
-
-with col_logo:
-    if current_asset:
-        render_asset_hero_logo(current_asset)
-
-with col_expander:
-    with st.expander(f"✅ Análise gerada para {symbol.upper()}. Clique para visualizar os detalhes do processamento.", expanded=False):
-        st.markdown(f"**Ativo Analisado:** {symbol.upper()}")
-        st.markdown(f"**Período Selecionado:** {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}")
-        st.markdown(f"**Observações Processadas:** {len(df_risk)} períodos.")
-        st.markdown(
-            f"**Metodologia Matemática:** A volatilidade e o Índice de Sharpe foram anualizados usando o fator multiplicador **{annualization_factor}**. "
-            f"A taxa livre de risco anual considerada no cálculo foi de **{risk_free_rate_pct:.2f}%**."
-        )
-
-st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
-
-
-# =====================
-# Disponibilidade dos dados: solicitado x disponível, fonte e consulta
-# =====================
-availability = st.session_state.get("risk_return_availability")
-if availability is not None:
-    render_data_availability(
-        availability,
-        st.session_state.get("risk_return_fetched_at"),
-    )
+render_analysis_summary(
+    current_asset,
+    st.session_state.get("risk_return_availability"),
+    st.session_state.get("risk_return_fetched_at"),
+    [
+        ("Ativo", symbol.upper()),
+        ("Frequência", frequency),
+        ("Observações processadas", f"{len(df_risk)} períodos"),
+        ("Fator de anualização", str(annualization_factor)),
+        ("Taxa livre de risco anual", f"{risk_free_rate_pct:.2f}%".replace(".", ",")),
+    ],
+    details_label="Detalhes do processamento",
+)
 
 st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
 

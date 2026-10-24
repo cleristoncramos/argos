@@ -47,6 +47,13 @@ GLOBAL_CSS = f"""
 .pg-sub {{ margin: 12px 0 0; max-width: 860px; padding-left: 12px; border-left: 3px solid {ACCENT};
     color: #3f3f3f; font-size: 1.02rem; line-height: 1.6; }}
 
+/* Detalhes do processamento (app/ui/data_info.py): grade compacta */
+.pd-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); border: 1px solid {LINE_SOFT}; background: {PAPER}; }}
+.pd-cell {{ padding: 8px 12px; border-right: 1px solid {LINE_SOFT}; border-bottom: 1px solid {LINE_SOFT}; }}
+.pd-cell.pd-wide {{ grid-column: 1 / -1; }}
+.pd-cell span {{ display: block; color: {MUTED}; font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }}
+.pd-cell b {{ display: block; margin-top: 2px; color: {INK}; font-size: .9rem; font-weight: 600; line-height: 1.45; }}
+
 /* Títulos de seção (st.header e ###): sóbrios, com filete superior */
 [data-testid="stMain"] [data-testid="stHeading"] h2 {{
     margin-top: 1.6rem; padding-top: 1rem !important; border-top: 1px solid {LINE_SOFT};

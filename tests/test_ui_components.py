@@ -78,3 +78,25 @@ def test_chart_layout_options_for_comparison_and_risk():
 
     risk = apply_custom_layout(go.Figure(layout={"xaxis": {"title": {"text": "Data"}}}), hide_x_title=True)
     assert not risk.layout.xaxis.title.text
+
+
+def test_processing_details_grid_is_compact_and_escaped():
+    from app.ui.data_info import build_processing_details_html
+
+    html = build_processing_details_html([
+        ("Ativo", "<b>X</b>"),
+        ("Tratamento", "Texto longo " * 8),
+    ])
+    assert html.count('class="pd-cell') == 2
+    assert "&lt;b&gt;X&lt;/b&gt;" in html and "<b>X</b>" not in html
+    assert 'class="pd-cell pd-wide"' in html  # valor longo ocupa a linha inteira
+
+
+def test_analysis_pages_use_the_shared_summary_block():
+    from pathlib import Path
+
+    views = Path(__file__).resolve().parents[1] / "app" / "views"
+    for name in ("analise_individual", "indicadores_tecnicos", "risco_retorno"):
+        source = (views / f"{name}.py").read_text(encoding="utf-8")
+        assert "render_analysis_summary(" in source, name
+        assert "col_expander" not in source, name  # o expansor não fica mais ao lado do cartão

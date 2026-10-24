@@ -30,11 +30,10 @@ import streamlit as st
 from app.ui.page_header import render_page_header
 from app.ui.charts import apply_custom_layout
 from app.ui.chart_guide import render_chart_guide
-from app.ui.asset_cards import render_asset_hero_logo
 from app.ui.data_info import (
     render_availability_messages,
     render_catalog_notice,
-    render_data_availability,
+    render_analysis_summary,
 )
 from app.ui.disclaimers import render_footer_disclaimer
 from app.ui.education import render_glossary, render_what_it_means
@@ -291,45 +290,29 @@ logo_asset = current_asset or {
     "icon": "📊",
 }
 
-col_logo, col_expander = st.columns([1, 3], vertical_alignment="center")
+missing = validation["missing_values"]
+if isinstance(missing, (pd.Series, dict)):
+    missing_str = ", ".join(
+        [f"{idx}: {val}" for idx, val in dict(missing).items() if val > 0]
+    ) or "Nenhum"
+else:
+    missing_str = str(missing)
 
-with col_logo:
-    render_asset_hero_logo(logo_asset)
-
-with col_expander:
-    with st.expander(f"✅ Análise gerada para {symbol}. Clique para visualizar detalhes e qualidade dos dados.", expanded=False):
-        st.markdown(f"**Ativo Analisado:** {symbol}")
-        st.markdown(f"**Período Selecionado:** {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')} | **Frequência:** {frequency}")
-        st.markdown(f"**Observações Processadas:** {len(df)} períodos.")
-
-        st.markdown("#### Qualidade e Validação dos Dados")
-        st.markdown(f"- **Total de linhas brutas:** {validation['total_rows']}")
-        st.markdown(f"- **Datas duplicadas:** {validation['duplicate_dates']}")
-        st.markdown(f"- **Valores negativos (Fechamento):** {validation['negative_close']}")
-
-        missing = validation["missing_values"]
-        if isinstance(missing, (pd.Series, dict)):
-            missing_str = ", ".join(
-                [f"{idx}: {val}" for idx, val in dict(missing).items() if val > 0]
-            )
-            if not missing_str:
-                missing_str = "Nenhum"
-        else:
-            missing_str = str(missing)
-        st.markdown(f"- **Valores ausentes:** {missing_str}")
-
-st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
-
-
-# =====================
-# Disponibilidade dos dados: solicitado x disponível, fonte e consulta
-# =====================
-availability = st.session_state.get("asset_availability")
-if availability is not None:
-    render_data_availability(
-        availability,
-        st.session_state.get("asset_fetched_at"),
-    )
+render_analysis_summary(
+    logo_asset,
+    st.session_state.get("asset_availability"),
+    st.session_state.get("asset_fetched_at"),
+    [
+        ("Ativo", symbol),
+        ("Frequência", frequency),
+        ("Observações processadas", f"{len(df)} períodos"),
+        ("Linhas brutas baixadas", str(validation["total_rows"])),
+        ("Datas duplicadas", str(validation["duplicate_dates"])),
+        ("Fechamentos negativos", str(validation["negative_close"])),
+        ("Valores ausentes", missing_str),
+    ],
+    details_label="Detalhes do processamento e qualidade dos dados",
+)
 
 st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
 
