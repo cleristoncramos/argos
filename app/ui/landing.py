@@ -60,7 +60,7 @@ DATA_SOURCES = [
      "com cache de 1 hora.",
      "Base de todas as análises. Retornos calculados sobre o fechamento, sem dividendos."),
     ("Catálogo interno do Argos",
-     "Ativos organizados por classe, mercado e subcategoria, com nome e descrição.",
+     "Ativos organizados por grupo, classe, subclasse e mercado, com nome e descrição.",
      "Seleção guiada dos ativos e organização da interface."),
     ("Pacote de demonstração",
      "Arquivos CSV congelados, com manifesto, data da coleta e hash SHA-256 de cada arquivo.",
@@ -123,7 +123,7 @@ def institutional_logo_uri(name: str, directory: Path = INSTITUTIONAL_DIR) -> Op
 
 
 def catalog_stats(assets: Iterable[Mapping[str, str]]) -> dict:
-    """Quantidade de ativos, classes e mercados do catálogo."""
+    """Quantidade de ativos, classes e grupos do catálogo."""
     records = list(assets)
     return {
         "assets": len(records),
@@ -323,7 +323,7 @@ def build_data_sources_html(stats: Mapping[str, int]) -> str:
     coverage = (
         f'<div class="ac-stats"><div><b>{stats["assets"]}</b><span>ativos</span></div>'
         f'<div><b>{stats["classes"]}</b><span>classes</span></div>'
-        f'<div><b>{stats["groups"]}</b><span>mercados</span></div>'
+        f'<div><b>{stats["groups"]}</b><span>grupos</span></div>'
         "<div><b>OHLCV</b><span>diário</span></div></div>"
     )
     table = _table(DATA_SOURCES, header=("Fonte", "Conteúdo", "Uso no sistema"),

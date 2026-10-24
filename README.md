@@ -9,7 +9,7 @@
 ![Cobertura](https://img.shields.io/badge/cobertura%20do%20core-100%25-2E7D32)
 ![PIBITI UFPI](https://img.shields.io/badge/PIBITI-UFPI%202026%E2%80%932027-1F1F1F)
 
-O **Argos DataLab** reúne em uma única plataforma o histórico de **120 ativos de 13 mercados** (ações, criptomoedas, FIIs, REITs, ETFs, commodities, câmbio, índices e taxas de juros) e transforma esses dados em gráficos interativos, métricas quantitativas e textos explicativos em linguagem simples. Foi desenvolvido no **Programa Institucional de Bolsas de Iniciação em Desenvolvimento Tecnológico e Inovação (PIBITI) da Universidade Federal do Piauí**, ciclo 2026–2027.
+O **Argos DataLab** reúne em uma única plataforma o histórico de **120 ativos em 13 grupos** (ações, criptomoedas, FIIs, REITs, ETFs, commodities, câmbio, índices e taxas de juros) e transforma esses dados em gráficos interativos, métricas quantitativas e textos explicativos em linguagem simples. Foi desenvolvido no **Programa Institucional de Bolsas de Iniciação em Desenvolvimento Tecnológico e Inovação (PIBITI) da Universidade Federal do Piauí**, ciclo 2026–2027.
 
 > [!IMPORTANT]
 > O Argos DataLab tem finalidade **exclusivamente acadêmica, educacional e de desenvolvimento tecnológico**. As informações, métricas e visualizações descrevem dados históricos e **não constituem recomendação, indicação ou aconselhamento de investimento**.
@@ -92,7 +92,7 @@ O **DataLab** completa a ideia: um laboratório onde os dados de mercado são ex
 
 ### Análise Individual
 
-- Seleção guiada por classe e mercado ou digitação livre do ticker, com validação de formato e de existência na fonte.
+- Seleção guiada por grupo de ativos ou digitação livre do ticker, com validação de formato e de existência na fonte.
 - Atalhos de período (1, 3, 5 e 10 anos) ou intervalo personalizado; frequência diária, semanal, mensal, semestral ou anual.
 - Visão geral (primeiro e último valor, retorno total, observações) e evolução temporal do preço.
 - Volatilidade anualizada mês a mês, com destaque para os meses de maior oscilação.
@@ -137,9 +137,9 @@ Recurso experimental, resultado da etapa de pesquisa 7B, que gera um texto educa
 
 ## Catálogo de ativos
 
-O catálogo fica em [`core/assets.py`](core/assets.py) e reúne **120 ativos em 9 classes e 13 mercados**:
+O catálogo fica em [`core/assets.py`](core/assets.py) e reúne **120 ativos em 13 grupos e 9 classes**:
 
-| Mercado | Classe | Ativos | Exemplos |
+| Grupo | Classe | Ativos | Exemplos |
 | --- | --- | ---: | --- |
 | Criptomoedas | Criptomoeda | 10 | BTC-USD, ETH-USD, SOL-USD |
 | Ações Brasil | Ação | 12 | PETR4.SA, VALE3.SA, ITUB4.SA |

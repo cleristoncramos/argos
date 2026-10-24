@@ -278,7 +278,7 @@ def render_asset_controls(
                 groups.append(group)
 
         if not groups:
-            st.error("Nenhuma classe de ativo foi encontrada.")
+            st.error("Nenhum grupo de ativos foi encontrado.")
             return {
                 "symbol": None,
                 "period": None,
@@ -306,7 +306,7 @@ def render_asset_controls(
         symbol = ""
 
         if input_mode == "Catálogo":
-            PLACEHOLDER_GROUP = "Selecione uma classe"
+            PLACEHOLDER_GROUP = "Selecione um grupo"
             options_group = [PLACEHOLDER_GROUP] + groups
 
             current_group = st.session_state.get(
@@ -315,7 +315,7 @@ def render_asset_controls(
             )
 
             selected_group = st.selectbox(
-                "Classe do Ativo",
+                "Grupo de ativos",
                 options=options_group,
                 index=(
                     options_group.index(current_group)

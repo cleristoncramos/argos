@@ -166,7 +166,7 @@ with col1:
         <div style="border: 1px solid #2a2a2a; border-top: 3px solid #c8102e; padding: 22px; height: 100%; background: #ffffff; box-shadow: 0 8px 22px rgba(17,17,17,.07);">
             <h4 style="margin-top: 0;">🔍 Exploração Robusta</h4>
             <p style="opacity: 0.8; font-size: 0.9rem; margin-bottom: 0;">
-                Navegação hierárquica por classes de ativos em português, com dados obtidos 
+                Navegação por grupos de ativos em português, com dados obtidos 
                 em tempo real e tratados contra instabilidades de API.
             </p>
         </div>
@@ -268,7 +268,7 @@ with st.container(border=True):
             "label": "📈 Análise Individual",
             "title": "Visão Geral e Sazonalidade do Ativo",
             "bullets": """
-            - **Seleção Hierárquica:** Escolha de ativos divididos em classes e subclasses organizadas.
+            - **Seleção Guiada:** Escolha do ativo por grupo (Ações Brasil, Criptomoedas, ETFs de renda fixa...) ou digitação do ticker.
             - **Período Inteligente:** Atalhos rápidos de 1, 3, 5, 10 anos ou definição de datas personalizadas.
             - **Gráfico de Volatilidade por Mês:** Acompanhamento do desvio padrão anualizado mês a mês.
             - **Mapa de Calor Sazonal:** Visualização do comportamento estatístico e sazonais de retornos.
@@ -280,7 +280,7 @@ with st.container(border=True):
             "label": "⚖️ Comparação de Ativos",
             "title": "Comparação Multi-Ativo Avançada",
             "bullets": """
-            - **Seleção Flexível:** Filtros combinados por classe e subclasse para até 5 ativos simultâneos.
+            - **Seleção Flexível:** Até 5 ativos simultâneos, combinando grupos diferentes.
             - **Evolução Base 100:** Gráfico unificado com normalização de ponto de partida e tooltips monetários.
             - **Matriz de Correlação:** Heatmap triangular exclusivo que evita redundâncias e facilita a leitura de pares.
             - **Resumo Consolidado:** Tabela comparativa interativa destacando melhor retorno, menor drawdown e Sharpe.

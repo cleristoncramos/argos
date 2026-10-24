@@ -102,7 +102,7 @@ argos/
 
 | Módulo | Responsabilidade |
 | --- | --- |
-| `assets.py` | Catálogo de 120 ativos (13 grupos, 9 classes), busca, filtros, hierarquia e validação automática do catálogo |
+| `assets.py` | Catálogo de 120 ativos (13 grupos, 9 classes; ver "Termos do catálogo" na seção 11), busca, filtros, hierarquia e validação automática do catálogo |
 | `asset_logos.py` | Resolução do logo do ativo (CoinCap e Financial Modeling Prep), com fallback para emoji; sem logos remotos no modo de demonstração |
 | `catalog_notice.py` | Aviso de que o catálogo é uma amostra inicial |
 | `config.py` | Frequências suportadas (diária, semanal, mensal, semestral e anual) e fatores de anualização |
@@ -262,6 +262,15 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 **Anualização.** √252 (diário), √52 (semanal), √12 (mensal), √2 (semestral) e √1 (anual), aplicada a todas as classes de ativos. Nas frequências semestral e anual, `data_availability` sinaliza o último período ainda em andamento (retorno parcial).
 
+**Termos do catálogo.** Interface e código usam os mesmos termos:
+
+| Termo na interface | Campo em `core/assets.py` | Quantidade | Exemplos |
+| --- | --- | ---: | --- |
+| **Grupo** | `group` | 13 | Criptomoedas, Ações Brasil, ETFs de renda fixa, FIIs Brasil |
+| **Classe** | `class` | 9 | Criptomoeda, Ação, ETF, REIT, FII, Índice, Forex, Commodity, Renda Fixa |
+| **Subclasse** | `subcategory` | — | Energia, Bancos, Smart contracts |
+| **Mercado** | `market` | — | Brasil/B3, EUA, Global |
+
 **Nomes.** Código em inglês; textos exibidos ao usuário em português do Brasil, com separador decimal vírgula e milhar ponto.
 
 **HTML próprio.** Todo texto vindo do catálogo, do usuário ou do modelo de linguagem é escapado antes de entrar em HTML ou Markdown.
@@ -299,5 +308,4 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 ### Limitações conhecidas da arquitetura
 
-- A terminologia "grupos" (código) × "classes" (interface) ainda não está padronizada.
 - O seletor da Comparação oferece Classe → Ativos; os campos `subcategory` e `market` do catálogo existem, mas ainda não são filtros.

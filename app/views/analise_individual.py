@@ -263,7 +263,7 @@ if (
     or "asset_df" not in st.session_state
 ):
     st.info(
-        "👈 Selecione a classe e o ativo na barra lateral e clique em "
+        "👈 Selecione o grupo e o ativo na barra lateral e clique em "
         "**Carregar Dados**."
     )
     st.stop()

@@ -233,7 +233,7 @@ Correções da revisão de 07/10 (`risk_metrics.py`, `analyzer.py`, `visualizati
 Interface e conteúdo:
 - [ ] MACD com controles próprios (hoje reutiliza os períodos das EMAs)
 - [ ] Contagens automáticas (ativos, grupos, classes) em "Sobre o Projeto"
-- [ ] Padronizar a terminologia "grupos" × "classes"
+- [x] Padronizar a terminologia "grupos" × "classes" — feito em 24/10/2026: a interface usa "Grupo de ativos" para os 13 itens do menu (campo `group`) e "classe" para os 9 tipos (campo `class`)
 - [ ] Selo "protótipo evolutivo"
 
 Qualidade (continuação da Fase 8):

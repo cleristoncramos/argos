@@ -22,13 +22,20 @@ O catálogo contém **120 ativos**, distribuídos em **13 grupos**.
 > O catálogo é uma estrutura de **metadados editoriais** para seleção e organização da interface. A existência de um ticker no catálogo **não garante** que o Yahoo Finance disponibilize a mesma profundidade de histórico para todos os ativos.
 
 > [!NOTE]
-> **Terminologia.** Na interface, os 13 grupos aparecem no campo "Classe do Ativo". No código, porém, o campo `class` possui 9 valores (Criptomoeda, Ação, ETF, REIT, FII, Índice, Forex, Commodity e Renda Fixa), e os 13 valores do campo `group` organizam o menu. Neste documento, **grupo** se refere aos 13 itens do menu e **classe** aos 9 valores técnicos.
+> **Terminologia (padronizada em 24/10/2026).** A interface e o código usam os mesmos termos: **grupo** é cada um dos 13 itens do menu "Grupo de ativos" (campo `group`) e **classe** é cada um dos 9 tipos técnicos (campo `class`).
+
+| Termo na interface | Campo em `core/assets.py` | Quantidade | Exemplos |
+| --- | --- | ---: | --- |
+| **Grupo** | `group` | 13 | Criptomoedas, Ações Brasil, ETFs de renda fixa, FIIs Brasil |
+| **Classe** | `class` | 9 | Criptomoeda, Ação, ETF, REIT, FII, Índice, Forex, Commodity, Renda Fixa |
+| **Subclasse** | `subcategory` | — | Energia, Bancos, Smart contracts |
+| **Mercado** | `market` | — | Brasil/B3, EUA, Global |
 
 ---
 
 ## 2. Natureza e critério de seleção
 
-A seleção de ativos adotada no Argos DataLab possui natureza intencional e não probabilística. O catálogo inicial é composto por 120 instrumentos financeiros organizados em 13 classes, incluindo criptomoedas, ações brasileiras e internacionais, ETFs, FIIs, REITs, índices, pares cambiais, commodities e taxas de juros. A escolha considerou critérios combinados de representatividade por classe, diversidade geográfica, cobertura setorial, relevância econômica, liquidez ou notoriedade, disponibilidade de séries históricas, compatibilidade com os tickers utilizados pelo Yahoo Finance e valor educacional para a análise de risco, retorno, correlação e sazonalidade.
+A seleção de ativos adotada no Argos DataLab possui natureza intencional e não probabilística. O catálogo inicial é composto por 120 instrumentos financeiros organizados em 13 grupos e 9 classes, incluindo criptomoedas, ações brasileiras e internacionais, ETFs, FIIs, REITs, índices, pares cambiais, commodities e taxas de juros. A escolha considerou critérios combinados de representatividade por classe, diversidade geográfica, cobertura setorial, relevância econômica, liquidez ou notoriedade, disponibilidade de séries históricas, compatibilidade com os tickers utilizados pelo Yahoo Finance e valor educacional para a análise de risco, retorno, correlação e sazonalidade.
 
 A inclusão de um ativo no catálogo não representa recomendação de investimento, ranking de qualidade, indicação de compra ou venda, nem avaliação de adequação ao perfil do investidor. O catálogo funciona como uma amostra operacional para demonstração, análise exploratória e pesquisa aplicada. A disponibilidade e a profundidade dos dados podem variar conforme o ativo e a fonte externa utilizada.
 

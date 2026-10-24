@@ -124,7 +124,7 @@ COMPARISON_END_DATE_STATE_KEY = "comparison_end_date"
 COMPARISON_FREQUENCY_STATE_KEY = "comparison_frequency"
 COMPARISON_RISK_FREE_RATE_STATE_KEY = "comparison_risk_free_rate_pct"
 COMPARISON_SYMBOLS_STATE_KEY = "comparison_symbols_input"
-COMPARISON_CLASS_STATE_KEY = "comparison_selected_class"
+COMPARISON_GROUP_STATE_KEY = "comparison_selected_group"
 COMPARISON_CUSTOM_MSG_KEY = "comparison_custom_msg"
 
 COMPARISON_PERIOD_WIDGET_KEY = "comparison_period_widget"
@@ -132,7 +132,7 @@ COMPARISON_START_DATE_WIDGET_KEY = "comparison_start_date_widget"
 COMPARISON_END_DATE_WIDGET_KEY = "comparison_end_date_widget"
 COMPARISON_FREQUENCY_WIDGET_KEY = "comparison_frequency_widget"
 COMPARISON_RISK_FREE_RATE_WIDGET_KEY = "comparison_risk_free_rate_pct_widget"
-COMPARISON_CLASS_WIDGET_KEY = "comparison_class_widget"
+COMPARISON_GROUP_WIDGET_KEY = "comparison_group_widget"
 COMPARISON_SYMBOLS_WIDGET_KEY = "comparison_symbols_widget"
 COMPARISON_CUSTOM_INPUT_KEY = "comparison_custom_ticker_input"
 COMPARISON_COMMON_PERIOD_KEY = "comparison_common_period_widget"
@@ -207,10 +207,10 @@ def sync_comparison_risk_free_rate() -> None:
         st.session_state[COMPARISON_RISK_FREE_RATE_WIDGET_KEY]
     )
 
-def sync_comparison_class() -> None:
-    """Sincroniza a classe selecionada no callback, antes do rerun."""
-    st.session_state[COMPARISON_CLASS_STATE_KEY] = st.session_state[
-        COMPARISON_CLASS_WIDGET_KEY
+def sync_comparison_group() -> None:
+    """Sincroniza o grupo selecionado no callback, antes do rerun."""
+    st.session_state[COMPARISON_GROUP_STATE_KEY] = st.session_state[
+        COMPARISON_GROUP_WIDGET_KEY
     ]
 
 def sync_comparison_symbols() -> None:
@@ -268,7 +268,7 @@ def initialize_comparison_state() -> None:
     )
     asset_end_date = st.session_state.get("comparison_end_date", today)
     asset_frequency = st.session_state.get("comparison_frequency", "Mensal")
-    asset_class = st.session_state.get(COMPARISON_CLASS_STATE_KEY, None)
+    asset_group = st.session_state.get(COMPARISON_GROUP_STATE_KEY, None)
 
     symbols_str = st.session_state.get(COMPARISON_SYMBOLS_STATE_KEY, "")
     symbols_list = [s.strip() for s in symbols_str.split(",") if s.strip()]
@@ -280,14 +280,14 @@ def initialize_comparison_state() -> None:
         COMPARISON_FREQUENCY_STATE_KEY: asset_frequency,
         COMPARISON_RISK_FREE_RATE_STATE_KEY: 0.0,
         COMPARISON_SYMBOLS_STATE_KEY: symbols_str,
-        COMPARISON_CLASS_STATE_KEY: asset_class,
+        COMPARISON_GROUP_STATE_KEY: asset_group,
         COMPARISON_CUSTOM_MSG_KEY: None,
         COMPARISON_PERIOD_WIDGET_KEY: asset_period,
         COMPARISON_START_DATE_WIDGET_KEY: asset_start_date,
         COMPARISON_END_DATE_WIDGET_KEY: asset_end_date,
         COMPARISON_FREQUENCY_WIDGET_KEY: asset_frequency,
         COMPARISON_RISK_FREE_RATE_WIDGET_KEY: 0.0,
-        COMPARISON_CLASS_WIDGET_KEY: asset_class,
+        COMPARISON_GROUP_WIDGET_KEY: asset_group,
         COMPARISON_SYMBOLS_WIDGET_KEY: symbols_list,
         COMPARISON_CUSTOM_INPUT_KEY: "",
         COMPARISON_COMMON_PERIOD_KEY: False,
@@ -672,15 +672,15 @@ with st.sidebar:
             groups.append(g)
 
     st.selectbox(
-        "Classe do Ativo:",
+        "Grupo de ativos:",
         options=groups,
-        placeholder="Selecione uma classe...",
+        placeholder="Selecione um grupo...",
         format_func=lambda x: GROUP_MAPPING.get(str(x).lower(), str(x).replace("_", " ").title()),
-        key=COMPARISON_CLASS_WIDGET_KEY,
-        on_change=sync_comparison_class,
+        key=COMPARISON_GROUP_WIDGET_KEY,
+        on_change=sync_comparison_group,
     )
 
-    selected_class = st.session_state[COMPARISON_CLASS_STATE_KEY]
+    selected_group = st.session_state[COMPARISON_GROUP_STATE_KEY]
 
     previously_selected_tickers = st.session_state.get(
         COMPARISON_SYMBOLS_WIDGET_KEY,
@@ -690,11 +690,11 @@ with st.sidebar:
     valid_options_tickers = []
     seen = set()
 
-    # O ticker entra nas opções se for da classe selecionada OU se já estiver
-    # selecionado (permite comparar classes diferentes e tickers digitados).
+    # O ticker entra nas opções se for do grupo selecionado OU se já estiver
+    # selecionado (permite comparar grupos diferentes e tickers digitados).
     for asset in catalog:
         asset_group = asset.get("group", asset.get("class", "Outros"))
-        is_in_group = (asset_group == selected_class)
+        is_in_group = (asset_group == selected_group)
         is_selected = (asset["ticker"] in previously_selected_tickers)
 
         if (is_in_group or is_selected) and asset["ticker"] not in seen:
@@ -711,9 +711,9 @@ with st.sidebar:
         options=valid_options_tickers,
         max_selections=MAX_COMPARED,
         format_func=format_multiselect_option,
-        disabled=(selected_class is None and not previously_selected_tickers),
+        disabled=(selected_group is None and not previously_selected_tickers),
         placeholder="Selecione um ativo",
-        help="Selecione uma classe acima para habilitar." if selected_class is None else "Digite para buscar por nome ou código na classe selecionada.",
+        help="Selecione um grupo acima para habilitar." if selected_group is None else "Digite para buscar por nome ou código no grupo selecionado.",
         key=COMPARISON_SYMBOLS_WIDGET_KEY,
         on_change=sync_comparison_symbols,
     )

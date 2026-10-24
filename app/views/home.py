@@ -186,7 +186,7 @@ with col_text:
 <div class="hero-stats">
   <div><b>{stats["assets"]}</b><small>ativos</small></div>
   <div><b>{stats["classes"]}</b><small>classes</small></div>
-  <div><b>{stats["groups"]}</b><small>mercados</small></div>
+  <div><b>{stats["groups"]}</b><small>grupos</small></div>
   <div><b>6</b><small>módulos</small></div>
 </div>
 """,
@@ -229,7 +229,7 @@ st.markdown(
 <div class="section">
   <div class="section-kicker">01 · Catálogo</div>
   <div><div class="section-title">Um mosaico do mercado, em um só lugar</div>
-  <div class="section-sub">{stats["assets"]} ativos organizados em {stats["groups"]} mercados: do Bitcoin à
+  <div class="section-sub">{stats["assets"]} ativos organizados em {stats["groups"]} grupos: do Bitcoin à
   Petrobras, do ouro ao S&amp;P 500. Passe o mouse para pausar.</div></div>
 </div>
 """,
@@ -249,7 +249,7 @@ st.markdown(
 </div>
 <div class="steps">
   <div class="step"><div class="step-n">PASSO 01</div><h4>Escolha o ativo</h4>
-    <p>Na barra lateral, filtre por classe e mercado ou digite o ticker direto, como <kbd>PETR4.SA</kbd> ou <kbd>BTC-USD</kbd>.</p></div>
+    <p>Na barra lateral, escolha o grupo e o ativo ou digite o ticker direto, como <kbd>PETR4.SA</kbd> ou <kbd>BTC-USD</kbd>.</p></div>
   <div class="step"><div class="step-n">PASSO 02</div><h4>Defina o período</h4>
     <p>Use os atalhos de 1, 3, 5 ou 10 anos ou escolha as datas. Ajuste a frequência: diária, semanal, mensal, semestral ou anual.</p></div>
   <div class="step"><div class="step-n">PASSO 03</div><h4>Carregue e explore</h4>

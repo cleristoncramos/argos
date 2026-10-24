@@ -3,7 +3,7 @@
 CATALOG_SELECTION_TEXT = (
     "A seleção de ativos adotada no Argos DataLab possui natureza intencional e "
     "não probabilística. O catálogo inicial é composto por 120 instrumentos "
-    "financeiros organizados em 13 classes, incluindo criptomoedas, ações "
+    "financeiros organizados em 13 grupos e 9 classes, incluindo criptomoedas, ações "
     "brasileiras e internacionais, ETFs, FIIs, REITs, índices, pares cambiais, "
     "commodities e taxas de juros. A escolha considerou critérios combinados de "
     "representatividade por classe, diversidade geográfica, cobertura setorial, "

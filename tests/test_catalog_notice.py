@@ -11,6 +11,6 @@ def test_catalog_texts_use_neutral_language():
         assert contains_forbidden_phrase(text) is None
 
 
-def test_catalog_text_mentions_size_and_classes():
+def test_catalog_text_mentions_size_groups_and_classes():
     assert "120" in CATALOG_SELECTION_TEXT
-    assert "13 classes" in CATALOG_SELECTION_TEXT
+    assert "13 grupos e 9 classes" in CATALOG_SELECTION_TEXT
