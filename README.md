@@ -48,6 +48,18 @@ Os dados históricos são consultados via **Yahoo Finance**, utilizando o pacote
 
 # 🚀 Funcionalidades
 
+## 🏠 Página inicial
+
+A página de entrada apresenta o Argos no estilo da experiência inicial do Streamlit:
+
+* Nome, frase de efeito e botão **Get Started**, que abre a Análise Individual;
+* Vídeo curto com uma navegação real pelo sistema (`app/assets/video/argos_tour.mp4`);
+* Mosaico animado com os ativos do catálogo e seus logotipos;
+* Tutorial em 3 passos e cartões de primeiros passos para cada módulo;
+* Botão **Informações acadêmicas**, que abre uma página com os logotipos da UFPI e do CEAD, curso, autor, orientador e tecnologias utilizadas.
+
+Os logotipos institucionais ficam em `app/assets/institucional/` (origem em `FONTES.md`). Para regravar o vídeo depois de mudanças na interface, siga as instruções no topo de `scripts/gravar_video_tour.py`.
+
 ## 🔍 Análise individual de ativos
 
 A plataforma permite realizar análises individuais dos ativos disponíveis no catálogo.

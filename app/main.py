@@ -71,6 +71,7 @@ st.set_page_config(
 # ==========================================================
 home_page = st.Page("views/home.py", title="Início", icon="🏠", default=True)
 sobre_page = st.Page("views/sobre_projeto.py", title="Sobre o Projeto", icon="📊")
+academico_page = st.Page("views/informacoes_academicas.py", title="Informações Acadêmicas", icon="🎓")
 analise_page = st.Page("views/analise_individual.py", title="Análise Individual", icon="📈")
 comparacao_page = st.Page("views/comparacao_ativos.py", title="Comparação de Ativos", icon="⚖️")
 indicadores_page = st.Page("views/indicadores_tecnicos.py", title="Indicadores Técnicos", icon="📉")
@@ -85,6 +86,7 @@ pg = st.navigation({
     "Menu Principal": [
         home_page,  
         sobre_page,
+        academico_page,
         analise_page,
         comparacao_page,
         indicadores_page,
