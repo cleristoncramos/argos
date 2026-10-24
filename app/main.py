@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 
 import streamlit as st
 import streamlit.components.v1 as components
@@ -8,6 +9,12 @@ import streamlit.components.v1 as components
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
+
+from app.reload_guard import reload_if_changed
+
+# O Streamlit só recarrega módulos da pasta app/; depois de um deploy, os de
+# core/ continuariam na versão antiga. Se o código mudou, recarrega todos.
+reload_if_changed(Path(PROJECT_ROOT))
 
 from app.ui.demo_banner import render_demo_banner
 from app.ui.design import apply_global_style

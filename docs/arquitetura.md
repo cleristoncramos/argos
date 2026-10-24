@@ -1,6 +1,6 @@
 # Arquitetura do Sistema — Argos DataLab
 
-**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 777 passando, cobertura de `core/` em 100% (2.246 instruções)
+**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 781 passando, cobertura de `core/` em 100% (2.246 instruções)
 
 Este documento descreve como o Argos DataLab é organizado: camadas, módulos, páginas, fluxo de dados, configuração e convenções. Os cálculos estão detalhados em `docs/metodologia_de_calculo.md`; as fontes e o tratamento dos dados, em `docs/fontes_e_tratamento_de_dados.md`; o catálogo de ativos, em `docs/catalogo-de-ativos.md`; a explicação assistida, em `docs/llm_7b_implementacao.md`.
 
@@ -37,6 +37,7 @@ As versões usadas em produção estão fixadas em `app/requirements.txt`; o `re
 argos/
 ├── app/                         # Interface (Streamlit): só renderização e interação
 │   ├── main.py                  # Navegação, estilo comum e aviso do modo de demonstração
+│   ├── reload_guard.py          # Recarga dos módulos de core/ e app/ depois de um deploy
 │   ├── requirements.txt         # Dependências fixadas para o Streamlit Community Cloud
 │   ├── views/                   # Uma página por arquivo
 │   │   ├── home.py                  # Página inicial
@@ -282,12 +283,13 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 | Texto fixo por gráfico em `core/chart_guides.py` | Garante explicação sem depender de modelo de linguagem; serve de conteúdo de reserva |
 | Explicação assistida em módulos puros de `core/`, desligada por padrão | Testável sem rede; a versão pública não chama o modelo, e o modo `demo` usa respostas validadas |
 | Modo de demonstração com dados congelados e hash | Apresentações e avaliação com usuários reproduzíveis e sem depender da internet |
+| Recarga dos módulos do projeto quando o código muda (`app/reload_guard.py`) | O Streamlit só recarrega módulos da pasta do script (`app/`); depois de um push, o Streamlit Cloud continuava com a versão antiga de `core/` na memória, o que causou um `TypeError` em 24/10/2026 |
 | Cache dos downloads em `app/ui/data_cache.py`, por injeção no `core` | Mantém `core/` livre do Streamlit e testável sem o runtime; falhas da fonte continuam fora do cache |
 | Modal acadêmico em vez de página no menu | Mantém o menu focado nas análises; as informações acadêmicas ficam a um clique da página inicial |
 
 ## 13. Testes e qualidade
 
-- **777 testes**, cobertura de `core/` em **100%** (2.246 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
+- **781 testes**, cobertura de `core/` em **100%** (2.246 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
 - `app/` **não** tem testes de renderização: páginas e componentes são conferidos manualmente no navegador (roteiro em `docs/roteiro_conferencia_navegador.md`). Há, porém:
   - **testes de componentes** que montam o HTML e o layout dos gráficos de `app/ui` sem o Streamlit (`test_ui_components.py`, `test_landing.py`), verificando escape de texto, conteúdo do modal, layout base dos gráficos e ausência de cantos arredondados no CSS próprio;
   - **testes estruturais** que leem o código-fonte das páginas (`test_chart_guides.py`, `test_simulation_texts.py`): todo gráfico tem roteiro de leitura, os textos novos usam linguagem neutra e o texto obrigatório da simulação está presente.

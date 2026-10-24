@@ -5,7 +5,7 @@
 [![Aplicação online](https://img.shields.io/badge/app-argos--datalab.streamlit.app-C8102E)](https://argos-datalab.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.63-FF4B4B?logo=streamlit&logoColor=white)
-![Testes](https://img.shields.io/badge/testes-777%20aprovados-2E7D32)
+![Testes](https://img.shields.io/badge/testes-781%20aprovados-2E7D32)
 ![Cobertura](https://img.shields.io/badge/cobertura%20do%20core-100%25-2E7D32)
 ![PIBITI UFPI](https://img.shields.io/badge/PIBITI-UFPI%202026%E2%80%932027-1F1F1F)
 
@@ -368,7 +368,7 @@ Depois, inicie a aplicação com `ARGOS_DEMO_MODE=true`. Um aviso na interface i
 
 ## Testes e qualidade
 
-A suíte possui **777 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
+A suíte possui **781 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
 
 - integridade do catálogo e validação de tickers e datas;
 - tratamento de dados, lacunas de calendário e agregação por frequência;
@@ -407,7 +407,7 @@ A aplicação é publicada no **Streamlit Community Cloud**, integrado ao GitHub
 | Arquivo de entrada | `app/main.py` |
 | Endereço | [argos-datalab.streamlit.app](https://argos-datalab.streamlit.app) |
 
-Cada push na `main` dispara uma nova publicação. Alterações em `.streamlit/config.toml` podem exigir **Reboot app** no painel do Streamlit Cloud.
+Cada push na `main` dispara uma nova publicação. O Streamlit só recarrega sozinho os módulos da pasta `app/`; por isso, a cada execução, [`app/reload_guard.py`](app/reload_guard.py) verifica se os arquivos de `core/` e `app/` mudaram e, se mudaram, descarta da memória os módulos antigos. Alterações em `.streamlit/config.toml` ainda podem exigir **Reboot app** no painel do Streamlit Cloud.
 
 **Rotina de keep-alive.** O Community Cloud hiberna apps sem visitas por cerca de 12 horas. O workflow [`.github/workflows/keep-alive.yml`](.github/workflows/keep-alive.yml) roda a cada 3 horas e abre o app em um navegador real ([`scripts/manter_app_ativo.py`](scripts/manter_app_ativo.py)); se o app estiver hibernando, clica no botão para acordá-lo. Em repositórios públicos, o GitHub desativa workflows agendados após 60 dias sem atividade; nesse caso, reative-o na aba **Actions**.
 
