@@ -11,8 +11,8 @@ Plano 2, item 8.7. Atualizado em 10/10/2026. Itens "fora" não serão feitos nes
 | Simulação com datas livres ou novas modalidades | Fora | Decisão N04: manter as janelas móveis existentes; o exemplo "depositar em setembro e retirar em outubro" é atendido pela janela sazonal (N04b) |
 | Dividendos, câmbio, inflação, custos e impostos nos cálculos | Fora | O escopo usa preço de fechamento; os avisos informam isso |
 | Perfil, renda ou objetivos do usuário | Fora | Evita configurar recomendação individual |
-| Frequências semestral e anual | Fora (pendente com o orientador) | Não definidas no escopo |
-| Filtros de Mercado e Subclasse no seletor da Comparação | Adiado (Plano 3) | O catálogo tem os campos, mas o seletor hoje vai de Classe a Ativos; mexer nos callbacks agora traz risco |
+| Frequências semestral e anual | **Implementado em 24/10/2026** | Semestres de janeiro a junho e de julho a dezembro; ano civil |
+| Filtros de Mercado e Subclasse no seletor da Comparação | **Implementado em 24/10/2026** | Grupo → Subclasse e Mercado → Ativos, com opções encadeadas |
 | Nome do projeto, identidade visual, página inicial, "Get Started" e vídeo curto da home | Adiado (Plano 3) | Decisão de 09/10/2026: mudanças visuais depois das melhorias de conteúdo |
 | Trabalho colaborativo e autoria compartilhada | Adiado (Plano 3) | Decisão N16: nada confirmado; fora de `docs/contribuicoes.md` por enquanto |
 | Chamadas ao modelo de linguagem na versão pública | Fora | Decisão N22: evita custo e abuso de chave exposta; a versão pública usa respostas salvas e validadas ou o texto fixo |

@@ -5,7 +5,7 @@
 [![Aplicação online](https://img.shields.io/badge/app-argos--datalab.streamlit.app-C8102E)](https://argos-datalab.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.63-FF4B4B?logo=streamlit&logoColor=white)
-![Testes](https://img.shields.io/badge/testes-792%20aprovados-2E7D32)
+![Testes](https://img.shields.io/badge/testes-799%20aprovados-2E7D32)
 ![Cobertura](https://img.shields.io/badge/cobertura%20do%20core-100%25-2E7D32)
 ![PIBITI UFPI](https://img.shields.io/badge/PIBITI-UFPI%202026%E2%80%932027-1F1F1F)
 
@@ -115,7 +115,7 @@ Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferra
 
 ### Sobre o Projeto
 
-- Propósito, módulos, metodologia, fontes de dados e limitações da plataforma.
+- Contexto e público, pergunta de pesquisa e objetivos com a situação de cada um, módulos, metodologia, dados e catálogo, qualidade, escopo e contexto acadêmico.
 
 ### Explicação assistida por IA (opcional, desligada por padrão)
 
@@ -356,7 +356,7 @@ Depois, inicie a aplicação com `ARGOS_DEMO_MODE=true`. Um aviso na interface i
 
 ## Testes e qualidade
 
-A suíte possui **792 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
+A suíte possui **799 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
 
 - integridade do catálogo e validação de tickers e datas;
 - tratamento de dados, lacunas de calendário e agregação por frequência;
