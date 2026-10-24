@@ -39,7 +39,7 @@ def render_selected_asset_cards(assets: list[dict]) -> None:
             image_html = (
                 f"<img src='{escape(logo_url)}' "
                 "style='width:32px;height:32px;object-fit:contain;"
-                "background:#fff;border:1px solid #04070D;' "
+                "background:#fff;border:1px solid #E2E8F0;' "
                 "onerror=\"this.style.display='none'; "
                 "this.nextElementSibling.style.display='inline';\"/>"
                 f"<span style='font-size:1.4rem; display:none;'>{fallback_icon}</span>"
@@ -48,16 +48,16 @@ def render_selected_asset_cards(assets: list[dict]) -> None:
             image_html = f"<span style='font-size:1.4rem;'>{fallback_icon}</span>"
 
         card_html = f"""
-        <div style="display:flex; align-items:center; gap:10px; background:linear-gradient(160deg,#15203A 0%,#0F182B 100%);
-                    border:1px solid #04070D;box-shadow:0 14px 34px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.04); padding:10px 14px;
+        <div style="display:flex; align-items:center; gap:10px; background:#FFFFFF;
+                    border:1px solid #2A2A2A;box-shadow:0 8px 22px rgba(17,17,17,.07); padding:10px 14px;
                     height:100%;">
             {image_html}
             <div style="display:flex; flex-direction:column; line-height:1.25; overflow:hidden;">
-                <span style="font-weight:700; font-size:0.85rem; color:#F1F5F9;
+                <span style="font-weight:700; font-size:0.85rem; color:#0f172a;
                              white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     {safe_ticker}
                 </span>
-                <span style="font-size:0.75rem; color:#94A3B8;
+                <span style="font-size:0.75rem; color:#64748b;
                              white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     {safe_name}
                 </span>
@@ -110,7 +110,7 @@ def render_selected_asset_cards(assets: list[dict]) -> None:
             image_html = (
                 f"<img src='{escape(logo_url)}' "
                 "style='width:32px;height:32px;object-fit:contain;"
-                "background:#fff;border:1px solid #04070D;' "
+                "background:#fff;border:1px solid #E2E8F0;' "
                 "onerror=\"this.style.display='none'; "
                 "this.nextElementSibling.style.display='inline';\"/>"
                 f"<span style='font-size:1.4rem; display:none;'>{fallback_icon}</span>"
@@ -119,16 +119,16 @@ def render_selected_asset_cards(assets: list[dict]) -> None:
             image_html = f"<span style='font-size:1.4rem;'>{fallback_icon}</span>"
 
         card_html = f"""
-        <div style="display:flex; align-items:center; gap:10px; background:linear-gradient(160deg,#15203A 0%,#0F182B 100%);
-                    border:1px solid #04070D;box-shadow:0 14px 34px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.04); padding:10px 14px;
+        <div style="display:flex; align-items:center; gap:10px; background:#FFFFFF;
+                    border:1px solid #2A2A2A;box-shadow:0 8px 22px rgba(17,17,17,.07); padding:10px 14px;
                     height:100%;">
             {image_html}
             <div style="display:flex; flex-direction:column; line-height:1.25; overflow:hidden;">
-                <span style="font-weight:700; font-size:0.85rem; color:#F1F5F9;
+                <span style="font-weight:700; font-size:0.85rem; color:#0f172a;
                              white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     {safe_ticker}
                 </span>
-                <span style="font-size:0.75rem; color:#94A3B8;
+                <span style="font-size:0.75rem; color:#64748b;
                              white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     {safe_name}
                 </span>
@@ -167,7 +167,7 @@ def render_asset_hero_logo(asset: dict) -> None:
         image_html = (
             f"<img src='{escape(logo_url)}' "
             "style='width:64px;height:64px;object-fit:contain;"
-            "background:#fff;border:1px solid #04070D;' "
+            "background:#fff;border:1px solid #E2E8F0;' "
             "onerror=\"this.style.display='none'; "
             "this.nextElementSibling.style.display='inline';\"/>"
             f"<span style='font-size:2.6rem; display:none;'>{fallback_icon}</span>"
@@ -176,16 +176,16 @@ def render_asset_hero_logo(asset: dict) -> None:
         image_html = f"<span style='font-size:2.6rem;'>{fallback_icon}</span>"
 
     card_html = f"""
-    <div style="display:flex; align-items:center; gap:16px; background:linear-gradient(160deg,#15203A 0%,#0F182B 100%);
-                border:1px solid #04070D;box-shadow:0 14px 34px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.04); padding:16px 20px;
+    <div style="display:flex; align-items:center; gap:16px; background:#FFFFFF;
+                border:1px solid #2A2A2A;box-shadow:0 8px 22px rgba(17,17,17,.07); padding:16px 20px;
                 height:100%;">
         {image_html}
         <div style="display:flex; flex-direction:column; line-height:1.3; overflow:hidden;">
-            <span style="font-weight:800; font-size:1.3rem; color:#F1F5F9;
+            <span style="font-weight:800; font-size:1.3rem; color:#0f172a;
                          white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                 {safe_ticker}
             </span>
-            <span style="font-size:0.95rem; color:#94A3B8;
+            <span style="font-size:0.95rem; color:#64748b;
                          white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                 {safe_name}
             </span>

@@ -221,7 +221,7 @@ def render_multi_asset_selector(
     """
     inject_compact_css()
     
-    st.markdown("<p style='font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: 600; color: #94A3B8;'>Filtros de Busca (Opcional)</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: 600; color: #475569;'>Filtros de Busca (Opcional)</p>", unsafe_allow_html=True)
     
     classes = sorted({asset["class"] for asset in ASSETS})
     class_options = ["Todas as Classes"] + classes

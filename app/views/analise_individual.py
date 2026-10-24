@@ -105,7 +105,7 @@ initialize_asset_state()
 st.title("📊 Análise Individual")
 
 st.markdown(
-    "<p style='font-size: 1.1rem; color: #94A3B8; margin-bottom: 2rem;'>"
+    "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 2rem;'>"
     "Explore para entender a fundo o comportamento histórico e estatístico de um único ativo selecionado no sistema.<br>"
     "</p>",
     unsafe_allow_html=True
@@ -140,8 +140,8 @@ def apply_custom_layout(fig):
         plot_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=10, r=20, t=20, b=20),
         xaxis=dict(showgrid=False, zeroline=False),
-        yaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.14)", zeroline=False),
-        font=dict(family="Inter, Arial, sans-serif", color="#94A3B8")
+        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", zeroline=False),
+        font=dict(family="Inter, Arial, sans-serif", color="#334155")
     )
     return fig
 
@@ -363,13 +363,13 @@ value_suffix = "%" if currency.kind == "rate" else ""
 with col1:
     render_custom_metric_card(
         "Primeiro Valor",
-        f"<span style='font-size: 1.2rem; color: #94A3B8; font-weight: 600;'>{prefix_currency}</span>{format_number_br(stats['first_value'])}{value_suffix}"
+        f"<span style='font-size: 1.2rem; color: #64748b; font-weight: 600;'>{prefix_currency}</span>{format_number_br(stats['first_value'])}{value_suffix}"
     )
 
 with col2:
     render_custom_metric_card(
         "Último Valor",
-        f"<span style='font-size: 1.2rem; color: #94A3B8; font-weight: 600;'>{prefix_currency}</span>{format_number_br(stats['last_value'])}{value_suffix}"
+        f"<span style='font-size: 1.2rem; color: #64748b; font-weight: 600;'>{prefix_currency}</span>{format_number_br(stats['last_value'])}{value_suffix}"
     )
 
 with col3:
@@ -378,7 +378,7 @@ with col3:
     if total_return > 0:
         return_str = f"+{return_str}"
 
-    color = "#4ADE80" if total_return > 0 else "#F87171" if total_return < 0 else "#E2E8F0"
+    color = "#166534" if total_return > 0 else "#991b1b" if total_return < 0 else "#0f172a"
     colored_value = f"<span style='color: {color};'>{return_str}</span>"
 
     render_custom_metric_card("Retorno Total", colored_value)
@@ -388,7 +388,7 @@ with col4:
     count_formatted = format_brazilian_integer(stats["count"])
     render_custom_metric_card(
         "Períodos Analisados",
-        f"{count_formatted} <span style='font-size: 1rem; color: #94A3B8; font-weight: 500;'>{freq_label}</span>"
+        f"{count_formatted} <span style='font-size: 1rem; color: #64748b; font-weight: 500;'>{freq_label}</span>"
     )
 
 st.caption(f"Unidade de cotação: {currency.label}.")
@@ -424,7 +424,7 @@ value_label = "Taxa" if currency.kind == "rate" else "Preço"
 
 st.markdown("### 📈 Evolução Temporal do Ativo")
 st.markdown(
-    "<p style='color: #94A3B8; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
+    "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
     f"Comportamento histórico de {'nível da taxa' if currency.kind == 'rate' else 'preço de fechamento'} para {symbol}."
     "</p>",
     unsafe_allow_html=True
@@ -460,7 +460,7 @@ with st.container(border=True):
 # =====================
 st.markdown("### 🌪️ Volatilidade Anualizada por Mês")
 st.markdown(
-    "<p style='color: #94A3B8; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
+    "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
     "Volatilidade <b>anualizada</b>: desvio padrão dos retornos diários de cada mês, "
     f"convertido para base anual (fator √{DAILY_ANNUALIZATION_FACTOR}). Barras em destaque "
     "indicam os meses com maiores picos de volatilidade histórica."
@@ -510,7 +510,7 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
 # =====================
 st.markdown(f"### 📉 Variação Percentual — {frequency}")
 st.markdown(
-    "<p style='color: #94A3B8; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
+    "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
     "Retorno de <b>cada período</b> em relação ao período anterior (não é a valorização "
     "acumulada desde o início, que aparece no card \"Retorno Total\")."
     "</p>",
@@ -520,7 +520,7 @@ st.markdown(
 df_chart = df.dropna(subset=["Pct_Change"]).copy()
 fig_bar = px.bar(
     df_chart, x="Date", y="Pct_Change", color="Pct_Change",
-    color_continuous_scale="RdYlGn", template="plotly_dark"
+    color_continuous_scale="RdYlGn", template="plotly_white"
 )
 fig_bar = apply_custom_layout(fig_bar)
 fig_bar.update_layout(coloraxis_showscale=False)
@@ -542,7 +542,7 @@ with st.container(border=True):
 # =====================
 st.markdown("### 🗓️ Padrões Sazonais")
 st.markdown(
-    "<p style='color: #94A3B8; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
+    "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
     "Cada célula mostra a variação percentual de um mês de um ano específico "
     "(retorno mensal, não acumulado), calculada pelo último fechamento de cada mês, "
     "independentemente da frequência escolhida. Verde indica variação positiva e vermelho, negativa; "
@@ -573,11 +573,11 @@ else:
             z=df_matrix.values,
             x=df_matrix.columns,
             y=df_matrix.index,
-            colorscale=[[0.0, "#ef4444"], [0.5, "#1E293B"], [1.0, "#22c55e"]],
+            colorscale=[[0.0, "#ef4444"], [0.5, "#ffffff"], [1.0, "#22c55e"]],
             zmid=0,
             text=text_matrix.values,
             texttemplate="%{text}",
-            textfont={"size": 12, "color": "#E2E8F0", "family": "Inter, Arial"},
+            textfont={"size": 12, "color": "#1e293b", "family": "Inter, Arial"},
             customdata=text_matrix.values,
             hoverongaps=False,
             hovertemplate="Ano: %{y}<br>Mês: %{x}<br>Variação: %{customdata}<extra></extra>",
@@ -592,7 +592,7 @@ else:
     fig_heatmap.update_yaxes(autorange="reversed")
 
     with st.container(border=True):
-        st.markdown("<h5 style='text-align: center; color: #94A3B8; margin-bottom: 10px; font-size: 1rem;'>Variação Mensal Histórica</h5>", unsafe_allow_html=True)
+        st.markdown("<h5 style='text-align: center; color: #334155; margin-bottom: 10px; font-size: 1rem;'>Variação Mensal Histórica</h5>", unsafe_allow_html=True)
         st.plotly_chart(fig_heatmap, use_container_width=True, config=PLOTLY_CONFIG)
         render_chart_guide("mapa_sazonal")
 
@@ -610,7 +610,7 @@ else:
             marker_color=bar_colors,
             text=text_avg,
             textposition="outside",
-            textfont=dict(size=12, color="#94A3B8", family="Inter, Arial"),
+            textfont=dict(size=12, color="#475569", family="Inter, Arial"),
             hovertemplate="Mês: %{x}<br>Média: %{text}<extra></extra>"
         )
     )
@@ -623,7 +623,7 @@ else:
     )
 
     with st.container(border=True):
-        st.markdown("<h5 style='text-align: center; color: #94A3B8; margin-top: 10px; margin-bottom: 10px; font-size: 1rem;'>Média Consolidada por Mês do Calendário</h5>", unsafe_allow_html=True)
+        st.markdown("<h5 style='text-align: center; color: #334155; margin-top: 10px; margin-bottom: 10px; font-size: 1rem;'>Média Consolidada por Mês do Calendário</h5>", unsafe_allow_html=True)
         st.plotly_chart(fig_bar_season, use_container_width=True, config=PLOTLY_CONFIG)
         render_chart_guide("media_mensal")
 
@@ -759,7 +759,7 @@ else:
 
             with st.container(border=True):
                 st.markdown(
-                    "<h5 style='text-align: center; color: #94A3B8; margin-bottom: 10px; font-size: 1rem;'>"
+                    "<h5 style='text-align: center; color: #334155; margin-bottom: 10px; font-size: 1rem;'>"
                     "Média de todos os anos × média do recorte</h5>",
                     unsafe_allow_html=True,
                 )
@@ -860,7 +860,7 @@ else:
                     fig_window.add_hline(
                         y=stats_all["Média"],
                         line_dash="dash",
-                        line_color="#94A3B8",
+                        line_color="#475569",
                         annotation_text=f"Média: {_fmt_pct(stats_all['Média'])}",
                     )
                 fig_window = apply_custom_layout(fig_window)

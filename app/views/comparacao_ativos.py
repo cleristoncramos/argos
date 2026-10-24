@@ -307,8 +307,8 @@ def apply_custom_layout(fig):
         plot_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=10, r=20, t=20, b=20),
         xaxis=dict(showgrid=False, zeroline=False),
-        yaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.14)", zeroline=False),
-        font=dict(family="Inter, Arial, sans-serif", color="#94A3B8")
+        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", zeroline=False),
+        font=dict(family="Inter, Arial, sans-serif", color="#334155")
     )
     return fig
 
@@ -576,7 +576,7 @@ def render_correlation_heatmap(correlation_matrix: pd.DataFrame) -> None:
         colorscale=[
             [0.00, "#4575B4"],
             [0.25, "#91BFDB"],
-            [0.50, "#1E293B"],
+            [0.50, "#F7F7F7"],
             [0.75, "#FC8D59"],
             [1.00, "#D73027"],
         ],
@@ -588,7 +588,7 @@ def render_correlation_heatmap(correlation_matrix: pd.DataFrame) -> None:
         textfont={
             "family": "Inter, Arial, sans-serif",
             "size": 14,
-            "color": "#94A3B8",
+            "color": "#334155",
         },
         hovertemplate=(
             "<b>%{y}</b> × <b>%{x}</b><br>"
@@ -617,7 +617,7 @@ def render_correlation_heatmap(correlation_matrix: pd.DataFrame) -> None:
             "constrain": "domain",
             "categoryorder": "array",
             "categoryarray": x_names,
-            "tickfont": {"size": 12, "color": "#94A3B8"},
+            "tickfont": {"size": 12, "color": "#475569"},
             "fixedrange": True,
         },
         yaxis={
@@ -630,7 +630,7 @@ def render_correlation_heatmap(correlation_matrix: pd.DataFrame) -> None:
             "scaleratio": 1,
             "categoryorder": "array",
             "categoryarray": y_names,
-            "tickfont": {"size": 12, "color": "#94A3B8"},
+            "tickfont": {"size": 12, "color": "#475569"},
             "fixedrange": True,
         },
     )
@@ -658,7 +658,7 @@ initialize_comparison_state()
 
 st.title("⚖️ Comparação de Ativos")
 st.markdown(
-    "<p style='font-size:1.1rem;color:#94A3B8;margin-bottom:2rem;'>"
+    "<p style='font-size:1.1rem;color:#475569;margin-bottom:2rem;'>"
     "Compare o comportamento histórico de diferentes ativos através de métricas de retorno, "
     "volatilidade, drawdown e correlação.</p>",
     unsafe_allow_html=True,
@@ -1209,7 +1209,7 @@ tab_performance, tab_risk, tab_correlation, tab_seasonality, tab_trend, tab_data
 with tab_performance:
     st.markdown("### Evolução de Desempenho Histórico")
     st.markdown(
-        "<p style='color:#94A3B8;font-size:0.95rem;margin-top:-12px;"
+        "<p style='color:#64748b;font-size:0.95rem;margin-top:-12px;"
         "margin-bottom:24px;'>Comparação de trajetória normalizada em "
         "<b>Base 100</b> no período inicial.</p>",
         unsafe_allow_html=True,
@@ -1444,7 +1444,7 @@ with tab_trend:
                     hovertemplate="%{x|%m/%Y}<br>%{customdata}<extra>" + escape(ticker) + "</extra>",
                 )
             )
-        fig_rolling.add_hline(y=0, line_color="#94A3B8", line_width=1)
+        fig_rolling.add_hline(y=0, line_color="#475569", line_width=1)
         fig_rolling = apply_custom_layout(fig_rolling)
         fig_rolling.update_layout(
             hovermode="x unified",
@@ -1501,7 +1501,7 @@ with tab_trend:
             )
 
         if ratio_rows:
-            fig_ratio.add_hline(y=0, line_color="#94A3B8", line_width=1)
+            fig_ratio.add_hline(y=0, line_color="#475569", line_width=1)
             fig_ratio = apply_custom_layout(fig_ratio)
             fig_ratio.update_layout(
                 hovermode="x unified",

@@ -63,7 +63,7 @@ initialize_asset_state()
 st.title("🧪 Simulação Histórica de Aportes")
 
 st.markdown(
-    "<p style='font-size: 1.1rem; color: #94A3B8; margin-bottom: 1rem;'>"
+    "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 1rem;'>"
     "Veja o que teria acontecido historicamente com um valor hipotético, "
     "aplicado de uma só vez ou em aportes periódicos. É uma ferramenta "
     "de estudo: ela descreve o passado e não indica o que fazer."
@@ -139,7 +139,7 @@ def build_path_chart(paths: dict, symbol: str) -> go.Figure:
             y=paths["periodic"]["Invested"],
             name="Total investido (periódicos)",
             mode="lines",
-            line=dict(color="#94A3B8", width=1.5, dash="dot"),
+            line=dict(color="#64748B", width=1.5, dash="dot"),
             hovertemplate=(
                 "%{x|%d/%m/%Y}<br>Investido: %{y:,.2f}"
                 "<extra></extra>"
@@ -151,11 +151,11 @@ def build_path_chart(paths: dict, symbol: str) -> go.Figure:
         title=f"Valor da carteira hipotética — {symbol}",
         xaxis_title="",
         yaxis_title="Valor na moeda do ativo",
-        template="plotly_dark",
+        template="plotly_white",
         hovermode="x unified",
         legend_title_text="Séries",
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="#F8FAFC",
+        plot_bgcolor="#FFFFFF",
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
@@ -194,17 +194,17 @@ def build_windows_chart(outcomes: pd.DataFrame, symbol: str) -> go.Figure:
         )
     )
 
-    fig.add_hline(y=0, line_color="#94A3B8", line_width=1)
+    fig.add_hline(y=0, line_color="#475569", line_width=1)
 
     fig.update_layout(
         title=f"Retorno de cada janela histórica — {symbol}",
         xaxis_title="Data de início da janela",
         yaxis_title="Retorno sobre o total investido (%)",
-        template="plotly_dark",
+        template="plotly_white",
         hovermode="x unified",
         legend_title_text="Séries",
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="#F8FAFC",
+        plot_bgcolor="#FFFFFF",
         margin=dict(l=40, r=20, t=70, b=40),
     )
 

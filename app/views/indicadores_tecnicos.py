@@ -78,7 +78,7 @@ initialize_asset_state()
 st.title("📈 Indicadores Técnicos")
 
 st.markdown(
-    "<p style='font-size: 1.1rem; color: #94A3B8; margin-bottom: 2rem;'>"
+    "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 2rem;'>"
     "Explore indicadores técnicos calculados sobre dados históricos. "
     "Médias móveis, RSI, MACD, Bandas de Bollinger, ATR e volatilidade móvel "
     "ajudam a descrever tendência, momentum e dispersão de preços."
@@ -135,8 +135,8 @@ def build_simple_line_chart(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         xaxis=dict(showgrid=False, title=""),
-        yaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.14)", ticksuffix=y_suffix),
-        font=dict(family="Inter, Arial, sans-serif", color="#94A3B8"),
+        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", ticksuffix=y_suffix),
+        font=dict(family="Inter, Arial, sans-serif", color="#334155"),
     )
     return figure
 
@@ -714,15 +714,15 @@ if show_volume and "Volume" in df.columns:
     volume_figure.update_traces(
         customdata=formatted_volume,
         hovertemplate="<b>%{x|%d/%m/%Y}</b><br>Volume: <b>%{customdata}</b><extra></extra>",
-        marker_color="#94A3B8",
+        marker_color="#64748B",
     )
 
     volume_figure.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         xaxis=dict(showgrid=False, zeroline=False, title=""),
-        yaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.14)", zeroline=False),
-        font=dict(family="Inter, Arial, sans-serif", color="#94A3B8")
+        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", zeroline=False),
+        font=dict(family="Inter, Arial, sans-serif", color="#334155")
     )
 
     with st.container(border=True):

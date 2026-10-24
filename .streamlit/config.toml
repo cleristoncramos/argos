@@ -1,14 +1,14 @@
-# Identidade visual do Argos DataLab: tema escuro azul-marinho, cantos retos e
-# linhas finas quase pretas. O CSS complementar fica em app/ui/design.py.
+# Identidade visual do Argos DataLab: tema claro com profundidade, cantos retos e
+# linhas finas escuras. O CSS complementar fica em app/ui/design.py.
 
 [theme]
-base = "dark"
-primaryColor = "#E5484D"
-backgroundColor = "#0B1220"
-secondaryBackgroundColor = "#111A2E"
-textColor = "#E6EAF2"
-borderColor = "#04070D"
-dataframeBorderColor = "#04070D"
+base = "light"
+primaryColor = "#C8102E"
+backgroundColor = "#F7F6F2"
+secondaryBackgroundColor = "#EFEDE7"
+textColor = "#111111"
+borderColor = "#2A2A2A"
+dataframeBorderColor = "#2A2A2A"
 showWidgetBorder = true
 showSidebarBorder = true
 baseRadius = "none"

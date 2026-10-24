@@ -101,7 +101,7 @@ def format_colored_pct(value, neutral_if_nan=False) -> str:
     """Formata porcentagem com cor dinâmica injetada via HTML."""
     if value is None or pd.isna(value):
         return "N/A"
-    color = "#4ADE80" if value > 0 else "#F87171" if value < 0 else "#E2E8F0"
+    color = "#166534" if value > 0 else "#991b1b" if value < 0 else "#0f172a"
     sign = "+" if value > 0 else ""
     formatted_str = f"{sign}{value * 100:,.2f}%".replace(",", "X").replace(".", ",").replace("X", ".")
     return f"<span style='color: {color};'>{formatted_str}</span>"
@@ -116,8 +116,8 @@ def apply_custom_layout(fig):
         plot_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=10, r=20, t=20, b=20),
         xaxis=dict(showgrid=False, zeroline=False, title_text=""),
-        yaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.14)", zeroline=False),
-        font=dict(family="Inter, Arial, sans-serif", color="#94A3B8")
+        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", zeroline=False),
+        font=dict(family="Inter, Arial, sans-serif", color="#334155")
     )
     return fig
 
@@ -151,7 +151,7 @@ if RISK_FREE_RATE_WIDGET_KEY not in st.session_state:
 st.title("🛡️ Risco e Retorno")
 
 st.markdown(
-    "<p style='font-size: 1.1rem; color: #94A3B8; margin-bottom: 2rem;'>"
+    "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 2rem;'>"
     "Analise retorno acumulado, volatilidade anualizada, drawdown máximo, "
     "percentual de períodos positivos e índice de Sharpe."
     "</p>",
@@ -442,13 +442,13 @@ with col2:
 with col3:
     render_metric_card(
         "Volatilidade Anualizada",
-        f"<span style='color: #94A3B8;'>{format_percentage(metrics['Volatilidade'])}</span>",
+        f"<span style='color: #475569;'>{format_percentage(metrics['Volatilidade'])}</span>",
         metric_key="volatilidade",
     )
 with col4:
     render_metric_card(
         "Índice de Sharpe",
-        f"<span style='color: #E2E8F0;'>{str_sharpe}</span>",
+        f"<span style='color: #0f172a;'>{str_sharpe}</span>",
         metric_key="sharpe",
     )
 
@@ -472,7 +472,7 @@ with col6:
 with col7:
     render_metric_card(
         "Períodos Positivos",
-        f"<span style='color: #4ADE80;'>{format_percentage(metrics['Percentual positivo'])}</span>",
+        f"<span style='color: #166534;'>{format_percentage(metrics['Percentual positivo'])}</span>",
         metric_key="win_rate",
     )
 with col8:
@@ -530,20 +530,20 @@ if not df_risk.empty and not df_risk["Cum_Ret"].isna().all():
     cumulative_return_figure.add_trace(go.Scatter(
         x=[max_date], y=[max_val],
         mode="markers+text",
-        marker=dict(color="#4ADE80", size=12, symbol="triangle-up"),
+        marker=dict(color="#166534", size=12, symbol="triangle-up"),
         text=[f"Máx: {max_val*100:.2f}%"],
         textposition="top center",
-        textfont=dict(color="#4ADE80", size=11, family="Inter, Arial, sans-serif"),
+        textfont=dict(color="#166534", size=11, family="Inter, Arial, sans-serif"),
         hoverinfo="skip"
     ))
 
     cumulative_return_figure.add_trace(go.Scatter(
         x=[min_date], y=[min_val],
         mode="markers+text",
-        marker=dict(color="#F87171", size=12, symbol="triangle-down"),
+        marker=dict(color="#991b1b", size=12, symbol="triangle-down"),
         text=[f"Mín: {min_val*100:.2f}%"],
         textposition="bottom center",
-        textfont=dict(color="#F87171", size=11, family="Inter, Arial, sans-serif"),
+        textfont=dict(color="#991b1b", size=11, family="Inter, Arial, sans-serif"),
         hoverinfo="skip"
     ))
 
@@ -584,10 +584,10 @@ if worst_drawdown_date is not None:
     drawdown_figure.add_trace(go.Scatter(
         x=[min_dd_date], y=[min_dd_val],
         mode="markers+text",
-        marker=dict(color="#F87171", size=10, symbol="x"),
+        marker=dict(color="#991b1b", size=10, symbol="x"),
         text=[f"Pior Queda: {min_dd_val*100:.2f}%"],
         textposition="bottom center",
-        textfont=dict(color="#F87171", size=11, family="Inter, Arial, sans-serif"),
+        textfont=dict(color="#991b1b", size=11, family="Inter, Arial, sans-serif"),
         hoverinfo="skip"
     ))
 
@@ -626,7 +626,7 @@ if not rets.empty:
             text=counts.values,
             textposition="outside",
             marker_color="#3B82F6",
-            marker_line_color="#0B1220",
+            marker_line_color="#FFFFFF",
             marker_line_width=1,
             hovertemplate="<b>Intervalo:</b> %{x}<br><b>Frequência:</b> %{y} ocorrências<extra></extra>"
         )

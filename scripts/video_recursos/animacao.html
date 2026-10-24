@@ -10,19 +10,19 @@
 -->
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0; }
-:root { --ink: #F1F5F9; --line: #04070D; --soft: rgba(148,163,184,.16); --muted: #94A3B8; --red: #E5484D; --paper: #0F182B; --alt: #16213A;
-        --green: #22C55E; --blue: #60A5FA; --amber: #d97706; }
+:root { --ink: #111; --line: #2a2a2a; --soft: #e4e1da; --muted: #5f5f5f; --red: #c8102e; --paper: #fff; --alt: #f6f4ef;
+        --green: #15803d; --blue: #1d4ed8; --amber: #d97706; }
 html, body { width: 1280px; height: 720px; overflow: hidden; color: var(--ink);
-             background: radial-gradient(900px 420px at 85% -10%, rgba(229,72,77,.20), transparent 60%),
-                         radial-gradient(800px 500px at -10% 20%, rgba(56,189,248,.10), transparent 60%), #0B1220;
+             background: radial-gradient(900px 400px at 88% -10%, rgba(200,16,46,.09), transparent 60%),
+                         radial-gradient(800px 480px at -10% 20%, rgba(29,78,216,.06), transparent 60%), #F7F6F2;
              font-family: "Segoe UI", "Source Sans Pro", Arial, sans-serif; }
 .frame { position: absolute; inset: 0; display: flex; flex-direction: column; }
 
 /* barra superior */
-.top { height: 58px; display: flex; align-items: center; justify-content: space-between; padding: 0 36px; border-bottom: 1px solid var(--soft); }
+.top { height: 58px; display: flex; align-items: center; justify-content: space-between; padding: 0 36px; border-bottom: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .18em; font-size: 15px; }
-.mark { width: 28px; height: 28px; background: linear-gradient(135deg, #EF4444, #B91C1C); box-shadow: 0 6px 18px rgba(229,72,77,.45); color: #fff; display: grid; place-items: center; font-size: 15px; letter-spacing: 0; }
-.counter { display: flex; border: 1px solid var(--line); background: var(--paper); font: 700 13px/1 Consolas, monospace; }
+.mark { width: 28px; height: 28px; background: linear-gradient(135deg, #E11D48, #B50E29); box-shadow: 0 4px 12px rgba(200,16,46,.3); color: #fff; display: grid; place-items: center; font-size: 15px; letter-spacing: 0; }
+.counter { display: flex; border: 1px solid var(--line); background: #fff; box-shadow: 0 6px 14px rgba(17,17,17,.08); font: 700 13px/1 Consolas, monospace; }
 .counter span { padding: 7px 12px; }
 .counter span + span { border-left: 1px solid var(--line); color: var(--red); }
 .badge { position: absolute; right: 36px; bottom: 54px; font-size: 12px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
@@ -34,34 +34,33 @@ html, body { width: 1280px; height: 720px; overflow: hidden; color: var(--ink);
 .scene.off { opacity: 0; transform: translateX(-60px); }
 .kicker { color: var(--red); font-weight: 800; font-size: 14px; letter-spacing: .22em; text-transform: uppercase; }
 .title { margin-top: 8px; font-size: 44px; font-weight: 800; letter-spacing: -.03em; line-height: 1.05; }
-.lead { margin-top: 10px; font-size: 19px; color: #CBD5E1; max-width: 560px; line-height: 1.45; }
+.lead { margin-top: 10px; font-size: 19px; color: #3a3a3a; max-width: 560px; line-height: 1.45; }
 .cols { display: grid; grid-template-columns: 420px 1fr; gap: 36px; height: 100%; }
-.panel { border: 1px solid var(--line); background: linear-gradient(160deg, #15203A, #0F182B); position: relative;
-         box-shadow: 0 24px 50px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.04); }
+.panel { border: 1px solid var(--line); background: var(--paper); position: relative; box-shadow: 0 18px 40px rgba(17,17,17,.10); }
 .panel-head { height: 34px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between;
-              padding: 0 12px; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; background: #070C16; color: #FCA5A5; }
+              padding: 0 12px; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; background: linear-gradient(180deg, #2b2b31, #1b1b1f); color: #fff; border-bottom: 2px solid var(--red); }
 .chips { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { border: 1px solid var(--line); padding: 6px 10px; font-size: 14px; font-weight: 700; background: var(--alt); box-shadow: 0 6px 14px rgba(0,0,0,.3); }
-.chip.red { background: linear-gradient(135deg, #EF4444, #B91C1C); color: #fff; }
+.chip { border: 1px solid var(--line); padding: 6px 10px; font-size: 14px; font-weight: 700; background: #fff; box-shadow: 0 4px 10px rgba(17,17,17,.07); }
+.chip.red { background: linear-gradient(135deg, #E11D48, #B50E29); color: #fff; }
 
 /* rodapé com capítulos */
-.bottom { height: 46px; border-top: 1px solid var(--soft); background: rgba(7,12,22,.7); display: grid; grid-template-columns: repeat(8, 1fr); position: relative; }
-.bottom div { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #475569;
+.bottom { height: 46px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(8, 1fr); position: relative; }
+.bottom div { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9a9a9a;
               display: flex; align-items: center; padding-left: 12px; border-right: 1px solid var(--soft); transition: color .3s; }
 .bottom div:last-child { border-right: 0; }
 .bottom div.done { color: var(--ink); }
 .bottom div.now { color: var(--red); }
-.progress { position: absolute; left: 0; top: -1px; height: 3px; background: var(--red); width: 0; box-shadow: 0 0 12px var(--red); }
+.progress { position: absolute; left: 0; top: -1px; height: 3px; background: linear-gradient(90deg, #B50E29, #F97316); width: 0; }
 
 /* métricas */
 .metrics { display: grid; grid-template-columns: repeat(2, 1fr); border: 1px solid var(--line); margin-top: 22px;
-           background: linear-gradient(160deg, #15203A, #0F182B); box-shadow: 0 18px 40px rgba(0,0,0,.4); }
+           background: #fff; border-top: 3px solid var(--red); box-shadow: 0 14px 30px rgba(17,17,17,.09); }
 .metric { padding: 12px 14px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .metric:nth-child(2n) { border-right: 0; }
 .metric:nth-last-child(-n+2) { border-bottom: 0; }
 .metric small { display: block; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .metric b { font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
-.pos { color: #4ADE80; } .neg { color: var(--red); }
+.pos { color: var(--green); } .neg { color: var(--red); }
 
 svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted); }
 .draw { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); }
@@ -79,8 +78,8 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
 
 /* intro */
 .intro { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0; }
-.intro h1 { text-shadow: 0 10px 40px rgba(0,0,0,.5); font-size: 104px; font-weight: 800; letter-spacing: -.05em; line-height: 1; }
-.intro h1 .hl { color: var(--red); }
+.intro h1 { font-size: 104px; font-weight: 800; letter-spacing: -.05em; line-height: 1; }
+.intro h1 .hl { background: linear-gradient(100deg, #B50E29, #E11D48 55%, #F97316); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .intro .tag { margin-top: 16px; font-size: 26px; font-weight: 600; padding: 0 0 0 14px; border-left: 4px solid var(--red); }
 .letters span { display: inline-block; opacity: 0; transform: translateY(40px); }
 .on .letters span { animation: rise .5s cubic-bezier(.2,1.4,.4,1) forwards; }
@@ -89,12 +88,12 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
 
 /* catálogo */
 .grid-assets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-.asset { border: 1px solid var(--line); padding: 10px 12px; display: flex; gap: 10px; align-items: center;
-         background: linear-gradient(160deg, #16213A, #0F182B); box-shadow: 0 10px 22px rgba(0,0,0,.4); }
-.asset i { font-style: normal; width: 34px; height: 34px; display: grid; place-items: center; background: rgba(255,255,255,.06); border: 1px solid var(--line); font-size: 18px; }
+.asset { border: 1px solid var(--line); padding: 10px 12px; display: flex; gap: 10px; align-items: center; background: #fff;
+         box-shadow: 0 8px 18px rgba(17,17,17,.08); }
+.asset i { font-style: normal; width: 34px; height: 34px; display: grid; place-items: center; background: var(--alt); border: 1px solid var(--soft); font-size: 18px; }
 .asset b { display: block; font: 700 14px Consolas, monospace; }
 .asset small { font-size: 12px; color: var(--muted); }
-.big { font-size: 120px; font-weight: 800; letter-spacing: -.05em; line-height: .9; color: var(--red); margin-top: 26px; text-shadow: 0 0 40px rgba(229,72,77,.45); }
+.big { font-size: 120px; font-weight: 800; letter-spacing: -.05em; line-height: .9; color: var(--red); margin-top: 26px; }
 
 /* heatmap */
 .heat { display: grid; grid-template-columns: 52px repeat(12, 1fr); gap: 3px; padding: 14px; }
@@ -102,11 +101,11 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
 .heat .lbl { color: var(--muted); font-family: Consolas, monospace; }
 
 /* outro */
-.cta { margin-top: 30px; display: inline-flex; border: 1px solid var(--line); background: var(--paper); box-shadow: 0 18px 40px rgba(0,0,0,.45); }
+.cta { margin-top: 30px; display: inline-flex; border: 1px solid var(--line); background: #fff; box-shadow: 0 18px 40px rgba(17,17,17,.14); }
 .cta span { padding: 16px 30px; font-size: 22px; font-weight: 800; }
-.cta span:first-child { background: linear-gradient(135deg, #EF4444, #B91C1C); color: #fff; border-right: 1px solid var(--line); }
+.cta span:first-child { background: linear-gradient(180deg, #D7193A, #B50E29); color: #fff; border-right: 1px solid var(--line); }
 .on .cta span:first-child { animation: pulse 1.2s 1s ease-in-out infinite; }
-@keyframes pulse { 50% { box-shadow: 0 0 30px rgba(229,72,77,.7); } }
+@keyframes pulse { 50% { background: #8f0b21; } }
 .disclaimer { margin-top: 26px; font-size: 15px; color: var(--muted); }
 </style>
 </head>
@@ -123,7 +122,7 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
       <h1 class="letters" id="logo"></h1>
       <div class="tag fade" style="--d:1.1s">Navegue pelo mar dos mercados guiado por dados.</div>
       <svg class="sea" viewBox="0 0 1280 170" preserveAspectRatio="none">
-        <path id="wave" class="draw" style="--len:1500;--dur:3s;--delay:.6s" fill="none" stroke="#E2E8F0" stroke-width="2"></path>
+        <path id="wave" class="draw" style="--len:1500;--dur:3s;--delay:.6s" fill="none" stroke="#111" stroke-width="2"></path>
         <text id="shipIntro" class="ship" font-size="46" x="-60" y="0">⛵</text>
       </svg>
     </section>
@@ -168,10 +167,10 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
           <div class="title">Quem foi mais<br>longe? Base 100.</div>
           <div class="lead">De 2 a 5 ativos partindo do mesmo ponto, com correlação e resumo de risco e retorno.</div>
           <div class="chips">
-            <span class="chip" style="border-left:6px solid #F59E0B">BTC-USD</span>
-            <span class="chip" style="border-left:6px solid #60A5FA">AAPL</span>
-            <span class="chip" style="border-left:6px solid #22C55E">PETR4.SA</span>
-            <span class="chip" style="border-left:6px solid #E2E8F0">S&amp;P 500</span>
+            <span class="chip" style="border-left:6px solid #d97706">BTC-USD</span>
+            <span class="chip" style="border-left:6px solid #1d4ed8">AAPL</span>
+            <span class="chip" style="border-left:6px solid #15803d">PETR4.SA</span>
+            <span class="chip" style="border-left:6px solid #111">S&amp;P 500</span>
           </div>
           <svg id="corr" width="300" height="190" viewBox="0 0 300 190" style="margin-top:20px"></svg>
         </div>
@@ -268,12 +267,12 @@ const NS = "http://www.w3.org/2000/svg";
 const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
 const scaleTo = (vals, h, pad) => { const mn = Math.min(...vals), mx = Math.max(...vals); return v => pad + (h - 2 * pad) * (1 - (v - mn) / (mx - mn || 1)); };
 const pathOf = (vals, w, y, x0 = 50) => vals.map((v, i) => `${i ? "L" : "M"}${(x0 + i * (w - x0 - 20) / (vals.length - 1)).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
-const gridLines = (svg, w, h, rows = 5) => { for (let i = 0; i <= rows; i++) { const yy = 20 + i * (h - 50) / rows; el("line", { x1: 50, x2: w - 20, y1: yy, y2: yy, stroke: "rgba(148,163,184,.14)" }, svg); } el("line", { x1: 50, x2: w - 20, y1: h - 30, y2: h - 30, stroke: "rgba(148,163,184,.5)" }, svg); };
+const gridLines = (svg, w, h, rows = 5) => { for (let i = 0; i <= rows; i++) { const yy = 20 + i * (h - 50) / rows; el("line", { x1: 50, x2: w - 20, y1: yy, y2: yy, stroke: "#e5e5e5" }, svg); } el("line", { x1: 50, x2: w - 20, y1: h - 30, y2: h - 30, stroke: "#1f1f1f" }, svg); };
 const drawPath = (svg, d, color, width, dur, delay) => { const p = el("path", { d, fill: "none", stroke: color, "stroke-width": width, class: "draw" }, svg); const len = p.getTotalLength(); p.style.setProperty("--len", len); p.style.setProperty("--dur", dur + "s"); p.style.setProperty("--delay", delay + "s"); return p; };
 
 // ---------- intro ----------
 document.getElementById("logo").innerHTML = "Argos DataLab".split("").map((c, i) =>
-  `<span style="animation-delay:${.05 * i}s;${i >= 6 ? "color:#E5484D" : ""}">${c === " " ? "&nbsp;" : c}</span>`).join("");
+  `<span style="animation-delay:${.05 * i}s;${i >= 6 ? "color:#c8102e" : ""}">${c === " " ? "&nbsp;" : c}</span>`).join("");
 const waveVals = walk(60, 100, .004, .09);
 const waveY = scaleTo(waveVals, 170, 40);
 document.getElementById("wave").setAttribute("d", pathOf(waveVals, 1280, waveY, 0));
@@ -290,25 +289,25 @@ document.getElementById("assetGrid").innerHTML = assets.map((a, i) =>
 (() => { const svg = document.getElementById("priceChart"); gridLines(svg, 760, 440);
   const v = walk(90, 100, .011, .14); const y = scaleTo(v, 440, 30);
   const d = pathOf(v, 760, y);
-  el("path", { d: d + ` L740,410 L50,410 Z`, fill: "rgba(229,72,77,.12)", class: "fade", style: "--d:2.4s" }, svg);
-  drawPath(svg, d, "#F87171", 3, 2.6, .4);
+  el("path", { d: d + ` L740,410 L50,410 Z`, fill: "rgba(200,16,46,.07)", class: "fade", style: "--d:2.4s" }, svg);
+  drawPath(svg, d, "#c8102e", 3, 2.6, .4);
   const ship = el("text", { class: "ship", "font-size": 40, x: -60, y: 0 }, svg); ship.textContent = "⛵"; ship.id = "shipPrice";
   window.shipPath = { svg: d }; ["2022", "2023", "2024", "2025", "2026"].forEach((t, i) => { const tx = el("text", { x: 70 + i * 160, y: 432 }, svg); tx.textContent = t; });
 })();
 
 // ---------- corrida base 100 ----------
 (() => { const svg = document.getElementById("raceChart"); gridLines(svg, 760, 440);
-  const series = [[.016, .2, "#F59E0B"], [.009, .07, "#60A5FA"], [.006, .1, "#22C55E"], [.005, .04, "#E2E8F0"]].map(s => [walk(70, 100, s[0], s[1]), s[2]]);
+  const series = [[.016, .2, "#d97706"], [.009, .07, "#1d4ed8"], [.006, .1, "#15803d"], [.005, .04, "#111"]].map(s => [walk(70, 100, s[0], s[1]), s[2]]);
   const all = series.flatMap(s => s[0]); const mn = Math.min(...all), mx = Math.max(...all);
   const y = v => 30 + 380 * (1 - (v - mn) / (mx - mn));
-  const base = el("line", { x1: 50, x2: 740, y1: y(100), y2: y(100), stroke: "rgba(148,163,184,.6)", "stroke-dasharray": "4 4" }, svg);
+  const base = el("line", { x1: 50, x2: 740, y1: y(100), y2: y(100), stroke: "#1f1f1f", "stroke-dasharray": "4 4" }, svg);
   const lb = el("text", { x: 54, y: y(100) - 6 }, svg); lb.textContent = "base 100";
   series.forEach((s, i) => drawPath(svg, pathOf(s[0], 760, y), s[1], 3, 3.2, .3 + i * .15));
   const corr = document.getElementById("corr"); const names = ["BTC", "AAPL", "PETR4", "S&P"];
   const m = [[1, .42, .21, .48], [.42, 1, .33, .81], [.21, .33, 1, .39], [.48, .81, .39, 1]];
   names.forEach((n, i) => { const t = el("text", { x: 0, y: 42 + i * 38 }, corr); t.textContent = n; });
-  m.forEach((row, i) => row.forEach((c, j) => { el("rect", { x: 60 + j * 58, y: 20 + i * 38, width: 56, height: 36, fill: `rgba(229,72,77,${c})`, stroke: "#04070D", "stroke-width": .5, class: "pop", style: `--d:${1 + (i + j) * .12}s` }, corr);
-    const t = el("text", { x: 76 + j * 58, y: 43 + i * 38, class: "fade", style: `--d:${1.3 + (i + j) * .12}s;fill:#fff` }, corr); t.textContent = c.toFixed(2); }));
+  m.forEach((row, i) => row.forEach((c, j) => { el("rect", { x: 60 + j * 58, y: 20 + i * 38, width: 56, height: 36, fill: `rgba(200,16,46,${c})`, stroke: "#1f1f1f", "stroke-width": .5, class: "pop", style: `--d:${1 + (i + j) * .12}s` }, corr);
+    const t = el("text", { x: 76 + j * 58, y: 43 + i * 38, class: "fade", style: `--d:${1.3 + (i + j) * .12}s;fill:${c > .55 ? "#fff" : "#111"}` }, corr); t.textContent = c.toFixed(2); }));
 })();
 
 // ---------- candles ----------
@@ -318,30 +317,30 @@ document.getElementById("assetGrid").innerHTML = assets.map((a, i) =>
   const all = c.flat(); const mn = Math.min(...all), mx = Math.max(...all); const y = v => 24 + 236 * (1 - (v - mn) / (mx - mn));
   const step = 690 / n;
   c.forEach((k, i) => { const x = 56 + i * step; const up = k[3] >= k[0]; const g = el("g", { class: "grow", style: `--d:${.2 + i * .04}s` }, svg);
-    el("line", { x1: x + step * .35, x2: x + step * .35, y1: y(k[1]), y2: y(k[2]), stroke: "#CBD5E1" }, g);
-    el("rect", { x, y: y(Math.max(k[0], k[3])), width: step * .7, height: Math.max(2, Math.abs(y(k[0]) - y(k[3]))), fill: up ? "#22C55E" : "#E5484D", stroke: "#04070D", "stroke-width": .6 }, g); });
+    el("line", { x1: x + step * .35, x2: x + step * .35, y1: y(k[1]), y2: y(k[2]), stroke: "#111" }, g);
+    el("rect", { x, y: y(Math.max(k[0], k[3])), width: step * .7, height: Math.max(2, Math.abs(y(k[0]) - y(k[3]))), fill: up ? "#15803d" : "#c8102e", stroke: "#111", "stroke-width": .6 }, g); });
   const sma = c.map((_, i) => { const w = c.slice(Math.max(0, i - 7), i + 1); return w.reduce((a, b) => a + b[3], 0) / w.length; });
-  drawPath(svg, sma.map((v, i) => `${i ? "L" : "M"}${(56 + i * step + step * .35).toFixed(1)},${y(v).toFixed(1)}`).join(" "), "#60A5FA", 2.5, 2.2, 2.2);
-  el("line", { x1: 0, x2: 760, y1: 300, y2: 300, stroke: "#04070D" }, svg);
+  drawPath(svg, sma.map((v, i) => `${i ? "L" : "M"}${(56 + i * step + step * .35).toFixed(1)},${y(v).toFixed(1)}`).join(" "), "#1d4ed8", 2.5, 2.2, 2.2);
+  el("line", { x1: 0, x2: 760, y1: 300, y2: 300, stroke: "#1f1f1f" }, svg);
   const lab = el("text", { x: 56, y: 322 }, svg); lab.textContent = "RSI 14";
   const yr = v => 330 + 90 * (1 - v / 100);
-  [70, 30].forEach(v => { el("line", { x1: 50, x2: 740, y1: yr(v), y2: yr(v), stroke: "#E5484D", "stroke-dasharray": "4 4" }, svg); const t = el("text", { x: 744, y: yr(v) + 4 }, svg); t.textContent = v; });
+  [70, 30].forEach(v => { el("line", { x1: 50, x2: 740, y1: yr(v), y2: yr(v), stroke: "#c8102e", "stroke-dasharray": "4 4" }, svg); const t = el("text", { x: 744, y: yr(v) + 4 }, svg); t.textContent = v; });
   const rsi = Array.from({ length: n }, (_, i) => 50 + 26 * Math.sin(i / 4) + (rnd() - .5) * 14);
-  drawPath(svg, rsi.map((v, i) => `${i ? "L" : "M"}${(56 + i * step).toFixed(1)},${yr(v).toFixed(1)}`).join(" "), "#E2E8F0", 2, 2.4, 2.6);
+  drawPath(svg, rsi.map((v, i) => `${i ? "L" : "M"}${(56 + i * step).toFixed(1)},${yr(v).toFixed(1)}`).join(" "), "#111", 2, 2.4, 2.6);
 })();
 
 // ---------- drawdown ----------
 (() => { const svg = document.getElementById("ddChart");
   const v = walk(90, 100, .004, .12); let peak = v[0]; const dd = v.map(x => { peak = Math.max(peak, x); return x / peak - 1; });
   const mn = Math.min(...dd); const y = d => 40 + 360 * (d / mn);
-  [0, .25, .5, .75, 1].forEach(f => { const yy = 40 + 360 * f; el("line", { x1: 50, x2: 740, y1: yy, y2: yy, stroke: "rgba(148,163,184,.14)" }, svg); const t = el("text", { x: 4, y: yy + 4 }, svg); t.textContent = (mn * f * 100).toFixed(0) + "%"; });
-  el("line", { x1: 50, x2: 740, y1: 40, y2: 40, stroke: "rgba(148,163,184,.5)" }, svg);
+  [0, .25, .5, .75, 1].forEach(f => { const yy = 40 + 360 * f; el("line", { x1: 50, x2: 740, y1: yy, y2: yy, stroke: "#e5e5e5" }, svg); const t = el("text", { x: 4, y: yy + 4 }, svg); t.textContent = (mn * f * 100).toFixed(0) + "%"; });
+  el("line", { x1: 50, x2: 740, y1: 40, y2: 40, stroke: "#1f1f1f" }, svg);
   const d = pathOf(dd, 760, y);
-  const area = el("path", { d: d + " L740,40 L50,40 Z", fill: "rgba(229,72,77,.22)", class: "fade", style: "--d:2s" }, svg);
-  drawPath(svg, d, "#F87171", 2.5, 2.6, .3);
+  const area = el("path", { d: d + " L740,40 L50,40 Z", fill: "rgba(200,16,46,.18)", class: "fade", style: "--d:2s" }, svg);
+  drawPath(svg, d, "#c8102e", 2.5, 2.6, .3);
   const i = dd.indexOf(mn); const x = 50 + i * 690 / (dd.length - 1);
-  el("circle", { cx: x, cy: y(mn), r: 7, fill: "#0F182B", stroke: "#F1F5F9", "stroke-width": 2, class: "pop", style: "--d:2.8s" }, svg);
-  const t = el("text", { x: Math.min(x + 12, 600), y: y(mn) + 4, class: "fade", style: "--d:3s;fill:#F1F5F9;font-weight:700" }, svg); t.textContent = "pior queda: " + (mn * 100).toFixed(0) + "%";
+  el("circle", { cx: x, cy: y(mn), r: 7, fill: "#fff", stroke: "#111", "stroke-width": 2, class: "pop", style: "--d:2.8s" }, svg);
+  const t = el("text", { x: Math.min(x + 12, 600), y: y(mn) + 4, class: "fade", style: "--d:3s;fill:#111;font-weight:700" }, svg); t.textContent = "pior queda: " + (mn * 100).toFixed(0) + "%";
   document.getElementById("ddMetric").dataset.count = (mn * 100).toFixed(0);
 })();
 
@@ -350,8 +349,8 @@ document.getElementById("assetGrid").innerHTML = assets.map((a, i) =>
   let html = '<div></div>' + months.map(m => `<div class="lbl">${m}</div>`).join("");
   [2020, 2021, 2022, 2023, 2024, 2025, 2026].forEach((yr, r) => { html += `<div class="lbl">${yr}</div>`;
     months.forEach((_, m) => { let v = (rnd() - .45) * 40; if (m === 8) v = -Math.abs(v) - 3; const a = Math.min(1, Math.abs(v) / 25);
-      const bg = v >= 0 ? `rgba(34,197,94,${.15 + a * .8})` : `rgba(229,72,77,${.15 + a * .8})`;
-      html += `<div class="pop" style="--d:${.2 + (r * 12 + m) * .018}s;background:${bg};color:#fff;border:1px solid #04070D">${v.toFixed(0)}</div>`; }); });
+      const bg = v >= 0 ? `rgba(21,128,61,${.15 + a * .85})` : `rgba(200,16,46,${.15 + a * .85})`;
+      html += `<div class="pop" style="--d:${.2 + (r * 12 + m) * .018}s;background:${bg};color:${a > .5 ? "#fff" : "#111"};border:1px solid #1f1f1f">${v.toFixed(0)}</div>`; }); });
   box.innerHTML = html;
 })();
 
@@ -360,10 +359,10 @@ document.getElementById("assetGrid").innerHTML = assets.map((a, i) =>
   const n = 30; const price = walk(n, 100, .012, .1); let units = 0; const inv = [], val = [];
   price.forEach((p, i) => { units += 200 / p; inv.push(200 * (i + 1)); val.push(units * p); });
   const mx = Math.max(...val, ...inv); const y = v => 410 - 380 * v / mx; const step = 690 / n;
-  inv.forEach((v, i) => el("rect", { x: 54 + i * step, y: y(v), width: step * .7, height: 410 - y(v), fill: "#1E2A47", stroke: "#04070D", "stroke-width": .8, class: "grow", style: `--d:${.2 + i * .07}s` }, svg));
-  drawPath(svg, val.map((v, i) => `${i ? "L" : "M"}${(54 + i * step + step * .35).toFixed(1)},${y(v).toFixed(1)}`).join(" "), "#22C55E", 3, 2.4, 1.2);
-  const l1 = el("rect", { x: 70, y: 30, width: 14, height: 14, fill: "#1E2A47", stroke: "#94A3B8" }, svg); const t1 = el("text", { x: 90, y: 42 }, svg); t1.textContent = "total aportado";
-  el("line", { x1: 210, x2: 234, y1: 37, y2: 37, stroke: "#22C55E", "stroke-width": 3 }, svg); const t2 = el("text", { x: 240, y: 42 }, svg); t2.textContent = "valor da carteira";
+  inv.forEach((v, i) => el("rect", { x: 54 + i * step, y: y(v), width: step * .7, height: 410 - y(v), fill: "#f5f5f3", stroke: "#1f1f1f", "stroke-width": .8, class: "grow", style: `--d:${.2 + i * .07}s` }, svg));
+  drawPath(svg, val.map((v, i) => `${i ? "L" : "M"}${(54 + i * step + step * .35).toFixed(1)},${y(v).toFixed(1)}`).join(" "), "#15803d", 3, 2.4, 1.2);
+  const l1 = el("rect", { x: 70, y: 30, width: 14, height: 14, fill: "#f5f5f3", stroke: "#1f1f1f" }, svg); const t1 = el("text", { x: 90, y: 42 }, svg); t1.textContent = "total aportado";
+  el("line", { x1: 210, x2: 234, y1: 37, y2: 37, stroke: "#15803d", "stroke-width": 3 }, svg); const t2 = el("text", { x: 240, y: 42 }, svg); t2.textContent = "valor da carteira";
   for (let k = 0; k < 7; k++) { const coin = el("text", { x: 100 + k * 90, y: -20, class: "coin", style: "font-size:26px" }, svg); coin.textContent = "🪙"; coin.dataset.delay = 1 + k * .35; }
 })();
 

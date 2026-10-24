@@ -1,27 +1,23 @@
 """
 Linguagem visual comum a todas as páginas do Argos DataLab.
 
-Regras: tema escuro azul-marinho com profundidade (gradientes, brilho e
-sombras suaves), nenhum canto arredondado e elementos delimitados por linhas
-finas quase pretas, discretas sobre o fundo escuro. O tema base está em
+Regras: tema claro com profundidade (fundo levemente quente, painéis brancos
+com sombra suave e detalhes em vermelho), nenhum canto arredondado e
+elementos delimitados por linhas finas escuras. O tema base está em
 .streamlit/config.toml; este CSS cobre o que o tema não alcança, inclusive o
 HTML próprio das páginas.
 """
 
 import streamlit as st
 
-BG = "#0B1220"
-SURFACE = "#111A2E"
-SURFACE_2 = "#16213A"
-LINE = "#04070D"                       # bordas de elementos e seções
-LINE_SOFT = "rgba(148,163,184,0.14)"   # divisões internas (linhas de tabela)
-ACCENT = "#E5484D"                     # vermelho do Argos
-INK = "#E6EAF2"
-MUTED = "#94A3B8"
-
-# Superfície padrão de cartões e painéis.
-CARD_BG = "linear-gradient(160deg, #15203A 0%, #0F182B 100%)"
-CARD_SHADOW = "0 14px 34px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.04)"
+LINE = "#2A2A2A"          # bordas de elementos e seções
+LINE_SOFT = "#E4E1DA"     # divisões internas (linhas de tabela)
+ACCENT = "#C8102E"        # vermelho do Argos
+INK = "#111111"
+MUTED = "#5F5F5F"
+PAPER = "#FFFFFF"
+PAPER_ALT = "#F6F4EF"
+SHADOW = "0 8px 22px rgba(17, 17, 17, .07)"
 
 GLOBAL_CSS = f"""
 <style>
@@ -29,32 +25,26 @@ GLOBAL_CSS = f"""
 
 .stApp {{
     background:
-        radial-gradient(1000px 480px at 85% -10%, rgba(229, 72, 77, .10), transparent 60%),
-        radial-gradient(900px 520px at -10% 10%, rgba(56, 189, 248, .07), transparent 60%),
-        {BG} !important;
+        radial-gradient(900px 380px at 88% -6%, rgba(200, 16, 46, .07), transparent 60%),
+        radial-gradient(800px 420px at -8% 12%, rgba(29, 78, 216, .05), transparent 60%),
+        #F7F6F2 !important;
 }}
-[data-testid="stSidebar"] {{
-    background: linear-gradient(180deg, #0F182B 0%, #0A1120 100%) !important;
-    border-right: 1px solid {LINE};
-}}
+[data-testid="stSidebar"] {{ border-right: 1px solid {LINE}; background: linear-gradient(180deg, #F1EFEA 0%, #ECE9E2 100%) !important; }}
 
-/* Painéis delimitados por linhas finas, com profundidade */
-[data-testid="stPlotlyChart"] {{
-    border: 1px solid {LINE}; padding: 8px;
-    background: {CARD_BG}; box-shadow: {CARD_SHADOW};
-}}
-[data-testid="stExpander"] details {{ border: 1px solid {LINE} !important; background: rgba(17, 26, 46, .6); }}
+/* Painéis brancos delimitados por linhas finas, com sombra suave */
+[data-testid="stPlotlyChart"] {{ border: 1px solid {LINE}; background: {PAPER}; padding: 6px; box-shadow: {SHADOW}; }}
+[data-testid="stExpander"] details {{ border: 1px solid {LINE} !important; background: {PAPER}; }}
 [data-testid="stAlertContainer"] {{ border: 1px solid {LINE} !important; }}
 [data-testid="stVerticalBlockBorderWrapper"] {{ border-color: {LINE} !important; }}
 [data-baseweb="tab-list"] {{ border-bottom: 1px solid {LINE}; }}
-[data-testid="stMain"] hr {{ border-color: rgba(148,163,184,.18) !important; opacity: 1; }}
+[data-testid="stMain"] hr {{ border-color: {LINE_SOFT} !important; opacity: 1; }}
 
-/* Botão principal com brilho */
+/* Botão principal com leve relevo */
 [data-testid="stBaseButton-primary"] {{
-    background: linear-gradient(135deg, #EF4444, #C81E2A) !important; border: 1px solid {LINE} !important;
-    box-shadow: 0 8px 22px rgba(229, 72, 77, .28) !important;
+    background: linear-gradient(180deg, #D7193A 0%, #B50E29 100%) !important; border: 1px solid #7A0A1C !important;
+    box-shadow: 0 6px 16px rgba(200, 16, 46, .25) !important;
 }}
-[data-testid="stBaseButton-primary"]:hover {{ box-shadow: 0 10px 28px rgba(229, 72, 77, .42) !important; }}
+[data-testid="stBaseButton-secondary"] {{ background: {PAPER} !important; box-shadow: 0 2px 6px rgba(17, 17, 17, .06) !important; }}
 </style>
 """
 
