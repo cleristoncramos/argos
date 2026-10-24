@@ -35,7 +35,7 @@ def build_metric_card_html(
         tooltip_html = ""
 
     subtitle_html = (
-        f'<div style="color:#64748b;font-size:0.8rem;margin-top:6px;">{escape(subtitle)}</div>'
+        f'<div style="color:#94A3B8;font-size:0.8rem;margin-top:6px;">{escape(subtitle)}</div>'
         if subtitle else ""
     )
 
@@ -51,13 +51,13 @@ def build_metric_card_html(
         )
 
     return (
-        '<div style="background:#ffffff;'
-        "border:1px solid #1f1f1f;padding:20px;"
+        '<div style="background:linear-gradient(160deg,#15203A 0%,#0F182B 100%);'
+        "border:1px solid #04070D;padding:20px;box-shadow:0 14px 34px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.04);"
         "display:flex;flex-direction:column;height:100%;\">"
-        '<div style="color:#64748b;font-size:0.75rem;font-weight:700;text-transform:uppercase;'
+        '<div style="color:#94A3B8;font-size:0.75rem;font-weight:700;text-transform:uppercase;'
         'letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;">'
         f"{escape(title)} {tooltip_html}</div>"
-        f'<div style="color:#0f172a;font-size:{value_size};font-weight:700;line-height:1.2;'
+        f'<div style="color:#F1F5F9;font-size:{value_size};font-weight:700;line-height:1.2;'
         f"font-family:'Inter',sans-serif;letter-spacing:-0.5px;\">{value}</div>"
         f"{subtitle_html}{badge_html}</div>"
     )

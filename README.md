@@ -62,7 +62,7 @@ Os logotipos institucionais ficam em `app/assets/institucional/` (origem em `FON
 
 ## 🎨 Identidade visual
 
-Todo o sistema usa tema claro, **cantos retos** e **linhas pretas finas** delimitando elementos e seções. O tema base está em `.streamlit/config.toml` e o CSS complementar, comum a todas as páginas, em `app/ui/design.py`.
+Todo o sistema usa tema escuro azul-marinho com profundidade (gradientes, brilho e sombras suaves), **cantos retos** e **linhas finas quase pretas** delimitando elementos e seções. O tema base está em `.streamlit/config.toml` e o CSS complementar, comum a todas as páginas, em `app/ui/design.py`.
 
 ## 🔍 Análise individual de ativos
 

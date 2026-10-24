@@ -78,6 +78,12 @@ def test_name_story_explains_argos_and_the_argo():
     html = build_name_story_html()
     assert "Argo" in html and "Velocino de Ouro" in html and "DataLab" in html
     assert html.count("<tr>") == len(NAME_STORY) + 1  # cabeçalho + uma linha por elemento
+    # O Argo foi construído pelo armador Argos, com a ajuda de Atena, para a expedição de Jasão.
+    assert "construído pelo armador <b>Argos</b>" in html
+    # Coerência com os avisos: o Velocino é a decisão informada, não a promessa de lucro.
+    assert "decisão mais bem informada" in html
+    assert "não promete o tesouro, ajuda a ler o mapa" in html
+    assert "Resumo do conceito" in html
 
 
 def test_technologies_and_data_sources_tables():

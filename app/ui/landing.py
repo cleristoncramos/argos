@@ -3,7 +3,7 @@ Blocos HTML da página inicial e do modal de informações acadêmicas.
 
 As funções aqui só montam texto HTML (sem chamar o Streamlit), para que
 possam ser testadas isoladamente. Todo texto vindo do catálogo de ativos é
-escapado antes de entrar no HTML. Visual: cantos retos e linhas pretas finas
+escapado antes de entrar no HTML. Visual: tema escuro, cantos retos e linhas finas
 (ver app/ui/design.py).
 """
 
@@ -70,32 +70,44 @@ DATA_SOURCES = [
      "Identificação visual dos ativos; desligados no modo de demonstração."),
 ]
 
-# (mito, leitura no Argos DataLab)
+# (elemento do mito, o que representa no sistema, no mito, no Argos DataLab)
 NAME_STORY = [
-    ("O construtor",
-     "Argos construiu o navio Argo com a orientação de Atena, deusa da sabedoria e da "
-     "estratégia, e deu a ele o seu nome.",
-     "A plataforma é a embarcação: uma infraestrutura construída com método para atravessar "
-     "o mar de dados do mercado financeiro."),
-    ("A proa que falava",
-     "Na proa do Argo havia uma peça de carvalho sagrado capaz de falar e orientar a "
-     "tripulação.",
-     "Gráficos, indicadores e textos educativos traduzem os números em leitura compreensível."),
-    ("Os Argonautas",
-     "Jasão reuniu heróis com habilidades distintas: a força de Héracles, a música de Orfeu, "
-     "a visão aguçada de Linceu.",
-     "Cada classe de ativo tem seu comportamento: criptomoedas velozes e voláteis, ações e "
-     "FIIs como base, commodities como recursos essenciais. Quem usa o sistema é o argonauta."),
-    ("As rochas e as tempestades",
-     "No caminho, as Simplégades se chocavam para esmagar os navios.",
-     "Crises, quedas e volatilidade: o Argos mede esses perigos com drawdown, volatilidade e "
-     "Índice de Sharpe."),
-    ("O Velocino de Ouro",
-     "O tesouro que motivava a jornada, guardado por um dragão que nunca dormia.",
-     "O objetivo é a decisão mais bem informada: entender risco e retorno com dados "
-     "históricos. O dragão que não dorme é o mercado, que não para; o sistema não promete o "
-     "tesouro, ajuda a ler o mapa."),
+    ("O navio Argo", "A infraestrutura web (o DataLab)",
+     "Não era um navio comum. Foi construído pelo armador Argos, que lhe deu o nome, com a "
+     "ajuda de Atena, deusa da sabedoria e da estratégia, para a expedição de Jasão. Na proa "
+     "havia uma peça de madeira mágica que falava e guiava os tripulantes.",
+     "O DataLab é o Argo moderno: uma ferramenta tecnológica, robusta e guiada por dados para "
+     "navegar pelo mar volátil do mercado financeiro. O sistema processa dados complexos e "
+     "\"fala\" com o usuário por meio de gráficos, indicadores e análises."),
+    ("Os Argonautas", "Os ativos e os analistas",
+     "Jasão não partiu sozinho. Reuniu uma tripulação em que cada membro tinha uma habilidade "
+     "única: Hércules tinha a força, Orfeu a música que acalmava tempestades, Linceu a visão "
+     "que enxergava através de paredes e os irmãos Boréadas a capacidade de voar.",
+     "Cada tipo de ativo tem sua própria habilidade: as criptomoedas são as exploradoras velozes "
+     "e imprevisíveis; ações e FIIs, a fundação sólida e estruturada da tripulação; as "
+     "commodities, os recursos brutos e essenciais para a jornada. Quem usa a plataforma se "
+     "torna um argonauta e usa as ferramentas do sistema para enfrentar o mercado."),
+    ("O Velocino de Ouro", "A decisão mais bem informada",
+     "O tesouro supremo trazia prosperidade, riqueza e legitimidade a quem o possuísse, mas "
+     "estava protegido por perigos mortais, como o dragão que nunca dormia.",
+     "No Argos DataLab, o Velocino é a decisão mais bem informada. O dragão que nunca dorme é o "
+     "próprio mercado, que funciona sem parar (sobretudo o de criptomoedas) e apresenta riscos "
+     "constantes. O sistema não promete o tesouro, ajuda a ler o mapa."),
+    ("O mar de monstros", "A volatilidade do mercado",
+     "No caminho, os Argonautas enfrentaram as Ciâneas, rochas que se chocavam, sereias e "
+     "tempestades. Precisavam da proa falante e das habilidades certas para sobreviver.",
+     "As rochas e os monstros são as crises financeiras, a inflação, as viradas de juros e os "
+     "ciclos de alta e de baixa (bull e bear markets). A plataforma ajuda a monitorar esses "
+     "perigos, com volatilidade, drawdown e Índice de Sharpe, e dá direção analítica para que "
+     "o usuário não naufrague."),
 ]
+
+NAME_SUMMARY = (
+    "Assim como o navio Argo cruzou mares perigosos em busca do Velocino de Ouro, guiado por "
+    "técnica e sabedoria, o Argos DataLab reúne dados de múltiplos mercados (ações, "
+    "criptomoedas, FIIs e commodities) em uma única plataforma, para que os argonautas de hoje "
+    "naveguem pela volatilidade e tomem decisões mais bem informadas."
+)
 
 _LOGO_TYPES = ((".svg", "image/svg+xml"), (".png", "image/png"))
 
@@ -191,27 +203,28 @@ def build_mosaic_html(
 MOSAIC_TEMPLATE = """<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 *{box-sizing:border-box;border-radius:0}
 html,body{margin:0;background:transparent;font-family:"Source Sans 3","Source Sans Pro",-apple-system,"Segoe UI",sans-serif;overflow:hidden}
-.mosaic{display:flex;flex-direction:column;gap:12px;padding:2px 0;
+.mosaic{display:flex;flex-direction:column;gap:12px;padding:4px 0 10px;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
           mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
-.lane{overflow:hidden}
+.lane{overflow:hidden;padding:2px 0}
 .track{display:flex;gap:12px;width:max-content;animation:slide var(--d) linear infinite;animation-direction:var(--dir)}
 .mosaic:hover .track{animation-play-state:paused}
 @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .tile{position:relative;display:flex;align-items:center;gap:12px;min-width:240px;padding:10px 14px 10px 10px;
-  background:#fff;border:1px solid #1f1f1f;transition:transform .2s ease,background .2s ease}
-.tile::before{content:"";position:absolute;left:-1px;top:-1px;bottom:-1px;width:3px;background:var(--c)}
-.tile:hover{transform:translateY(-2px);background:#f5f5f3}
-.logo{position:relative;flex:none;width:42px;height:42px;background:#fff;border:1px solid #d4d4d4;display:grid;place-items:center;overflow:hidden}
+  background:linear-gradient(160deg,#16213A,#0F182B);border:1px solid #04070D;
+  box-shadow:0 8px 20px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.04);transition:transform .2s ease,box-shadow .2s ease}
+.tile::before{content:"";position:absolute;left:-1px;top:-1px;bottom:-1px;width:3px;background:var(--c);box-shadow:0 0 12px var(--c)}
+.tile:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(0,0,0,.45),0 0 0 1px var(--c)}
+.logo{position:relative;flex:none;width:42px;height:42px;background:#fff;border:1px solid #04070D;display:grid;place-items:center;overflow:hidden}
 .logo img{width:80%;height:80%;object-fit:contain;position:relative;z-index:1}
 .logo b{position:absolute;inset:0;display:none;place-items:center;font-size:.7rem;color:#fff;background:var(--c)}
 .logo.fallback b{display:grid}
-.logo.emoji{font-size:1.35rem;background:#f5f5f3}
+.logo.emoji{font-size:1.35rem;background:rgba(255,255,255,.06)}
 .txt{display:flex;flex-direction:column;min-width:0}
-.tk{color:#111;font-weight:700;font-size:.88rem;letter-spacing:.02em;font-family:"JetBrains Mono",ui-monospace,Consolas,monospace}
-.nm{color:#5f5f5f;font-size:.76rem;white-space:nowrap;max-width:132px;overflow:hidden;text-overflow:ellipsis}
+.tk{color:#F1F5F9;font-weight:700;font-size:.88rem;letter-spacing:.02em;font-family:"JetBrains Mono",ui-monospace,Consolas,monospace}
+.nm{color:#94A3B8;font-size:.76rem;white-space:nowrap;max-width:132px;overflow:hidden;text-overflow:ellipsis}
 .cls{margin-left:auto;padding:2px 7px;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:#111;border:1px solid #1f1f1f;white-space:nowrap}
+  color:var(--c);background:rgba(255,255,255,.04);border:1px solid #04070D;white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.track{animation:none}}
 </style></head><body><div class="mosaic">{{LANES}}</div></body></html>"""
 
@@ -279,18 +292,24 @@ def build_identification_html() -> str:
 def build_name_story_html() -> str:
     """Seção 'Por que Argos DataLab': o mito do navio Argo lido no sistema."""
     intro = (
-        '<p class="ac-lead">Na mitologia grega, <b>Argos</b> foi o construtor do <b>Argo</b>, o '
-        "navio que levou Jasão e os Argonautas por mares desconhecidos em busca do Velocino de "
-        "Ouro. O nome une essa jornada guiada por sabedoria e técnica a um <b>DataLab</b>: um "
-        "laboratório onde os dados de mercado são explorados com método, de forma reproduzível "
-        "e transparente.</p>"
+        '<p class="ac-lead">Na mitologia grega, a jornada de Jasão não era apenas uma aventura: era '
+        "a busca pelo bem mais valioso do mundo, o <b>Velocino de Ouro</b>, por meio da técnica, "
+        "da inteligência coletiva e da navegação em mares desconhecidos. O navio da expedição, o "
+        "<b>Argo</b>, foi construído pelo armador <b>Argos</b>, com a ajuda da deusa Atena, e "
+        "recebeu o nome do seu construtor. O <b>DataLab</b> completa a ideia: um laboratório onde "
+        "os dados de mercado são explorados com método.</p>"
     )
-    table = _table(
-        ((title, myth, reading) for title, myth, reading in NAME_STORY),
-        header=("Elemento", "No mito", "No Argos DataLab"),
-        css_class="ac-table ac-story",
+    rows = "".join(
+        f'<tr><td><b>{escape(element)}</b><span class="ac-maps">= {escape(meaning)}</span></td>'
+        f"<td>{escape(myth)}</td><td>{escape(reading)}</td></tr>"
+        for element, meaning, myth, reading in NAME_STORY
     )
-    return intro + table
+    table = (
+        '<table class="ac-table ac-story"><thead><tr><th>Elemento</th><th>No mito</th>'
+        f"<th>No Argos DataLab</th></tr></thead><tbody>{rows}</tbody></table>"
+    )
+    summary = f'<div class="ac-summary-box"><span>Resumo do conceito</span>{escape(NAME_SUMMARY)}</div>'
+    return intro + table + summary
 
 
 def build_technologies_html() -> str:
@@ -318,36 +337,49 @@ def build_data_sources_html(stats: Mapping[str, int]) -> str:
 
 ACADEMIC_MODAL_CSS = """
 <style>
-div[role="dialog"] { border: 1px solid #1f1f1f !important; box-shadow: 0 30px 80px rgba(0,0,0,.35) !important; }
-.ac-head { display: flex; align-items: stretch; border: 1px solid #1f1f1f; }
-.ac-logos { display: flex; align-items: center; gap: 18px; padding: 14px 20px; background: #fff; border-right: 1px solid #1f1f1f; }
+div[role="dialog"] {
+  background: linear-gradient(180deg, #111A2E 0%, #0B1220 100%) !important; border: 1px solid #04070D !important;
+  box-shadow: 0 40px 100px rgba(0,0,0,.6), 0 0 0 1px rgba(229,72,77,.12), 0 0 80px rgba(229,72,77,.10) !important; }
+.ac-head { display: flex; align-items: stretch; border: 1px solid #04070D; box-shadow: 0 14px 34px rgba(0,0,0,.4); }
+.ac-logos { display: flex; align-items: center; gap: 18px; padding: 14px 20px; background: #fff; border-right: 1px solid #04070D; }
 .ac-logos img { height: 58px; width: auto; display: block; }
 .ac-logos img + img { padding-left: 18px; border-left: 1px solid #d4d4d4; }
-.ac-ids { flex: 1; padding: 14px 20px; background: #111; color: #fff; display: flex; flex-direction: column; justify-content: center; }
-.ac-inst { font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em; }
-.ac-center { margin-top: 3px; color: #ff8a8a; font-weight: 600; font-size: .9rem; }
-.ac-course { color: #d4d4d4; font-size: .86rem; }
-.ac-title { padding: 18px 0 6px; border-bottom: 1px solid #1f1f1f; margin-bottom: 4px; }
-.ac-kicker { color: #c8102e; font-size: .7rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
-.ac-name { font-size: 1.9rem; font-weight: 800; letter-spacing: -.03em; color: #111; line-height: 1.15; }
-.ac-summary { color: #5f5f5f; font-size: .95rem; margin-bottom: 10px; }
-.ac-table { width: 100%; border-collapse: collapse; border: 1px solid #1f1f1f; font-size: .88rem; margin: 6px 0 10px; }
-.ac-table th, .ac-table td { padding: 9px 12px; text-align: left; vertical-align: top; border: 0; border-bottom: 1px solid #d4d4d4; color: #111; }
+.ac-ids { flex: 1; padding: 14px 20px; display: flex; flex-direction: column; justify-content: center;
+  background: radial-gradient(500px 160px at 100% 0%, rgba(229,72,77,.28), transparent 70%), linear-gradient(135deg, #16213A, #0F182B); }
+.ac-inst { font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em; color: #F8FAFC; }
+.ac-center { margin-top: 3px; color: #FCA5A5; font-weight: 600; font-size: .9rem; }
+.ac-course { color: #CBD5E1; font-size: .86rem; }
+.ac-title { padding: 18px 0 8px; border-bottom: 1px solid rgba(148,163,184,.18); margin-bottom: 4px; }
+.ac-kicker { color: #F87171; font-size: .7rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+.ac-name { font-size: 1.9rem; font-weight: 800; letter-spacing: -.03em; line-height: 1.15;
+  background: linear-gradient(100deg, #F8FAFC 0%, #F8FAFC 45%, #F87171 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ac-summary { color: #94A3B8; font-size: .95rem; margin-bottom: 10px; }
+.ac-table { width: 100%; border-collapse: collapse; border: 1px solid #04070D; font-size: .88rem; margin: 6px 0 10px;
+  background: linear-gradient(160deg, #15203A, #0F182B); box-shadow: 0 14px 34px rgba(0,0,0,.35); }
+.ac-table th, .ac-table td { padding: 9px 12px; text-align: left; vertical-align: top; border: 0;
+  border-bottom: 1px solid rgba(148,163,184,.12); color: #E2E8F0; }
 .ac-table tr:last-child th, .ac-table tr:last-child td { border-bottom: 0; }
-.ac-table tbody th { width: 170px; background: #f5f5f3; font-weight: 700; border-right: 1px solid #1f1f1f; }
-.ac-table thead th { background: #111; color: #fff; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; }
-.ac-grid td:first-child, .ac-story td:first-child { font-weight: 700; white-space: nowrap; background: #f5f5f3; border-right: 1px solid #d4d4d4; }
-.ac-story td:nth-child(2) { color: #5f5f5f; width: 36%; }
-.ac-lead { font-size: .95rem; line-height: 1.65; color: #111; margin: 8px 0 12px; padding-left: 12px; border-left: 3px solid #c8102e; }
-.ac-stats { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid #1f1f1f; margin: 8px 0 10px; }
-.ac-stats div { padding: 10px 14px; border-right: 1px solid #1f1f1f; }
+.ac-table tbody th { width: 170px; background: rgba(255,255,255,.03); font-weight: 700; color: #F8FAFC; border-right: 1px solid #04070D; }
+.ac-table thead th { background: #070C16; color: #FCA5A5; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; }
+.ac-grid td:first-child, .ac-story td:first-child { font-weight: 700; background: rgba(255,255,255,.03); border-right: 1px solid #04070D; color: #F8FAFC; }
+.ac-grid td:first-child { white-space: nowrap; }
+.ac-story td:first-child { width: 170px; }
+.ac-story td:nth-child(2) { color: #94A3B8; width: 34%; }
+.ac-maps { display: block; margin-top: 4px; font-weight: 600; font-size: .78rem; color: #F87171; }
+.ac-lead { font-size: .95rem; line-height: 1.65; color: #E2E8F0; margin: 8px 0 12px; padding-left: 12px; border-left: 3px solid #E5484D; }
+.ac-summary-box { margin-top: 10px; padding: 14px 16px; border: 1px solid #04070D; color: #E2E8F0; font-size: .92rem; line-height: 1.6;
+  background: linear-gradient(135deg, rgba(229,72,77,.16), rgba(15,24,43,.9)); box-shadow: 0 14px 34px rgba(0,0,0,.35); }
+.ac-summary-box span { display: block; margin-bottom: 4px; color: #FCA5A5; font-size: .7rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.ac-stats { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid #04070D; margin: 8px 0 10px;
+  background: linear-gradient(160deg, #15203A, #0F182B); box-shadow: 0 14px 34px rgba(0,0,0,.35); }
+.ac-stats div { padding: 10px 14px; border-right: 1px solid #04070D; }
 .ac-stats div:last-child { border-right: 0; }
-.ac-stats b { display: block; font-size: 1.35rem; color: #111; }
-.ac-stats span { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: #5f5f5f; font-weight: 700; }
-.ac-note { font-size: .8rem; color: #5f5f5f; margin: 4px 0 0; }
+.ac-stats b { display: block; font-size: 1.35rem; color: #F8FAFC; }
+.ac-stats span { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: #94A3B8; font-weight: 700; }
+.ac-note { font-size: .8rem; color: #94A3B8; margin: 4px 0 0; }
 @media (max-width: 760px) {
   .ac-head { flex-direction: column; }
-  .ac-logos { border-right: 0; border-bottom: 1px solid #1f1f1f; }
+  .ac-logos { border-right: 0; border-bottom: 1px solid #04070D; }
   .ac-logos img { height: 44px; }
   .ac-table tbody th { width: 110px; }
   .ac-stats { grid-template-columns: repeat(2, 1fr); }

@@ -16,13 +16,13 @@ COLORS = {
     "ema_short": "#10B981",
     "ema_long": "#EC4899",
     "bollinger": "rgba(59, 130, 246, 0.18)",
-    "volume": "#64748B",
+    "volume": "#94A3B8",
     "rsi": "#8B5CF6",
     "macd": "#2563EB",
     "signal": "#F59E0B",
     "positive": "#16A34A",
     "negative": "#DC2626",
-    "neutral": "#475569",
+    "neutral": "#94A3B8",
 }
 
 
@@ -44,7 +44,7 @@ def _finish(fig: go.Figure, context: str) -> go.Figure:
         x=0,
         y=1.10,
         showarrow=False,
-        font=dict(size=11, color="#475569"),
+        font=dict(size=11, color="#94A3B8"),
         align="left",
     )
 
@@ -167,7 +167,7 @@ def create_price_indicator_chart(
                 name="Média Bollinger",
                 mode="lines",
                 line=dict(
-                    color="#64748B",
+                    color="#94A3B8",
                     width=1,
                     dash="dot",
                 ),
@@ -267,11 +267,11 @@ def create_price_indicator_chart(
         title=f"Preço de Fechamento e Indicadores — {symbol}",
         xaxis_title="Data",
         yaxis_title=price_label,
-        template="plotly_white",
+        template="plotly_dark",
         hovermode="x unified",
         legend_title_text="Séries",
-        paper_bgcolor="#F8FAFC",
-        plot_bgcolor="#FFFFFF",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
@@ -279,12 +279,12 @@ def create_price_indicator_chart(
 
     fig.update_xaxes(
         showgrid=True,
-        gridcolor="#E2E8F0",
+        gridcolor="rgba(148,163,184,0.14)",
     )
 
     fig.update_yaxes(
         showgrid=True,
-        gridcolor="#E2E8F0",
+        gridcolor="rgba(148,163,184,0.14)",
     )
 
     return fig
@@ -339,9 +339,9 @@ def create_candlestick_chart(
         title=f"Gráfico Candle — {symbol}",
         xaxis_title="Data",
         yaxis_title=price_label,
-        template="plotly_white",
-        paper_bgcolor="#F8FAFC",
-        plot_bgcolor="#FFFFFF",
+        template="plotly_dark",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
         xaxis_rangeslider_visible=False,
         margin=dict(l=40, r=20, t=70, b=40),
     )
@@ -379,9 +379,9 @@ def create_volume_chart(
         title=f"Volume Negociado — {symbol}",
         xaxis_title="Data",
         yaxis_title="Volume",
-        template="plotly_white",
-        paper_bgcolor="#F8FAFC",
-        plot_bgcolor="#FFFFFF",
+        template="plotly_dark",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
@@ -448,10 +448,10 @@ def create_rsi_chart(
         xaxis_title="Data",
         yaxis_title="RSI (0 a 100)",
         yaxis=dict(range=[0, 100]),
-        template="plotly_white",
+        template="plotly_dark",
         hovermode="x unified",
-        paper_bgcolor="#F8FAFC",
-        plot_bgcolor="#FFFFFF",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
@@ -530,10 +530,10 @@ def create_macd_chart(
         title=f"MACD — {symbol}",
         xaxis_title="Data",
         yaxis_title="Valor do indicador",
-        template="plotly_white",
+        template="plotly_dark",
         hovermode="x unified",
-        paper_bgcolor="#F8FAFC",
-        plot_bgcolor="#FFFFFF",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
         barmode="relative",
         margin=dict(l=40, r=20, t=70, b=40),
     )
@@ -586,10 +586,10 @@ def create_cumulative_return_chart(
         title=f"Retorno Acumulado — {symbol}",
         xaxis_title="Data",
         yaxis_title="Retorno acumulado (%)",
-        template="plotly_white",
+        template="plotly_dark",
         hovermode="x unified",
-        paper_bgcolor="#F8FAFC",
-        plot_bgcolor="#FFFFFF",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
@@ -639,10 +639,10 @@ def create_drawdown_chart(
         title=f"Drawdown — {symbol}",
         xaxis_title="Data",
         yaxis_title="Queda desde o pico (%)",
-        template="plotly_white",
+        template="plotly_dark",
         hovermode="x unified",
-        paper_bgcolor="#F8FAFC",
-        plot_bgcolor="#FFFFFF",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
@@ -669,12 +669,12 @@ def create_returns_histogram(
             "value": "Retorno por período (%)",
             "count": "Frequência",
         },
-        template="plotly_white",
+        template="plotly_dark",
     )
 
     fig.update_traces(
         marker_color=COLORS["price"],
-        marker_line_color="#1E3A8A",
+        marker_line_color="#93C5FD",
         marker_line_width=0.5,
     )
 
@@ -682,8 +682,8 @@ def create_returns_histogram(
         title=f"Distribuição dos Retornos — {symbol}",
         xaxis_title="Retorno por período (%)",
         yaxis_title="Frequência",
-        paper_bgcolor="#F8FAFC",
-        plot_bgcolor="#FFFFFF",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=40, r=20, t=70, b=40),
     )
 
