@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Argos DataLab · tour pelos recursos</title>
+<!--
+  Animação do vídeo da página inicial (gravada por scripts/gravar_video_recursos.py).
+  1280x720, cantos retos e linhas pretas finas, como o restante do sistema.
+  Os números e as séries são ilustrativos (gerados com semente fixa), não dados reais.
+-->
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0; }
+:root { --ink: #111; --line: #1f1f1f; --soft: #d4d4d4; --muted: #5f5f5f; --red: #c8102e; --paper: #fff; --alt: #f5f5f3;
+        --green: #15803d; --blue: #1d4ed8; --amber: #d97706; }
+html, body { width: 1280px; height: 720px; overflow: hidden; background: var(--paper); color: var(--ink);
+             font-family: "Segoe UI", "Source Sans Pro", Arial, sans-serif; }
+.frame { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+/* barra superior */
+.top { height: 58px; display: flex; align-items: center; justify-content: space-between; padding: 0 36px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .18em; font-size: 15px; }
+.mark { width: 28px; height: 28px; background: var(--red); color: #fff; display: grid; place-items: center; font-size: 15px; letter-spacing: 0; }
+.counter { display: flex; border: 1px solid var(--line); font: 700 13px/1 Consolas, monospace; }
+.counter span { padding: 7px 12px; }
+.counter span + span { border-left: 1px solid var(--line); color: var(--red); }
+.badge { position: absolute; right: 36px; bottom: 54px; font-size: 12px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+
+/* palco */
+.stage { position: relative; flex: 1; overflow: hidden; }
+.scene { position: absolute; inset: 0; padding: 34px 36px 0; opacity: 0; transform: translateX(60px); transition: opacity .55s ease, transform .55s ease; }
+.scene.on { opacity: 1; transform: none; }
+.scene.off { opacity: 0; transform: translateX(-60px); }
+.kicker { color: var(--red); font-weight: 800; font-size: 14px; letter-spacing: .22em; text-transform: uppercase; }
+.title { margin-top: 8px; font-size: 44px; font-weight: 800; letter-spacing: -.03em; line-height: 1.05; }
+.lead { margin-top: 10px; font-size: 19px; color: #3a3a3a; max-width: 560px; line-height: 1.45; }
+.cols { display: grid; grid-template-columns: 420px 1fr; gap: 36px; height: 100%; }
+.panel { border: 1px solid var(--line); background: var(--paper); position: relative; }
+.panel-head { height: 34px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between;
+              padding: 0 12px; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; background: var(--alt); }
+.chips { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1px solid var(--line); padding: 6px 10px; font-size: 14px; font-weight: 700; background: #fff; }
+.chip.red { background: var(--ink); color: #fff; }
+
+/* rodapé com capítulos */
+.bottom { height: 46px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(8, 1fr); position: relative; }
+.bottom div { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9a9a9a;
+              display: flex; align-items: center; padding-left: 12px; border-right: 1px solid var(--soft); transition: color .3s; }
+.bottom div:last-child { border-right: 0; }
+.bottom div.done { color: var(--ink); }
+.bottom div.now { color: var(--red); }
+.progress { position: absolute; left: 0; top: -1px; height: 3px; background: var(--red); width: 0; }
+
+/* métricas */
+.metrics { display: grid; grid-template-columns: repeat(2, 1fr); border: 1px solid var(--line); margin-top: 22px; }
+.metric { padding: 12px 14px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.metric:nth-child(2n) { border-right: 0; }
+.metric:nth-last-child(-n+2) { border-bottom: 0; }
+.metric small { display: block; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.metric b { font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+.pos { color: var(--green); } .neg { color: var(--red); }
+
+svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted); }
+.draw { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); }
+.on .draw { animation: draw var(--dur, 2.6s) var(--delay, .3s) cubic-bezier(.4,0,.2,1) forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.pop { opacity: 0; transform: scale(.6); transform-box: fill-box; transform-origin: center; }
+.on .pop { animation: pop .45s var(--d, 0s) cubic-bezier(.2,1.6,.4,1) forwards; }
+@keyframes pop { to { opacity: 1; transform: none; } }
+.grow { transform: scaleY(0); transform-box: fill-box; transform-origin: bottom; }
+.on .grow { animation: grow .5s var(--d, 0s) cubic-bezier(.2,1.2,.4,1) forwards; }
+@keyframes grow { to { transform: none; } }
+.fade { opacity: 0; } .on .fade { animation: fade .5s var(--d, 0s) ease forwards; }
+@keyframes fade { to { opacity: 1; } }
+.ship { font-size: 46px; }
+
+/* intro */
+.intro { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0; }
+.intro h1 { font-size: 104px; font-weight: 800; letter-spacing: -.05em; line-height: 1; }
+.intro h1 .hl { color: var(--red); }
+.intro .tag { margin-top: 16px; font-size: 26px; font-weight: 600; padding: 0 0 0 14px; border-left: 4px solid var(--red); }
+.letters span { display: inline-block; opacity: 0; transform: translateY(40px); }
+.on .letters span { animation: rise .5s cubic-bezier(.2,1.4,.4,1) forwards; }
+@keyframes rise { to { opacity: 1; transform: none; } }
+.sea { position: absolute; left: 0; right: 0; bottom: 0; height: 170px; }
+
+/* catálogo */
+.grid-assets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.asset { border: 1px solid var(--line); padding: 10px 12px; display: flex; gap: 10px; align-items: center; background: #fff; }
+.asset i { font-style: normal; width: 34px; height: 34px; display: grid; place-items: center; background: var(--alt); border: 1px solid var(--soft); font-size: 18px; }
+.asset b { display: block; font: 700 14px Consolas, monospace; }
+.asset small { font-size: 12px; color: var(--muted); }
+.big { font-size: 120px; font-weight: 800; letter-spacing: -.05em; line-height: .9; color: var(--red); margin-top: 26px; }
+
+/* heatmap */
+.heat { display: grid; grid-template-columns: 52px repeat(12, 1fr); gap: 3px; padding: 14px; }
+.heat div { height: 38px; display: grid; place-items: center; font-size: 11px; font-weight: 700; }
+.heat .lbl { color: var(--muted); font-family: Consolas, monospace; }
+
+/* outro */
+.cta { margin-top: 30px; display: inline-flex; border: 1px solid var(--line); }
+.cta span { padding: 16px 30px; font-size: 22px; font-weight: 800; }
+.cta span:first-child { background: var(--red); color: #fff; border-right: 1px solid var(--line); }
+.on .cta span:first-child { animation: pulse 1.2s 1s ease-in-out infinite; }
+@keyframes pulse { 50% { background: #8f0b21; } }
+.disclaimer { margin-top: 26px; font-size: 15px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="top">
+    <div class="brand"><span class="mark">A</span>ARGOS DATALAB</div>
+    <div class="counter"><span id="chapter">TOUR</span><span id="count">01 / 08</span></div>
+  </div>
+  <div class="stage" id="stage">
+
+    <!-- 1. INTRO -->
+    <section class="scene intro" data-name="Início">
+      <h1 class="letters" id="logo"></h1>
+      <div class="tag fade" style="--d:1.1s">Navegue pelo mar dos mercados guiado por dados.</div>
+      <svg class="sea" viewBox="0 0 1280 170" preserveAspectRatio="none">
+        <path id="wave" class="draw" style="--len:1500;--dur:3s;--delay:.6s" fill="none" stroke="#111" stroke-width="2"></path>
+        <text id="shipIntro" class="ship" font-size="46" x="-60" y="0">⛵</text>
+      </svg>
+    </section>
+
+    <!-- 2. CATÁLOGO -->
+    <section class="scene" data-name="Catálogo">
+      <div class="cols">
+        <div>
+          <div class="kicker">01 · Catálogo</div>
+          <div class="title">120 ativos,<br>13 mercados.</div>
+          <div class="lead">Ações do Brasil e do mundo, criptomoedas, FIIs, REITs, ETFs, commodities, câmbio e índices.</div>
+          <div class="big"><span data-count="120">0</span></div>
+        </div>
+        <div class="grid-assets" id="assetGrid"></div>
+      </div>
+    </section>
+
+    <!-- 3. ANÁLISE INDIVIDUAL -->
+    <section class="scene" data-name="Individual">
+      <div class="cols">
+        <div>
+          <div class="kicker">02 · Análise individual</div>
+          <div class="title">Um ativo,<br>a história inteira.</div>
+          <div class="lead">Preço ao longo do tempo, retorno do período e volatilidade de cada mês.</div>
+          <div class="metrics">
+            <div class="metric"><small>Retorno total</small><b class="pos" data-count="142" data-fmt="+%">0</b></div>
+            <div class="metric"><small>Volatilidade</small><b data-count="48" data-fmt="%">0</b></div>
+            <div class="metric"><small>Meses positivos</small><b data-count="58" data-fmt="%">0</b></div>
+            <div class="metric"><small>Observações</small><b data-count="1826">0</b></div>
+          </div>
+        </div>
+        <div class="panel"><div class="panel-head"><span>Preço de fechamento · BTC-USD</span><span>5 anos</span></div>
+          <svg id="priceChart" width="100%" height="440" viewBox="0 0 760 440"></svg></div>
+      </div>
+    </section>
+
+    <!-- 4. COMPARAÇÃO -->
+    <section class="scene" data-name="Comparação">
+      <div class="cols">
+        <div>
+          <div class="kicker">03 · Comparação</div>
+          <div class="title">Quem foi mais<br>longe? Base 100.</div>
+          <div class="lead">De 2 a 5 ativos partindo do mesmo ponto, com correlação e resumo de risco e retorno.</div>
+          <div class="chips">
+            <span class="chip" style="border-left:6px solid #d97706">BTC-USD</span>
+            <span class="chip" style="border-left:6px solid #1d4ed8">AAPL</span>
+            <span class="chip" style="border-left:6px solid #15803d">PETR4.SA</span>
+            <span class="chip" style="border-left:6px solid #111">S&amp;P 500</span>
+          </div>
+          <svg id="corr" width="300" height="190" viewBox="0 0 300 190" style="margin-top:20px"></svg>
+        </div>
+        <div class="panel"><div class="panel-head"><span>Evolução em base 100</span><span>mesmo início</span></div>
+          <svg id="raceChart" width="100%" height="440" viewBox="0 0 760 440"></svg></div>
+      </div>
+    </section>
+
+    <!-- 5. INDICADORES -->
+    <section class="scene" data-name="Indicadores">
+      <div class="cols">
+        <div>
+          <div class="kicker">04 · Indicadores técnicos</div>
+          <div class="title">Candles, médias<br>e momento.</div>
+          <div class="lead">Médias móveis, Bandas de Bollinger, RSI e MACD, cada um com um guia de leitura.</div>
+          <div class="chips">
+            <span class="chip red fade" style="--d:.6s">SMA 20</span><span class="chip fade" style="--d:.9s">SMA 50</span>
+            <span class="chip fade" style="--d:1.2s">Bollinger</span><span class="chip fade" style="--d:1.5s">RSI 14</span>
+            <span class="chip fade" style="--d:1.8s">MACD</span>
+          </div>
+        </div>
+        <div class="panel"><div class="panel-head"><span>Candles + SMA · RSI</span><span>diário</span></div>
+          <svg id="candles" width="100%" height="440" viewBox="0 0 760 440"></svg></div>
+      </div>
+    </section>
+
+    <!-- 6. RISCO -->
+    <section class="scene" data-name="Risco">
+      <div class="cols">
+        <div>
+          <div class="kicker">05 · Risco e retorno</div>
+          <div class="title">Quanto caiu<br>no pior momento?</div>
+          <div class="lead">Drawdown máximo, volatilidade anualizada e Índice de Sharpe, com a taxa livre de risco que você escolher.</div>
+          <div class="metrics">
+            <div class="metric"><small>Drawdown máximo</small><b class="neg" id="ddMetric" data-count="-31" data-fmt="%">0</b></div>
+            <div class="metric"><small>Sharpe</small><b data-count="0.62" data-dec="2">0</b></div>
+            <div class="metric"><small>Volatilidade</small><b data-count="31" data-fmt="%">0</b></div>
+            <div class="metric"><small>Pior mês</small><b class="neg" data-count="-19" data-fmt="%">0</b></div>
+          </div>
+        </div>
+        <div class="panel"><div class="panel-head"><span>Drawdown · queda desde o pico</span><span>PETR4.SA</span></div>
+          <svg id="ddChart" width="100%" height="440" viewBox="0 0 760 440"></svg></div>
+      </div>
+    </section>
+
+    <!-- 7. SAZONALIDADE -->
+    <section class="scene" data-name="Sazonalidade">
+      <div class="cols">
+        <div>
+          <div class="kicker">06 · Sazonalidade</div>
+          <div class="title">Setembro é<br>mesmo ruim?</div>
+          <div class="lead">O mapa de calor mostra o retorno de cada mês em cada ano. Verde subiu, vermelho caiu.</div>
+        </div>
+        <div class="panel"><div class="panel-head"><span>Retorno mensal (%) · mês × ano</span><span>BTC-USD</span></div>
+          <div class="heat" id="heat"></div></div>
+      </div>
+    </section>
+
+    <!-- 8. SIMULAÇÃO -->
+    <section class="scene" data-name="Simulação">
+      <div class="cols">
+        <div>
+          <div class="kicker">07 · Simulação de aportes</div>
+          <div class="title">E se eu tivesse<br>investido?</div>
+          <div class="lead">Aportes mensais aplicados ao histórico: total investido versus valor da carteira, sem custos nem impostos.</div>
+          <div class="metrics">
+            <div class="metric"><small>Total aportado</small><b data-count="12000" data-fmt="R$">0</b></div>
+            <div class="metric"><small>Valor final</small><b class="pos" data-count="17840" data-fmt="R$">0</b></div>
+          </div>
+        </div>
+        <div class="panel"><div class="panel-head"><span>Aportes de R$ 200 por mês</span><span>simulação histórica</span></div>
+          <svg id="dcaChart" width="100%" height="440" viewBox="0 0 760 440"></svg></div>
+      </div>
+    </section>
+
+    <!-- 9. OUTRO -->
+    <section class="scene intro" data-name="Comece">
+      <div class="kicker">Argos DataLab</div>
+      <h1 style="font-size:72px;margin-top:10px">Pronto para <span class="hl">navegar</span>?</h1>
+      <div class="cta"><span>Get Started →</span><span>Informações acadêmicas</span></div>
+      <div class="disclaimer">Uso educacional e de pesquisa · PIBITI UFPI · Não é recomendação de investimento.</div>
+    </section>
+  </div>
+  <div class="bottom" id="chapters"><i class="progress" id="progress"></i></div>
+  <div class="badge">Dados ilustrativos</div>
+</div>
+
+<script>
+// ---------- utilidades ----------
+let seed = 7;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const walk = (n, start, drift, vol) => { const out = [start]; for (let i = 1; i < n; i++) out.push(Math.max(5, out[i - 1] * (1 + drift + (rnd() - .5) * vol))); return out; };
+const NS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+const scaleTo = (vals, h, pad) => { const mn = Math.min(...vals), mx = Math.max(...vals); return v => pad + (h - 2 * pad) * (1 - (v - mn) / (mx - mn || 1)); };
+const pathOf = (vals, w, y, x0 = 50) => vals.map((v, i) => `${i ? "L" : "M"}${(x0 + i * (w - x0 - 20) / (vals.length - 1)).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+const gridLines = (svg, w, h, rows = 5) => { for (let i = 0; i <= rows; i++) { const yy = 20 + i * (h - 50) / rows; el("line", { x1: 50, x2: w - 20, y1: yy, y2: yy, stroke: "#e5e5e5" }, svg); } el("line", { x1: 50, x2: w - 20, y1: h - 30, y2: h - 30, stroke: "#1f1f1f" }, svg); };
+const drawPath = (svg, d, color, width, dur, delay) => { const p = el("path", { d, fill: "none", stroke: color, "stroke-width": width, class: "draw" }, svg); const len = p.getTotalLength(); p.style.setProperty("--len", len); p.style.setProperty("--dur", dur + "s"); p.style.setProperty("--delay", delay + "s"); return p; };
+
+// ---------- intro ----------
+document.getElementById("logo").innerHTML = "Argos DataLab".split("").map((c, i) =>
+  `<span style="animation-delay:${.05 * i}s;${i >= 6 ? "color:#c8102e" : ""}">${c === " " ? "&nbsp;" : c}</span>`).join("");
+const waveVals = walk(60, 100, .004, .09);
+const waveY = scaleTo(waveVals, 170, 40);
+document.getElementById("wave").setAttribute("d", pathOf(waveVals, 1280, waveY, 0));
+
+// ---------- catálogo ----------
+const assets = [["₿", "BTC-USD", "Bitcoin"], ["🇧🇷", "PETR4.SA", "Petrobras"], ["", "AAPL", "Apple"], ["🥇", "GC=F", "Ouro"],
+  ["📊", "^GSPC", "S&P 500"], ["💱", "USDBRL=X", "Dólar/Real"], ["🏠", "HGLG11.SA", "CSHG Log."], ["Ξ", "ETH-USD", "Ethereum"],
+  ["🇧🇷", "VALE3.SA", "Vale"], ["🛢️", "CL=F", "Petróleo"], ["🏢", "O", "Realty Income"], ["📈", "QQQ", "Nasdaq 100"],
+  ["◎", "SOL-USD", "Solana"], ["🇧🇷", "ITUB4.SA", "Itaú"], ["🇪🇺", "ASML", "ASML"], ["💵", "^TNX", "Treasury 10a"]];
+document.getElementById("assetGrid").innerHTML = assets.map((a, i) =>
+  `<div class="asset pop" style="--d:${.15 + i * .12}s"><i>${a[0]}</i><div><b>${a[1]}</b><small>${a[2]}</small></div></div>`).join("");
+
+// ---------- preço ----------
+(() => { const svg = document.getElementById("priceChart"); gridLines(svg, 760, 440);
+  const v = walk(90, 100, .011, .14); const y = scaleTo(v, 440, 30);
+  const d = pathOf(v, 760, y);
+  el("path", { d: d + ` L740,410 L50,410 Z`, fill: "rgba(200,16,46,.07)", class: "fade", style: "--d:2.4s" }, svg);
+  drawPath(svg, d, "#c8102e", 3, 2.6, .4);
+  const ship = el("text", { class: "ship", "font-size": 40, x: -60, y: 0 }, svg); ship.textContent = "⛵"; ship.id = "shipPrice";
+  window.shipPath = { svg: d }; ["2022", "2023", "2024", "2025", "2026"].forEach((t, i) => { const tx = el("text", { x: 70 + i * 160, y: 432 }, svg); tx.textContent = t; });
+})();
+
+// ---------- corrida base 100 ----------
+(() => { const svg = document.getElementById("raceChart"); gridLines(svg, 760, 440);
+  const series = [[.016, .2, "#d97706"], [.009, .07, "#1d4ed8"], [.006, .1, "#15803d"], [.005, .04, "#111"]].map(s => [walk(70, 100, s[0], s[1]), s[2]]);
+  const all = series.flatMap(s => s[0]); const mn = Math.min(...all), mx = Math.max(...all);
+  const y = v => 30 + 380 * (1 - (v - mn) / (mx - mn));
+  const base = el("line", { x1: 50, x2: 740, y1: y(100), y2: y(100), stroke: "#1f1f1f", "stroke-dasharray": "4 4" }, svg);
+  const lb = el("text", { x: 54, y: y(100) - 6 }, svg); lb.textContent = "base 100";
+  series.forEach((s, i) => drawPath(svg, pathOf(s[0], 760, y), s[1], 3, 3.2, .3 + i * .15));
+  const corr = document.getElementById("corr"); const names = ["BTC", "AAPL", "PETR4", "S&P"];
+  const m = [[1, .42, .21, .48], [.42, 1, .33, .81], [.21, .33, 1, .39], [.48, .81, .39, 1]];
+  names.forEach((n, i) => { const t = el("text", { x: 0, y: 42 + i * 38 }, corr); t.textContent = n; });
+  m.forEach((row, i) => row.forEach((c, j) => { el("rect", { x: 60 + j * 58, y: 20 + i * 38, width: 56, height: 36, fill: `rgba(200,16,46,${c})`, stroke: "#1f1f1f", "stroke-width": .5, class: "pop", style: `--d:${1 + (i + j) * .12}s` }, corr);
+    const t = el("text", { x: 76 + j * 58, y: 43 + i * 38, class: "fade", style: `--d:${1.3 + (i + j) * .12}s;fill:${c > .55 ? "#fff" : "#111"}` }, corr); t.textContent = c.toFixed(2); }));
+})();
+
+// ---------- candles ----------
+(() => { const svg = document.getElementById("candles"); gridLines(svg, 760, 300, 4);
+  const n = 46; let p = 100; const c = [];
+  for (let i = 0; i < n; i++) { const o = p, cl = Math.max(20, o * (1 + (rnd() - .46) * .08)); const hi = Math.max(o, cl) * (1 + rnd() * .03), lo = Math.min(o, cl) * (1 - rnd() * .03); c.push([o, hi, lo, cl]); p = cl; }
+  const all = c.flat(); const mn = Math.min(...all), mx = Math.max(...all); const y = v => 24 + 236 * (1 - (v - mn) / (mx - mn));
+  const step = 690 / n;
+  c.forEach((k, i) => { const x = 56 + i * step; const up = k[3] >= k[0]; const g = el("g", { class: "grow", style: `--d:${.2 + i * .04}s` }, svg);
+    el("line", { x1: x + step * .35, x2: x + step * .35, y1: y(k[1]), y2: y(k[2]), stroke: "#111" }, g);
+    el("rect", { x, y: y(Math.max(k[0], k[3])), width: step * .7, height: Math.max(2, Math.abs(y(k[0]) - y(k[3]))), fill: up ? "#15803d" : "#c8102e", stroke: "#111", "stroke-width": .6 }, g); });
+  const sma = c.map((_, i) => { const w = c.slice(Math.max(0, i - 7), i + 1); return w.reduce((a, b) => a + b[3], 0) / w.length; });
+  drawPath(svg, sma.map((v, i) => `${i ? "L" : "M"}${(56 + i * step + step * .35).toFixed(1)},${y(v).toFixed(1)}`).join(" "), "#1d4ed8", 2.5, 2.2, 2.2);
+  el("line", { x1: 0, x2: 760, y1: 300, y2: 300, stroke: "#1f1f1f" }, svg);
+  const lab = el("text", { x: 56, y: 322 }, svg); lab.textContent = "RSI 14";
+  const yr = v => 330 + 90 * (1 - v / 100);
+  [70, 30].forEach(v => { el("line", { x1: 50, x2: 740, y1: yr(v), y2: yr(v), stroke: "#c8102e", "stroke-dasharray": "4 4" }, svg); const t = el("text", { x: 744, y: yr(v) + 4 }, svg); t.textContent = v; });
+  const rsi = Array.from({ length: n }, (_, i) => 50 + 26 * Math.sin(i / 4) + (rnd() - .5) * 14);
+  drawPath(svg, rsi.map((v, i) => `${i ? "L" : "M"}${(56 + i * step).toFixed(1)},${yr(v).toFixed(1)}`).join(" "), "#111", 2, 2.4, 2.6);
+})();
+
+// ---------- drawdown ----------
+(() => { const svg = document.getElementById("ddChart");
+  const v = walk(90, 100, .004, .12); let peak = v[0]; const dd = v.map(x => { peak = Math.max(peak, x); return x / peak - 1; });
+  const mn = Math.min(...dd); const y = d => 40 + 360 * (d / mn);
+  [0, .25, .5, .75, 1].forEach(f => { const yy = 40 + 360 * f; el("line", { x1: 50, x2: 740, y1: yy, y2: yy, stroke: "#e5e5e5" }, svg); const t = el("text", { x: 4, y: yy + 4 }, svg); t.textContent = (mn * f * 100).toFixed(0) + "%"; });
+  el("line", { x1: 50, x2: 740, y1: 40, y2: 40, stroke: "#1f1f1f" }, svg);
+  const d = pathOf(dd, 760, y);
+  const area = el("path", { d: d + " L740,40 L50,40 Z", fill: "rgba(200,16,46,.18)", class: "fade", style: "--d:2s" }, svg);
+  drawPath(svg, d, "#c8102e", 2.5, 2.6, .3);
+  const i = dd.indexOf(mn); const x = 50 + i * 690 / (dd.length - 1);
+  el("circle", { cx: x, cy: y(mn), r: 7, fill: "#fff", stroke: "#111", "stroke-width": 2, class: "pop", style: "--d:2.8s" }, svg);
+  const t = el("text", { x: Math.min(x + 12, 600), y: y(mn) + 4, class: "fade", style: "--d:3s;fill:#111;font-weight:700" }, svg); t.textContent = "pior queda: " + (mn * 100).toFixed(0) + "%";
+  document.getElementById("ddMetric").dataset.count = (mn * 100).toFixed(0);
+})();
+
+// ---------- sazonalidade ----------
+(() => { const box = document.getElementById("heat"); const months = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
+  let html = '<div></div>' + months.map(m => `<div class="lbl">${m}</div>`).join("");
+  [2020, 2021, 2022, 2023, 2024, 2025, 2026].forEach((yr, r) => { html += `<div class="lbl">${yr}</div>`;
+    months.forEach((_, m) => { let v = (rnd() - .45) * 40; if (m === 8) v = -Math.abs(v) - 3; const a = Math.min(1, Math.abs(v) / 25);
+      const bg = v >= 0 ? `rgba(21,128,61,${.15 + a * .85})` : `rgba(200,16,46,${.15 + a * .85})`;
+      html += `<div class="pop" style="--d:${.2 + (r * 12 + m) * .018}s;background:${bg};color:${a > .5 ? "#fff" : "#111"};border:1px solid #1f1f1f">${v.toFixed(0)}</div>`; }); });
+  box.innerHTML = html;
+})();
+
+// ---------- simulação ----------
+(() => { const svg = document.getElementById("dcaChart"); gridLines(svg, 760, 440);
+  const n = 30; const price = walk(n, 100, .012, .1); let units = 0; const inv = [], val = [];
+  price.forEach((p, i) => { units += 200 / p; inv.push(200 * (i + 1)); val.push(units * p); });
+  const mx = Math.max(...val, ...inv); const y = v => 410 - 380 * v / mx; const step = 690 / n;
+  inv.forEach((v, i) => el("rect", { x: 54 + i * step, y: y(v), width: step * .7, height: 410 - y(v), fill: "#f5f5f3", stroke: "#1f1f1f", "stroke-width": .8, class: "grow", style: `--d:${.2 + i * .07}s` }, svg));
+  drawPath(svg, val.map((v, i) => `${i ? "L" : "M"}${(54 + i * step + step * .35).toFixed(1)},${y(v).toFixed(1)}`).join(" "), "#15803d", 3, 2.4, 1.2);
+  const l1 = el("rect", { x: 70, y: 30, width: 14, height: 14, fill: "#f5f5f3", stroke: "#1f1f1f" }, svg); const t1 = el("text", { x: 90, y: 42 }, svg); t1.textContent = "total aportado";
+  el("line", { x1: 210, x2: 234, y1: 37, y2: 37, stroke: "#15803d", "stroke-width": 3 }, svg); const t2 = el("text", { x: 240, y: 42 }, svg); t2.textContent = "valor da carteira";
+  for (let k = 0; k < 7; k++) { const coin = el("text", { x: 100 + k * 90, y: -20, class: "coin", style: "font-size:26px" }, svg); coin.textContent = "🪙"; coin.dataset.delay = 1 + k * .35; }
+})();
+
+// ---------- contadores e navio ----------
+function runCounters(scene) {
+  scene.querySelectorAll("[data-count]").forEach(node => {
+    const target = parseFloat(node.dataset.count), dec = parseInt(node.dataset.dec || "0"), fmt = node.dataset.fmt || "";
+    const t0 = performance.now() + 500, dur = 1600;
+    const tick = now => { const t = Math.min(1, Math.max(0, (now - t0) / dur)); const e = 1 - Math.pow(1 - t, 3); const v = target * e;
+      let s = Math.abs(v) >= 1000 ? Math.round(v).toLocaleString("pt-BR") : v.toFixed(dec).replace(".", ",");
+      if (fmt === "%") s = s + "%"; if (fmt === "+%") s = "+" + s + "%"; if (fmt === "R$") s = "R$ " + s;
+      node.textContent = s; if (t < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick); });
+}
+function sail(svgSelector, pathD, textNode, delay, dur) {
+  const svg = document.querySelector(svgSelector); const p = el("path", { d: pathD, fill: "none", stroke: "none" }, svg); const len = p.getTotalLength();
+  const t0 = performance.now() + delay * 1000;
+  const tick = now => { const t = Math.min(1, Math.max(0, (now - t0) / (dur * 1000))); const pt = p.getPointAtLength(len * t);
+    textNode.setAttribute("x", pt.x - 24); textNode.setAttribute("y", pt.y - 4); if (t < 1) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+}
+function dropCoins(scene) {
+  scene.querySelectorAll(".coin").forEach(c => { const t0 = performance.now() + c.dataset.delay * 1000;
+    const tick = now => { const t = Math.min(1, Math.max(0, (now - t0) / 900)); c.setAttribute("y", -20 + t * t * 420); c.style.opacity = t < 1 ? 1 : 0; if (t < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick); });
+}
+
+// ---------- linha do tempo ----------
+const DURATIONS = [5.5, 6.5, 7, 7, 7, 7, 6.5, 6.5, 5.5]; // segundos por cena
+const scenes = [...document.querySelectorAll(".scene")];
+const chapters = document.getElementById("chapters");
+scenes.slice(1).forEach(s => { const d = document.createElement("div"); d.textContent = s.dataset.name; chapters.appendChild(d); });
+const total = DURATIONS.reduce((a, b) => a + b, 0);
+window.ARGOS_TOTAL_SECONDS = total;
+
+function show(i) {
+  scenes.forEach((s, k) => { s.classList.toggle("on", k === i); s.classList.toggle("off", k < i); });
+  const s = scenes[i];
+  document.getElementById("count").textContent = String(i + 1).padStart(2, "0") + " / " + String(scenes.length).padStart(2, "0");
+  document.getElementById("chapter").textContent = i === 0 ? "TOUR" : s.dataset.name.toUpperCase();
+  [...chapters.querySelectorAll("div")].forEach((d, k) => { d.classList.toggle("done", k < i - 1); d.classList.toggle("now", k === i - 1); });
+  runCounters(s);
+  if (i === 0) sail(".intro .sea", document.getElementById("wave").getAttribute("d"), document.getElementById("shipIntro"), .8, 3.4);
+  if (i === 2) sail("#priceChart", window.shipPath.svg, document.getElementById("shipPrice"), .5, 2.6);
+  if (i === 7) dropCoins(s);
+}
+
+window.startArgosTour = () => {
+  let i = 0; show(0); const t0 = performance.now();
+  const progress = document.getElementById("progress");
+  const tick = now => { progress.style.width = Math.min(100, (now - t0) / (total * 1000) * 100) + "%"; if (now - t0 < total * 1000) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+  let acc = 0; DURATIONS.slice(0, -1).forEach((d, k) => { acc += d; setTimeout(() => show(k + 1), acc * 1000); });
+};
+if (!location.search.includes("manual")) window.addEventListener("load", () => setTimeout(window.startArgosTour, 300));
+</script>
+</body>
+</html>

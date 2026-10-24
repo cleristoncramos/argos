@@ -27,8 +27,7 @@ st.markdown(
        ========================================================== */
     div[data-testid="stHorizontalBlock"].argos-module-tabs {
         gap: 0 !important;
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 8px !important;
+        border: 1px solid #1f1f1f !important;
         overflow: hidden !important; 
         background-color: #f8fafc !important;
         margin-bottom: 16px !important;
@@ -67,12 +66,10 @@ st.markdown(
        Refinamento geral de Grids e Cards
        ========================================================== */
     .argos-static-card {
-        border: 1px solid rgba(128, 128, 128, 0.2);
-        border-radius: 12px;
+        border: 1px solid #1f1f1f;
         padding: 22px 24px;
         height: 100%;
         background-color: #ffffff;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     }
     .argos-static-card h3 {
         margin-top: 0;
@@ -85,8 +82,7 @@ st.markdown(
     }
     .argos-grid-item {
         background-color: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
+        border: 1px solid #1f1f1f;
         padding: 12px 16px;
         display: flex;
         justify-content: space-between;
@@ -95,7 +91,6 @@ st.markdown(
     }
     .argos-grid-item:hover {
         border-color: #cbd5e1;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         transform: translateY(-1px);
     }
     .argos-grid-title {
@@ -108,7 +103,6 @@ st.markdown(
         color: #475569;
         font-size: 0.8rem;
         padding: 3px 10px;
-        border-radius: 12px;
         font-weight: 700;
     }
     </style>
@@ -141,7 +135,7 @@ st.markdown(
 st.markdown(
     """
     <div style="display:flex; align-items:center; gap:14px; background: linear-gradient(90deg, #fef2f2 0%, #ffffff 100%);
-                border: 1px solid #fecaca; border-left: 4px solid #ef4444; border-radius: 10px; padding: 16px 20px;">
+                border: 1px solid #fecaca; border-left: 4px solid #ef4444; padding: 16px 20px;">
         <span style="font-size:1.6rem;">💡</span>
         <span style="color:#334155; font-size:0.98rem;">
             <b>Bem-vindo ao Argos!</b> Utilize o menu lateral esquerdo para navegar entre as seções da plataforma.
@@ -168,7 +162,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.markdown(
         """
-        <div style="border: 1px solid rgba(128, 128, 128, 0.2); border-radius: 12px; padding: 22px; height: 100%;">
+        <div style="border: 1px solid #1f1f1f; padding: 22px; height: 100%;">
             <h4 style="margin-top: 0;">🔍 Exploração Robusta</h4>
             <p style="opacity: 0.8; font-size: 0.9rem; margin-bottom: 0;">
                 Navegação hierárquica por classes de ativos em português, com dados obtidos 
@@ -180,7 +174,7 @@ with col1:
 with col2:
     st.markdown(
         """
-        <div style="border: 1px solid rgba(128, 128, 128, 0.2); border-radius: 12px; padding: 22px; height: 100%;">
+        <div style="border: 1px solid #1f1f1f; padding: 22px; height: 100%;">
             <h4 style="margin-top: 0;">⚖️ Análise Comparativa</h4>
             <p style="opacity: 0.8; font-size: 0.9rem; margin-bottom: 0;">
                 Cruzamento de múltiplos ativos (2 a 5) normalizados em Base 100, acompanhados 
@@ -192,7 +186,7 @@ with col2:
 with col3:
     st.markdown(
         """
-        <div style="border: 1px solid rgba(128, 128, 128, 0.2); border-radius: 12px; padding: 22px; height: 100%;">
+        <div style="border: 1px solid #1f1f1f; padding: 22px; height: 100%;">
             <h4 style="margin-top: 0;">📉 Métricas de Risco</h4>
             <p style="opacity: 0.8; font-size: 0.9rem; margin-bottom: 0;">
                 Cálculo de volatilidade anualizada, índice de Sharpe ajustado, análise de 

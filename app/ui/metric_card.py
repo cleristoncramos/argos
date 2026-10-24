@@ -45,15 +45,15 @@ def build_metric_card_html(
         fg, bg = tone_style(tone)
         badge_html = (
             '<div style="margin-top:12px;">'
-            f'<span style="font-size:0.85rem;font-weight:600;padding:4px 8px;border-radius:6px;'
+            f'<span style="font-size:0.85rem;font-weight:600;padding:4px 8px;'
             f'display:inline-block;background-color:{bg};color:{fg};">{escape(text)}</span>'
             "</div>"
         )
 
     return (
-        '<div style="background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);'
-        "border:1px solid #e2e8f0;border-radius:12px;padding:20px;"
-        "box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);display:flex;flex-direction:column;height:100%;\">"
+        '<div style="background:#ffffff;'
+        "border:1px solid #1f1f1f;padding:20px;"
+        "display:flex;flex-direction:column;height:100%;\">"
         '<div style="color:#64748b;font-size:0.75rem;font-weight:700;text-transform:uppercase;'
         'letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;">'
         f"{escape(title)} {tooltip_html}</div>"

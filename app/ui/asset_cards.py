@@ -38,7 +38,7 @@ def render_selected_asset_cards(assets: list[dict]) -> None:
         if logo_url:
             image_html = (
                 f"<img src='{escape(logo_url)}' "
-                "style='width:32px;height:32px;border-radius:50%;object-fit:contain;"
+                "style='width:32px;height:32px;object-fit:contain;"
                 "background:#fff;border:1px solid #E2E8F0;' "
                 "onerror=\"this.style.display='none'; "
                 "this.nextElementSibling.style.display='inline';\"/>"
@@ -48,8 +48,8 @@ def render_selected_asset_cards(assets: list[dict]) -> None:
             image_html = f"<span style='font-size:1.4rem;'>{fallback_icon}</span>"
 
         card_html = f"""
-        <div style="display:flex; align-items:center; gap:10px; background:#F8FAFC;
-                    border:1px solid #E2E8F0; border-radius:12px; padding:10px 14px;
+        <div style="display:flex; align-items:center; gap:10px; background:#FFFFFF;
+                    border:1px solid #1F1F1F; padding:10px 14px;
                     height:100%;">
             {image_html}
             <div style="display:flex; flex-direction:column; line-height:1.25; overflow:hidden;">
@@ -109,7 +109,7 @@ def render_selected_asset_cards(assets: list[dict]) -> None:
         if logo_url:
             image_html = (
                 f"<img src='{escape(logo_url)}' "
-                "style='width:32px;height:32px;border-radius:50%;object-fit:contain;"
+                "style='width:32px;height:32px;object-fit:contain;"
                 "background:#fff;border:1px solid #E2E8F0;' "
                 "onerror=\"this.style.display='none'; "
                 "this.nextElementSibling.style.display='inline';\"/>"
@@ -119,8 +119,8 @@ def render_selected_asset_cards(assets: list[dict]) -> None:
             image_html = f"<span style='font-size:1.4rem;'>{fallback_icon}</span>"
 
         card_html = f"""
-        <div style="display:flex; align-items:center; gap:10px; background:#F8FAFC;
-                    border:1px solid #E2E8F0; border-radius:12px; padding:10px 14px;
+        <div style="display:flex; align-items:center; gap:10px; background:#FFFFFF;
+                    border:1px solid #1F1F1F; padding:10px 14px;
                     height:100%;">
             {image_html}
             <div style="display:flex; flex-direction:column; line-height:1.25; overflow:hidden;">
@@ -166,7 +166,7 @@ def render_asset_hero_logo(asset: dict) -> None:
     if logo_url:
         image_html = (
             f"<img src='{escape(logo_url)}' "
-            "style='width:64px;height:64px;border-radius:50%;object-fit:contain;"
+            "style='width:64px;height:64px;object-fit:contain;"
             "background:#fff;border:1px solid #E2E8F0;' "
             "onerror=\"this.style.display='none'; "
             "this.nextElementSibling.style.display='inline';\"/>"
@@ -176,8 +176,8 @@ def render_asset_hero_logo(asset: dict) -> None:
         image_html = f"<span style='font-size:2.6rem;'>{fallback_icon}</span>"
 
     card_html = f"""
-    <div style="display:flex; align-items:center; gap:16px; background:#F8FAFC;
-                border:1px solid #E2E8F0; border-radius:14px; padding:16px 20px;
+    <div style="display:flex; align-items:center; gap:16px; background:#FFFFFF;
+                border:1px solid #1F1F1F; padding:16px 20px;
                 height:100%;">
         {image_html}
         <div style="display:flex; flex-direction:column; line-height:1.3; overflow:hidden;">

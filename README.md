@@ -53,12 +53,16 @@ Os dados históricos são consultados via **Yahoo Finance**, utilizando o pacote
 A página de entrada apresenta o Argos no estilo da experiência inicial do Streamlit:
 
 * Nome, frase de efeito e botão **Get Started**, que abre a Análise Individual;
-* Vídeo curto com uma navegação real pelo sistema (`app/assets/video/argos_tour.mp4`);
+* Vídeo animado e ilustrativo com os recursos do sistema (`app/assets/video/argos_recursos.mp4`);
 * Mosaico animado com os ativos do catálogo e seus logotipos;
 * Tutorial em 3 passos e cartões de primeiros passos para cada módulo;
-* Botão **Informações acadêmicas**, que abre uma página com os logotipos da UFPI e do CEAD, curso, autor, orientador e tecnologias utilizadas.
+* Botão **Informações acadêmicas**, que abre um modal com os logotipos da UFPI e do CEAD, a identificação do trabalho, a origem do nome Argos DataLab, as tecnologias e as bases de dados.
 
-Os logotipos institucionais ficam em `app/assets/institucional/` (origem em `FONTES.md`). Para regravar o vídeo depois de mudanças na interface, siga as instruções no topo de `scripts/gravar_video_tour.py`.
+Os logotipos institucionais ficam em `app/assets/institucional/` (origem em `FONTES.md`). A animação do vídeo está em `scripts/video_recursos/animacao.html`; para regravá-la, siga as instruções no topo de `scripts/gravar_video_recursos.py`.
+
+## 🎨 Identidade visual
+
+Todo o sistema usa tema claro, **cantos retos** e **linhas pretas finas** delimitando elementos e seções. O tema base está em `.streamlit/config.toml` e o CSS complementar, comum a todas as páginas, em `app/ui/design.py`.
 
 ## 🔍 Análise individual de ativos
 

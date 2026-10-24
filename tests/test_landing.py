@@ -1,11 +1,19 @@
+import re
+
+from app.ui.design import GLOBAL_CSS
 from app.ui.landing import (
     ACADEMIC_INFO,
+    ACADEMIC_MODAL_CSS,
+    DATA_SOURCES,
+    FEATURES_VIDEO,
+    MOSAIC_TEMPLATE,
+    NAME_STORY,
     TECHNOLOGIES,
-    TOUR_VIDEO,
     build_academic_header_html,
-    build_details_html,
+    build_data_sources_html,
+    build_identification_html,
     build_mosaic_html,
-    build_people_html,
+    build_name_story_html,
     build_technologies_html,
     catalog_stats,
     institutional_logo_uri,
@@ -56,19 +64,34 @@ def test_institutional_logos_are_packaged():
 def test_academic_header_lists_institution_center_and_course():
     html = build_academic_header_html({"UFPI": "data:image/svg+xml;base64,AA", "CEAD": None})
     assert html.count("<img") == 1
-    for key in ("institution", "center", "course"):
+    for key in ("institution", "center", "course", "system"):
         assert ACADEMIC_INFO[key] in html
 
 
-def test_people_details_and_technologies():
-    people = build_people_html()
-    assert ACADEMIC_INFO["author"] in people and ACADEMIC_INFO["advisor"] in people
-    assert ">CR<" in people and ">AA<" in people  # iniciais do primeiro e do último nome
-    details = build_details_html()
-    assert ACADEMIC_INFO["work_plan"] in details and "PIBITI" in details
-    techs = build_technologies_html()
-    assert techs.count('class="acad-tech"') == len(TECHNOLOGIES)
+def test_identification_has_author_advisor_and_program():
+    html = build_identification_html()
+    for key in ("author", "advisor", "work_plan", "program", "course", "center"):
+        assert ACADEMIC_INFO[key] in html
 
 
-def test_tour_video_is_packaged():
-    assert TOUR_VIDEO.exists() and TOUR_VIDEO.stat().st_size < 15 * 1_048_576
+def test_name_story_explains_argos_and_the_argo():
+    html = build_name_story_html()
+    assert "Argo" in html and "Velocino de Ouro" in html and "DataLab" in html
+    assert html.count("<tr>") == len(NAME_STORY) + 1  # cabeçalho + uma linha por elemento
+
+
+def test_technologies_and_data_sources_tables():
+    assert build_technologies_html().count("<tr>") == len(TECHNOLOGIES) + 1
+    html = build_data_sources_html(catalog_stats(ASSETS))
+    assert html.count("<tr>") == len(DATA_SOURCES) + 1
+    assert "Yahoo Finance" in html and str(len(ASSETS)) in html
+
+
+def test_no_rounded_corners_in_own_styles():
+    for css in (GLOBAL_CSS, ACADEMIC_MODAL_CSS, MOSAIC_TEMPLATE):
+        radii = re.findall(r"border-radius\s*:\s*([^;}\s]+)", css)
+        assert all(value in ("0", "0!important") for value in radii), radii
+
+
+def test_features_video_is_packaged():
+    assert FEATURES_VIDEO.exists() and FEATURES_VIDEO.stat().st_size < 15 * 1_048_576
