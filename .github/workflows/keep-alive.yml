@@ -1,15 +1,31 @@
 name: Streamlit Keep Alive
 
+# O Community Cloud hiberna o app após ~12 h sem visitas. Um curl não conta
+# como visita (a URL redireciona para a autenticação), então o app é aberto
+# num navegador real; se já estiver hibernando, o script clica para acordar.
+# O GitHub atrasa ou pula execuções agendadas, por isso a folga de 3 em 3 h.
+
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '17 */3 * * *'
   workflow_dispatch:
 
 jobs:
-  ping:
-    name: Ping Streamlit App
+  visit:
+    name: Visitar o Argos DataLab
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - name: Send HTTP GET request to Argos DataLab
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar Playwright e Chromium
         run: |
-          curl -I -s --max-time 30 https://argos-datalab.streamlit.app
+          python -m pip install --quiet playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Abrir o app
+        run: python scripts/manter_app_ativo.py
