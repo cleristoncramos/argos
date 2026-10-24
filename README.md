@@ -1,425 +1,380 @@
-# 📊 Argos DataLab
+# Argos DataLab
 
-**Plataforma web para análise exploratória de ativos financeiros, comparação de desempenho, indicadores técnicos e métricas de risco.**
+**Laboratório de dados financeiros: análise exploratória de ativos, comparação de desempenho, indicadores técnicos e métricas de risco em uma plataforma web educacional.**
 
-O **Argos DataLab** foi desenvolvido com foco educacional e de pesquisa no contexto do **PIBITI UFPI 2026–2027**.
+[![Aplicação online](https://img.shields.io/badge/app-argos--datalab.streamlit.app-C8102E)](https://argos-datalab.streamlit.app)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.63-FF4B4B?logo=streamlit&logoColor=white)
+![Testes](https://img.shields.io/badge/testes-759%20aprovados-2E7D32)
+![Cobertura](https://img.shields.io/badge/cobertura%20do%20core-100%25-2E7D32)
+![PIBITI UFPI](https://img.shields.io/badge/PIBITI-UFPI%202026%E2%80%932027-1F1F1F)
+
+O **Argos DataLab** reúne em uma única plataforma o histórico de **120 ativos de 13 mercados** (ações, criptomoedas, FIIs, REITs, ETFs, commodities, câmbio, índices e taxas de juros) e transforma esses dados em gráficos interativos, métricas quantitativas e textos explicativos em linguagem simples. Foi desenvolvido no **Programa Institucional de Bolsas de Iniciação em Desenvolvimento Tecnológico e Inovação (PIBITI) da Universidade Federal do Piauí**, ciclo 2026–2027.
 
 > [!IMPORTANT]
-> O Argos DataLab tem finalidade **exclusivamente acadêmica, educacional e de desenvolvimento tecnológico**.
->
-> As informações, métricas e visualizações apresentadas **não constituem recomendação, indicação ou aconselhamento de investimento**.
+> O Argos DataLab tem finalidade **exclusivamente acadêmica, educacional e de desenvolvimento tecnológico**. As informações, métricas e visualizações descrevem dados históricos e **não constituem recomendação, indicação ou aconselhamento de investimento**.
 
 ---
 
-## ✨ Visão geral
+## Sumário
 
-O **Argos DataLab** permite explorar séries históricas de ativos financeiros e transformar os dados em análises visuais e estatísticas.
-
-A plataforma foi desenvolvida para apoiar:
-
-* 🔬 Pesquisadores;
-* 🎓 Estudantes;
-* 📈 Entusiastas do mercado financeiro;
-
-na investigação de:
-
-* comportamento histórico;
-* risco;
-* retorno;
-* correlação;
-* sazonalidade;
-* indicadores técnicos;
-* desempenho comparativo.
-
-### 📚 Classes de ativos
-
-Entre as classes de ativos contempladas no catálogo estão, conforme disponibilidade da fonte de dados:
-
-* 📈 **Ações**
-* ₿ **Criptomoedas**
-* 🏠 **Fundos Imobiliários (FIIs)**
-* 🏢 **REITs**
-* 🛢️ **Commodities**
-* 📊 **Outros ativos organizados no catálogo interno da aplicação**
-
-Os dados históricos são consultados via **Yahoo Finance**, utilizando o pacote **yfinance**, tratados localmente e apresentados em uma interface desenvolvida com **Streamlit** e **Plotly**.
+1. [Sobre o projeto](#sobre-o-projeto)
+2. [Por que "Argos DataLab"](#por-que-argos-datalab)
+3. [Funcionalidades](#funcionalidades)
+4. [Catálogo de ativos](#catálogo-de-ativos)
+5. [Metodologia de cálculo](#metodologia-de-cálculo)
+6. [Fonte e tratamento dos dados](#fonte-e-tratamento-dos-dados)
+7. [Arquitetura](#arquitetura)
+8. [Tecnologias](#tecnologias)
+9. [Instalação e execução](#instalação-e-execução)
+10. [Configuração](#configuração)
+11. [Modo de demonstração](#modo-de-demonstração)
+12. [Testes e qualidade](#testes-e-qualidade)
+13. [Publicação](#publicação)
+14. [Identidade visual](#identidade-visual)
+15. [Documentação complementar](#documentação-complementar)
+16. [Como contribuir](#como-contribuir)
+17. [Contexto acadêmico](#contexto-acadêmico)
+18. [Aviso legal e metodológico](#aviso-legal-e-metodológico)
+19. [Licença](#licença)
 
 ---
 
-# 🚀 Funcionalidades
+## Sobre o projeto
 
-## 🏠 Página inicial
+Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferramentas e conhecimento que nem sempre estão ao alcance de estudantes e pesquisadores. O Argos DataLab aproxima esses dois lados: cada análise vem acompanhada da fórmula usada, das premissas adotadas e de uma leitura em linguagem simples do que o resultado significa (e do que ele **não** permite concluir).
 
-A página de entrada apresenta o Argos no estilo da experiência inicial do Streamlit:
+**Público-alvo:** estudantes, pesquisadores e interessados em mercado financeiro que desejam estudar o comportamento histórico de ativos com rigor e transparência.
 
-* Nome, frase de efeito e botão **Get Started**, que abre a Análise Individual;
-* Vídeo animado e ilustrativo com os recursos do sistema (`app/assets/video/argos_recursos.mp4`);
-* Mosaico animado com os ativos do catálogo e seus logotipos;
-* Tutorial em 3 passos e cartões de primeiros passos para cada módulo;
-* Botão **Informações acadêmicas**, que abre um modal com os logotipos da UFPI e do CEAD, a identificação do trabalho, a origem do nome Argos DataLab, as tecnologias e as bases de dados.
+**Perguntas que a plataforma ajuda a responder:**
 
-Os logotipos institucionais ficam em `app/assets/institucional/` (origem em `FONTES.md`). A animação do vídeo está em `scripts/video_recursos/animacao.html`; para regravá-la, siga as instruções no topo de `scripts/gravar_video_recursos.py`.
+| Pergunta | Onde |
+| --- | --- |
+| Como um ativo se comportou ao longo do tempo? Há meses historicamente melhores ou piores? | Análise Individual |
+| Qual ativo foi mais longe no mesmo período? Eles se movem juntos? | Comparação de Ativos |
+| O que dizem as médias móveis, as Bandas de Bollinger, o RSI e o MACD? | Indicadores Técnicos |
+| Quanto o ativo oscilou e qual foi a maior queda desde um pico? | Risco e Retorno |
+| E se eu tivesse investido um valor fixo todo mês? | Simulação de Aportes |
 
-## 🎨 Identidade visual
+**Princípios do projeto:**
 
-Todo o sistema usa tema claro com profundidade (fundo levemente quente, painéis brancos com sombra suave e detalhes em vermelho), **cantos retos** e **linhas finas escuras** delimitando elementos e seções. O tema base está em `.streamlit/config.toml` e o CSS complementar, comum a todas as páginas, em `app/ui/design.py`.
-
-## 🔍 Análise individual de ativos
-
-A plataforma permite realizar análises individuais dos ativos disponíveis no catálogo.
-
-Principais funcionalidades:
-
-* Seleção hierárquica de ativos por classe e subclasse;
-* Atalhos de período para **1, 3, 5 e 10 anos**;
-* Escolha de intervalo personalizado de datas;
-* Visualização de preços e evolução histórica;
-* Gráfico de volatilidade anualizada por mês;
-* Mapa de calor de sazonalidade dos retornos;
-* Exportação dos dados processados em **CSV**.
+- **Transparência:** fórmulas, parâmetros e convenções documentados e visíveis na interface.
+- **Neutralidade:** os textos descrevem o passado; nenhum ativo é apontado como "melhor" ou "pior" para investir.
+- **Reprodutibilidade:** cálculos isolados em `core/`, cobertos por testes, e um modo de demonstração com dados congelados.
+- **Separação de responsabilidades:** interface em `app/`, regras analíticas em `core/`.
 
 ---
 
-## ⚖️ Comparação de ativos
+## Por que "Argos DataLab"
 
-Permite comparar simultaneamente diferentes ativos para análise de desempenho e risco.
+Na mitologia grega, o **Argo** foi o navio que levou Jasão e os Argonautas por mares desconhecidos em busca do **Velocino de Ouro**. Foi construído pelo armador **Argos**, com a ajuda da deusa Atena, e recebeu o nome do seu construtor.
 
-Principais funcionalidades:
+| Elemento do mito | No Argos DataLab |
+| --- | --- |
+| O navio Argo, guiado por uma proa que falava | A plataforma, que "fala" com o usuário por meio de gráficos, indicadores e análises |
+| Os Argonautas, cada um com uma habilidade | Os ativos, cada classe com seu comportamento, e quem usa o sistema |
+| O Velocino de Ouro | A decisão mais bem informada: o sistema não promete o tesouro, ajuda a ler o mapa |
+| O mar de monstros | A volatilidade, as crises e os ciclos de alta e de baixa que o sistema ajuda a medir |
 
-* Comparação simultânea de **2 a 5 ativos**;
-* Normalização da evolução histórica em **Base 100**;
-* Gráficos comparativos de desempenho;
-* Matriz de correlação;
-* Heatmap de correlação;
-* Resumo comparativo de:
-
-  * retorno;
-  * volatilidade;
-  * drawdown;
-  * índice de Sharpe.
+O **DataLab** completa a ideia: um laboratório onde os dados de mercado são explorados com método. A analogia completa está no modal **Informações acadêmicas** da página inicial.
 
 ---
 
-## 📈 Indicadores técnicos
+## Funcionalidades
 
-A plataforma disponibiliza diferentes recursos de análise técnica.
+### Página inicial
 
-### Gráficos
+- Nome, frase de efeito e botão **Get Started**, que abre a Análise Individual.
+- Vídeo animado e ilustrativo com um tour pelos recursos do sistema.
+- Mosaico animado com os 120 ativos do catálogo e seus logotipos.
+- Tutorial em três passos e atalhos de "primeiros passos" para cada módulo.
+- Botão **Informações acadêmicas**, que abre um modal com os logotipos da UFPI e do CEAD, a identificação do trabalho, a origem do nome, as tecnologias e as bases de dados.
 
-* Gráficos de fechamento;
-* Gráficos de linhas;
-* Gráficos de barras;
-* Gráficos de candles, quando aplicável.
+### Análise Individual
 
-### Indicadores
+- Seleção guiada por classe e mercado ou digitação livre do ticker, com validação de formato e de existência na fonte.
+- Atalhos de período (1, 3, 5 e 10 anos) ou intervalo personalizado; frequência diária, semanal ou mensal.
+- Visão geral (primeiro e último valor, retorno total, observações) e evolução temporal do preço.
+- Volatilidade anualizada mês a mês, com destaque para os meses de maior oscilação.
+- Mapa de calor de retornos mensais (mês × ano), média por mês do calendário, recorte por anos e **janela sazonal** (por exemplo, de setembro a outubro em cada ano).
+- Painel de disponibilidade de dados (período solicitado × disponível) e exportação em CSV.
 
-* **SMA** — Média Móvel Simples;
-* **EMA** — Média Móvel Exponencial;
-* **Bandas de Bollinger**;
-* **RSI** — Índice de Força Relativa;
-* **MACD**;
-* Acompanhamento de volume negociado.
+### Comparação de Ativos
+
+- De **2 a 5 ativos**, inclusive de classes diferentes, com evolução em **base 100**.
+- Opção de comparar apenas o **período comum** a todos os ativos.
+- Matriz de correlação dos retornos, resumo comparativo e destaques descritivos do período.
+- Tendência histórica com **retorno móvel** (3, 6 ou 12 meses) e **razão de desempenho** em relação a um ativo de referência.
+- Sazonalidade comparada entre os ativos.
+
+### Indicadores Técnicos
+
+- Gráfico de linha de fechamento ou de **candles**.
+- **SMA** e **EMA** (curta e longa), **Bandas de Bollinger**, **RSI**, **MACD**, **ATR**, volatilidade móvel e volume.
+- Parâmetros ajustáveis e um guia de leitura ("como ler este gráfico") para cada indicador.
+
+### Risco e Retorno
+
+- Retorno acumulado, retorno médio, **volatilidade anualizada**, **Índice de Sharpe** (com taxa livre de risco configurável), **drawdown máximo** e a data do fundo da maior queda.
+- Percentual de períodos positivos, melhor e pior período.
+- Curva de drawdown e distribuição dos retornos por faixas.
+
+### Simulação de Aportes
+
+- Aporte único versus aportes periódicos com o mesmo total investido.
+- Janelas históricas de horizonte fixo, com menor, mediano e maior resultado e a proporção de janelas positivas.
+- Premissas explícitas: preço de fechamento, sem dividendos, taxas, impostos ou inflação.
+
+### Sobre o Projeto
+
+- Propósito, módulos, metodologia, fontes de dados e limitações da plataforma.
+
+### Explicação assistida por IA (opcional, desligada por padrão)
+
+Recurso experimental, resultado da etapa de pesquisa 7B, que gera um texto educativo a partir das métricas exibidas em uma tela. Usa um prompt congelado e versionado, resposta em JSON validada antes de ser exibida, limites de uso e de custo por sessão e um texto fixo de reserva em caso de falha. Fica **desligado por padrão**; no modo de demonstração usa apenas respostas previamente gravadas e validadas. Detalhes em [`docs/llm_7b_implementacao.md`](docs/llm_7b_implementacao.md).
 
 ---
 
-# ⚠️ Risco e retorno
+## Catálogo de ativos
 
-O Argos DataLab disponibiliza métricas quantitativas para avaliação histórica de risco e retorno.
+O catálogo fica em [`core/assets.py`](core/assets.py) e reúne **120 ativos em 9 classes e 13 mercados**:
 
-Entre elas:
+| Mercado | Classe | Ativos | Exemplos |
+| --- | --- | ---: | --- |
+| Criptomoedas | Criptomoeda | 10 | BTC-USD, ETH-USD, SOL-USD |
+| Ações Brasil | Ação | 12 | PETR4.SA, VALE3.SA, ITUB4.SA |
+| Ações EUA | Ação | 15 | AAPL, MSFT, NVDA |
+| Ações Europa | Ação | 8 | ASML, SAP, NESN.SW |
+| Ações Ásia | Ação | 8 | TSM, SONY, 005930.KS |
+| ETFs de ações | ETF | 10 | SPY, QQQ, VTI |
+| ETFs de renda fixa | ETF | 6 | BND, AGG, TLT |
+| REITs / mercado imobiliário | REIT | 5 | VNQ, O, PLD |
+| FIIs Brasil | FII | 5 | MXRF11.SA, HGLG11.SA, KNRI11.SA |
+| Índices de mercado | Índice | 12 | ^BVSP, ^GSPC, ^IXIC |
+| Forex | Forex | 8 | USDBRL=X, EURUSD=X, USDJPY=X |
+| Commodities | Commodity | 14 | GC=F, SI=F, CL=F |
+| Treasury / taxas de juros | Renda Fixa | 7 | ^IRX, ^TNX, ^TYX |
 
-* **Retorno total**;
-* **Retorno médio**;
-* **Win rate**;
-* **Volatilidade anualizada**;
-* **Índice de Sharpe**, com taxa livre de risco configurável;
-* **Drawdown máximo**;
-* Data do pior drawdown do período;
-* Distribuição de retornos por faixas percentuais.
-
-> [!NOTE]
-> As métricas são calculadas com base em dados históricos e devem ser interpretadas como instrumentos de estudo e análise quantitativa.
+Além do catálogo, qualquer ticker disponível no Yahoo Finance pode ser digitado diretamente (por exemplo, `PETR4.SA`, `BRK-B`, `^BVSP`, `GC=F`). A lista completa, com critérios de inclusão, está em [`docs/catalogo-de-ativos.md`](docs/catalogo-de-ativos.md).
 
 ---
 
-# 🧱 Estrutura do projeto
+## Metodologia de cálculo
 
-A estrutura abaixo representa os principais diretórios esperados pela aplicação:
+Resumo das principais convenções. A descrição completa, com fórmulas, unidades e casos-limite, está em [`docs/metodologia_de_calculo.md`](docs/metodologia_de_calculo.md).
+
+| Tema | Convenção adotada |
+| --- | --- |
+| Variável principal | Preço de **fechamento** (`Close`) da frequência escolhida |
+| Retorno simples | `r_t = V_t / V_{t-1} − 1`; lacunas viram vazio e **não** são preenchidas com o valor anterior |
+| Anualização | Fator `k` = 252 (diário), 52 (semanal) e 12 (mensal), igual para todas as classes |
+| Volatilidade | `desvio-padrão(r, ddof=1) × √k` |
+| Índice de Sharpe | `média(r − r_f) / desvio-padrão(r − r_f) × √k`, com a taxa anual `r_f` convertida para a frequência |
+| Drawdown | `V_t / máximo(V_1..V_t) − 1`; o drawdown máximo é o menor valor da série |
+| Base 100 | Cada série dividida pelo seu primeiro valor válido e multiplicada por 100 |
+| Correlação | Pearson entre retornos simples coincidentes |
+| SMA / EMA | Janelas padrão 20 e 50 (SMA) e 12 e 26 (EMA) |
+| Bandas de Bollinger | `SMA_20 ± 2 × desvio-padrão amostral` |
+| RSI | Janela 14, suavização de Wilder, níveis de referência 30 e 70 |
+| MACD | `EMA_12 − EMA_26`, linha de sinal `EMA_9` |
+| Sem informação futura | Cada indicador em uma data usa apenas dados até essa data (verificado por testes) |
+
+---
+
+## Fonte e tratamento dos dados
+
+| Fonte | Conteúdo | Uso |
+| --- | --- | --- |
+| **Yahoo Finance** (via `yfinance`) | Séries diárias de abertura, máxima, mínima, fechamento e volume | Base de todas as análises; consulta sob demanda com cache de 1 hora |
+| **Catálogo interno** | Ticker, nome, classe, mercado e descrição dos ativos | Seleção guiada e organização da interface |
+| **Pacote de demonstração** | CSVs congelados com manifesto e hash SHA-256 | Apresentações e avaliação sem depender da internet |
+| **CoinCap** e **Financial Modeling Prep** | Logotipos públicos de criptomoedas, ações, ETFs, REITs e FIIs | Identificação visual dos ativos |
+
+**Tratamento:** os dados diários são baixados uma única vez; as frequências semanal e mensal são derivadas localmente por agregação (abertura, máxima, mínima, fechamento e volume somado). Datas inválidas são descartadas, e falhas temporárias da fonte não ficam guardadas em cache.
+
+**Limitações conhecidas:**
+
+- Os retornos são **de preço**: dividendos e proventos não são incorporados, o que subestima o retorno total de ações pagadoras e FIIs.
+- O mesmo fator de anualização (252) é usado para criptoativos, que negociam todos os dias, por comparabilidade entre classes.
+- Valores em moedas diferentes não são convertidos; a base 100 compara trajetórias, não preços.
+- A fonte pode apresentar atrasos, ajustes históricos, mudanças de ticker e indisponibilidade temporária.
+
+Detalhes em [`docs/fontes_e_tratamento_de_dados.md`](docs/fontes_e_tratamento_de_dados.md) e [`docs/fora_do_escopo.md`](docs/fora_do_escopo.md).
+
+---
+
+## Arquitetura
+
+A aplicação segue uma separação em camadas: as páginas em `app/` cuidam apenas da interface e delegam todos os cálculos ao pacote `core/`, que não depende do Streamlit para as regras analíticas e é integralmente testado.
+
+```text
+Barra lateral (ativo, período, frequência)
+        │  botão habilitado só com ativo e datas válidos
+        ▼
+core/data_loader        dados diários do Yahoo Finance (cache de 1 h)
+        ▼
+core/data_processor     limpeza, ordenação e agregação por frequência
+        ▼
+core/data_availability  período solicitado × disponível
+        ▼
+core/analyzer, risk_metrics, indicators, comparison, seasonality, simulation, trend
+        ▼
+st.session_state        resultado da "consulta confirmada"
+        ▼
+app/ui + core/visualizations   cartões, tabelas e gráficos Plotly
+```
+
+### Estrutura de pastas
 
 ```text
 argos/
 ├── app/
-│   ├── main.py                 # Ponto de entrada da aplicação Streamlit
-│   └── views/                  # Páginas e módulos de interface
-│
-├── core/
-│   ├── assets.py               # Catálogo central de ativos
-│   └── ...                     # Regras de negócio, tratamento e análises
-│
-├── tests/                      # Suíte de testes automatizados
-│
-├── requirements.txt            # Dependências Python
-├── README.md                   # Documentação do projeto
-└── ...
+│   ├── main.py                  # Ponto de entrada: navegação e estilo comum
+│   ├── requirements.txt         # Dependências fixadas para o Streamlit Community Cloud
+│   ├── views/                   # Páginas (home, análises, simulação, sobre)
+│   ├── ui/                      # Componentes de interface (barra lateral, cartões, tabelas, modal, estilo)
+│   └── assets/                  # Logotipos institucionais e vídeo da página inicial
+├── core/                        # Regras analíticas, dados, métricas, indicadores e textos educativos
+├── tests/                       # Suíte de testes automatizados (pytest)
+├── data/                        # Respostas salvas da explicação assistida e pacote da demonstração
+├── docs/                        # Documentação técnica, metodológica e acadêmica
+├── experiments/                 # Experimentos de pesquisa (avaliação da explicação assistida)
+├── scripts/                     # Geração dos dados de demonstração e do vídeo da página inicial
+├── .streamlit/config.toml       # Tema visual da aplicação
+├── .github/workflows/           # Rotina que mantém o app publicado ativo
+├── requirements.txt             # Dependências para desenvolvimento local
+└── pytest.ini                   # Configuração dos testes e da cobertura mínima
 ```
 
-> [!TIP]
-> A organização exata pode evoluir ao longo do projeto.
->
-> Ao adicionar novos módulos, mantenha a separação entre:
->
-> * **interface** → `app/`
-> * **regras analíticas e dados** → `core/`
-> * **testes** → `tests/`
+Descrição de cada módulo em [`docs/arquitetura.md`](docs/arquitetura.md).
 
 ---
 
-# 🛠️ Tecnologias
+## Tecnologias
 
-O projeto utiliza as seguintes tecnologias:
+| Camada | Tecnologia | Papel |
+| --- | --- | --- |
+| Linguagem | Python 3 | Lógica de dados, cálculos e interface |
+| Dados | pandas e NumPy | Séries temporais, agregação, retornos e estatísticas |
+| Interface | Streamlit | Aplicação web multipágina, estado de sessão e cache |
+| Visualização | Plotly | Gráficos interativos (linhas, candles, mapas de calor) |
+| Coleta | yfinance | Acesso às séries históricas do Yahoo Finance |
+| Qualidade | pytest e pytest-cov | Testes automatizados e medição de cobertura |
+| Publicação | GitHub, GitHub Actions e Streamlit Community Cloud | Versionamento, rotina de keep-alive e hospedagem |
+| IA (opcional) | API de modelo de linguagem | Explicação assistida dos gráficos, desligada por padrão |
 
-| Tecnologia                | Finalidade                                    |
-| ------------------------- | --------------------------------------------- |
-| **Python**                | Linguagem principal                           |
-| **Streamlit**             | Interface web e navegação da aplicação        |
-| **Plotly**                | Gráficos interativos                          |
-| **pandas**                | Tratamento e análise tabular de dados         |
-| **NumPy**                 | Operações numéricas e estatísticas            |
-| **yfinance**              | Consulta de dados históricos do Yahoo Finance |
-| **pytest**                | Testes automatizados                          |
-| **coverage / pytest-cov** | Medição de cobertura de testes                |
-
----
-
-# 📋 Pré-requisitos
-
-Antes de iniciar, tenha instalado:
-
-* **Python 3.10 ou superior**
-* **Git**
-* **PowerShell** no Windows ou terminal equivalente no macOS/Linux
-
-Verifique a versão do Python:
-
-```bash
-python --version
-```
+Versões usadas em produção (fixadas em [`app/requirements.txt`](app/requirements.txt)): Streamlit 1.63, pandas 3.0, NumPy 2.5, Plotly 7.0 e yfinance 1.7.
 
 ---
 
-# 💻 Instalação local
+## Instalação e execução
 
-## 1. Clone o repositório
+### Pré-requisitos
+
+- Python 3.10 ou superior
+- Git
+
+### Passo a passo
+
+Clone o repositório:
 
 ```bash
 git clone https://github.com/cleristoncramos/argos.git
+```
+
+Entre na pasta do projeto:
+
+```bash
 cd argos
 ```
 
-## 2. Crie o ambiente virtual
+Crie o ambiente virtual:
 
 ```bash
 python -m venv venv
 ```
 
-## 3. Ative o ambiente virtual
-
-### Windows — PowerShell
+Ative o ambiente virtual no Windows (PowerShell):
 
 ```powershell
 .\venv\Scripts\Activate.ps1
 ```
 
-Caso o PowerShell bloqueie a execução de scripts, execute uma vez no terminal atual:
+Se o PowerShell bloquear a ativação, libere scripts apenas para o terminal atual e ative de novo:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
-Depois, ative novamente:
-
-```powershell
-.\venv\Scripts\Activate.ps1
-```
-
-### macOS / Linux
+Ative o ambiente virtual no macOS ou Linux:
 
 ```bash
 source venv/bin/activate
 ```
 
-## 4. Atualize o pip e instale as dependências
+Instale as dependências:
 
 ```bash
-python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
----
-
-# ▶️ Execução local
-
-Com o ambiente virtual ativado, execute o seguinte comando na raiz do projeto:
+Inicie a aplicação, a partir da raiz do projeto:
 
 ```bash
 streamlit run app/main.py
 ```
 
-O Streamlit iniciará o servidor local e normalmente abrirá a aplicação automaticamente no navegador.
-
-Caso isso não ocorra, acesse:
-
-```text
-http://localhost:8501
-```
-
-Para encerrar o servidor:
-
-```text
-Ctrl + C
-```
-
----
-
-# 📊 Fonte de dados
-
-A aplicação utiliza dados históricos disponibilizados pelo **Yahoo Finance**, por meio do pacote **yfinance**.
-
-O catálogo de ativos é centralizado em:
-
-```text
-core/assets.py
-```
-
-Esse catálogo deve concentrar:
-
-* Código ou ticker do ativo;
-* Nome de exibição;
-* Classe e subclasse do ativo;
-* Fonte de dados;
-* Regras de validação;
-* Critérios de liquidez e qualidade, quando aplicáveis.
-
-## ⚠️ Limitações da fonte
-
-Dados de mercado podem sofrer:
-
-* atrasos;
-* indisponibilidade temporária;
-* alterações de ticker;
-* ajustes históricos;
-* limitações da fonte externa.
-
-Por isso:
-
-* valide o ticker antes de utilizá-lo em análises;
-* trate falhas de consulta de API de forma controlada;
-* não interprete dados históricos como garantia de desempenho futuro;
-* não utilize a aplicação como ferramenta de recomendação de investimento.
-
----
-
-# 🧪 Testes e cobertura
-
-A suíte automatizada deve validar, no mínimo:
-
-* Integridade do catálogo de ativos;
-* Tratamento e limpeza de dados históricos;
-* Cálculos de retorno, volatilidade, Sharpe e drawdown;
-* Regras de normalização em Base 100;
-* Transformações para indicadores técnicos;
-* Regras de visualização e componentes críticos, quando aplicável.
-
-## Executar os testes
-
-```bash
-python -m pytest
-```
-
-## Executar testes com cobertura
-
-Se o projeto estiver configurado com `pytest-cov`, execute:
-
-```bash
-python -m pytest --cov=core --cov-report=term-missing --cov-report=html
-```
-
-A cobertura é medida prioritariamente no diretório `core/`.
-
-### 🎯 Meta de cobertura
-
-O `pytest.ini` exige cobertura mínima de **80%** (`--cov-fail-under=80`): a execução local de `python -m pytest` falha se a cobertura ficar abaixo desse limite.
-
-Para a versão congelada, a meta é mais alta: **95% ou mais no diretório `core/`** (ver `docs/versao_congelada.md`). Atualmente o `core/` está com 100%.
+A aplicação abre em `http://localhost:8501`. Para encerrar o servidor, use `Ctrl + C` no terminal.
 
 > [!NOTE]
-> O projeto ainda não tem pipeline de integração contínua. O único workflow do GitHub Actions (`.github/workflows/keep-alive.yml`) apenas mantém o app publicado ativo; os testes devem ser executados localmente antes de cada commit.
-
-## Abrir o relatório HTML de cobertura
-
-### Windows
-
-```powershell
-Start-Process ".\htmlcov\index.html"
-```
-
-### macOS
-
-```bash
-open htmlcov/index.html
-```
-
-### Linux
-
-```bash
-xdg-open htmlcov/index.html
-```
+> O `requirements.txt` da raiz lista as versões mínimas para desenvolvimento local. O `app/requirements.txt` fixa as versões exatas usadas pelo Streamlit Community Cloud.
 
 ---
 
-# ✅ Boas práticas de desenvolvimento
+## Configuração
 
-Ao contribuir com o projeto:
+A aplicação funciona sem nenhuma configuração adicional. Os recursos opcionais são controlados por variáveis de ambiente ou pelo arquivo `.streamlit/secrets.toml` (que nunca vai para o repositório):
 
-1. Crie uma branch para cada funcionalidade ou correção.
-2. Mantenha regras de negócio e cálculos em `core/`, evitando lógica analítica extensa dentro das páginas Streamlit.
-3. Adicione ou atualize testes para toda alteração em cálculos, tratamento de dados ou regras críticas.
-4. Evite expor tokens, chaves de API ou dados sensíveis no código-fonte.
-5. Não faça commits de arquivos locais, ambientes virtuais, relatórios temporários ou credenciais.
-6. Execute testes e valide a interface localmente antes de abrir um pull request ou fazer merge.
-7. Documente decisões metodológicas que alterem métricas, indicadores ou regras de cálculo.
+| Variável | Valores | Efeito |
+| --- | --- | --- |
+| `ARGOS_DEMO_MODE` | `true` / `false` (padrão) | Usa apenas os dados salvos em `data/demo/`, sem acessar a internet |
+| `ARGOS_DEMO_DIR` | caminho | Pasta alternativa para o pacote de demonstração |
+| `ARGOS_LLM_MODE` | `off` (padrão), `demo`, `live` | Controla a explicação assistida: desligada, respostas salvas ou chamadas à API |
+| `OPENAI_API_KEY` | chave da API | Necessária apenas no modo `live` da explicação assistida |
+| `ARGOS_LLM_RECORD` | `1` | No modo `live`, grava as respostas aprovadas para uso posterior no modo `demo` |
 
 ---
 
-# 🌿 Fluxo de desenvolvimento e publicação
+## Modo de demonstração
 
-O fluxo recomendado é:
+Para apresentações e avaliações com usuários, o Argos pode rodar **sem internet**, a partir de um pacote de dados congelado (CSVs e manifesto com data da coleta e hash SHA-256 de cada arquivo).
 
-```text
-Branch feature
-      ↓
-Desenvolvimento local
-      ↓
-Testes com pytest
-      ↓
-Validação local de UX/UI
-      ↓
-Commit e push
-      ↓
-Pull request / merge na main
-      ↓
-Deploy automático
-```
-
-## Criar uma branch
-
-Exemplo:
+Gere o pacote uma vez, com internet:
 
 ```bash
-git checkout -b feature/nome-da-funcionalidade
+python scripts/gerar_dados_demo.py
 ```
 
-## Antes de enviar alterações
+Confira a integridade dos arquivos pelos hashes:
+
+```bash
+python scripts/gerar_dados_demo.py --verify
+```
+
+Depois, inicie a aplicação com `ARGOS_DEMO_MODE=true`. Um aviso na interface indica que os dados são salvos. Estratégia completa em [`docs/demonstracao.md`](docs/demonstracao.md) e [`docs/versao_congelada.md`](docs/versao_congelada.md).
+
+---
+
+## Testes e qualidade
+
+A suíte possui **759 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
+
+- integridade do catálogo e validação de tickers e datas;
+- tratamento de dados, lacunas de calendário e agregação por frequência;
+- retornos, volatilidade, Sharpe, drawdown, base 100 e correlação;
+- indicadores técnicos, inclusive a ausência de informação futura;
+- sazonalidade, janelas de retorno e simulação de aportes;
+- modo de demonstração, explicação assistida e componentes de interface.
 
 Execute os testes:
 
@@ -427,95 +382,118 @@ Execute os testes:
 python -m pytest
 ```
 
-Verifique o estado do repositório:
+Gere o relatório de cobertura em HTML:
 
 ```bash
-git status
+python -m pytest --cov=core --cov-report=term-missing --cov-report=html
 ```
 
-Adicione as alterações:
+O relatório fica em `htmlcov/index.html`. O `pytest.ini` exige cobertura mínima de **80%**; para a versão congelada, a meta é de **95% no `core/`**.
 
-```bash
-git add .
-```
-
-Crie o commit:
-
-```bash
-git commit -m "feat: descreve a funcionalidade"
-```
-
-Envie a branch:
-
-```bash
-git push origin feature/nome-da-funcionalidade
-```
+> [!NOTE]
+> O projeto ainda não tem pipeline de integração contínua: os testes devem ser executados localmente antes de cada commit. Registro detalhado em [`TESTES.md`](TESTES.md) e [`docs/checkpoint_qualidade.md`](docs/checkpoint_qualidade.md).
 
 ---
 
-# ☁️ Publicação
+## Publicação
 
-O deploy é realizado pelo **Streamlit Community Cloud**, por meio da integração com o GitHub.
+A aplicação é publicada no **Streamlit Community Cloud**, integrado ao GitHub:
 
-## Configuração esperada
+| Configuração | Valor |
+| --- | --- |
+| Repositório | `cleristoncramos/argos` |
+| Branch de produção | `main` |
+| Arquivo de entrada | `app/main.py` |
+| Endereço | [argos-datalab.streamlit.app](https://argos-datalab.streamlit.app) |
 
-| Configuração           | Valor                   |
-| ---------------------- | ----------------------- |
-| **Repositório**        | `cleristoncramos/argos` |
-| **Branch de produção** | `main`                  |
-| **Arquivo de entrada** | `app/main.py`           |
+Cada push na `main` dispara uma nova publicação. Alterações em `.streamlit/config.toml` podem exigir **Reboot app** no painel do Streamlit Cloud.
 
-Após o merge na branch `main`, a plataforma de deploy deve iniciar uma nova publicação automaticamente.
-
-## Checklist antes da publicação
-
-Antes de publicar, confirme:
-
-* [ ] Dependências atualizadas em `requirements.txt`;
-* [ ] Aplicação iniciando localmente com `streamlit run app/main.py`;
-* [ ] Testes passando;
-* [ ] Ausência de segredos no repositório;
-* [ ] Ausência de arquivos grandes ou temporários indevidos.
+**Rotina de keep-alive.** O Community Cloud hiberna apps sem visitas por cerca de 12 horas. O workflow [`.github/workflows/keep-alive.yml`](.github/workflows/keep-alive.yml) roda a cada 3 horas e abre o app em um navegador real ([`scripts/manter_app_ativo.py`](scripts/manter_app_ativo.py)); se o app estiver hibernando, clica no botão para acordá-lo. Em repositórios públicos, o GitHub desativa workflows agendados após 60 dias sem atividade; nesse caso, reative-o na aba **Actions**.
 
 ---
 
-# 🎓 Contexto acadêmico
+## Identidade visual
 
-O **Argos DataLab** está inserido no contexto do seguinte projeto acadêmico:
+O sistema usa tema claro com profundidade: fundo levemente quente, painéis brancos com sombra suave, detalhes em vermelho, **cantos retos** e **linhas finas escuras** delimitando elementos e seções.
 
-| Informação               | Detalhes                                                                               |
-| ------------------------ | -------------------------------------------------------------------------------------- |
-| **Programa**             | Iniciação em Desenvolvimento Tecnológico e Inovação — PIBITI UFPI 2026–2027            |
-| **Plano de Trabalho**    | Análise de Dados para Apoio à Tomada de Decisão em Investimentos no Mercado Financeiro |
-| **Pesquisador discente** | Clériston de Castro Ramos                                                              |
-| **Orientador**           | Prof. Dr. Arlino Henrique Magalhães de Araújo                                          |
-| **Instituição**          | Universidade Federal do Piauí — UFPI                                                   |
-| **Curso**                | Tecnologia em Gestão de Dados                                                          |
+| Arquivo | Conteúdo |
+| --- | --- |
+| [`.streamlit/config.toml`](.streamlit/config.toml) | Tema base (cores, bordas e raio zero) |
+| [`app/ui/design.py`](app/ui/design.py) | CSS comum a todas as páginas |
+| [`app/ui/landing.py`](app/ui/landing.py) | Blocos da página inicial e do modal acadêmico |
+| [`scripts/video_recursos/animacao.html`](scripts/video_recursos/animacao.html) | Animação do vídeo da página inicial |
+| [`scripts/gravar_video_recursos.py`](scripts/gravar_video_recursos.py) | Grava a animação em MP4 |
+
+Os logotipos institucionais ficam em `app/assets/institucional/`, com a origem registrada em `FONTES.md`.
 
 ---
 
-# ⚖️ Aviso legal e metodológico
+## Documentação complementar
 
-O **Argos DataLab** é um projeto de **pesquisa, ensino e desenvolvimento tecnológico**.
+| Documento | Conteúdo |
+| --- | --- |
+| [`docs/arquitetura.md`](docs/arquitetura.md) | Camadas, módulos, fluxo de dados e decisões de projeto |
+| [`docs/metodologia_de_calculo.md`](docs/metodologia_de_calculo.md) | Fórmulas, unidades e convenções de todas as métricas |
+| [`docs/fontes_e_tratamento_de_dados.md`](docs/fontes_e_tratamento_de_dados.md) | Coleta, preparação, frequências e limitações da fonte |
+| [`docs/catalogo-de-ativos.md`](docs/catalogo-de-ativos.md) | Catálogo completo e critérios de inclusão |
+| [`docs/fora_do_escopo.md`](docs/fora_do_escopo.md) | O que a plataforma deliberadamente não faz |
+| [`docs/demonstracao.md`](docs/demonstracao.md) | Estratégia de demonstração e modo offline |
+| [`docs/versao_congelada.md`](docs/versao_congelada.md) | Procedimento de congelamento da versão de avaliação |
+| [`docs/validacao_academica.md`](docs/validacao_academica.md) | Cenários de validação e evidências |
+| [`docs/llm_7b_implementacao.md`](docs/llm_7b_implementacao.md) | Implementação da explicação assistida |
+| [`docs/relatorio_validacao_7a.md`](docs/relatorio_validacao_7a.md) | Avaliação experimental da explicação assistida |
+| [`docs/README.md`](docs/README.md) | Índice das fases e etapas de desenvolvimento |
+| [`TESTES.md`](TESTES.md) | Registro da estratégia de testes |
 
-Dados históricos e indicadores quantitativos são instrumentos para **estudo e análise**, não previsões ou garantias.
+---
 
-### Importante
+## Como contribuir
 
-* Resultados passados não garantem resultados futuros.
-* A plataforma não oferece recomendação de compra, venda ou manutenção de ativos.
-* Nenhuma informação exibida deve substituir análise profissional, avaliação de perfil de risco ou orientação de especialista habilitado.
-* A disponibilidade e a precisão dos dados dependem de fontes externas e podem sofrer variações.
+1. Crie uma branch para cada funcionalidade ou correção.
+2. Mantenha cálculos e regras de negócio em `core/`; as páginas em `app/` devem apenas exibir resultados.
+3. Adicione ou atualize testes para toda alteração em cálculos, tratamento de dados ou regras críticas.
+4. Documente em `docs/` qualquer decisão metodológica que altere métricas ou indicadores.
+5. Execute `python -m pytest` e confira a interface localmente antes de enviar.
+6. Nunca envie chaves de API, arquivos `.env`, ambientes virtuais ou relatórios temporários.
+
+Crie uma branch para a sua alteração:
+
+```bash
+git checkout -b feature/nome-da-funcionalidade
+```
+
+As mensagens de commit seguem o padrão [Conventional Commits](https://www.conventionalcommits.org/pt-br/) em português (`feat:`, `fix:`, `docs:`, `chore:`, `style:`).
+
+---
+
+## Contexto acadêmico
+
+| Informação | Detalhes |
+| --- | --- |
+| Instituição | Universidade Federal do Piauí (UFPI) |
+| Centro | Centro de Educação Aberta e a Distância (CEAD) |
+| Curso | Curso Superior de Tecnologia em Gestão de Dados |
+| Programa | Programa Institucional de Bolsas de Iniciação em Desenvolvimento Tecnológico e Inovação (PIBITI UFPI 2026–2027) |
+| Plano de trabalho | Análise de Dados para Apoio à Tomada de Decisão em Investimentos no Mercado Financeiro |
+| Pesquisador discente | Clériston de Castro Ramos |
+| Orientador | Prof. Dr. Arlino Henrique Magalhães de Araújo |
+
+---
+
+## Aviso legal e metodológico
+
+O Argos DataLab é um projeto de **pesquisa, ensino e desenvolvimento tecnológico**. Dados históricos e indicadores quantitativos são instrumentos de estudo, não previsões ou garantias.
+
+- Resultados passados não garantem resultados futuros.
+- A plataforma não oferece recomendação de compra, venda ou manutenção de ativos.
+- Nenhuma informação exibida substitui análise profissional, avaliação de perfil de risco ou orientação de especialista habilitado.
+- A disponibilidade e a precisão dos dados dependem de fontes externas.
 
 > [!WARNING]
 > O Argos DataLab **não deve ser utilizado como ferramenta de recomendação de investimentos**.
->
-> Seu objetivo é exclusivamente **acadêmico, educacional e de desenvolvimento tecnológico**.
 
 ---
 
-# 📄 Licença
+## Licença
 
-Projeto desenvolvido para fins **educacionais e de pesquisa** no âmbito do **PIBITI UFPI**.
-
-**Todos os direitos reservados.**
+Projeto desenvolvido para fins educacionais e de pesquisa no âmbito do PIBITI UFPI. **Todos os direitos reservados.** As marcas e logotipos da UFPI e do CEAD pertencem às respectivas instituições e são usados apenas para identificar o vínculo acadêmico.
