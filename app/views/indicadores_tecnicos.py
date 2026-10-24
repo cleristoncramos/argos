@@ -21,6 +21,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.page_header import render_page_header
 from app.ui.chart_guide import render_chart_guide
 from app.ui.asset_cards import render_asset_hero_logo
 from app.ui.data_info import (
@@ -75,15 +76,9 @@ st.set_page_config(
 initialize_asset_state()
 
 
-st.title("📈 Indicadores Técnicos")
-
-st.markdown(
-    "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 2rem;'>"
-    "Explore indicadores técnicos calculados sobre dados históricos. "
-    "Médias móveis, RSI, MACD, Bandas de Bollinger, ATR e volatilidade móvel "
-    "ajudam a descrever tendência, momentum e dispersão de preços."
-    "</p>",
-    unsafe_allow_html=True
+render_page_header(
+    "views/indicadores_tecnicos.py",
+    "Indicadores técnicos calculados sobre dados históricos (médias móveis, Bandas de Bollinger, RSI, MACD, ATR e volatilidade móvel) para descrever tendência, momento e dispersão de preços.",
 )
 
 
@@ -145,7 +140,7 @@ def build_simple_line_chart(
 # Controles compartilhados
 # =====================
 asset_params = render_asset_controls(
-    title="⚙️ Parâmetros da Análise",
+    title="Parâmetros da Análise",
     button_label="📊 Gerar análise técnica",
     button_key="indicators_load_button",
 )
@@ -603,7 +598,7 @@ st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
 # =====================
 # Preço e indicadores
 # =====================
-st.header("📊 Preço e Indicadores")
+st.header("Preço e Indicadores")
 
 if chart_type == "Candles":
     candle_figure = create_candlestick_chart(
@@ -671,7 +666,7 @@ if show_bollinger:
 # Volume
 # =====================
 if show_volume and "Volume" in df.columns:
-    st.markdown("### 📦 Volume")
+    st.markdown("### Volume")
 
     volume_figure = create_volume_chart(
         df=df,
@@ -710,7 +705,7 @@ if show_volume and "Volume" in df.columns:
 # RSI
 # =====================
 if show_rsi:
-    st.header("📉 RSI")
+    st.header("RSI")
 
     rsi_figure = create_rsi_chart(
         df=df,
@@ -741,7 +736,7 @@ if show_rsi:
 # MACD
 # =====================
 if show_macd:
-    st.header("📊 MACD")
+    st.header("MACD")
 
     macd_figure = create_macd_chart(
         df=df,
@@ -769,7 +764,7 @@ if show_macd:
 # ATR
 # =====================
 if show_atr and f"ATR_{atr_window}" in df.columns:
-    st.header("📏 ATR")
+    st.header("ATR")
 
     with st.container(border=True):
         st.plotly_chart(
@@ -791,7 +786,7 @@ if show_atr and f"ATR_{atr_window}" in df.columns:
 # Volatilidade móvel
 # =====================
 if show_vol and f"VOL_{vol_window}" in df.columns:
-    st.header("🌪️ Volatilidade Móvel")
+    st.header("Volatilidade Móvel")
 
     with st.container(border=True):
         st.plotly_chart(
@@ -814,7 +809,7 @@ if show_vol and f"VOL_{vol_window}" in df.columns:
 # =====================
 # Tabela e download
 # =====================
-st.header("📋 Dados com Indicadores")
+st.header("Dados com Indicadores")
 
 display_columns = [
     column

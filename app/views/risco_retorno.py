@@ -22,6 +22,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.page_header import render_page_header
 from app.ui.charts import apply_custom_layout
 from app.ui.chart_guide import render_chart_guide
 from app.ui.asset_cards import render_asset_hero_logo
@@ -134,21 +135,16 @@ if RISK_FREE_RATE_WIDGET_KEY not in st.session_state:
         st.session_state[RISK_FREE_RATE_STATE_KEY]
     )
 
-st.title("🛡️ Risco e Retorno")
-
-st.markdown(
-    "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 2rem;'>"
-    "Analise retorno acumulado, volatilidade anualizada, drawdown máximo, "
-    "percentual de períodos positivos e índice de Sharpe."
-    "</p>",
-    unsafe_allow_html=True
+render_page_header(
+    "views/risco_retorno.py",
+    "Retorno acumulado, volatilidade anualizada, drawdown máximo, percentual de períodos positivos e Índice de Sharpe do período analisado.",
 )
 
 # =====================
 # Controles compartilhados
 # =====================
 asset_params = render_asset_controls(
-    title="⚙️ Parâmetros de Risco e Retorno",
+    title="Parâmetros de Risco e Retorno",
     button_label="📊 Analisar risco e retorno",
     button_key="risk_return_load_button",
 )
@@ -395,7 +391,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 # =====================
 # Métricas principais
 # =====================
-st.header("📊 Métricas Principais")
+st.header("Métricas Principais")
 
 # Pré-cálculo dos Melhores/Piores períodos
 best_period_val = df_risk["Simple_Return"].max()
@@ -493,7 +489,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 # =====================
 # Retorno acumulado
 # =====================
-st.header("📈 Retorno Acumulado")
+st.header("Retorno Acumulado")
 
 cumulative_return_figure = create_cumulative_return_chart(
     df=df_risk,
@@ -552,7 +548,7 @@ st.caption(
 # =====================
 # Drawdown
 # =====================
-st.header("📉 Drawdown")
+st.header("Drawdown")
 
 drawdown_figure = create_drawdown_chart(
     df=df_risk,
@@ -590,7 +586,7 @@ with st.container(border=True):
 # =====================
 # Distribuição
 # =====================
-st.header("📊 Distribuição de Retornos")
+st.header("Distribuição de Retornos")
 
 rets = df_risk["Simple_Return"].dropna() * 100
 if not rets.empty:
@@ -640,7 +636,7 @@ if not rets.empty:
 # =====================
 # Dados e download
 # =====================
-st.header("📄 Dados de Risco e Retorno")
+st.header("Dados de Risco e Retorno")
 
 display_columns = [
     "Date",

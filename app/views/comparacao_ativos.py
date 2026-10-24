@@ -16,6 +16,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.page_header import render_page_header
 from app.ui.charts import apply_custom_layout
 from app.ui.chart_guide import render_chart_guide
 from app.ui.asset_cards import render_selected_asset_cards
@@ -649,12 +650,9 @@ st.set_page_config(
 initialize_asset_state()
 initialize_comparison_state()
 
-st.title("⚖️ Comparação de Ativos")
-st.markdown(
-    "<p style='font-size:1.1rem;color:#475569;margin-bottom:2rem;'>"
-    "Compare o comportamento histórico de diferentes ativos através de métricas de retorno, "
-    "volatilidade, drawdown e correlação.</p>",
-    unsafe_allow_html=True,
+render_page_header(
+    "views/comparacao_ativos.py",
+    "Desempenho histórico de 2 a 5 ativos lado a lado: evolução em base 100, risco e retorno, correlação e tendência.",
 )
 
 
@@ -665,7 +663,7 @@ with st.sidebar:
     inject_compact_sidebar_css()
     inject_compact_dropdown_script()
 
-    st.header("⚙️ Parâmetros da Comparação")
+    st.header("Parâmetros da Comparação")
 
     # No modo demo, o catálogo mostra só os ativos dos dados salvos.
     catalog = catalog_assets(ASSETS)
@@ -1169,7 +1167,7 @@ for i, symbol in enumerate(summary_numeric["Ativo"].tolist()):
 # ==========================================================
 # Destaques (descrevem o histórico; não são recomendação)
 # ==========================================================
-st.header("📌 Destaques do Período")
+st.header("Destaques do Período")
 
 if not summary_numeric.empty:
     highlight_cols = st.columns(4)

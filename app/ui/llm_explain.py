@@ -112,7 +112,7 @@ def render_explain_section(build_context: Callable[[], Optional[dict]], key: str
         return
 
     st.divider()
-    st.subheader("🤖 Explicação assistida por IA")
+    st.subheader("Explicação assistida por IA")
     st.caption(DISCLAIMER)
 
     state_key = f"llm_result_{key}"

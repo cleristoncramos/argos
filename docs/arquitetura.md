@@ -1,6 +1,6 @@
 # Arquitetura do Sistema — Argos
 
-**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 799 passando, cobertura de `core/` em 100% (2.255 instruções)
+**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 804 passando, cobertura de `core/` em 100% (2.255 instruções)
 
 Este documento descreve como o Argos é organizado: camadas, módulos, páginas, fluxo de dados, configuração e convenções. Os cálculos estão detalhados em `docs/metodologia_de_calculo.md`; as fontes e o tratamento dos dados, em `docs/fontes_e_tratamento_de_dados.md`; o catálogo de ativos, em `docs/catalogo-de-ativos.md`; a explicação assistida, em `docs/llm_7b_implementacao.md`.
 
@@ -65,6 +65,7 @@ argos/
 │   │   ├── landing.py               # Blocos HTML da página inicial e do modal (testáveis)
 │   │   ├── llm_explain.py           # Botão e exibição da explicação assistida
 │   │   ├── metric_card.py           # Card de métrica
+│   │   ├── page_header.py           # Cabeçalho padrão das páginas de análise (sem ícones)
 │   │   ├── pages.py                 # Ordem oficial das páginas (menu, home e Get Started)
 │   │   ├── sidebar.py               # Seleção de ativo, período e frequência
 │   │   ├── state.py                 # Estado inicial da sessão
@@ -301,7 +302,7 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 ## 13. Testes e qualidade
 
-- **799 testes**, cobertura de `core/` em **100%** (2.255 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
+- **804 testes**, cobertura de `core/` em **100%** (2.255 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
 - `app/` **não** tem testes de renderização: páginas e componentes são conferidos manualmente no navegador (roteiro em `docs/roteiro_conferencia_navegador.md`). Há, porém:
   - **testes de componentes** que montam o HTML e o layout dos gráficos de `app/ui` sem o Streamlit (`test_ui_components.py`, `test_landing.py`), verificando escape de texto, conteúdo do modal, layout base dos gráficos e ausência de cantos arredondados no CSS próprio;
   - **testes estruturais** que leem o código-fonte das páginas (`test_chart_guides.py`, `test_simulation_texts.py`): todo gráfico tem roteiro de leitura, os textos novos usam linguagem neutra e o texto obrigatório da simulação está presente.

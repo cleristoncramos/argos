@@ -39,6 +39,26 @@ GLOBAL_CSS = f"""
 [data-baseweb="tab-list"] {{ border-bottom: 1px solid {LINE}; }}
 [data-testid="stMain"] hr {{ border-color: {LINE_SOFT} !important; opacity: 1; }}
 
+/* Cabeçalho das páginas de análise (app/ui/page_header.py) */
+.pg-head {{ margin: -0.6rem 0 1.6rem; padding: 0 0 18px; border-bottom: 1px solid {LINE}; }}
+.pg-kicker {{ color: {ACCENT}; font-size: .72rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; }}
+.pg-title {{ margin: 6px 0 0 !important; padding: 0 !important; font-size: 2.4rem !important; font-weight: 800 !important;
+    letter-spacing: -.03em; line-height: 1.1 !important; color: {INK}; }}
+.pg-sub {{ margin: 12px 0 0; max-width: 860px; padding-left: 12px; border-left: 3px solid {ACCENT};
+    color: #3f3f3f; font-size: 1.02rem; line-height: 1.6; }}
+
+/* Títulos de seção (st.header e ###): sóbrios, com filete superior */
+[data-testid="stMain"] [data-testid="stHeading"] h2 {{
+    margin-top: 1.6rem; padding-top: 1rem !important; border-top: 1px solid {LINE_SOFT};
+    font-size: 1.5rem; font-weight: 750; letter-spacing: -.01em; color: {INK};
+}}
+[data-testid="stMain"] [data-testid="stMarkdownContainer"] > h3 {{ font-weight: 700; letter-spacing: -.01em; color: {INK}; }}
+[data-testid="stSidebar"] [data-testid="stHeading"] h2 {{
+    font-size: 1.05rem; font-weight: 750; letter-spacing: .02em; text-transform: uppercase; color: {INK};
+    padding-bottom: .4rem !important; border-bottom: 2px solid {ACCENT};
+}}
+[data-testid="stSidebar"] [data-testid="stHeading"] {{ margin-bottom: 1rem !important; }}
+
 /* Botão principal com leve relevo */
 [data-testid="stBaseButton-primary"] {{
     background: linear-gradient(180deg, #D7193A 0%, #B50E29 100%) !important; border: 1px solid #7A0A1C !important;

@@ -27,6 +27,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.page_header import render_page_header
 from app.ui.charts import apply_custom_layout
 from app.ui.chart_guide import render_chart_guide
 from app.ui.asset_cards import render_asset_hero_logo
@@ -104,13 +105,9 @@ DAILY_ANNUALIZATION_FACTOR = 252
 initialize_asset_state()
 
 
-st.title("📊 Análise Individual")
-
-st.markdown(
-    "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 2rem;'>"
-    "Explore para entender a fundo o comportamento histórico e estatístico de um único ativo selecionado no sistema.<br>"
-    "</p>",
-    unsafe_allow_html=True
+render_page_header(
+    "views/analise_individual.py",
+    "Comportamento histórico e estatístico de um ativo: preço, retorno, volatilidade mensal e padrões sazonais.",
 )
 
 
@@ -137,7 +134,7 @@ def render_custom_metric_card(title: str, value: str) -> None:
 # Controles compartilhados
 # =====================
 asset_params = render_asset_controls(
-    title="⚙️ Configurações",
+    title="Configurações",
     button_label="🔄 Carregar Dados",
     button_key="asset_load_button",
 )
@@ -340,7 +337,7 @@ st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
 # =====================
 # Seção 1: Resumo
 # =====================
-st.header("📊 Visão Geral do Ativo")
+st.header("Visão Geral do Ativo")
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -413,7 +410,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 # =====================
 value_label = "Taxa" if currency.kind == "rate" else "Preço"
 
-st.markdown("### 📈 Evolução Temporal do Ativo")
+st.markdown("### Evolução Temporal do Ativo")
 st.markdown(
     "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
     f"Comportamento histórico de {'nível da taxa' if currency.kind == 'rate' else 'preço de fechamento'} para {symbol}."
@@ -449,7 +446,7 @@ with st.container(border=True):
 # =====================
 # Seção 3: Volatilidade por Mês
 # =====================
-st.markdown("### 🌪️ Volatilidade Anualizada por Mês")
+st.markdown("### Volatilidade Anualizada por Mês")
 st.markdown(
     "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
     "Volatilidade <b>anualizada</b>: desvio padrão dos retornos diários de cada mês, "
@@ -499,7 +496,7 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
 # =====================
 # Seção 4: Variação Percentual
 # =====================
-st.markdown(f"### 📉 Variação Percentual — {frequency}")
+st.markdown(f"### Variação Percentual — {frequency}")
 st.markdown(
     "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
     "Retorno de <b>cada período</b> em relação ao período anterior (não é a valorização "
@@ -531,7 +528,7 @@ with st.container(border=True):
 # =====================
 # Seção 5: Matriz Anual x Mensal
 # =====================
-st.markdown("### 🗓️ Padrões Sazonais")
+st.markdown("### Padrões Sazonais")
 st.markdown(
     "<p style='color: #64748b; font-size: 0.95rem; margin-top: -12px; margin-bottom: 24px;'>"
     "Cada célula mostra a variação percentual de um mês de um ano específico "
@@ -643,7 +640,7 @@ else:
             return "—"
         return f"{value:+.2f}".replace(".", ",") + " p.p."
 
-    st.markdown("#### 🔎 Recorte por anos e meses")
+    st.markdown("#### Recorte por anos e meses")
     st.caption(SEASONALITY_METHOD_TEXT)
 
     available_years = sorted(int(year) for year in df_matrix_stats.index)
@@ -887,7 +884,7 @@ else:
 # =====================
 # Seção 6: Tabela de Dados
 # =====================
-st.header("📋 Dados Processados")
+st.header("Dados Processados")
 
 df_display = df.rename(columns={"Value": "Close"}).copy()
 display_columns = ["Date", "Open", "High", "Low", "Close", "Pct_Change"]

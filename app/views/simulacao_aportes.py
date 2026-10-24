@@ -20,6 +20,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.page_header import render_page_header
 from app.ui.chart_guide import render_chart_guide
 from app.ui.llm_explain import asset_name, render_explain_section
 from app.ui.sidebar import render_asset_controls
@@ -60,15 +61,9 @@ st.set_page_config(
 initialize_asset_state()
 
 
-st.title("🧪 Simulação Histórica de Aportes")
-
-st.markdown(
-    "<p style='font-size: 1.1rem; color: #475569; margin-bottom: 1rem;'>"
-    "Veja o que teria acontecido historicamente com um valor hipotético, "
-    "aplicado de uma só vez ou em aportes periódicos. É uma ferramenta "
-    "de estudo: ela descreve o passado e não indica o que fazer."
-    "</p>",
-    unsafe_allow_html=True,
+render_page_header(
+    "views/simulacao_aportes.py",
+    "O que teria acontecido com um valor hipotético aplicado de uma só vez ou em aportes periódicos. Descreve o passado e não indica o que fazer.",
 )
 
 st.warning(SIMULATION_MANDATORY_TEXT, icon="⚠️")
@@ -215,7 +210,7 @@ def build_windows_chart(outcomes: pd.DataFrame, symbol: str) -> go.Figure:
 # Controles
 # ==========================================================
 asset_params = render_asset_controls(
-    title="⚙️ Parâmetros da Simulação",
+    title="Parâmetros da Simulação",
     button_label="🧪 Carregar histórico",
     button_key="simulation_load_button",
 )
@@ -372,7 +367,7 @@ with st.expander(
 # ==========================================================
 # 1. Resultado histórico
 # ==========================================================
-st.header("📊 O que teria ocorrido no período")
+st.header("O que teria ocorrido no período")
 
 col_lump, col_periodic = st.columns(2)
 
@@ -429,7 +424,7 @@ render_explain_section(
 # ==========================================================
 # 2. Janelas históricas
 # ==========================================================
-st.header("🗓️ Como terminaram as diferentes janelas")
+st.header("Como terminaram as diferentes janelas")
 
 st.markdown(
     "O resultado acima depende da data de início. Aqui o sistema testa "
