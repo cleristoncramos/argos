@@ -339,6 +339,7 @@ A aplicação funciona sem nenhuma configuração adicional. Os recursos opciona
 | --- | --- | --- |
 | `ARGOS_DEMO_MODE` | `true` / `false` (padrão) | Usa apenas os dados salvos em `data/demo/`, sem acessar a internet |
 | `ARGOS_DEMO_DIR` | caminho | Pasta alternativa para o pacote de demonstração |
+| `ARGOS_EDU_LAYER` | `on` (padrão) / `off` | Oculta os textos educativos para a condição experimental da avaliação com usuários; os avisos obrigatórios continuam visíveis |
 | `ARGOS_LLM_MODE` | `off` (padrão), `demo`, `live` | Controla a explicação assistida: desligada, respostas salvas ou chamadas à API |
 | `OPENAI_API_KEY` | chave da API | Necessária apenas no modo `live` da explicação assistida |
 | `ARGOS_LLM_RECORD` | `1` | No modo `live`, grava as respostas aprovadas para uso posterior no modo `demo` |
