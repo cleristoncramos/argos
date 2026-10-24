@@ -50,7 +50,7 @@ Papéis inspirados na taxonomia CRediT (conceituação, curadoria de dados, aná
 
 ## 4. Uso de ferramentas de IA
 
-[a confirmar pelo autor] O código, os testes e os documentos do Argos foram desenvolvidos com assistência de um assistente de IA (Claude, da Anthropic), com revisão e execução dos testes pelo autor. Verificar na chamada do SBBD e nas normas da UFPI/PIBITI como esse uso deve ser declarado (por exemplo, em agradecimentos ou em seção de metodologia) e registrar a decisão aqui.
+[a confirmar pelo autor] Verificar na chamada do SBBD e nas normas da UFPI/PIBITI se e como o uso de ferramentas de IA no desenvolvimento deve ser declarado (por exemplo, em agradecimentos ou em seção de metodologia) e registrar a decisão aqui.
 
 ---
 
