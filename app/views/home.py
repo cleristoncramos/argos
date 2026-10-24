@@ -160,7 +160,7 @@ stats = catalog_stats(ASSETS)
 st.markdown(
     """
 <div class="topbar">
-  <div class="brand"><span class="brand-mark">A</span>Argos DataLab</div>
+  <div class="brand"><span class="brand-mark">A</span>Argos</div>
   <div class="top-meta"><span><i class="live"></i>Online</span><span>PIBITI</span><span>UFPI · CEAD</span></div>
 </div>
 """,
@@ -175,9 +175,9 @@ col_text, col_video = st.columns([1, 1.15], gap="large", vertical_alignment="cen
 with col_text:
     st.markdown(
         f"""
-<div class="eyebrow">Laboratório de dados financeiros</div>
-<div class="hero-title">Argos <span>DataLab</span></div>
-<div class="hero-tagline">Navegue pelo mar dos mercados guiado por dados.</div>
+<div class="eyebrow">Pesquisa e educação financeira · PIBITI UFPI</div>
+<div class="hero-title">Argos</div>
+<div class="hero-tagline">Plataforma de Análise Histórica de Ativos Financeiros</div>
 <div class="hero-sub">
   Explore o histórico de ações, criptomoedas, FIIs, commodities e índices.
   Compare ativos, leia indicadores técnicos e meça risco e retorno, com
@@ -308,7 +308,7 @@ for row_start in range(0, len(FIRST_STEPS), 3):
 st.markdown(
     """
 <div class="home-footer">
-  <div><b>ARGOS DATALAB</b> · PIBITI UFPI 2026–2027 · CEAD · Tecnologia em Gestão de Dados</div>
+  <div><b>ARGOS</b> · PIBITI UFPI 2026–2027 · CEAD · Tecnologia em Gestão de Dados</div>
   <div>Dados históricos via Yahoo Finance · Uso educacional, sem recomendação de investimento</div>
 </div>
 """,

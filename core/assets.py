@@ -1,4 +1,4 @@
-"""Catálogo centralizado de ativos suportados pelo Argos DataLab.
+"""Catálogo centralizado de ativos suportados pelo Argos.
 
 Os registros deste módulo são metadados editoriais para seleção e
 organização da interface. Eles não garantem que o Yahoo Finance ofereça

@@ -1,5 +1,5 @@
 """
-Linguagem visual comum a todas as páginas do Argos DataLab.
+Linguagem visual comum a todas as páginas do Argos.
 
 Regras: tema claro com profundidade (fundo levemente quente, painéis brancos
 com sombra suave e detalhes em vermelho), nenhum canto arredondado e

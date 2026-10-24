@@ -1,6 +1,6 @@
 """
 Textos padronizados e funções de formatação neutra para a camada de
-educação financeira do Argos DataLab.
+educação financeira do Argos.
 
 Este módulo é deliberadamente livre de dependências de UI (sem Streamlit).
 Ele define O QUE dizer; o módulo app/ui/disclaimers.py define COMO exibir.

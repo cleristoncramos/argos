@@ -67,7 +67,7 @@ bloquear_tradutor_nativo()
 # 1. Configuração da Página
 # ==========================================================
 st.set_page_config(
-    page_title="Argos DataLab",
+    page_title="Argos",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",

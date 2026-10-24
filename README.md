@@ -1,6 +1,6 @@
-# Argos DataLab
+# Argos
 
-**Laboratório de dados financeiros: análise exploratória de ativos, comparação de desempenho, indicadores técnicos e métricas de risco em uma plataforma web educacional.**
+**Plataforma de Análise Histórica de Ativos Financeiros: análise exploratória de ativos, comparação de desempenho, indicadores técnicos e métricas de risco, com finalidade educacional e de pesquisa.**
 
 [![Aplicação online](https://img.shields.io/badge/app-argos--datalab.streamlit.app-C8102E)](https://argos-datalab.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
@@ -9,40 +9,42 @@
 ![Cobertura](https://img.shields.io/badge/cobertura%20do%20core-100%25-2E7D32)
 ![PIBITI UFPI](https://img.shields.io/badge/PIBITI-UFPI%202026%E2%80%932027-1F1F1F)
 
-O **Argos DataLab** reúne em uma única plataforma o histórico de **120 ativos em 13 grupos** (ações, criptomoedas, FIIs, REITs, ETFs, commodities, câmbio, índices e taxas de juros) e transforma esses dados em gráficos interativos, métricas quantitativas e textos explicativos em linguagem simples. Foi desenvolvido no **Programa Institucional de Bolsas de Iniciação em Desenvolvimento Tecnológico e Inovação (PIBITI) da Universidade Federal do Piauí**, ciclo 2026–2027.
+O **Argos** reúne em uma única plataforma o histórico de **120 ativos em 13 grupos** (ações, criptomoedas, FIIs, REITs, ETFs, commodities, câmbio, índices e taxas de juros) e transforma esses dados em gráficos interativos, métricas quantitativas e textos explicativos em linguagem simples. Foi desenvolvido no **Programa Institucional de Bolsas de Iniciação em Desenvolvimento Tecnológico e Inovação (PIBITI) da Universidade Federal do Piauí**, ciclo 2026–2027.
 
 > [!IMPORTANT]
-> O Argos DataLab tem finalidade **exclusivamente acadêmica, educacional e de desenvolvimento tecnológico**. As informações, métricas e visualizações descrevem dados históricos e **não constituem recomendação, indicação ou aconselhamento de investimento**.
+> O Argos tem finalidade **exclusivamente acadêmica, educacional e de desenvolvimento tecnológico**. As informações, métricas e visualizações descrevem dados históricos e **não constituem recomendação, indicação ou aconselhamento de investimento**.
+
+> [!NOTE]
+> **Nome provisório.** Até 23/10/2026 o sistema se chamava **Argos DataLab**. Em 24/10/2026 o nome passou a ser **Argos — Plataforma de Análise Histórica de Ativos Financeiros**, sem a analogia mitológica, enquanto a denominação definitiva é discutida com o orientador. Documentos históricos (atas, relatórios e o prompt congelado da explicação assistida) mantêm o nome original.
 
 ---
 
 ## Sumário
 
 1. [Sobre o projeto](#sobre-o-projeto)
-2. [Por que "Argos DataLab"](#por-que-argos-datalab)
-3. [Funcionalidades](#funcionalidades)
-4. [Catálogo de ativos](#catálogo-de-ativos)
-5. [Metodologia de cálculo](#metodologia-de-cálculo)
-6. [Fonte e tratamento dos dados](#fonte-e-tratamento-dos-dados)
-7. [Arquitetura](#arquitetura)
-8. [Tecnologias](#tecnologias)
-9. [Instalação e execução](#instalação-e-execução)
-10. [Configuração](#configuração)
-11. [Modo de demonstração](#modo-de-demonstração)
-12. [Testes e qualidade](#testes-e-qualidade)
-13. [Publicação](#publicação)
-14. [Identidade visual](#identidade-visual)
-15. [Documentação complementar](#documentação-complementar)
-16. [Como contribuir](#como-contribuir)
-17. [Contexto acadêmico](#contexto-acadêmico)
-18. [Aviso legal e metodológico](#aviso-legal-e-metodológico)
-19. [Licença](#licença)
+2. [Funcionalidades](#funcionalidades)
+3. [Catálogo de ativos](#catálogo-de-ativos)
+4. [Metodologia de cálculo](#metodologia-de-cálculo)
+5. [Fonte e tratamento dos dados](#fonte-e-tratamento-dos-dados)
+6. [Arquitetura](#arquitetura)
+7. [Tecnologias](#tecnologias)
+8. [Instalação e execução](#instalação-e-execução)
+9. [Configuração](#configuração)
+10. [Modo de demonstração](#modo-de-demonstração)
+11. [Testes e qualidade](#testes-e-qualidade)
+12. [Publicação](#publicação)
+13. [Identidade visual](#identidade-visual)
+14. [Documentação complementar](#documentação-complementar)
+15. [Como contribuir](#como-contribuir)
+16. [Contexto acadêmico](#contexto-acadêmico)
+17. [Aviso legal e metodológico](#aviso-legal-e-metodológico)
+18. [Licença](#licença)
 
 ---
 
 ## Sobre o projeto
 
-Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferramentas e conhecimento que nem sempre estão ao alcance de estudantes e pesquisadores. O Argos DataLab aproxima esses dois lados: cada análise vem acompanhada da fórmula usada, das premissas adotadas e de uma leitura em linguagem simples do que o resultado significa (e do que ele **não** permite concluir).
+Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferramentas e conhecimento que nem sempre estão ao alcance de estudantes e pesquisadores. O Argos aproxima esses dois lados: cada análise vem acompanhada da fórmula usada, das premissas adotadas e de uma leitura em linguagem simples do que o resultado significa (e do que ele **não** permite concluir).
 
 **Público-alvo:** estudantes, pesquisadores e interessados em mercado financeiro que desejam estudar o comportamento histórico de ativos com rigor e transparência.
 
@@ -65,21 +67,6 @@ Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferra
 
 ---
 
-## Por que "Argos DataLab"
-
-Na mitologia grega, o **Argo** foi o navio que levou Jasão e os Argonautas por mares desconhecidos em busca do **Velocino de Ouro**. Foi construído pelo armador **Argos**, com a ajuda da deusa Atena, e recebeu o nome do seu construtor.
-
-| Elemento do mito | No Argos DataLab |
-| --- | --- |
-| O navio Argo, guiado por uma proa que falava | A plataforma, que "fala" com o usuário por meio de gráficos, indicadores e análises |
-| Os Argonautas, cada um com uma habilidade | Os ativos, cada classe com seu comportamento, e quem usa o sistema |
-| O Velocino de Ouro | A decisão mais bem informada: o sistema não promete o tesouro, ajuda a ler o mapa |
-| O mar de monstros | A volatilidade, as crises e os ciclos de alta e de baixa que o sistema ajuda a medir |
-
-O **DataLab** completa a ideia: um laboratório onde os dados de mercado são explorados com método. A analogia completa está no modal **Informações acadêmicas** da página inicial.
-
----
-
 ## Funcionalidades
 
 ### Página inicial
@@ -88,7 +75,7 @@ O **DataLab** completa a ideia: um laboratório onde os dados de mercado são ex
 - Vídeo animado e ilustrativo com um tour pelos recursos do sistema.
 - Mosaico animado com os 120 ativos do catálogo e seus logotipos.
 - Tutorial em três passos e atalhos de "primeiros passos" para cada módulo.
-- Botão **Informações acadêmicas**, que abre um modal com os logotipos da UFPI e do CEAD, a identificação do trabalho, a origem do nome, as tecnologias e as bases de dados.
+- Botão **Informações acadêmicas**, que abre um modal com os logotipos da UFPI e do CEAD, a identificação do trabalho, as tecnologias e as bases de dados.
 
 ### Análise Individual
 
@@ -484,7 +471,7 @@ As mensagens de commit seguem o padrão [Conventional Commits](https://www.conve
 
 ## Aviso legal e metodológico
 
-O Argos DataLab é um projeto de **pesquisa, ensino e desenvolvimento tecnológico**. Dados históricos e indicadores quantitativos são instrumentos de estudo, não previsões ou garantias.
+O Argos é um projeto de **pesquisa, ensino e desenvolvimento tecnológico**. Dados históricos e indicadores quantitativos são instrumentos de estudo, não previsões ou garantias.
 
 - Resultados passados não garantem resultados futuros.
 - A plataforma não oferece recomendação de compra, venda ou manutenção de ativos.
@@ -492,7 +479,7 @@ O Argos DataLab é um projeto de **pesquisa, ensino e desenvolvimento tecnológi
 - A disponibilidade e a precisão dos dados dependem de fontes externas.
 
 > [!WARNING]
-> O Argos DataLab **não deve ser utilizado como ferramenta de recomendação de investimentos**.
+> O Argos **não deve ser utilizado como ferramenta de recomendação de investimentos**.
 
 ---
 

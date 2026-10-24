@@ -51,7 +51,7 @@ Decisões já tomadas (registro):
 
 ## Prioridade baixa
 
-- [ ] Revisar nome "Argos DataLab" (Fase 10)
+- [~] Revisar nome "Argos DataLab" (Fase 10) — 24/10/2026: adotado provisoriamente "Argos — Plataforma de Análise Histórica de Ativos Financeiros" (sem "DataLab" e sem mitologia); lista de nomes descritivos institucionais a apresentar ao orientador
 - [ ] Refinar identidade visual (Fase 10)
 - [ ] Adicionar mais classes e ativos (Fase 10)
 - [ ] Criar modelos avançados de previsão (fora do escopo atual)
@@ -254,7 +254,7 @@ Ordem de dependência: 2 define 4; 1 e 3 alimentam 4; 7 reúne tudo. Com a pergu
 
 ### C. Dúvidas para o orientador (registrar a resposta ao lado)
 
-- [ ] Nome "Argos DataLab" e identidade visual: manter ou revisar?
+- [~] Nome "Argos DataLab" e identidade visual: manter ou revisar? — nome provisório "Argos" em uso; decisão definitiva na próxima reunião com o orientador
 - [ ] As 13 classes/grupos bastam para a primeira versão?
 - [ ] O critério de seleção do catálogo está adequado como amostra inicial?
 - [ ] Incluir frequências semestral e anual? São estatisticamente adequadas?

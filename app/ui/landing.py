@@ -19,9 +19,9 @@ INSTITUTIONAL_DIR = ASSETS_DIR / "institucional"
 FEATURES_VIDEO = ASSETS_DIR / "video" / "argos_recursos.mp4"
 
 ACADEMIC_INFO = {
-    "system": "Argos DataLab",
-    "system_summary": "Plataforma web para análise exploratória de ativos financeiros, "
-                      "comparação de desempenho, indicadores técnicos e métricas de risco",
+    "system": "Argos",
+    "system_summary": "Plataforma de Análise Histórica de Ativos Financeiros: análise exploratória, comparação de desempenho, "
+                      "indicadores técnicos e métricas de risco",
     "institution": "Universidade Federal do Piauí (UFPI)",
     "center": "Centro de Educação Aberta e a Distância (CEAD)",
     "course": "Curso Superior de Tecnologia em Gestão de Dados",
@@ -69,45 +69,6 @@ DATA_SOURCES = [
      "Logotipos públicos de criptomoedas, ações, ETFs, REITs e FIIs.",
      "Identificação visual dos ativos; desligados no modo de demonstração."),
 ]
-
-# (elemento do mito, o que representa no sistema, no mito, no Argos DataLab)
-NAME_STORY = [
-    ("O navio Argo", "A infraestrutura web (o DataLab)",
-     "Não era um navio comum. Foi construído pelo armador Argos, que lhe deu o nome, com a "
-     "ajuda de Atena, deusa da sabedoria e da estratégia, para a expedição de Jasão. Na proa "
-     "havia uma peça de madeira mágica que falava e guiava os tripulantes.",
-     "O DataLab é o Argo moderno: uma ferramenta tecnológica, robusta e guiada por dados para "
-     "navegar pelo mar volátil do mercado financeiro. O sistema processa dados complexos e "
-     "\"fala\" com o usuário por meio de gráficos, indicadores e análises."),
-    ("Os Argonautas", "Os ativos e os analistas",
-     "Jasão não partiu sozinho. Reuniu uma tripulação em que cada membro tinha uma habilidade "
-     "única: Hércules tinha a força, Orfeu a música que acalmava tempestades, Linceu a visão "
-     "que enxergava através de paredes e os irmãos Boréadas a capacidade de voar.",
-     "Cada tipo de ativo tem sua própria habilidade: as criptomoedas são as exploradoras velozes "
-     "e imprevisíveis; ações e FIIs, a fundação sólida e estruturada da tripulação; as "
-     "commodities, os recursos brutos e essenciais para a jornada. Quem usa a plataforma se "
-     "torna um argonauta e usa as ferramentas do sistema para enfrentar o mercado."),
-    ("O Velocino de Ouro", "A decisão mais bem informada",
-     "O tesouro supremo trazia prosperidade, riqueza e legitimidade a quem o possuísse, mas "
-     "estava protegido por perigos mortais, como o dragão que nunca dormia.",
-     "No Argos DataLab, o Velocino é a decisão mais bem informada. O dragão que nunca dorme é o "
-     "próprio mercado, que funciona sem parar (sobretudo o de criptomoedas) e apresenta riscos "
-     "constantes. O sistema não promete o tesouro, ajuda a ler o mapa."),
-    ("O mar de monstros", "A volatilidade do mercado",
-     "No caminho, os Argonautas enfrentaram as Ciâneas, rochas que se chocavam, sereias e "
-     "tempestades. Precisavam da proa falante e das habilidades certas para sobreviver.",
-     "As rochas e os monstros são as crises financeiras, a inflação, as viradas de juros e os "
-     "ciclos de alta e de baixa (bull e bear markets). A plataforma ajuda a monitorar esses "
-     "perigos, com volatilidade, drawdown e Índice de Sharpe, e dá direção analítica para que "
-     "o usuário não naufrague."),
-]
-
-NAME_SUMMARY = (
-    "Assim como o navio Argo cruzou mares perigosos em busca do Velocino de Ouro, guiado por "
-    "técnica e sabedoria, o Argos DataLab reúne dados de múltiplos mercados (ações, "
-    "criptomoedas, FIIs e commodities) em uma única plataforma, para que os argonautas de hoje "
-    "naveguem pela volatilidade e tomem decisões mais bem informadas."
-)
 
 _LOGO_TYPES = ((".svg", "image/svg+xml"), (".png", "image/png"))
 
@@ -289,29 +250,6 @@ def build_identification_html() -> str:
     return _table(rows)
 
 
-def build_name_story_html() -> str:
-    """Seção 'Por que Argos DataLab': o mito do navio Argo lido no sistema."""
-    intro = (
-        '<p class="ac-lead">Na mitologia grega, a jornada de Jasão não era apenas uma aventura: era '
-        "a busca pelo bem mais valioso do mundo, o <b>Velocino de Ouro</b>, por meio da técnica, "
-        "da inteligência coletiva e da navegação em mares desconhecidos. O navio da expedição, o "
-        "<b>Argo</b>, foi construído pelo armador <b>Argos</b>, com a ajuda da deusa Atena, e "
-        "recebeu o nome do seu construtor. O <b>DataLab</b> completa a ideia: um laboratório onde "
-        "os dados de mercado são explorados com método.</p>"
-    )
-    rows = "".join(
-        f'<tr><td><b>{escape(element)}</b><span class="ac-maps">= {escape(meaning)}</span></td>'
-        f"<td>{escape(myth)}</td><td>{escape(reading)}</td></tr>"
-        for element, meaning, myth, reading in NAME_STORY
-    )
-    table = (
-        '<table class="ac-table ac-story"><thead><tr><th>Elemento</th><th>No mito</th>'
-        f"<th>No Argos DataLab</th></tr></thead><tbody>{rows}</tbody></table>"
-    )
-    summary = f'<div class="ac-summary-box"><span>Resumo do conceito</span>{escape(NAME_SUMMARY)}</div>'
-    return intro + table + summary
-
-
 def build_technologies_html() -> str:
     """Tabela com as tecnologias utilizadas, por camada."""
     return _table(TECHNOLOGIES, header=("Camada", "Tecnologia", "Papel no projeto"),
@@ -359,16 +297,8 @@ div[role="dialog"] { background: #F7F6F2 !important; border: 1px solid #2a2a2a !
 .ac-table tbody th { width: 170px; background: #f6f4ef; font-weight: 700; border-right: 1px solid #2a2a2a; }
 .ac-table thead th { background: linear-gradient(180deg, #2b2b31, #1b1b1f); color: #fff; font-size: .72rem; letter-spacing: .1em;
   text-transform: uppercase; font-weight: 700; border-bottom: 2px solid #c8102e; }
-.ac-grid td:first-child, .ac-story td:first-child { font-weight: 700; background: #f6f4ef; border-right: 1px solid #d6d3cc; }
+.ac-grid td:first-child { font-weight: 700; background: #f6f4ef; border-right: 1px solid #d6d3cc; }
 .ac-grid td:first-child { white-space: nowrap; }
-.ac-story td:first-child { width: 170px; }
-.ac-story td:nth-child(2) { color: #5f5f5f; width: 34%; }
-.ac-maps { display: block; margin-top: 4px; font-weight: 600; font-size: .78rem; color: #c8102e; }
-.ac-lead { font-size: .95rem; line-height: 1.65; color: #111; margin: 8px 0 12px; padding: 10px 14px; border-left: 3px solid #c8102e;
-  background: linear-gradient(90deg, rgba(200,16,46,.06), transparent 70%); }
-.ac-summary-box { margin-top: 10px; padding: 14px 16px; border: 1px solid #2a2a2a; color: #111; font-size: .92rem; line-height: 1.6;
-  background: linear-gradient(135deg, #fff 0%, #fbeeee 100%); box-shadow: 0 8px 20px rgba(17,17,17,.07); }
-.ac-summary-box span { display: block; margin-bottom: 4px; color: #c8102e; font-size: .7rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
 .ac-stats { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid #2a2a2a; margin: 8px 0 10px;
   background: #fff; box-shadow: 0 8px 20px rgba(17,17,17,.07); }
 .ac-stats div { padding: 10px 14px; border-right: 1px solid #d6d3cc; }

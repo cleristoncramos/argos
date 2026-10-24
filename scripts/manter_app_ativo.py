@@ -27,7 +27,7 @@ from playwright.sync_api import sync_playwright
 
 APP_URL = "https://argos-datalab.streamlit.app"
 WAKE_BUTTON = "Yes, get this app back up"
-APP_MARKER = "Argos DataLab"
+APP_MARKER = "Argos"
 LOAD_TIMEOUT_MS = 60_000
 WAKE_TIMEOUT_MS = 300_000  # um app hibernado pode levar alguns minutos para subir
 

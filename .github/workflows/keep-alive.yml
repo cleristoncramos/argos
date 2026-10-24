@@ -12,7 +12,7 @@ on:
 
 jobs:
   visit:
-    name: Visitar o Argos DataLab
+    name: Visitar o Argos
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

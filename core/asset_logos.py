@@ -1,6 +1,6 @@
 """
 Mapeamento de ativos para URLs de logo/ícone, usado para exibir
-imagens visuais dos ativos selecionados nas páginas do Argos DataLab.
+imagens visuais dos ativos selecionados nas páginas do Argos.
 
 Fontes usadas (gratuitas, sem necessidade de chave de API):
 - Criptomoedas: CoinCap (ícones estáticos por símbolo).

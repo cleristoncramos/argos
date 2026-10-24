@@ -10,7 +10,7 @@ if PROJECT_ROOT not in sys.path:
 import streamlit as st
 
 st.set_page_config(
-    page_title="Argos DataLab",
+    page_title="Argos",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -119,7 +119,7 @@ st.markdown(
     <h1 style="font-weight: 800; padding-bottom: 0.2rem; margin-top: -1rem;">
         📊 Sobre o Projeto 
         <span style="color: #ef4444; font-weight: 850; letter-spacing: -1px;">
-            Argos DataLab
+            Argos
         </span>
     </h1>
     """,
@@ -128,8 +128,8 @@ st.markdown(
 
 st.markdown(
     "<p style='font-size:1.2rem; opacity: 0.8; margin-bottom:1.5rem;'>"
-    "Plataforma inteligente de análise exploratória, modelagem de risco e "
-    "comparação de ativos para o mercado financeiro.</p>",
+    "Plataforma de Análise Histórica de Ativos Financeiros: análise exploratória, risco e retorno e "
+    "comparação de ativos, com finalidade educacional e de pesquisa.</p>",
     unsafe_allow_html=True,
 )
 
@@ -153,10 +153,9 @@ st.markdown("<br>", unsafe_allow_html=True)
 # ==========================================================
 st.header("🎯 Propósito da Plataforma")
 st.markdown(
-    "O **Argos DataLab** foi desenvolvido para democratizar o acesso a ferramentas "
-    "analíticas avançadas, permitindo que pesquisadores, estudantes e entusiastas do mercado "
-    "examinem o comportamento histórico de ações, criptomoedas, FIIs, REITs e commodities com "
-    "rigor estatístico e visualizações profissionais."
+    "O **Argos** foi desenvolvido para apoiar pesquisadores e estudantes no exame do "
+    "comportamento histórico de ações, criptomoedas, FIIs, REITs e commodities, com "
+    "métodos estatísticos documentados e visualizações interativas."
 )
 
 col1, col2, col3 = st.columns(3)
@@ -269,7 +268,7 @@ with st.container(border=True):
             "title": "Visão Geral e Sazonalidade do Ativo",
             "bullets": """
             - **Seleção Guiada:** Escolha do ativo por grupo (Ações Brasil, Criptomoedas, ETFs de renda fixa...) ou digitação do ticker.
-            - **Período Inteligente:** Atalhos rápidos de 1, 3, 5, 10 anos ou definição de datas personalizadas.
+            - **Período:** Atalhos de 1, 3, 5 e 10 anos ou definição de datas personalizadas.
             - **Gráfico de Volatilidade por Mês:** Acompanhamento do desvio padrão anualizado mês a mês.
             - **Mapa de Calor Sazonal:** Visualização do comportamento estatístico e sazonais de retornos.
             - **Exportação:** Download completo dos dados tratados e limpos em formato CSV.
@@ -406,4 +405,4 @@ with col_aviso:
     )
 
 st.markdown("---")
-st.caption("Argos DataLab · Desenvolvido com Python, Streamlit e Plotly.")
+st.caption("Argos · Plataforma de Análise Histórica de Ativos Financeiros · Desenvolvido com Python, Streamlit e Plotly.")

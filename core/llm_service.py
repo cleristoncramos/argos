@@ -42,7 +42,7 @@ STATUS_OFF = "desativada"
 
 FALLBACK_TEXT = (
     "A explicação automática não está disponível agora. Os gráficos, as métricas e os textos "
-    "educativos do Argos DataLab continuam disponíveis. Os dados são históricos e a análise "
+    "educativos do Argos continuam disponíveis. Os dados são históricos e a análise "
     "tem finalidade educativa; não é recomendação de investimento."
 )
 

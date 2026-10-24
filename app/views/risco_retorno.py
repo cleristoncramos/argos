@@ -119,7 +119,7 @@ def sync_risk_free_rate() -> None:
 # Configuração da página
 # ==========================================================
 st.set_page_config(
-    page_title="Argos DataLab",
+    page_title="Argos",
     page_icon="🛡️",
     layout="wide",
 )

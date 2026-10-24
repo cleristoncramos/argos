@@ -1,6 +1,6 @@
 """
 Componentes de UI reutilizáveis para avisos, disclaimers e explicações
-educativas padronizadas, usados em todas as páginas do Argos DataLab.
+educativas padronizadas, usados em todas as páginas do Argos.
 """
 
 import streamlit as st

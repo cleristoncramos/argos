@@ -1,8 +1,8 @@
-# Arquitetura do Sistema — Argos DataLab
+# Arquitetura do Sistema — Argos
 
 **Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 785 passando, cobertura de `core/` em 100% (2.252 instruções)
 
-Este documento descreve como o Argos DataLab é organizado: camadas, módulos, páginas, fluxo de dados, configuração e convenções. Os cálculos estão detalhados em `docs/metodologia_de_calculo.md`; as fontes e o tratamento dos dados, em `docs/fontes_e_tratamento_de_dados.md`; o catálogo de ativos, em `docs/catalogo-de-ativos.md`; a explicação assistida, em `docs/llm_7b_implementacao.md`.
+Este documento descreve como o Argos é organizado: camadas, módulos, páginas, fluxo de dados, configuração e convenções. Os cálculos estão detalhados em `docs/metodologia_de_calculo.md`; as fontes e o tratamento dos dados, em `docs/fontes_e_tratamento_de_dados.md`; o catálogo de ativos, em `docs/catalogo-de-ativos.md`; a explicação assistida, em `docs/llm_7b_implementacao.md`.
 
 ---
 
@@ -174,7 +174,7 @@ A navegação é registrada em `app/main.py` com `st.navigation`. A página inic
 | Risco e Retorno | `views/risco_retorno.py` | Retorno, volatilidade, Sharpe, drawdown (com data), melhor e pior período, distribuição de retornos |
 | Simulação de Aportes | `views/simulacao_aportes.py` | Simulação histórica com valor hipotético; não é recomendação nem previsão |
 
-**Modal acadêmico.** O botão "Informações acadêmicas" da página inicial abre `app/ui/academic_dialog.py` (`st.dialog`), com quatro abas: identificação do trabalho, origem do nome Argos DataLab, tecnologias e bases de dados. O conteúdo é montado por funções puras de `app/ui/landing.py`, cobertas por `tests/test_landing.py`.
+**Modal acadêmico.** O botão "Informações acadêmicas" da página inicial abre `app/ui/academic_dialog.py` (`st.dialog`), com três abas: identificação do trabalho, tecnologias e bases de dados. O conteúdo é montado por funções puras de `app/ui/landing.py`, cobertas por `tests/test_landing.py`.
 
 Todas as páginas de análise exibem, ao final, o aviso de catálogo e o rodapé legal, e cada gráfico tem o botão "Como ler este gráfico" (`app/ui/chart_guide.py`). Nas telas que têm explicação assistida, o botão correspondente só aparece quando o recurso está ligado.
 
@@ -294,6 +294,7 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 | Modo de demonstração com dados congelados e hash | Apresentações e avaliação com usuários reproduzíveis e sem depender da internet |
 | Recarga dos módulos do projeto quando o código muda (`app/reload_guard.py`) | O Streamlit só recarrega módulos da pasta do script (`app/`); depois de um push, o Streamlit Cloud continuava com a versão antiga de `core/` na memória, o que causou um `TypeError` em 24/10/2026 |
 | Cache dos downloads em `app/ui/data_cache.py`, por injeção no `core` | Mantém `core/` livre do Streamlit e testável sem o runtime; falhas da fonte continuam fora do cache |
+| Nome provisório "Argos — Plataforma de Análise Histórica de Ativos Financeiros" (24/10/2026), sem a analogia mitológica | O orientador considerou que "Argos DataLab" e a mitologia não transmitiam a seriedade de um sistema acadêmico; a denominação definitiva será decidida com ele. O prompt congelado v0.6 mantém o nome antigo, pois é texto interno validado na 7A e alterá-lo exigiria nova versão e nova validação |
 | Modal acadêmico em vez de página no menu | Mantém o menu focado nas análises; as informações acadêmicas ficam a um clique da página inicial |
 
 ## 13. Testes e qualidade

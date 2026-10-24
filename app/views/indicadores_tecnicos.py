@@ -66,7 +66,7 @@ from core.visualizations import (
 
 
 st.set_page_config(
-    page_title="Argos DataLab",
+    page_title="Argos",
     page_icon="📈",
     layout="wide",
 )

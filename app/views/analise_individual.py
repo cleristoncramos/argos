@@ -81,7 +81,7 @@ from core.returns_utils import simple_returns
 
 
 st.set_page_config(
-    page_title="Argos DataLab",
+    page_title="Argos",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",

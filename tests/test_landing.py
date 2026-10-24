@@ -7,13 +7,11 @@ from app.ui.landing import (
     DATA_SOURCES,
     FEATURES_VIDEO,
     MOSAIC_TEMPLATE,
-    NAME_STORY,
     TECHNOLOGIES,
     build_academic_header_html,
     build_data_sources_html,
     build_identification_html,
     build_mosaic_html,
-    build_name_story_html,
     build_technologies_html,
     catalog_stats,
     institutional_logo_uri,
@@ -74,16 +72,18 @@ def test_identification_has_author_advisor_and_program():
         assert ACADEMIC_INFO[key] in html
 
 
-def test_name_story_explains_argos_and_the_argo():
-    html = build_name_story_html()
-    assert "Argo" in html and "Velocino de Ouro" in html and "DataLab" in html
-    assert html.count("<tr>") == len(NAME_STORY) + 1  # cabeçalho + uma linha por elemento
-    # O Argo foi construído pelo armador Argos, com a ajuda de Atena, para a expedição de Jasão.
-    assert "construído pelo armador <b>Argos</b>" in html
-    # Coerência com os avisos: o Velocino é a decisão informada, não a promessa de lucro.
-    assert "decisão mais bem informada" in html
-    assert "não promete o tesouro, ajuda a ler o mapa" in html
-    assert "Resumo do conceito" in html
+def test_modal_is_sober_without_mythology():
+    """Opção A do nome (24/10/2026): sem 'DataLab' e sem a analogia mitológica."""
+    html = "".join((
+        build_academic_header_html({}),
+        build_identification_html(),
+        build_technologies_html(),
+        build_data_sources_html(catalog_stats(ASSETS)),
+    ))
+    assert ACADEMIC_INFO["system"] == "Argos"
+    assert "Plataforma de Análise Histórica de Ativos Financeiros" in html
+    for term in ("DataLab", "Velocino", "Argonauta", "mitologia", "Jasão"):
+        assert term not in html
 
 
 def test_technologies_and_data_sources_tables():

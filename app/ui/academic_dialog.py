@@ -7,7 +7,6 @@ from app.ui.landing import (
     build_academic_header_html,
     build_data_sources_html,
     build_identification_html,
-    build_name_story_html,
     build_technologies_html,
     catalog_stats,
     institutional_logo_uri,
@@ -21,13 +20,11 @@ def show_academic_dialog() -> None:
     logos = {"UFPI": institutional_logo_uri("UFPI"), "CEAD": institutional_logo_uri("CEAD")}
     st.markdown(build_academic_header_html(logos), unsafe_allow_html=True)
 
-    identification, name, technologies, data = st.tabs(
-        ["Identificação", "Por que Argos DataLab", "Tecnologias", "Bases de dados"]
+    identification, technologies, data = st.tabs(
+        ["Identificação", "Tecnologias", "Bases de dados"]
     )
     with identification:
         st.markdown(build_identification_html(), unsafe_allow_html=True)
-    with name:
-        st.markdown(build_name_story_html(), unsafe_allow_html=True)
     with technologies:
         st.markdown(build_technologies_html(), unsafe_allow_html=True)
     with data:
