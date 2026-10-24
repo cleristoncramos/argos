@@ -1,6 +1,6 @@
 # Arquitetura do Sistema — Argos DataLab
 
-**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 781 passando, cobertura de `core/` em 100% (2.246 instruções)
+**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 785 passando, cobertura de `core/` em 100% (2.252 instruções)
 
 Este documento descreve como o Argos DataLab é organizado: camadas, módulos, páginas, fluxo de dados, configuração e convenções. Os cálculos estão detalhados em `docs/metodologia_de_calculo.md`; as fontes e o tratamento dos dados, em `docs/fontes_e_tratamento_de_dados.md`; o catálogo de ativos, em `docs/catalogo-de-ativos.md`; a explicação assistida, em `docs/llm_7b_implementacao.md`.
 
@@ -102,7 +102,7 @@ argos/
 
 | Módulo | Responsabilidade |
 | --- | --- |
-| `assets.py` | Catálogo de 120 ativos (13 grupos, 9 classes; ver "Termos do catálogo" na seção 11), busca, filtros, hierarquia e validação automática do catálogo |
+| `assets.py` | Catálogo de 120 ativos (13 grupos, 9 classes; ver "Termos do catálogo" na seção 11), busca, filtros encadeados (`filter_assets`, `facet_values`), hierarquia e validação automática do catálogo |
 | `asset_logos.py` | Resolução do logo do ativo (CoinCap e Financial Modeling Prep), com fallback para emoji; sem logos remotos no modo de demonstração |
 | `catalog_notice.py` | Aviso de que o catálogo é uma amostra inicial |
 | `config.py` | Frequências suportadas (diária, semanal, mensal, semestral e anual) e fatores de anualização |
@@ -169,7 +169,7 @@ A navegação é registrada em `app/main.py` com `st.navigation`. A página inic
 | Início | `views/home.py` | Apresentação, botão **Get Started**, vídeo dos recursos, mosaico animado do catálogo, tutorial em 3 passos, atalhos para os módulos e botão do modal acadêmico; sem barra lateral |
 | Sobre o Projeto | `views/sobre_projeto.py` | Propósito, módulos, contexto acadêmico e aviso legal |
 | Análise Individual | `views/analise_individual.py` | Série temporal, estatísticas, volatilidade mensal anualizada, variação por período, padrões sazonais e recorte por anos, meses e janela de retorno |
-| Comparação de Ativos | `views/comparacao_ativos.py` | De 2 a 5 ativos: base 100, período comum opcional, risco, correlação, sazonalidade comparada, tendência histórica (retorno móvel e razão) e dados tabulares |
+| Comparação de Ativos | `views/comparacao_ativos.py` | De 2 a 5 ativos, escolhidos por grupo com filtros opcionais de subclasse e mercado: base 100, período comum opcional, risco, correlação, sazonalidade comparada, tendência histórica (retorno móvel e razão) e dados tabulares |
 | Indicadores Técnicos | `views/indicadores_tecnicos.py` | Linha ou candles, médias móveis, Bollinger, RSI, MACD, ATR, volatilidade móvel e volume |
 | Risco e Retorno | `views/risco_retorno.py` | Retorno, volatilidade, Sharpe, drawdown (com data), melhor e pior período, distribuição de retornos |
 | Simulação de Aportes | `views/simulacao_aportes.py` | Simulação histórica com valor hipotético; não é recomendação nem previsão |
@@ -298,7 +298,7 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 ## 13. Testes e qualidade
 
-- **781 testes**, cobertura de `core/` em **100%** (2.246 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
+- **785 testes**, cobertura de `core/` em **100%** (2.252 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
 - `app/` **não** tem testes de renderização: páginas e componentes são conferidos manualmente no navegador (roteiro em `docs/roteiro_conferencia_navegador.md`). Há, porém:
   - **testes de componentes** que montam o HTML e o layout dos gráficos de `app/ui` sem o Streamlit (`test_ui_components.py`, `test_landing.py`), verificando escape de texto, conteúdo do modal, layout base dos gráficos e ausência de cantos arredondados no CSS próprio;
   - **testes estruturais** que leem o código-fonte das páginas (`test_chart_guides.py`, `test_simulation_texts.py`): todo gráfico tem roteiro de leitura, os textos novos usam linguagem neutra e o texto obrigatório da simulação está presente.
@@ -308,4 +308,3 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 ### Limitações conhecidas da arquitetura
 
-- O seletor da Comparação oferece Classe → Ativos; os campos `subcategory` e `market` do catálogo existem, mas ainda não são filtros.

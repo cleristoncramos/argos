@@ -46,7 +46,7 @@ from app.ui.tables import (
 )
 
 from core.analyzer import calculate_returns
-from core.assets import ASSETS
+from core.assets import ASSETS, facet_values, filter_assets
 from core.demo_mode import catalog_assets, is_demo_mode
 from core.comparison import (
     build_base_100_table,
@@ -133,6 +133,8 @@ COMPARISON_END_DATE_WIDGET_KEY = "comparison_end_date_widget"
 COMPARISON_FREQUENCY_WIDGET_KEY = "comparison_frequency_widget"
 COMPARISON_RISK_FREE_RATE_WIDGET_KEY = "comparison_risk_free_rate_pct_widget"
 COMPARISON_GROUP_WIDGET_KEY = "comparison_group_widget"
+COMPARISON_SUBCLASS_WIDGET_KEY = "comparison_subclass_widget"
+COMPARISON_MARKET_WIDGET_KEY = "comparison_market_widget"
 COMPARISON_SYMBOLS_WIDGET_KEY = "comparison_symbols_widget"
 COMPARISON_CUSTOM_INPUT_KEY = "comparison_custom_ticker_input"
 COMPARISON_COMMON_PERIOD_KEY = "comparison_common_period_widget"
@@ -212,6 +214,9 @@ def sync_comparison_group() -> None:
     st.session_state[COMPARISON_GROUP_STATE_KEY] = st.session_state[
         COMPARISON_GROUP_WIDGET_KEY
     ]
+    # Subclasse e mercado pertencem ao grupo anterior: recomeçam em "Todas/Todos".
+    st.session_state[COMPARISON_SUBCLASS_WIDGET_KEY] = None
+    st.session_state[COMPARISON_MARKET_WIDGET_KEY] = None
 
 def sync_comparison_symbols() -> None:
     """Sincroniza os tickers selecionados no callback, antes do rerun."""
@@ -682,6 +687,58 @@ with st.sidebar:
 
     selected_group = st.session_state[COMPARISON_GROUP_STATE_KEY]
 
+    # Filtros opcionais dentro do grupo (campos subcategory e market do
+    # catálogo). As opções de cada um dependem do outro, então nenhuma
+    # combinação deixa a lista de ativos vazia. Só aparecem quando há mais
+    # de uma opção.
+    selected_subclass = st.session_state.get(COMPARISON_SUBCLASS_WIDGET_KEY)
+    selected_market = st.session_state.get(COMPARISON_MARKET_WIDGET_KEY)
+
+    if selected_group is not None:
+        group_filters = {
+            "group": selected_group,
+            "subcategory": selected_subclass,
+            "market": selected_market,
+        }
+        subclasses = facet_values(catalog, "subcategory", **group_filters)
+        markets = facet_values(catalog, "market", **group_filters)
+
+        if len(subclasses) > 1 or selected_subclass is not None:
+            st.selectbox(
+                "Subclasse (opcional):",
+                options=[None, *subclasses],
+                format_func=lambda value: "Todas" if value is None else value,
+                placeholder="Todas",
+                key=COMPARISON_SUBCLASS_WIDGET_KEY,
+                help="Restringe a lista de ativos a um setor ou tipo dentro do grupo.",
+            )
+        if len(markets) > 1 or selected_market is not None:
+            st.selectbox(
+                "Mercado (opcional):",
+                options=[None, *markets],
+                format_func=lambda value: "Todos" if value is None else value,
+                placeholder="Todos",
+                key=COMPARISON_MARKET_WIDGET_KEY,
+                help="Restringe a lista de ativos a um país ou bolsa dentro do grupo.",
+            )
+
+        selected_subclass = st.session_state.get(COMPARISON_SUBCLASS_WIDGET_KEY)
+        selected_market = st.session_state.get(COMPARISON_MARKET_WIDGET_KEY)
+
+    filtered_tickers = (
+        {
+            asset["ticker"]
+            for asset in filter_assets(
+                catalog,
+                group=selected_group,
+                subcategory=selected_subclass,
+                market=selected_market,
+            )
+        }
+        if selected_group is not None
+        else set()
+    )
+
     previously_selected_tickers = st.session_state.get(
         COMPARISON_SYMBOLS_WIDGET_KEY,
         [],
@@ -690,11 +747,10 @@ with st.sidebar:
     valid_options_tickers = []
     seen = set()
 
-    # O ticker entra nas opções se for do grupo selecionado OU se já estiver
-    # selecionado (permite comparar grupos diferentes e tickers digitados).
+    # O ticker entra nas opções se atender ao grupo e aos filtros OU se já
+    # estiver selecionado (permite comparar grupos diferentes e tickers digitados).
     for asset in catalog:
-        asset_group = asset.get("group", asset.get("class", "Outros"))
-        is_in_group = (asset_group == selected_group)
+        is_in_group = asset["ticker"] in filtered_tickers
         is_selected = (asset["ticker"] in previously_selected_tickers)
 
         if (is_in_group or is_selected) and asset["ticker"] not in seen:
@@ -713,7 +769,7 @@ with st.sidebar:
         format_func=format_multiselect_option,
         disabled=(selected_group is None and not previously_selected_tickers),
         placeholder="Selecione um ativo",
-        help="Selecione um grupo acima para habilitar." if selected_group is None else "Digite para buscar por nome ou código no grupo selecionado.",
+        help="Selecione um grupo acima para habilitar." if selected_group is None else "Digite para buscar por nome ou código no grupo e nos filtros selecionados.",
         key=COMPARISON_SYMBOLS_WIDGET_KEY,
         on_change=sync_comparison_symbols,
     )

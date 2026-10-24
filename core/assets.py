@@ -287,6 +287,38 @@ def get_assets(
     ]
 
 
+def filter_assets(
+    assets: Iterable[Mapping[str, Any]],
+    **filters: str | None,
+) -> list[Mapping[str, Any]]:
+    """
+    Filtra uma lista de ativos pelos campos informados (ex.: group,
+    subcategory, market). Filtros com valor None são ignorados.
+    """
+    active = {key: value for key, value in filters.items() if value is not None}
+    return [
+        asset
+        for asset in assets
+        if all(asset.get(key) == value for key, value in active.items())
+    ]
+
+
+def facet_values(
+    assets: Iterable[Mapping[str, Any]],
+    field: str,
+    **filters: str | None,
+) -> list[str]:
+    """
+    Valores distintos de `field` (em ordem alfabética) entre os ativos que
+    atendem aos demais filtros. Serve para montar filtros encadeados sem
+    combinações vazias: as opções de um filtro dependem dos outros.
+    """
+    filters.pop(field, None)
+    return sorted(
+        {str(asset[field]) for asset in filter_assets(assets, **filters) if asset.get(field)}
+    )
+
+
 def get_tickers(assets: Iterable[Mapping[str, Any]] | None = None) -> list[str]:
     """Extrai tickers para uso em yf.download() ou yf.Tickers()."""
     source = ASSETS if assets is None else assets

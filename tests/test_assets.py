@@ -195,3 +195,45 @@ def test_get_hierarchy_returns_copies():
     ][0]["name"] = "Nome alterado"
 
     assert get_asset("BTC-USD")["name"] == "Bitcoin"
+
+# ---------- filtros encadeados da Comparação (grupo, subclasse, mercado) ----------
+
+def test_filter_assets_ignores_empty_filters():
+    from core.assets import ASSETS, filter_assets
+
+    assert len(filter_assets(ASSETS, group=None, market=None)) == len(ASSETS)
+    tickers = [a["ticker"] for a in filter_assets(ASSETS, group="commodities", subcategory="Metal precioso")]
+    assert tickers == ["GC=F", "SI=F", "PL=F"]
+
+
+def test_facet_values_depend_on_the_other_filters():
+    from core.assets import ASSETS, facet_values
+
+    markets = facet_values(ASSETS, "market", group="commodities")
+    assert markets == ["EUA/CBOT", "EUA/COMEX", "EUA/ICE", "EUA/NYMEX", "Global/ICE"]
+    # Com o mercado escolhido, só sobram subclasses existentes nesse mercado
+    assert facet_values(ASSETS, "subcategory", group="commodities", market="EUA/COMEX") == [
+        "Metal industrial",
+        "Metal precioso",
+    ]
+    # O filtro do próprio campo é ignorado (a lista não encolhe para um item)
+    assert facet_values(ASSETS, "market", group="commodities", market="EUA/COMEX") == markets
+
+
+def test_every_facet_combination_has_assets():
+    from core.assets import ASSETS, ASSET_GROUPS, facet_values, filter_assets
+
+    for group in (g["key"] for g in ASSET_GROUPS):
+        for subclass in facet_values(ASSETS, "subcategory", group=group):
+            for market in facet_values(ASSETS, "market", group=group, subcategory=subclass):
+                assert filter_assets(ASSETS, group=group, subcategory=subclass, market=market)
+
+
+def test_single_market_groups_hide_the_market_filter():
+    from core.assets import ASSETS, facet_values
+
+    # Grupos com um só mercado não exibem o filtro (a página só mostra com 2+ opções)
+    for group in ("crypto", "br_stocks", "us_stocks", "fixed_income_etfs", "reits", "brazil_fiis", "forex", "treasury"):
+        assert len(facet_values(ASSETS, "market", group=group)) == 1
+    for group in ("europe_stocks", "asia_stocks", "equity_etfs", "indexes", "commodities"):
+        assert len(facet_values(ASSETS, "market", group=group)) > 1
