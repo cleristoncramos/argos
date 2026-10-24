@@ -44,6 +44,12 @@ GLOBAL_CSS = f"""
     background: linear-gradient(180deg, #D7193A 0%, #B50E29 100%) !important; border: 1px solid #7A0A1C !important;
     box-shadow: 0 6px 16px rgba(200, 16, 46, .25) !important;
 }}
+/* Texto sempre branco no botão vermelho, inclusive desabilitado (antes de escolher o ativo) */
+[data-testid="stBaseButton-primary"], [data-testid="stBaseButton-primary"] p {{ color: #FFFFFF !important; }}
+[data-testid="stBaseButton-primary"]:disabled {{
+    background: linear-gradient(180deg, #E58A99 0%, #D9707F 100%) !important; border-color: #B8798A !important;
+    box-shadow: none !important; cursor: not-allowed;
+}}
 [data-testid="stBaseButton-secondary"] {{ background: {PAPER} !important; box-shadow: 0 2px 6px rgba(17, 17, 17, .06) !important; }}
 </style>
 """
