@@ -332,13 +332,12 @@ A cobertura é medida prioritariamente no diretório `core/`.
 
 ### 🎯 Meta de cobertura
 
-A meta mínima configurada no projeto é de:
+O `pytest.ini` exige cobertura mínima de **80%** (`--cov-fail-under=80`): a execução local de `python -m pytest` falha se a cobertura ficar abaixo desse limite.
 
-```text
-80%
-```
+Para a versão congelada, a meta é mais alta: **95% ou mais no diretório `core/`** (ver `docs/versao_congelada.md`). Atualmente o `core/` está com 100%.
 
-O pipeline de integração contínua deve falhar caso a cobertura fique abaixo desse limite.
+> [!NOTE]
+> O projeto ainda não tem pipeline de integração contínua. O único workflow do GitHub Actions (`.github/workflows/keep-alive.yml`) apenas mantém o app publicado ativo; os testes devem ser executados localmente antes de cada commit.
 
 ## Abrir o relatório HTML de cobertura
 

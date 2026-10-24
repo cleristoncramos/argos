@@ -226,7 +226,7 @@ Correções da revisão de 07/10 (`risk_metrics.py`, `analyzer.py`, `visualizati
 - [~] Capturar `ValueError` de valores ≤ 0 nas páginas de risco e de comparação (ex.: petróleo WTI negativo em abril de 2020) com mensagem clara — feito; conferir com `CL=F`
 - [ ] Conferir no navegador as 5 páginas alteradas em 07/10 (Análise Individual, Risco e Retorno, Indicadores Técnicos, Comparação, Simulação de Aportes) e os 4 downloads de CSV
 - [ ] Decidir se volatilidade e retorno médio sem dados passam a retornar `NaN` em vez de `0.0` (exige ajustar testes e exibição)
-- [ ] Confirmar com `Select-String` se `sync_asset_widget_state` e `persist_asset_widget_state` são usadas; remover se não forem
+- [x] Confirmar com `Select-String` se `sync_asset_widget_state` e `persist_asset_widget_state` são usadas; remover se não forem — nenhum uso encontrado; removidas de `app/ui/state.py`
 - [ ] Decidir sobre o símbolo padrão (`BTC-USD` no estado × placeholder vazio na seleção)
 - [ ] Tema: fundos claros fixos em `core/visualizations.py` num app de tema escuro; `COLORS` duplicado em `app/ui/colors.py`
 
