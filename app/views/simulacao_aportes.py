@@ -25,7 +25,7 @@ from app.ui.llm_explain import asset_name, render_explain_section
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
 from core.currency import currency_info
-from core.data_loader import download_active_data
+from app.ui.data_cache import download_active_data
 from core.llm_builders import simulation_context
 from core.data_processor import (
     aggregate_by_frequency,

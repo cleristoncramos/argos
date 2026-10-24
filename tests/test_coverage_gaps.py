@@ -61,7 +61,7 @@ def test_validate_catalog_rejects_missing_fields(monkeypatch):
 
 
 # ----------------------------------------------------------------------
-# data_loader._download_active_data_cached
+# data_loader.fetch_history
 # ----------------------------------------------------------------------
 
 OHLCV = ["Open", "High", "Low", "Close", "Volume"]
@@ -69,11 +69,8 @@ OHLCV = ["Open", "High", "Low", "Close", "Volume"]
 
 @pytest.fixture(autouse=True)
 def _no_sleep_and_fresh_cache(monkeypatch):
-    """Evita esperas dos retries e isola o cache entre testes."""
+    """Evita esperas dos retries."""
     monkeypatch.setattr(data_loader.time, "sleep", lambda *_: None)
-    clear = getattr(data_loader._download_active_data_cached, "clear", None)
-    if callable(clear):
-        clear()
     yield
 
 
@@ -96,7 +93,7 @@ def test_download_flattens_multiindex_columns(monkeypatch):
     frame = pd.DataFrame(np.ones((3, 5)), index=index, columns=columns)
     monkeypatch.setattr(data_loader.yf, "Ticker", _fake_ticker(frame))
 
-    result = data_loader._download_active_data_cached(
+    result = data_loader.fetch_history(
         "MULTIIDX", "2024-01-01", "2024-02-01", "1d"
     )
 
@@ -114,7 +111,7 @@ def test_download_accepts_datetime_index_name(monkeypatch):
     frame = pd.DataFrame(np.ones((3, 5)), index=index, columns=OHLCV)
     monkeypatch.setattr(data_loader.yf, "Ticker", _fake_ticker(frame))
 
-    result = data_loader._download_active_data_cached(
+    result = data_loader.fetch_history(
         "INTRADAY", "2024-01-01", "2024-02-01", "1h"
     )
 
@@ -126,7 +123,7 @@ def test_download_accepts_datetime_index_name(monkeypatch):
 
 def test_download_without_attempts_raises_data_unavailable():
     with pytest.raises(data_loader.DataUnavailable):
-        data_loader._download_active_data_cached(
+        data_loader.fetch_history(
             "NOATTEMPTS", "2024-01-01", "2024-02-01", "1d", 0
         )
 

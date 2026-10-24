@@ -50,7 +50,7 @@ from core.analyzer import calculate_returns
 from core.assets import ASSETS
 from core.config import ANNUALIZATION_FACTORS
 from core.data_availability import assess_availability
-from core.data_loader import download_active_data
+from app.ui.data_cache import download_active_data
 from core.data_processor import (
     aggregate_by_frequency,
     prepare_dataframe,

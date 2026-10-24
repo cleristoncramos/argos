@@ -43,7 +43,7 @@ from core.assets import ASSETS
 from core.config import ANNUALIZATION_FACTORS, LONG_FREQUENCIES
 from core.currency import currency_info
 from core.data_availability import assess_availability
-from core.data_loader import download_active_data
+from app.ui.data_cache import download_active_data
 from core.data_processor import aggregate_by_frequency, prepare_dataframe
 from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.formatters import format_number_br

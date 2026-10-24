@@ -33,13 +33,6 @@ _TMP = []
 def _no_sleep_and_fresh_cache(monkeypatch):
     """Isola o cache e as variáveis de ambiente entre os testes."""
     monkeypatch.setattr(data_loader.time, "sleep", lambda *_: None)
-    for func in (
-        data_loader._download_active_data_cached,
-        data_loader._load_demo_data_cached,
-    ):
-        clear = getattr(func, "clear", None)
-        if callable(clear):
-            clear()
     demo_mode._hash_ok.cache_clear()
     asset_logos.get_asset_logo_url.cache_clear()
     saved = {k: os.environ.pop(k, None) for k in (demo_mode.ENV_VAR, demo_mode.ENV_DIR_VAR)}

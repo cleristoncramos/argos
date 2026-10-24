@@ -5,7 +5,7 @@
 [![Aplicação online](https://img.shields.io/badge/app-argos--datalab.streamlit.app-C8102E)](https://argos-datalab.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.63-FF4B4B?logo=streamlit&logoColor=white)
-![Testes](https://img.shields.io/badge/testes-773%20aprovados-2E7D32)
+![Testes](https://img.shields.io/badge/testes-777%20aprovados-2E7D32)
 ![Cobertura](https://img.shields.io/badge/cobertura%20do%20core-100%25-2E7D32)
 ![PIBITI UFPI](https://img.shields.io/badge/PIBITI-UFPI%202026%E2%80%932027-1F1F1F)
 
@@ -205,13 +205,13 @@ Detalhes em [`docs/fontes_e_tratamento_de_dados.md`](docs/fontes_e_tratamento_de
 
 ## Arquitetura
 
-A aplicação segue uma separação em camadas: as páginas em `app/` cuidam apenas da interface e delegam todos os cálculos ao pacote `core/`, que não depende do Streamlit para as regras analíticas e é integralmente testado.
+A aplicação segue uma separação em camadas: as páginas em `app/` cuidam apenas da interface e delegam todos os cálculos ao pacote `core/`, que não depende do Streamlit e é integralmente testado.
 
 ```text
 Barra lateral (ativo, período, frequência)
         │  botão habilitado só com ativo e datas válidos
         ▼
-core/data_loader        dados diários do Yahoo Finance (cache de 1 h)
+app/ui/data_cache       cache de 1 h sobre core/data_loader (dados diários do Yahoo Finance)
         ▼
 core/data_processor     limpeza, ordenação e agregação por frequência
         ▼
@@ -368,7 +368,7 @@ Depois, inicie a aplicação com `ARGOS_DEMO_MODE=true`. Um aviso na interface i
 
 ## Testes e qualidade
 
-A suíte possui **773 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
+A suíte possui **777 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
 
 - integridade do catálogo e validação de tickers e datas;
 - tratamento de dados, lacunas de calendário e agregação por frequência;

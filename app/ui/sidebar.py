@@ -5,7 +5,7 @@ import streamlit.components.v1 as components
 
 from core.assets import ASSETS
 from core.config import config
-from core.data_loader import download_active_data
+from app.ui.data_cache import download_active_data
 from core.demo_mode import catalog_assets, is_demo_mode
 from core.date_validation import validate_date_range
 from core.periods import (
@@ -206,7 +206,7 @@ def inject_compact_dropdown_script() -> None:
 def _fetch_recent(ticker: str):
     """
     Baixa ~15 dias do ticker só para verificar se ele existe e tem dados.
-    Sem cache próprio: o data_loader já faz cache dos downloads.
+    Sem cache próprio: app/ui/data_cache já faz cache dos downloads.
     """
     end = date.today()
     start = end - timedelta(days=15)

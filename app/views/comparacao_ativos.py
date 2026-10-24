@@ -68,7 +68,7 @@ from core.comparison_checks import (
 )
 from core.config import ANNUALIZATION_FACTORS, config
 from core.currency import currency_info
-from core.data_loader import download_active_data
+from app.ui.data_cache import download_active_data
 from core.data_processor import (
     aggregate_by_frequency,
     prepare_dataframe,

@@ -1,10 +1,17 @@
-from typing import Optional
+"""
+Coleta dos dados históricos (Yahoo Finance ou pacote da demonstração).
+
+Módulo puro: não depende do Streamlit. O cache dos downloads fica na camada
+de interface (`app/ui/data_cache.py`), que passa as versões cacheadas de
+`fetch_history` e `load_demo_frame` para `download_active_data`.
+"""
+
+from typing import Callable, Optional
 import logging
 import time
 from datetime import datetime, timedelta
 
 import pandas as pd
-import streamlit as st
 import yfinance as yf
 
 from core.demo_mode import (
@@ -21,10 +28,11 @@ class DataUnavailable(Exception):
     """
     Falha ao obter dados da fonte.
 
-    É levantada dentro da função cacheada para que o st.cache_data NÃO
-    armazene o resultado de falhas temporárias (ex.: instabilidade do
-    Yahoo Finance), que de outra forma ficariam em cache por 1 hora e
-    fariam um ticker válido parecer inexistente.
+    É levantada por `fetch_history` (e não convertida em None ali) para que
+    a versão cacheada na interface NÃO armazene o resultado de falhas
+    temporárias (ex.: instabilidade do Yahoo Finance), que de outra forma
+    ficariam em cache por 1 hora e fariam um ticker válido parecer
+    inexistente.
     """
 
 
@@ -33,10 +41,16 @@ def download_active_data(
     start_date: str,
     end_date: str,
     interval: str = "1d",
+    *,
+    fetch: Optional[Callable[..., pd.DataFrame]] = None,
+    load_demo: Optional[Callable[..., pd.DataFrame]] = None,
 ) -> Optional[pd.DataFrame]:
     """
     Normaliza os parâmetros públicos, ajusta a data final e delega o
-    download à função cacheada. Devolve None em caso de falha.
+    download. Devolve None em caso de falha.
+
+    `fetch` (padrão: `fetch_history`) e `load_demo` (padrão:
+    `load_demo_frame`) permitem que a interface injete versões cacheadas.
     """
     normalized_symbol = str(symbol).strip().upper()
     normalized_start_date = str(start_date).strip()
@@ -60,10 +74,11 @@ def download_active_data(
             normalized_start_date,
             normalized_end_date,
             normalized_interval,
+            load_demo or load_demo_frame,
         )
 
     try:
-        return _download_active_data_cached(
+        return (fetch or fetch_history)(
             symbol=normalized_symbol,
             start_date=normalized_start_date,
             end_date=normalized_end_date,
@@ -78,43 +93,18 @@ def _download_demo_data(
     start_date: str,
     end_date: str,
     interval: str,
+    load_demo: Callable[..., pd.DataFrame],
 ) -> Optional[pd.DataFrame]:
     """Lê o ativo dos dados salvos; None se não estiver no pacote da demo."""
     try:
-        return _load_demo_data_cached(
-            symbol,
-            start_date,
-            end_date,
-            interval,
-            str(demo_dir()),
-        )
+        # A pasta entra como argumento para fazer parte da chave do cache.
+        return load_demo(symbol, start_date, end_date, interval, str(demo_dir()))
     except DemoDataError as exc:
         logger.warning("Modo de demonstração: %s", exc)
         return None
 
 
-@st.cache_data(
-    ttl=3600,
-    max_entries=16,
-    show_spinner=False,
-)
-def _load_demo_data_cached(
-    symbol: str,
-    start_date: str,
-    end_date: str,
-    interval: str,
-    directory: str,
-) -> pd.DataFrame:
-    """Versão cacheada da leitura local (a pasta entra na chave do cache)."""
-    return load_demo_frame(symbol, start_date, end_date, interval, directory)
-
-
-@st.cache_data(
-    ttl=3600,
-    max_entries=64,
-    show_spinner=False,
-)
-def _download_active_data_cached(
+def fetch_history(
     symbol: str,
     start_date: str,
     end_date: str,

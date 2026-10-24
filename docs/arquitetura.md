@@ -1,6 +1,6 @@
 # Arquitetura do Sistema — Argos DataLab
 
-**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 773 passando, cobertura de `core/` em 100% (2.251 instruções)
+**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 777 passando, cobertura de `core/` em 100% (2.246 instruções)
 
 Este documento descreve como o Argos DataLab é organizado: camadas, módulos, páginas, fluxo de dados, configuração e convenções. Os cálculos estão detalhados em `docs/metodologia_de_calculo.md`; as fontes e o tratamento dos dados, em `docs/fontes_e_tratamento_de_dados.md`; o catálogo de ativos, em `docs/catalogo-de-ativos.md`; a explicação assistida, em `docs/llm_7b_implementacao.md`.
 
@@ -53,6 +53,7 @@ argos/
 │   │   ├── charts.py                # Layout base dos gráficos Plotly das páginas de análise
 │   │   ├── colors.py                # Cores e ícones de retorno positivo/negativo
 │   │   ├── comparison_info.py       # Avisos de comparabilidade
+│   │   ├── data_cache.py            # Cache dos downloads (st.cache_data sobre core/data_loader)
 │   │   ├── data_info.py             # Fonte, disponibilidade e aviso de catálogo
 │   │   ├── demo_banner.py           # Aviso de versão congelada (modo de demonstração)
 │   │   ├── design.py                # CSS comum a todas as páginas (identidade visual)
@@ -92,7 +93,7 @@ argos/
 - **Regra:** `core/` nunca importa de `app/`. Cálculos não ficam nas páginas; quando uma página precisa de um cálculo novo, ele é criado em `core/` e testado.
 - **Módulos puros.** Os módulos da explicação assistida, do modo de demonstração e da camada educativa em `core/` não importam o Streamlit nem acessam a rede por conta própria; a chamada à API passa por uma função de transporte injetável, substituída por um cliente simulado nos testes.
 
-Exceção conhecida: `core/data_loader.py` importa `streamlit` apenas para usar `st.cache_data` no download (ver seção 13).
+**Nenhum módulo de `core/` importa o Streamlit** (verificado por `tests/test_data_cache.py`). O cache dos downloads fica na camada de interface: `app/ui/data_cache.py` aplica `st.cache_data` às funções puras `core.data_loader.fetch_history` e `core.demo_mode.load_demo_frame` e as injeta em `core.data_loader.download_active_data`. As páginas chamam a versão de `app/ui/data_cache.py`.
 
 ## 5. Módulos de `core/`
 
@@ -107,7 +108,7 @@ Exceção conhecida: `core/data_loader.py` importa `streamlit` apenas para usar 
 | `periods.py` | Atalhos de período (1, 3, 5 e 10 anos, personalizado) e cálculo da data inicial |
 | `date_validation.py` | Validação do intervalo de datas do período personalizado |
 | `ticker_input.py` | Normalização e validação do ticker digitado livremente |
-| `data_loader.py` | Download no Yahoo Finance, repetições, cache e checagem básica de qualidade; desvia para os dados salvos no modo de demonstração |
+| `data_loader.py` | Download no Yahoo Finance com repetições (`fetch_history`), normalização dos parâmetros e checagem básica de qualidade; desvia para os dados salvos no modo de demonstração. Puro: recebe por parâmetro as versões cacheadas da interface |
 | `demo_mode.py` | Modo de demonstração: leitura dos CSVs salvos, manifesto com hash SHA-256 e reamostragem por frequência |
 | `data_processor.py` | Preparação dos dados, agregação por frequência e seleção da variável principal |
 | `data_availability.py` | Período solicitado × período disponível, número de observações e avisos |
@@ -184,7 +185,8 @@ Exemplo (página de Risco e Retorno); as demais páginas de análise seguem o me
 sidebar.render_asset_controls()      escolha de ativo, período, frequência
         │  (botão habilitado só com ativo válido e datas válidas)
         ▼
-data_loader.download_active_data()   dados diários do Yahoo Finance (cache de 1 h)
+data_cache.download_active_data()    app/ui: cache de 1 h sobre core/data_loader
+        │                             dados diários do Yahoo Finance
         │                             ou CSVs salvos, no modo de demonstração
         ▼
 data_processor.prepare_dataframe()   OHLCV ordenado, datas válidas
@@ -280,11 +282,12 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 | Texto fixo por gráfico em `core/chart_guides.py` | Garante explicação sem depender de modelo de linguagem; serve de conteúdo de reserva |
 | Explicação assistida em módulos puros de `core/`, desligada por padrão | Testável sem rede; a versão pública não chama o modelo, e o modo `demo` usa respostas validadas |
 | Modo de demonstração com dados congelados e hash | Apresentações e avaliação com usuários reproduzíveis e sem depender da internet |
+| Cache dos downloads em `app/ui/data_cache.py`, por injeção no `core` | Mantém `core/` livre do Streamlit e testável sem o runtime; falhas da fonte continuam fora do cache |
 | Modal acadêmico em vez de página no menu | Mantém o menu focado nas análises; as informações acadêmicas ficam a um clique da página inicial |
 
 ## 13. Testes e qualidade
 
-- **773 testes**, cobertura de `core/` em **100%** (2.251 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
+- **777 testes**, cobertura de `core/` em **100%** (2.246 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
 - `app/` **não** tem testes de renderização: páginas e componentes são conferidos manualmente no navegador (roteiro em `docs/roteiro_conferencia_navegador.md`). Há, porém:
   - **testes de componentes** que montam o HTML e o layout dos gráficos de `app/ui` sem o Streamlit (`test_ui_components.py`, `test_landing.py`), verificando escape de texto, conteúdo do modal, layout base dos gráficos e ausência de cantos arredondados no CSS próprio;
   - **testes estruturais** que leem o código-fonte das páginas (`test_chart_guides.py`, `test_simulation_texts.py`): todo gráfico tem roteiro de leitura, os textos novos usam linguagem neutra e o texto obrigatório da simulação está presente.
@@ -294,6 +297,5 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 ### Limitações conhecidas da arquitetura
 
-- `core/data_loader.py` depende de `streamlit` (cache). Para isolar totalmente `core/`, o cache poderia ser movido para a camada `app/`.
 - A terminologia "grupos" (código) × "classes" (interface) ainda não está padronizada.
 - O seletor da Comparação oferece Classe → Ativos; os campos `subcategory` e `market` do catálogo existem, mas ainda não são filtros.
