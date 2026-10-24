@@ -8,6 +8,8 @@ def test_annualization_factors_have_expected_frequencies():
     assert ANNUALIZATION_FACTORS["Diário"] == 252
     assert ANNUALIZATION_FACTORS["Semanal"] == 52
     assert ANNUALIZATION_FACTORS["Mensal"] == 12
+    assert ANNUALIZATION_FACTORS["Semestral"] == 2
+    assert ANNUALIZATION_FACTORS["Anual"] == 1
 
 
 def test_config_has_frequencies():
@@ -32,4 +34,6 @@ def test_every_frequency_has_annualization_factor():
 def test_annualization_factors_follow_convention():
     from core.config import ANNUALIZATION_FACTORS
 
-    assert ANNUALIZATION_FACTORS == {"Diário": 252, "Semanal": 52, "Mensal": 12}
+    assert ANNUALIZATION_FACTORS == {
+        "Diário": 252, "Semanal": 52, "Mensal": 12, "Semestral": 2, "Anual": 1,
+    }

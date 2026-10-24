@@ -1,6 +1,6 @@
 # Arquitetura do Sistema — Argos DataLab
 
-**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 757 passando, cobertura de `core/` em 100% (2.234 instruções)
+**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 773 passando, cobertura de `core/` em 100% (2.251 instruções)
 
 Este documento descreve como o Argos DataLab é organizado: camadas, módulos, páginas, fluxo de dados, configuração e convenções. Os cálculos estão detalhados em `docs/metodologia_de_calculo.md`; as fontes e o tratamento dos dados, em `docs/fontes_e_tratamento_de_dados.md`; o catálogo de ativos, em `docs/catalogo-de-ativos.md`; a explicação assistida, em `docs/llm_7b_implementacao.md`.
 
@@ -50,6 +50,7 @@ argos/
 │   │   ├── academic_dialog.py       # Modal "Informações acadêmicas"
 │   │   ├── asset_cards.py           # Cards e logos dos ativos (com fallback)
 │   │   ├── chart_guide.py           # Botão "Como ler este gráfico"
+│   │   ├── charts.py                # Layout base dos gráficos Plotly das páginas de análise
 │   │   ├── colors.py                # Cores e ícones de retorno positivo/negativo
 │   │   ├── comparison_info.py       # Avisos de comparabilidade
 │   │   ├── data_info.py             # Fonte, disponibilidade e aviso de catálogo
@@ -102,7 +103,7 @@ Exceção conhecida: `core/data_loader.py` importa `streamlit` apenas para usar 
 | `assets.py` | Catálogo de 120 ativos (13 grupos, 9 classes), busca, filtros, hierarquia e validação automática do catálogo |
 | `asset_logos.py` | Resolução do logo do ativo (CoinCap e Financial Modeling Prep), com fallback para emoji; sem logos remotos no modo de demonstração |
 | `catalog_notice.py` | Aviso de que o catálogo é uma amostra inicial |
-| `config.py` | Frequências suportadas e fatores de anualização |
+| `config.py` | Frequências suportadas (diária, semanal, mensal, semestral e anual) e fatores de anualização |
 | `periods.py` | Atalhos de período (1, 3, 5 e 10 anos, personalizado) e cálculo da data inicial |
 | `date_validation.py` | Validação do intervalo de datas do período personalizado |
 | `ticker_input.py` | Normalização e validação do ticker digitado livremente |
@@ -199,7 +200,7 @@ st.session_state                      resultado guardado ("consulta confirmada")
 tabelas, cards e gráficos             renderização (app/ui + core/visualizations)
 ```
 
-Os dados diários são baixados uma única vez; semanal e mensal são derivados localmente por agregação (ver `docs/fontes_e_tratamento_de_dados.md`). Falhas temporárias da fonte levantam `DataUnavailable` dentro da função cacheada, para que não fiquem guardadas em cache.
+Os dados diários são baixados uma única vez; as frequências semanal, mensal, semestral e anual são derivadas localmente por agregação (`data_processor.aggregate_by_frequency`, com a chave `PeriodEnd` calculada por `period_end`) (ver `docs/fontes_e_tratamento_de_dados.md`). Falhas temporárias da fonte levantam `DataUnavailable` dentro da função cacheada, para que não fiquem guardadas em cache.
 
 **Estado da sessão: "consulta confirmada".** Cada página só recalcula quando o usuário clica no botão de análise. O resultado fica em `st.session_state` (`*_loaded`, `*_query`, `*_df` e afins) junto com os parâmetros usados. Alterar um controle na barra lateral **não muda a análise exibida** até um novo clique, e os textos da página usam os parâmetros da consulta confirmada, não os do widget. Falhas limpam o estado para evitar exibir resultados de uma consulta anterior.
 
@@ -256,7 +257,7 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 **Colunas.** `Date`, `Open`, `High`, `Low`, `Close`, `Volume`; `Value` é a cópia da variável principal; `Simple_Return`, `Log_Return`, `Running_Peak` e `Drawdown` são criadas pelo `core/`.
 
-**Anualização.** √252 (diário), √52 (semanal), √12 (mensal), aplicada a todas as classes de ativos.
+**Anualização.** √252 (diário), √52 (semanal), √12 (mensal), √2 (semestral) e √1 (anual), aplicada a todas as classes de ativos. Nas frequências semestral e anual, `data_availability` sinaliza o último período ainda em andamento (retorno parcial).
 
 **Nomes.** Código em inglês; textos exibidos ao usuário em português do Brasil, com separador decimal vírgula e milhar ponto.
 
@@ -283,9 +284,9 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 ## 13. Testes e qualidade
 
-- **757 testes**, cobertura de `core/` em **100%** (2.234 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
+- **773 testes**, cobertura de `core/` em **100%** (2.251 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
 - `app/` **não** tem testes de renderização: páginas e componentes são conferidos manualmente no navegador (roteiro em `docs/roteiro_conferencia_navegador.md`). Há, porém:
-  - **testes de componentes** que montam o HTML de `app/ui` sem o Streamlit (`test_ui_components.py`, `test_landing.py`), verificando escape de texto, conteúdo do modal e ausência de cantos arredondados no CSS próprio;
+  - **testes de componentes** que montam o HTML e o layout dos gráficos de `app/ui` sem o Streamlit (`test_ui_components.py`, `test_landing.py`), verificando escape de texto, conteúdo do modal, layout base dos gráficos e ausência de cantos arredondados no CSS próprio;
   - **testes estruturais** que leem o código-fonte das páginas (`test_chart_guides.py`, `test_simulation_texts.py`): todo gráfico tem roteiro de leitura, os textos novos usam linguagem neutra e o texto obrigatório da simulação está presente.
 - Testes verificam, entre outros: ausência de informação futura nos indicadores, linguagem neutra nos textos, catálogo (120 ativos, tickers únicos, campos obrigatórios), disponibilidade de dados, bordas de agregação, modo de demonstração e todo o fluxo da explicação assistida com cliente simulado.
 - Não há pipeline de integração contínua: os testes são executados localmente antes de cada commit.
@@ -294,7 +295,5 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 ### Limitações conhecidas da arquitetura
 
 - `core/data_loader.py` depende de `streamlit` (cache). Para isolar totalmente `core/`, o cache poderia ser movido para a camada `app/`.
-- As páginas de Análise Individual, Comparação e Risco e Retorno repetem o helper `apply_custom_layout` dos gráficos; há oportunidade de centralizar em `app/ui`.
 - A terminologia "grupos" (código) × "classes" (interface) ainda não está padronizada.
 - O seletor da Comparação oferece Classe → Ativos; os campos `subcategory` e `market` do catálogo existem, mas ainda não são filtros.
-- Frequências semestral e anual não estão implementadas (decisão pendente com o orientador).

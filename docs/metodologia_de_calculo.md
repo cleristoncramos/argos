@@ -14,7 +14,7 @@ Este documento descreve **o que cada número significa e como é calculado**. Os
 | --- | --- |
 | `C_t` (ou `V_t`) | Preço de fechamento do período `t` (coluna `Value`) |
 | `r_t` | Retorno simples: `r_t = V_t / V_{t-1} − 1` |
-| `k` | Fator de anualização: 252 (diário), 52 (semanal), 12 (mensal) |
+| `k` | Fator de anualização: 252 (diário), 52 (semanal), 12 (mensal), 2 (semestral), 1 (anual) |
 | `N` | Janela do indicador, em períodos da frequência escolhida |
 
 **Unidades.** `analyzer.py` e `seasonality.py` trabalham em **percentual** (5,0 = 5%); `risk_metrics.py`, `comparison.py`, `simulation.py` e `trend.py` em **decimal** (0,05 = 5%). A conversão para texto ocorre somente na interface.

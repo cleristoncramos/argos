@@ -85,7 +85,7 @@ Decisões já tomadas (registro):
 - [~] Diferenciar "período solicitado" de "período disponível"
 - [x] Documentar que criptos e ativos recentes podem ter histórico menor — `docs/fontes_e_tratamento_de_dados.md`, seções 5 e 8
 - [~] Tratar corretamente ativos com datas de início diferentes — período comum e alinhamento por fim de período (PeriodEnd) aplicados em `core/`; integrado na página de comparação em 07/10; falta conferir no navegador
-- [ ] Avaliar frequências semestral e anual (a configuração atual tem apenas Diário, Semanal e Mensal; depende do orientador)
+- [x] Avaliar frequências semestral e anual — implementadas em 24/10/2026 (semestres de janeiro a junho e de julho a dezembro; ano civil; fatores de anualização 2 e 1; aviso de último período em andamento)
 
 ### 4. Análise Individual
 - [~] Exibir fonte dos dados e data da última atualização

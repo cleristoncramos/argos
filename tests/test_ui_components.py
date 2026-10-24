@@ -53,3 +53,28 @@ def test_metric_card_free_tooltip_escaped():
 def test_percent_cell_has_no_thousands_separator():
     # Mesmo comportamento de core.formatters.format_return_pct
     assert percent_cell()(12.345)[0] == "1234,50%"
+
+def test_chart_layout_defaults_hide_legend_and_clear_background():
+    import plotly.graph_objects as go
+
+    from app.ui.charts import apply_custom_layout
+
+    fig = apply_custom_layout(go.Figure(layout={"title": "x", "xaxis": {"title": {"text": "Data"}}}))
+    assert fig.layout.showlegend is False
+    assert fig.layout.paper_bgcolor == "rgba(0,0,0,0)"
+    assert fig.layout.plot_bgcolor == "rgba(0,0,0,0)"
+    assert fig.layout.yaxis.showgrid is True and fig.layout.xaxis.showgrid is False
+    assert fig.layout.xaxis.title.text == "Data"  # título do eixo X mantido por padrão
+    assert not fig.layout.title.text
+
+
+def test_chart_layout_options_for_comparison_and_risk():
+    import plotly.graph_objects as go
+
+    from app.ui.charts import apply_custom_layout
+
+    comparison = apply_custom_layout(go.Figure(), show_legend=True)
+    assert comparison.layout.showlegend is None  # legenda segue o padrão do Plotly
+
+    risk = apply_custom_layout(go.Figure(layout={"xaxis": {"title": {"text": "Data"}}}), hide_x_title=True)
+    assert not risk.layout.xaxis.title.text

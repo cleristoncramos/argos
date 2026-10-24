@@ -249,7 +249,7 @@ with st.sidebar:
         max_value=12,
         value=1,
         key="simulation_every",
-        help="O período segue a frequência escolhida (diária, semanal ou mensal).",
+        help="O período segue a frequência escolhida (diária, semanal, mensal, semestral ou anual).",
     )
 
     horizon = st.slider(

@@ -27,6 +27,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.charts import apply_custom_layout
 from app.ui.chart_guide import render_chart_guide
 from app.ui.asset_cards import render_asset_hero_logo
 from app.ui.data_info import (
@@ -131,21 +132,6 @@ def render_custom_metric_card(title: str, value: str) -> None:
     render_metric_card(title, value, value_size="2rem")
 
 
-def apply_custom_layout(fig):
-    """Limpa o fundo e ajusta o layout base do gráfico Plotly."""
-    fig.update_layout(
-        title="",
-        showlegend=False,
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        margin=dict(l=10, r=20, t=20, b=20),
-        xaxis=dict(showgrid=False, zeroline=False),
-        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", zeroline=False),
-        font=dict(family="Inter, Arial, sans-serif", color="#334155")
-    )
-    return fig
-
-
 # =====================
 # Controles compartilhados
 # =====================
@@ -245,6 +231,7 @@ if load_data:
             requested_start=start_date,
             requested_end=end_date,
             period_observations=len(df_primary),
+            frequency=frequency,
         )
 
         if availability.insufficient:
@@ -384,7 +371,10 @@ with col3:
     render_custom_metric_card("Retorno Total", colored_value)
 
 with col4:
-    freq_label = "dias" if frequency == "Diário" else "semanas" if frequency == "Semanal" else "meses"
+    freq_label = {
+        "Diário": "dias", "Semanal": "semanas", "Mensal": "meses",
+        "Semestral": "semestres", "Anual": "anos",
+    }.get(frequency, "períodos")
     count_formatted = format_brazilian_integer(stats["count"])
     render_custom_metric_card(
         "Períodos Analisados",

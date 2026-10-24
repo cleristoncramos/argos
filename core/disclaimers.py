@@ -128,7 +128,7 @@ METRIC_EXPLANATIONS: dict[str, MetricExplanation] = {
         unit="Percentual (%)",
         description=(
             "Média aritmética dos retornos simples na frequência "
-            "selecionada (diária, semanal ou mensal)."
+            "selecionada (diária, semanal, mensal, semestral ou anual)."
         ),
         higher_is="depende do contexto",
         limitation=(

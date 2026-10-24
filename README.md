@@ -5,7 +5,7 @@
 [![Aplicação online](https://img.shields.io/badge/app-argos--datalab.streamlit.app-C8102E)](https://argos-datalab.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.63-FF4B4B?logo=streamlit&logoColor=white)
-![Testes](https://img.shields.io/badge/testes-757%20aprovados-2E7D32)
+![Testes](https://img.shields.io/badge/testes-773%20aprovados-2E7D32)
 ![Cobertura](https://img.shields.io/badge/cobertura%20do%20core-100%25-2E7D32)
 ![PIBITI UFPI](https://img.shields.io/badge/PIBITI-UFPI%202026%E2%80%932027-1F1F1F)
 
@@ -93,7 +93,7 @@ O **DataLab** completa a ideia: um laboratório onde os dados de mercado são ex
 ### Análise Individual
 
 - Seleção guiada por classe e mercado ou digitação livre do ticker, com validação de formato e de existência na fonte.
-- Atalhos de período (1, 3, 5 e 10 anos) ou intervalo personalizado; frequência diária, semanal ou mensal.
+- Atalhos de período (1, 3, 5 e 10 anos) ou intervalo personalizado; frequência diária, semanal, mensal, semestral ou anual.
 - Visão geral (primeiro e último valor, retorno total, observações) e evolução temporal do preço.
 - Volatilidade anualizada mês a mês, com destaque para os meses de maior oscilação.
 - Mapa de calor de retornos mensais (mês × ano), média por mês do calendário, recorte por anos e **janela sazonal** (por exemplo, de setembro a outubro em cada ano).
@@ -167,7 +167,7 @@ Resumo das principais convenções. A descrição completa, com fórmulas, unida
 | --- | --- |
 | Variável principal | Preço de **fechamento** (`Close`) da frequência escolhida |
 | Retorno simples | `r_t = V_t / V_{t-1} − 1`; lacunas viram vazio e **não** são preenchidas com o valor anterior |
-| Anualização | Fator `k` = 252 (diário), 52 (semanal) e 12 (mensal), igual para todas as classes |
+| Anualização | Fator `k` = 252 (diário), 52 (semanal), 12 (mensal), 2 (semestral) e 1 (anual), igual para todas as classes |
 | Volatilidade | `desvio-padrão(r, ddof=1) × √k` |
 | Índice de Sharpe | `média(r − r_f) / desvio-padrão(r − r_f) × √k`, com a taxa anual `r_f` convertida para a frequência |
 | Drawdown | `V_t / máximo(V_1..V_t) − 1`; o drawdown máximo é o menor valor da série |
@@ -190,7 +190,7 @@ Resumo das principais convenções. A descrição completa, com fórmulas, unida
 | **Pacote de demonstração** | CSVs congelados com manifesto e hash SHA-256 | Apresentações e avaliação sem depender da internet |
 | **CoinCap** e **Financial Modeling Prep** | Logotipos públicos de criptomoedas, ações, ETFs, REITs e FIIs | Identificação visual dos ativos |
 
-**Tratamento:** os dados diários são baixados uma única vez; as frequências semanal e mensal são derivadas localmente por agregação (abertura, máxima, mínima, fechamento e volume somado). Datas inválidas são descartadas, e falhas temporárias da fonte não ficam guardadas em cache.
+**Tratamento:** os dados diários são baixados uma única vez; as frequências semanal, mensal, semestral e anual são derivadas localmente por agregação (abertura, máxima, mínima, fechamento e volume somado). Datas inválidas são descartadas, e falhas temporárias da fonte não ficam guardadas em cache.
 
 **Limitações conhecidas:**
 
@@ -368,7 +368,7 @@ Depois, inicie a aplicação com `ARGOS_DEMO_MODE=true`. Um aviso na interface i
 
 ## Testes e qualidade
 
-A suíte possui **757 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
+A suíte possui **773 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
 
 - integridade do catálogo e validação de tickers e datas;
 - tratamento de dados, lacunas de calendário e agregação por frequência;

@@ -8,6 +8,9 @@ from datetime import date
 
 import pandas as pd
 
+from core.config import LONG_FREQUENCIES
+from core.data_processor import period_end
+
 MIN_OBSERVATIONS = 2            # abaixo disso não há como calcular retorno
 RECOMMENDED_OBSERVATIONS = 12   # abaixo disso as estatísticas são pouco estáveis
 START_TOLERANCE_DAYS = 10       # fins de semana/feriados no início do período
@@ -28,6 +31,9 @@ class DataAvailability:
     stale_end: bool
     insufficient: bool
     limited: bool
+    # Semestral/anual: fim do último período quando ele ainda não terminou
+    partial_period_end: date | None = None
+    frequency: str | None = None
 
 
 def assess_availability(
@@ -40,10 +46,13 @@ def assess_availability(
     end_tolerance_days: int = END_TOLERANCE_DAYS,
     min_observations: int = MIN_OBSERVATIONS,
     recommended_observations: int = RECOMMENDED_OBSERVATIONS,
+    frequency: str | None = None,
 ) -> DataAvailability:
     """
     `dates`: datas das observações diárias baixadas (antes de agregar).
     `period_observations`: quantidade de períodos após agregar pela frequência.
+    `frequency`: com "Semestral" ou "Anual", sinaliza o último período ainda
+    em andamento, cujo retorno é parcial.
     """
     series = pd.to_datetime(pd.Series(list(dates)), errors="coerce").dropna()
 
@@ -57,6 +66,12 @@ def assess_availability(
 
     first = series.min().date()
     last = series.max().date()
+
+    partial_end = None
+    if frequency in LONG_FREQUENCIES:
+        end_of_period = period_end(pd.Series([series.max()]), frequency).iloc[0].date()
+        if last < end_of_period:
+            partial_end = end_of_period
     start_gap = max((first - requested_start).days, 0)
     end_gap = max((requested_end - last).days, 0)
 
@@ -73,6 +88,8 @@ def assess_availability(
         stale_end=end_gap > end_tolerance_days,
         insufficient=period_observations < min_observations,
         limited=period_observations < recommended_observations,
+        partial_period_end=partial_end,
+        frequency=frequency,
     )
 
 
@@ -109,6 +126,15 @@ def availability_messages(a: DataAvailability) -> list[tuple[str, str]]:
             f"Os dados terminam em {_fmt(a.available_end)}, {a.end_gap_days} dias antes "
             f"da data final solicitada ({_fmt(a.requested_end)}). Pode indicar ativo sem "
             "negociação recente, descontinuado ou indisponibilidade temporária da fonte.",
+        ))
+
+    if a.partial_period_end is not None:
+        unit = "semestre" if a.frequency == "Semestral" else "ano"
+        messages.append((
+            "info",
+            f"O último {unit} ainda está em andamento: os dados vão até "
+            f"{_fmt(a.available_end)} e o {unit} termina em {_fmt(a.partial_period_end)}. "
+            f"O retorno desse {unit} é parcial e não se compara diretamente aos períodos completos.",
         ))
 
     if a.limited:

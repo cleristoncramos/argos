@@ -4,7 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class AppConfig:
     """Configurações padrão da aplicação"""
-    FREQUENCIES: tuple = ("Diário", "Semanal", "Mensal")
+    FREQUENCIES: tuple = ("Diário", "Semanal", "Mensal", "Semestral", "Anual")
 
 
 # Instância única de configuração
@@ -20,4 +20,10 @@ ANNUALIZATION_FACTORS = {
     "Diário": 252,
     "Semanal": 52,
     "Mensal": 12,
+    "Semestral": 2,
+    "Anual": 1,
 }
+
+# Frequências em que o último período pode ainda não ter terminado e, por
+# isso, ter retorno parcial (o semestre ou o ano em andamento).
+LONG_FREQUENCIES = ("Semestral", "Anual")

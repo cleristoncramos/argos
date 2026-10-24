@@ -67,7 +67,7 @@ def test_build_context_ok():
     [
         {"analysis_type": "x"},
         {"status": "x"},
-        {"frequency": "Anual"},
+        {"frequency": "Trimestral"},
         {"assets": []},
         {"assets": [""]},
         {"assets": ["AAPL", "aapl"]},

@@ -40,11 +40,11 @@ from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
 from app.ui.tables import date_cell, number_cell, render_table
 from core.assets import ASSETS
-from core.config import ANNUALIZATION_FACTORS
+from core.config import ANNUALIZATION_FACTORS, LONG_FREQUENCIES
 from core.currency import currency_info
 from core.data_availability import assess_availability
 from core.data_loader import download_active_data
-from core.data_processor import prepare_dataframe
+from core.data_processor import aggregate_by_frequency, prepare_dataframe
 from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.formatters import format_number_br
 from core.indicators import (
@@ -366,11 +366,11 @@ if load_analysis:
 
     effective_chart_type = chart_type
 
-    if chart_type == "Candles" and frequency == "Mensal":
+    if chart_type == "Candles" and frequency in ("Mensal",) + LONG_FREQUENCIES:
         effective_chart_type = "Linha de fechamento"
 
         st.sidebar.warning(
-            "O gráfico candle não é exibido para frequência mensal. "
+            f"O gráfico candle não é exibido para frequência {frequency.lower()}. "
             "A análise utilizará linha de fechamento."
         )
 
@@ -428,41 +428,10 @@ if load_analysis:
         # Datas diárias baixadas, guardadas antes de agregar pela frequência
         daily_dates = df["Date"].copy()
 
-        if frequency == "Semanal":
-            df = (
-                df
-                .set_index("Date")
-                .resample("W")
-                .agg(
-                    {
-                        "Open": "first",
-                        "High": "max",
-                        "Low": "min",
-                        "Close": "last",
-                        "Volume": "sum",
-                    }
-                )
-                .dropna()
-                .reset_index()
-            )
-
-        elif frequency == "Mensal":
-            df = (
-                df
-                .set_index("Date")
-                .resample("ME")
-                .agg(
-                    {
-                        "Open": "first",
-                        "High": "max",
-                        "Low": "min",
-                        "Close": "last",
-                        "Volume": "sum",
-                    }
-                )
-                .dropna()
-                .reset_index()
-            )
+        if frequency != "Diário":
+            df = aggregate_by_frequency(df, frequency)[
+                ["Date", "Open", "High", "Low", "Close", "Volume"]
+            ]
 
         # Disponibilidade: período solicitado x período efetivamente disponível
         availability = assess_availability(
@@ -470,6 +439,7 @@ if load_analysis:
             requested_start=start_date,
             requested_end=end_date,
             period_observations=len(df),
+            frequency=frequency,
         )
 
         if availability.insufficient:

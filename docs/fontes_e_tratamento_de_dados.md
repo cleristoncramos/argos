@@ -45,16 +45,23 @@ Consequência do cache: uma consulta repetida dentro de 1 hora reaproveita os da
 | Diária | 252 | Dados como baixados |
 | Semanal | 52 | Agrupamento por semana do calendário |
 | Mensal | 12 | Agrupamento por mês do calendário |
+| Semestral | 2 | Agrupamento por semestre: janeiro a junho e julho a dezembro |
+| Anual | 1 | Agrupamento por ano civil |
 
 **Regras de agregação OHLCV** (`aggregate_by_frequency`): `Open` = primeiro valor do período; `High` = máximo; `Low` = mínimo; `Close` = último valor; `Volume` = soma.
 
-**Alinhamento na comparação.** Em frequência semanal ou mensal, a página de comparação alinha os ativos pelo **fim do período do calendário** (coluna `PeriodEnd`), e não pelo último pregão de cada ativo. Assim, ativos com calendários de negociação diferentes (feriados distintos, mercados 24 horas) caem na mesma linha. Se algum ativo não tiver `PeriodEnd`, o alinhamento volta a usar `Date`.
+**Alinhamento na comparação.** Em qualquer frequência agregada (semanal, mensal, semestral ou anual), a página de comparação alinha os ativos pelo **fim do período do calendário** (coluna `PeriodEnd`), e não pelo último pregão de cada ativo. Assim, ativos com calendários de negociação diferentes (feriados distintos, mercados 24 horas) caem na mesma linha. Se algum ativo não tiver `PeriodEnd`, o alinhamento volta a usar `Date`.
 
-**Fator de anualização.** O mesmo fator (252, 52 ou 12) é aplicado a todas as classes para manter as métricas comparáveis. É uma convenção do projeto, não uma verdade universal: criptoativos negociam todos os dias, e 365 seria uma alternativa defensável. O fator usado aparece nas páginas de risco e comparação.
+**Fator de anualização.** O mesmo fator (252, 52, 12, 2 ou 1) é aplicado a todas as classes para manter as métricas comparáveis. É uma convenção do projeto, não uma verdade universal: criptoativos negociam todos os dias, e 365 seria uma alternativa defensável. O fator usado aparece nas páginas de risco e comparação.
 
-**Por que não há frequência semestral ou anual.** Com um período de 10 anos, haveria apenas 20 observações semestrais ou 10 anuais, o que torna volatilidade, Sharpe e correlação pouco estáveis. A inclusão depende de decisão do orientador.
+**Frequências semestral e anual (desde 24/10/2026).** Úteis para enxergar o comportamento de longo prazo, mas com poucas observações: em 10 anos há apenas 20 semestres ou 10 anos, o que torna volatilidade, Sharpe e correlação pouco estáveis. Por isso:
 
-**Observação sobre Indicadores Técnicos.** Essa página agrega semanal e mensal por reamostragem do calendário (`W` e `ME`), então as datas exibidas são os rótulos de fim de semana e de fim de mês, e não o último pregão.
+- a página exibe o aviso de **poucas observações** quando há menos de 12 períodos;
+- o **último semestre ou ano em andamento** é sinalizado: seu fechamento é o do último pregão disponível, e o retorno é parcial (não se compara diretamente aos períodos completos);
+- indicadores com janela maior que o número de períodos (por exemplo, SMA de 20 anos) ficam vazios, e o gráfico de candles é substituído pela linha de fechamento, como na frequência mensal;
+- na simulação de aportes, o horizonte das janelas é contado em semestres ou anos e precisa ser menor que o número de observações.
+
+**Observação sobre Indicadores Técnicos.** Desde 24/10/2026, essa página usa a mesma agregação das demais (`aggregate_by_frequency`): as datas exibidas são as do último pregão de cada período.
 
 ## 5. Disponibilidade e dados insuficientes
 

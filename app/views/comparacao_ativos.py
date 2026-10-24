@@ -16,6 +16,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.charts import apply_custom_layout
 from app.ui.chart_guide import render_chart_guide
 from app.ui.asset_cards import render_selected_asset_cards
 from app.ui.colors import tone_icon, tone_of
@@ -300,19 +301,6 @@ def initialize_comparison_state() -> None:
 # ==========================================================
 # Layout e cards
 # ==========================================================
-def apply_custom_layout(fig):
-    fig.update_layout(
-        title="",
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        margin=dict(l=10, r=20, t=20, b=20),
-        xaxis=dict(showgrid=False, zeroline=False),
-        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", zeroline=False),
-        font=dict(family="Inter, Arial, sans-serif", color="#334155")
-    )
-    return fig
-
-
 def render_custom_metric_card(
     title: str,
     asset: str,
@@ -606,7 +594,7 @@ def render_correlation_heatmap(correlation_matrix: pd.DataFrame) -> None:
 
     figure_size = max(420, min(720, 100 * len(x_assets) + 150))
     figure = go.Figure(data=[heatmap])
-    figure = apply_custom_layout(figure)
+    figure = apply_custom_layout(figure, show_legend=True)
     figure.update_layout(
         height=figure_size,
         xaxis={
@@ -941,9 +929,9 @@ if load_comparison:
         {s: d["Date"] for s, d in downloaded.items() if s in asset_data}
     )
 
-    # Mensal/semanal: alinha por fim do período (calendário), não pelo
+    # Frequências agregadas: alinha por fim do período (calendário), não pelo
     # último pregão de cada ativo. Só usa PeriodEnd se todos os ativos o têm.
-    can_align_by_period = frequency in ("Semanal", "Mensal") and all(
+    can_align_by_period = frequency != "Diário" and all(
         "PeriodEnd" in frame.columns for frame in asset_data.values()
     )
     align_col = "PeriodEnd" if can_align_by_period else "Date"
@@ -1235,7 +1223,7 @@ with tab_performance:
             custom_data=["Tooltip_Value"]
         )
 
-        fig_base_100 = apply_custom_layout(fig_base_100)
+        fig_base_100 = apply_custom_layout(fig_base_100, show_legend=True)
 
         fig_base_100.update_layout(
             hovermode="x unified",
@@ -1346,7 +1334,7 @@ with tab_seasonality:
                     ),
                 )
             )
-        fig_season = apply_custom_layout(fig_season)
+        fig_season = apply_custom_layout(fig_season, show_legend=True)
         fig_season.update_layout(
             barmode="group",
             margin=dict(l=40, r=20, t=40, b=20),
@@ -1445,7 +1433,7 @@ with tab_trend:
                 )
             )
         fig_rolling.add_hline(y=0, line_color="#475569", line_width=1)
-        fig_rolling = apply_custom_layout(fig_rolling)
+        fig_rolling = apply_custom_layout(fig_rolling, show_legend=True)
         fig_rolling.update_layout(
             hovermode="x unified",
             yaxis_title=f"Variação em {trend_window} meses (%)",
@@ -1502,7 +1490,7 @@ with tab_trend:
 
         if ratio_rows:
             fig_ratio.add_hline(y=0, line_color="#475569", line_width=1)
-            fig_ratio = apply_custom_layout(fig_ratio)
+            fig_ratio = apply_custom_layout(fig_ratio, show_legend=True)
             fig_ratio.update_layout(
                 hovermode="x unified",
                 yaxis_title="Razão de desempenho (%)",

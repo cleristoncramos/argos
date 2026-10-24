@@ -433,7 +433,7 @@ def render_asset_controls(
         frequency_options = getattr(
             config,
             "FREQUENCIES",
-            ["Diário", "Semanal", "Mensal"],
+            ["Diário", "Semanal", "Mensal", "Semestral", "Anual"],
         )
 
         current_frequency = st.session_state.get(

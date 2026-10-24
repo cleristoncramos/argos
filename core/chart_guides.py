@@ -35,7 +35,7 @@ CHART_GUIDES: Dict[str, Dict[str, str]] = {
     "variacao_percentual": {
         "mede": "A variação de cada período em relação ao período imediatamente anterior.",
         "mostra": "A sequência de variações, com os períodos de alta e de queda lado a lado.",
-        "cuidado": "Não é o retorno acumulado. A frequência escolhida (diária, semanal ou mensal) muda o tamanho das barras.",
+        "cuidado": "Não é o retorno acumulado. A frequência escolhida (diária, semanal, mensal, semestral ou anual) muda o tamanho das barras.",
         "nao_permite": "Concluir que uma sequência de altas ou quedas continuará.",
     },
     "mapa_sazonal": {

@@ -67,6 +67,42 @@ def prepare_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     return df_processed
 
 
+_PANDAS_PERIODS = {
+    "Semanal": "W",
+    "Mensal": "M",
+    "Anual": "Y",
+}
+
+
+def period_end(dates: pd.Series, frequency: str) -> pd.Series:
+    """
+    Último dia do calendário do período de cada data (sem horário).
+
+    Semanal termina no domingo; mensal, no último dia do mês; semestral, em
+    30/06 ou 31/12; anual, em 31/12. Serve de chave de agregação e de data
+    de alinhamento entre ativos.
+    """
+    dates = pd.to_datetime(dates)
+
+    if frequency == "Semestral":
+        end_month = (dates.dt.month > 6).map({False: 6, True: 12})
+        end_day = end_month.map({6: 30, 12: 31})
+        return pd.to_datetime(
+            {"year": dates.dt.year, "month": end_month, "day": end_day}
+        )
+
+    if frequency not in _PANDAS_PERIODS:
+        raise ValueError(
+            f"Frequência não suportada: {frequency}"
+        )
+
+    return (
+        dates.dt.to_period(_PANDAS_PERIODS[frequency])
+        .dt.end_time
+        .dt.normalize()
+    )
+
+
 def aggregate_by_frequency(
     df: pd.DataFrame,
     frequency: str = "Mensal",
@@ -85,10 +121,14 @@ def aggregate_by_frequency(
     - Diário
     - Semanal
     - Mensal
+    - Semestral (janeiro a junho e julho a dezembro)
+    - Anual (ano civil)
 
-    Nas frequências semanal e mensal, a coluna `PeriodEnd` guarda o fim
-    do período (calendário) e serve para alinhar ativos com calendários
-    de negociação diferentes; `Date` continua sendo o último pregão.
+    Nas frequências agregadas, a coluna `PeriodEnd` guarda o fim do
+    período (calendário) e serve para alinhar ativos com calendários de
+    negociação diferentes; `Date` continua sendo o último pregão. O último
+    período pode estar incompleto (semestre ou ano em andamento): nele, o
+    fechamento é o do último pregão disponível.
     """
     if df is None or df.empty:
         return pd.DataFrame()
@@ -121,16 +161,7 @@ def aggregate_by_frequency(
         )
         return df_agg
 
-    if frequency == "Semanal":
-        df_agg["Period"] = df_agg["Date"].dt.to_period("W")
-
-    elif frequency == "Mensal":
-        df_agg["Period"] = df_agg["Date"].dt.to_period("M")
-
-    else:
-        raise ValueError(
-            f"Frequência não suportada: {frequency}"
-        )
+    df_agg["PeriodEnd"] = period_end(df_agg["Date"], frequency)
 
     aggregation_rules = {
         "Date": "last",
@@ -150,17 +181,13 @@ def aggregate_by_frequency(
     df_agg = (
         df_agg
         .groupby(
-            "Period",
+            "PeriodEnd",
             as_index=False,
         )
         .agg(
             aggregation_rules,
         )
     )
-
-    # Fim do período (mês/semana): data de alinhamento entre ativos
-    df_agg["PeriodEnd"] = df_agg["Period"].dt.end_time.dt.normalize()
-    df_agg = df_agg.drop(columns=["Period"])
 
     df_agg["Date"] = pd.to_datetime(
         df_agg["Date"],

@@ -251,7 +251,7 @@ st.markdown(
   <div class="step"><div class="step-n">PASSO 01</div><h4>Escolha o ativo</h4>
     <p>Na barra lateral, filtre por classe e mercado ou digite o ticker direto, como <kbd>PETR4.SA</kbd> ou <kbd>BTC-USD</kbd>.</p></div>
   <div class="step"><div class="step-n">PASSO 02</div><h4>Defina o período</h4>
-    <p>Use os atalhos de 1, 3, 5 ou 10 anos ou escolha as datas. Ajuste a frequência: diária, semanal ou mensal.</p></div>
+    <p>Use os atalhos de 1, 3, 5 ou 10 anos ou escolha as datas. Ajuste a frequência: diária, semanal, mensal, semestral ou anual.</p></div>
   <div class="step"><div class="step-n">PASSO 03</div><h4>Carregue e explore</h4>
     <p>Clique em <kbd>Carregar dados</kbd>: gráficos interativos, métricas com explicações e exportação em CSV.</p></div>
 </div>

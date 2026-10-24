@@ -22,6 +22,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.charts import apply_custom_layout
 from app.ui.chart_guide import render_chart_guide
 from app.ui.asset_cards import render_asset_hero_logo
 from app.ui.data_info import (
@@ -105,21 +106,6 @@ def format_colored_pct(value, neutral_if_nan=False) -> str:
     sign = "+" if value > 0 else ""
     formatted_str = f"{sign}{value * 100:,.2f}%".replace(",", "X").replace(".", ",").replace("X", ".")
     return f"<span style='color: {color};'>{formatted_str}</span>"
-
-
-def apply_custom_layout(fig):
-    """Limpa o fundo e ajusta o layout base do gráfico Plotly."""
-    fig.update_layout(
-        title="",
-        showlegend=False,
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        margin=dict(l=10, r=20, t=20, b=20),
-        xaxis=dict(showgrid=False, zeroline=False, title_text=""),
-        yaxis=dict(showgrid=True, gridcolor="#F1F5F9", zeroline=False),
-        font=dict(family="Inter, Arial, sans-serif", color="#334155")
-    )
-    return fig
 
 
 def sync_risk_free_rate() -> None:
@@ -256,6 +242,7 @@ if load_analysis:
             requested_start=start_date,
             requested_end=end_date,
             period_observations=len(df_primary),
+            frequency=frequency,
         )
 
         if availability.insufficient:
@@ -515,7 +502,7 @@ cumulative_return_figure = create_cumulative_return_chart(
     return_col="Simple_Return",
 )
 
-cumulative_return_figure = apply_custom_layout(cumulative_return_figure)
+cumulative_return_figure = apply_custom_layout(cumulative_return_figure, hide_x_title=True)
 
 # Cálculo local do retorno acumulado para injetar os marcadores de topo e fundo
 df_risk["Cum_Ret"] = (1 + df_risk["Simple_Return"].fillna(0)).cumprod() - 1
@@ -574,7 +561,7 @@ drawdown_figure = create_drawdown_chart(
     drawdown_col="Drawdown",
 )
 
-drawdown_figure = apply_custom_layout(drawdown_figure)
+drawdown_figure = apply_custom_layout(drawdown_figure, hide_x_title=True)
 
 # Marcador do drawdown máximo
 if worst_drawdown_date is not None:
@@ -632,7 +619,7 @@ if not rets.empty:
         )
     )
 
-    histogram_figure = apply_custom_layout(histogram_figure)
+    histogram_figure = apply_custom_layout(histogram_figure, hide_x_title=True)
     histogram_figure.update_yaxes(showticklabels=False, showgrid=False, zeroline=False, title_text="")
 
     with st.container(border=True):

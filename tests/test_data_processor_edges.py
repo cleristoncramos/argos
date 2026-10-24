@@ -96,7 +96,7 @@ def test_aggregate_weekly_groups_by_week():
 
 def test_aggregate_rejects_unsupported_frequency():
     with pytest.raises(ValueError):
-        aggregate_by_frequency(make_daily(), "Anual")
+        aggregate_by_frequency(make_daily(), "Trimestral")
 
 
 # ---------- select_primary_variable ----------

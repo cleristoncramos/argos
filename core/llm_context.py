@@ -21,11 +21,11 @@ ANALYSIS_TYPES = (
     "simulacao",
 )
 STATUSES = ("ok", "dados_insuficientes")
-FREQUENCIES = ("Diário", "Semanal", "Mensal")
+FREQUENCIES = ("Diário", "Semanal", "Mensal", "Semestral", "Anual")
 REQUEST_TYPES = ("recomendacao", "previsao")
 
 # Observações mínimas por frequência abaixo das quais a amostra é "pequena".
-MIN_OBSERVATIONS = {"Diário": 60, "Semanal": 26, "Mensal": 24}
+MIN_OBSERVATIONS = {"Diário": 60, "Semanal": 26, "Mensal": 24, "Semestral": 10, "Anual": 5}
 MIN_YEARS = 5
 
 LIMITATION_FLAGS = (
