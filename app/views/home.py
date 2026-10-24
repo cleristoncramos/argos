@@ -235,7 +235,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-components.html(build_mosaic_html(ASSETS, get_asset_logo_url), height=236, scrolling=False)
+components.html(build_mosaic_html(ASSETS, get_asset_logo_url), height=284, scrolling=False)
 
 # ==========================================================
 # TUTORIAL BREVE

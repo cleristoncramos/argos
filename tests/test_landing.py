@@ -101,3 +101,11 @@ def test_no_rounded_corners_in_own_styles():
 
 def test_features_video_is_packaged():
     assert FEATURES_VIDEO.exists() and FEATURES_VIDEO.stat().st_size < 15 * 1_048_576
+
+
+def test_mosaic_shows_logo_ticker_and_name_without_group_badge():
+    asset = {"ticker": "PETR4.SA", "name": "Petrobras PN", "class": "Ação", "group": "br_stocks",
+             "icon": "📈", "category_color": "#2563EB"}
+    html = build_mosaic_html([asset], lambda t, g: "https://logos.example/p.png", rows=1)
+    assert ">PETR4.SA<" in html and ">Petrobras PN<" in html
+    assert 'class="cls"' not in html and ">Ação<" not in html

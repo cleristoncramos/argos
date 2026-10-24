@@ -183,3 +183,11 @@ def test_logo_url_is_cached():
 
     assert first_result == second_result
     assert get_asset_logo_url.cache_info().hits >= 1
+
+def test_blank_source_logos_fall_back_to_icon():
+    from core.asset_logos import BLANK_LOGOS, get_asset_logo_url
+
+    get_asset_logo_url.cache_clear()
+    for ticker in BLANK_LOGOS:
+        assert get_asset_logo_url(ticker, "us_stocks") is None
+        assert get_asset_logo_url(ticker.lower(), "equity_etfs") is None

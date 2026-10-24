@@ -86,12 +86,13 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
 .sea { position: absolute; left: 0; right: 0; bottom: 0; height: 170px; }
 
 /* catálogo */
-.grid-assets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-.asset { border: 1px solid var(--line); padding: 10px 12px; display: flex; gap: 10px; align-items: center; background: #fff;
-         box-shadow: 0 8px 18px rgba(17,17,17,.08); }
-.asset i { font-style: normal; width: 34px; height: 34px; display: grid; place-items: center; background: var(--alt); border: 1px solid var(--soft); font-size: 18px; }
-.asset b { display: block; font: 700 14px Consolas, monospace; }
-.asset small { font-size: 12px; color: var(--muted); }
+.grid-assets { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; align-content: start; }
+.logo-tile { aspect-ratio: 1; border: 1px solid var(--line); background: #fff; display: grid; place-items: center;
+             box-shadow: 0 8px 18px rgba(17,17,17,.08); }
+.logo-tile img { width: 64%; height: 64%; object-fit: contain; }
+.logo-chip { display: inline-flex; align-items: center; height: 44px; padding: 6px 12px; }
+.logo-chip img { height: 30px; width: 30px; object-fit: contain; }
+.grid-empty { grid-column: 1 / -1; padding: 40px; border: 1px dashed var(--soft); color: var(--muted); text-align: center; }
 .big { font-size: 120px; font-weight: 800; letter-spacing: -.05em; line-height: .9; color: var(--red); margin-top: 26px; }
 
 /* heatmap */
@@ -131,7 +132,7 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
         <div>
           <div class="kicker">01 · Catálogo</div>
           <div class="title">120 ativos,<br>13 grupos.</div>
-          <div class="lead">Ações do Brasil e do mundo, criptomoedas, FIIs, REITs, ETFs, commodities, câmbio e índices.</div>
+          <div class="lead">Ações do Brasil e do mundo, criptomoedas, FIIs, REITs e ETFs, lado a lado na mesma análise.</div>
           <div class="big"><span data-count="120">0</span></div>
         </div>
         <div class="grid-assets" id="assetGrid"></div>
@@ -164,12 +165,7 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
           <div class="kicker">03 · Comparação</div>
           <div class="title">Quem foi mais<br>longe? Base 100.</div>
           <div class="lead">De 2 a 5 ativos partindo do mesmo ponto, com correlação e resumo de risco e retorno.</div>
-          <div class="chips">
-            <span class="chip" style="border-left:6px solid #d97706">BTC-USD</span>
-            <span class="chip" style="border-left:6px solid #1d4ed8">AAPL</span>
-            <span class="chip" style="border-left:6px solid #15803d">PETR4.SA</span>
-            <span class="chip" style="border-left:6px solid #111">S&amp;P 500</span>
-          </div>
+          <div class="chips" id="compareChips"></div>
           <svg id="corr" width="300" height="190" viewBox="0 0 300 190" style="margin-top:20px"></svg>
         </div>
         <div class="panel"><div class="panel-head"><span>Evolução em base 100</span><span>mesmo início</span></div>
@@ -276,12 +272,13 @@ const waveY = scaleTo(waveVals, 170, 40);
 document.getElementById("wave").setAttribute("d", pathOf(waveVals, 1280, waveY, 0));
 
 // ---------- catálogo ----------
-const assets = [["₿", "BTC-USD", "Bitcoin"], ["🇧🇷", "PETR4.SA", "Petrobras"], ["", "AAPL", "Apple"], ["🥇", "GC=F", "Ouro"],
-  ["📊", "^GSPC", "S&P 500"], ["💱", "USDBRL=X", "Dólar/Real"], ["🏠", "HGLG11.SA", "CSHG Log."], ["Ξ", "ETH-USD", "Ethereum"],
-  ["🇧🇷", "VALE3.SA", "Vale"], ["🛢️", "CL=F", "Petróleo"], ["🏢", "O", "Realty Income"], ["📈", "QQQ", "Nasdaq 100"],
-  ["◎", "SOL-USD", "Solana"], ["🇧🇷", "ITUB4.SA", "Itaú"], ["🇪🇺", "ASML", "ASML"], ["💵", "^TNX", "Treasury 10a"]];
-document.getElementById("assetGrid").innerHTML = assets.map((a, i) =>
-  `<div class="asset pop" style="--d:${.15 + i * .12}s"><i>${a[0]}</i><div><b>${a[1]}</b><small>${a[2]}</small></div></div>`).join("");
+// Logotipos reais, injetados pelo script de gravação (window.ARGOS_LOGOS = [{ticker, src}]).
+const LOGOS = window.ARGOS_LOGOS || [];
+const logoOf = ticker => (LOGOS.find(l => l.ticker === ticker) || {}).src;
+document.getElementById("assetGrid").innerHTML = LOGOS.length
+  ? LOGOS.slice(0, 35).map((l, i) =>
+      `<div class="logo-tile pop" style="--d:${.1 + i * .05}s"><img src="${l.src}" alt=""></div>`).join("")
+  : '<div class="grid-empty">Logotipos indisponíveis: grave pelo script scripts/gravar_video_recursos.py</div>';
 
 // ---------- preço ----------
 (() => { const svg = document.getElementById("priceChart"); gridLines(svg, 760, 440);
@@ -300,9 +297,17 @@ document.getElementById("assetGrid").innerHTML = assets.map((a, i) =>
   const base = el("line", { x1: 50, x2: 740, y1: y(100), y2: y(100), stroke: "#1f1f1f", "stroke-dasharray": "4 4" }, svg);
   const lb = el("text", { x: 54, y: y(100) - 6 }, svg); lb.textContent = "base 100";
   series.forEach((s, i) => drawPath(svg, pathOf(s[0], 760, y), s[1], 3, 3.2, .3 + i * .15));
-  const corr = document.getElementById("corr"); const names = ["BTC", "AAPL", "PETR4", "S&P"];
+  const COMPARED = [["BTC-USD", "#d97706"], ["AAPL", "#1d4ed8"], ["PETR4.SA", "#15803d"], ["MSFT", "#111"]];
+  document.getElementById("compareChips").innerHTML = COMPARED.map(([ticker, color]) => logoOf(ticker)
+    ? `<span class="chip logo-chip" style="border-left:6px solid ${color}"><img src="${logoOf(ticker)}" alt=""></span>`
+    : `<span class="chip" style="border-left:6px solid ${color}">${ticker}</span>`).join("");
+  const corr = document.getElementById("corr"); const names = COMPARED.map(([ticker]) => ticker);
   const m = [[1, .42, .21, .48], [.42, 1, .33, .81], [.21, .33, 1, .39], [.48, .81, .39, 1]];
-  names.forEach((n, i) => { const t = el("text", { x: 0, y: 42 + i * 38 }, corr); t.textContent = n; });
+  names.forEach((n, i) => {
+    const src = logoOf(n);
+    if (src) el("image", { href: src, x: 14, y: 22 + i * 38, width: 32, height: 32 }, corr);
+    else { const t = el("text", { x: 0, y: 42 + i * 38 }, corr); t.textContent = n.split(/[.-]/)[0]; }
+  });
   m.forEach((row, i) => row.forEach((c, j) => { el("rect", { x: 60 + j * 58, y: 20 + i * 38, width: 56, height: 36, fill: `rgba(200,16,46,${c})`, stroke: "#1f1f1f", "stroke-width": .5, class: "pop", style: `--d:${1 + (i + j) * .12}s` }, corr);
     const t = el("text", { x: 76 + j * 58, y: 43 + i * 38, class: "fade", style: `--d:${1.3 + (i + j) * .12}s;fill:${c > .55 ? "#fff" : "#111"}` }, corr); t.textContent = c.toFixed(2); }));
 })();

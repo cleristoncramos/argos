@@ -58,9 +58,17 @@ SPECIAL_LOGO_MAP = {
 }
 
 
+# A fonte devolve uma imagem em branco para estes tickers (verificado em
+# 24/10/2026); sem logo, a interface mostra o ícone de reserva.
+BLANK_LOGOS = {"V", "QQQ"}
+
+
 @lru_cache(maxsize=256)
 def _remote_logo_url(ticker: str, group: str) -> Optional[str]:
     ticker_upper = ticker.upper()
+
+    if ticker_upper in BLANK_LOGOS:
+        return None
 
     if ticker_upper in SPECIAL_LOGO_MAP:
         return SPECIAL_LOGO_MAP[ticker_upper]

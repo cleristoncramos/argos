@@ -118,7 +118,6 @@ def _monogram(ticker: str) -> str:
 def _mosaic_tile(asset: Mapping[str, str], logo_url: Optional[str]) -> str:
     ticker = escape(asset["ticker"])
     name = escape(asset["name"])
-    asset_class = escape(asset["class"])
     color = escape(asset.get("category_color", "#5f5f5f"))
     fallback = escape(asset.get("icon") or _monogram(asset["ticker"]))
     monogram = escape(_monogram(asset["ticker"]))
@@ -134,8 +133,7 @@ def _mosaic_tile(asset: Mapping[str, str], logo_url: Optional[str]) -> str:
     return (
         f'<div class="tile" style="--c:{color}">{badge}'
         f'<span class="txt"><span class="tk">{ticker}</span>'
-        f'<span class="nm">{name}</span></span>'
-        f'<span class="cls">{asset_class}</span></div>'
+        f'<span class="nm">{name}</span></span></div>'
     )
 
 
@@ -147,7 +145,8 @@ def build_mosaic_html(
     """Documento HTML do mosaico animado (faixas que deslizam em sentidos alternados)."""
     mixed = _interleave_by_class(list(assets))
     lanes = [mixed[i::rows] for i in range(rows)]
-    durations = (140, 170, 155, 185)
+    # Cerca de 30 px/s: devagar o bastante para ler ticker e nome.
+    durations = (280, 320, 300, 340)
     lanes_html = []
     for index, lane in enumerate(lanes):
         tiles = "".join(_mosaic_tile(a, logo_for(a["ticker"], a["group"])) for a in lane)
@@ -171,21 +170,19 @@ html,body{margin:0;background:transparent;font-family:"Source Sans 3","Source Sa
 .track{display:flex;gap:12px;width:max-content;animation:slide var(--d) linear infinite;animation-direction:var(--dir)}
 .mosaic:hover .track{animation-play-state:paused}
 @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.tile{position:relative;display:flex;align-items:center;gap:12px;min-width:240px;padding:10px 14px 10px 12px;
+.tile{position:relative;display:flex;align-items:center;gap:12px;min-width:196px;padding:8px 14px 8px 10px;
   background:linear-gradient(180deg,#fff 0%,#faf9f6 100%);border:1px solid #2a2a2a;
   box-shadow:0 6px 14px rgba(17,17,17,.08);transition:transform .2s ease,box-shadow .2s ease}
 .tile::before{content:"";position:absolute;left:-1px;top:-1px;bottom:-1px;width:4px;background:var(--c)}
 .tile:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(17,17,17,.14)}
-.logo{position:relative;flex:none;width:42px;height:42px;background:#fff;border:1px solid #d6d3cc;display:grid;place-items:center;overflow:hidden}
+.logo{position:relative;flex:none;width:54px;height:54px;background:#fff;border:1px solid #d6d3cc;display:grid;place-items:center;overflow:hidden}
 .logo img{width:80%;height:80%;object-fit:contain;position:relative;z-index:1}
 .logo b{position:absolute;inset:0;display:none;place-items:center;font-size:.7rem;color:#fff;background:var(--c)}
 .logo.fallback b{display:grid}
 .logo.emoji{font-size:1.35rem;background:#f3f1ec}
 .txt{display:flex;flex-direction:column;min-width:0}
 .tk{color:#111;font-weight:700;font-size:.88rem;letter-spacing:.02em;font-family:"JetBrains Mono",ui-monospace,Consolas,monospace}
-.nm{color:#5f5f5f;font-size:.76rem;white-space:nowrap;max-width:132px;overflow:hidden;text-overflow:ellipsis}
-.cls{margin-left:auto;padding:2px 7px;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--c);background:#f6f4ef;border:1px solid #d6d3cc;white-space:nowrap}
+.nm{color:#5f5f5f;font-size:.76rem;white-space:nowrap;max-width:118px;overflow:hidden;text-overflow:ellipsis}
 @media (prefers-reduced-motion:reduce){.track{animation:none}}
 </style></head><body><div class="mosaic">{{LANES}}</div></body></html>"""
 
