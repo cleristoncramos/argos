@@ -1,6 +1,6 @@
 # Arquitetura do Sistema — Argos
 
-**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 787 passando, cobertura de `core/` em 100% (2.255 instruções)
+**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 792 passando, cobertura de `core/` em 100% (2.255 instruções)
 
 Este documento descreve como o Argos é organizado: camadas, módulos, páginas, fluxo de dados, configuração e convenções. Os cálculos estão detalhados em `docs/metodologia_de_calculo.md`; as fontes e o tratamento dos dados, em `docs/fontes_e_tratamento_de_dados.md`; o catálogo de ativos, em `docs/catalogo-de-ativos.md`; a explicação assistida, em `docs/llm_7b_implementacao.md`.
 
@@ -64,6 +64,7 @@ argos/
 │   │   ├── landing.py               # Blocos HTML da página inicial e do modal (testáveis)
 │   │   ├── llm_explain.py           # Botão e exibição da explicação assistida
 │   │   ├── metric_card.py           # Card de métrica
+│   │   ├── pages.py                 # Ordem oficial das páginas (menu, home e Get Started)
 │   │   ├── sidebar.py               # Seleção de ativo, período e frequência
 │   │   ├── state.py                 # Estado inicial da sessão
 │   │   └── tables.py                # Tabelas padronizadas
@@ -162,17 +163,17 @@ argos/
 
 ## 6. Páginas e navegação
 
-A navegação é registrada em `app/main.py` com `st.navigation`. A página inicial é a padrão; nas demais, o item "Início" fica oculto no menu e um ícone de casa leva de volta a ela.
+A navegação é registrada em `app/main.py` com `st.navigation`, a partir da lista única de `app/ui/pages.py`, que também define a ordem dos atalhos "Primeiros passos" da página inicial e o destino do botão **Get Started** (a primeira página). A ordem segue o fluxo de estudo: análises primeiro e "Sobre o Projeto" por último, como informação institucional. A página inicial é a padrão; nas demais, o item "Início" fica oculto no menu e um ícone de casa leva de volta a ela.
 
 | Página | Arquivo | O que faz |
 | --- | --- | --- |
 | Início | `views/home.py` | Apresentação, botão **Get Started**, vídeo dos recursos, mosaico animado do catálogo, tutorial em 3 passos, atalhos para os módulos e botão do modal acadêmico; sem barra lateral |
-| Sobre o Projeto | `views/sobre_projeto.py` | Propósito, módulos, contexto acadêmico e aviso legal |
 | Análise Individual | `views/analise_individual.py` | Série temporal, estatísticas, volatilidade mensal anualizada, variação por período, padrões sazonais e recorte por anos, meses e janela de retorno |
 | Comparação de Ativos | `views/comparacao_ativos.py` | De 2 a 5 ativos, escolhidos por grupo com filtros opcionais de subclasse e mercado: base 100, período comum opcional, risco, correlação, sazonalidade comparada, tendência histórica (retorno móvel e razão) e dados tabulares |
 | Indicadores Técnicos | `views/indicadores_tecnicos.py` | Linha ou candles, médias móveis, Bollinger, RSI, MACD, ATR, volatilidade móvel e volume |
 | Risco e Retorno | `views/risco_retorno.py` | Retorno, volatilidade, Sharpe, drawdown (com data), melhor e pior período, distribuição de retornos |
 | Simulação de Aportes | `views/simulacao_aportes.py` | Simulação histórica com valor hipotético; não é recomendação nem previsão |
+| Sobre o Projeto | `views/sobre_projeto.py` | Propósito, módulos, contexto acadêmico e aviso legal |
 
 **Modal acadêmico.** O botão "Informações acadêmicas" da página inicial abre `app/ui/academic_dialog.py` (`st.dialog`), com três abas: identificação do trabalho, tecnologias e bases de dados. O conteúdo é montado por funções puras de `app/ui/landing.py`, cobertas por `tests/test_landing.py`.
 
@@ -299,7 +300,7 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 ## 13. Testes e qualidade
 
-- **787 testes**, cobertura de `core/` em **100%** (2.255 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
+- **792 testes**, cobertura de `core/` em **100%** (2.255 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
 - `app/` **não** tem testes de renderização: páginas e componentes são conferidos manualmente no navegador (roteiro em `docs/roteiro_conferencia_navegador.md`). Há, porém:
   - **testes de componentes** que montam o HTML e o layout dos gráficos de `app/ui` sem o Streamlit (`test_ui_components.py`, `test_landing.py`), verificando escape de texto, conteúdo do modal, layout base dos gráficos e ausência de cantos arredondados no CSS próprio;
   - **testes estruturais** que leem o código-fonte das páginas (`test_chart_guides.py`, `test_simulation_texts.py`): todo gráfico tem roteiro de leitura, os textos novos usam linguagem neutra e o texto obrigatório da simulação está presente.

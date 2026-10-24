@@ -10,10 +10,10 @@ if PROJECT_ROOT not in sys.path:
 
 from app.ui.academic_dialog import show_academic_dialog  # noqa: E402
 from app.ui.landing import FEATURES_VIDEO, build_mosaic_html, catalog_stats  # noqa: E402
+from app.ui.pages import MENU_PAGES, START_PAGE  # noqa: E402
 from core.asset_logos import get_asset_logo_url  # noqa: E402
 from core.assets import ASSETS  # noqa: E402
 
-ANALYSIS_PAGE = "views/analise_individual.py"
 
 # ==========================================================
 # ESTILO DA PÁGINA INICIAL (tema claro com profundidade, cantos retos)
@@ -195,7 +195,7 @@ with col_text:
     cta_start, cta_academic = st.columns(2)
     with cta_start, st.container(key="cta_start"):
         if st.button("Get Started  →", use_container_width=True):
-            st.switch_page(ANALYSIS_PAGE)
+            st.switch_page(START_PAGE.path)
     with cta_academic, st.container(key="cta_academic"):
         if st.button("Informações acadêmicas", use_container_width=True):
             show_academic_dialog()
@@ -273,34 +273,20 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-FIRST_STEPS = [
-    ("📈", "Análise Individual", "Preço, volatilidade mensal e sazonalidade de um ativo ao longo do tempo.",
-     "views/analise_individual.py"),
-    ("⚖️", "Comparação de Ativos", "De 2 a 5 ativos em base 100, correlação e resumo de risco e retorno.",
-     "views/comparacao_ativos.py"),
-    ("📉", "Indicadores Técnicos", "Médias móveis, Bandas de Bollinger, RSI e MACD com guias de leitura.",
-     "views/indicadores_tecnicos.py"),
-    ("⚠️", "Risco e Retorno", "Volatilidade, Sharpe, drawdown máximo e distribuição dos retornos.",
-     "views/risco_retorno.py"),
-    ("🧪", "Simulação de Aportes", "E se eu tivesse investido? Simulação histórica, sem custos nem impostos.",
-     "views/simulacao_aportes.py"),
-    ("📊", "Sobre o Projeto", "Objetivos, metodologia de cálculo, fontes de dados e limitações.",
-     "views/sobre_projeto.py"),
-]
-
-for row_start in range(0, len(FIRST_STEPS), 3):
+# Mesma ordem do menu principal (app/ui/pages.py)
+for row_start in range(0, len(MENU_PAGES), 3):
     columns = st.columns(3, gap="small")
     for offset, column in enumerate(columns):
         index = row_start + offset
-        icon, title, description, page = FIRST_STEPS[index]
+        spec = MENU_PAGES[index]
         with column, st.container(key=f"fs_{index}"):
             st.markdown(
-                f'<div class="fs-top"><span class="fs-icon">{icon}</span>'
+                f'<div class="fs-top"><span class="fs-icon">{spec.icon}</span>'
                 f'<span class="fs-n">{index + 1:02d}</span></div>'
-                f'<div class="fs-title">{title}</div><div class="fs-desc">{description}</div>',
+                f'<div class="fs-title">{spec.title}</div><div class="fs-desc">{spec.description}</div>',
                 unsafe_allow_html=True,
             )
-            st.page_link(page, label="Abrir módulo →")
+            st.page_link(spec.path, label="Abrir módulo →")
 
 # ==========================================================
 # RODAPÉ

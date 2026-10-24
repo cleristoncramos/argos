@@ -18,6 +18,7 @@ reload_if_changed(Path(PROJECT_ROOT))
 
 from app.ui.demo_banner import render_demo_banner
 from app.ui.design import apply_global_style
+from app.ui.pages import HOME_PAGE, MENU_PAGES
 
 # ==========================================================
 # 0. Bloqueio do tradutor via injeção JS no documento pai
@@ -77,28 +78,17 @@ st.set_page_config(
 # ==========================================================
 # 2. Definição Explícita das Páginas
 # ==========================================================
-home_page = st.Page("views/home.py", title="Início", icon="🏠", default=True)
-sobre_page = st.Page("views/sobre_projeto.py", title="Sobre o Projeto", icon="📊")
-analise_page = st.Page("views/analise_individual.py", title="Análise Individual", icon="📈")
-comparacao_page = st.Page("views/comparacao_ativos.py", title="Comparação de Ativos", icon="⚖️")
-indicadores_page = st.Page("views/indicadores_tecnicos.py", title="Indicadores Técnicos", icon="📉")
-risco_page = st.Page("views/risco_retorno.py", title="Risco e Retorno", icon="⚠️")
-simulacao_page = st.Page("views/simulacao_aportes.py", title="Simulação de Aportes", icon="🧪")
+# A ordem vem de app/ui/pages.py, a mesma dos "Primeiros passos" da home:
+# análises primeiro, "Sobre o Projeto" por último.
+home_page = st.Page(HOME_PAGE.path, title=HOME_PAGE.title, icon=HOME_PAGE.icon, default=True)
+menu_pages = [st.Page(spec.path, title=spec.title, icon=spec.icon) for spec in MENU_PAGES]
 
 
 # ==========================================================
 # 3. Configuração do Menu de Navegação Nativo
 # ==========================================================
 pg = st.navigation({
-    "Menu Principal": [
-        home_page,  
-        sobre_page,
-        analise_page,
-        comparacao_page,
-        indicadores_page,
-        risco_page,
-        simulacao_page,
-    ]
+    "Menu Principal": [home_page, *menu_pages]
 })
 
 
