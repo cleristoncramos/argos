@@ -131,7 +131,7 @@ Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferra
 
 ### Sobre o Projeto
 
-- Contexto e público, pergunta de pesquisa e objetivos com a situação de cada um, os seis módulos de análise, metodologia, dados e catálogo, qualidade, escopo e contexto acadêmico.
+- Contexto e público, objetivos da pesquisa em linhas gerais, os seis módulos de análise, metodologia, dados e catálogo, qualidade, escopo e contexto acadêmico.
 
 ### Explicação assistida por IA (opcional, desligada por padrão)
 

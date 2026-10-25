@@ -17,34 +17,30 @@ from app.ui.pages import ANALYSIS_PAGES
 
 SUBTITLE = "Plataforma de Análise Histórica de Ativos Financeiros"
 
-RESEARCH_QUESTION = (
-    "Em que medida indicadores técnicos clássicos (tendência, momentum, volatilidade e "
-    "volume), calculados sobre dados históricos de múltiplas classes de ativos, podem ser "
-    "organizados em uma ferramenta de apoio à interpretação de dados financeiros que seja "
-    "compreensível para usuários sem formação em finanças, preservando rigor metodológico e "
-    "sem configurar recomendação de investimento?"
+RESEARCH_AIM = (
+    "A pesquisa investiga como dados históricos do mercado financeiro e indicadores técnicos "
+    "clássicos podem ser organizados em uma ferramenta compreensível para pessoas sem formação "
+    "em finanças, com rigor metodológico e sem configurar recomendação de investimento."
 )
 
-GENERAL_OBJECTIVE = (
-    "Desenvolver e avaliar uma ferramenta de apoio à interpretação de dados históricos do "
-    "mercado financeiro que organize indicadores técnicos clássicos de forma compreensível "
-    "para pessoas sem formação em finanças, com rigor metodológico e sem configurar "
-    "recomendação de investimento."
+# (título, texto) dos objetivos, em linhas gerais.
+RESEARCH_GOALS = (
+    ("Organizar e explicar",
+     "Reunir dados de diferentes classes de ativos, calcular métricas e indicadores de forma "
+     "verificável e explicar cada resultado em linguagem simples, deixando claro o que ele "
+     "permite e o que não permite concluir."),
+    ("Avaliar a compreensão",
+     "Verificar, com pessoas sem formação em finanças, se a ferramenta de fato ajuda a "
+     "interpretar o comportamento histórico dos ativos."),
+    ("Ampliar as análises",
+     "Conforme o projeto avançar, incorporar técnicas de aprendizado de máquina em análises "
+     "mais avançadas e estudar os fatores que influenciam o comportamento dos investimentos, "
+     "mantendo o caráter educacional."),
 )
 
-# (código, objetivo, situação, concluído?)
-SPECIFIC_OBJECTIVES = (
-    ("O1", "Selecionar e documentar indicadores com fórmula, parâmetros e limitações",
-     "Concluído", True),
-    ("O2", "Implementar os cálculos de forma reprodutível e verificada, sem informação futura",
-     "Concluído; testes contra valores de referência independentes em andamento", True),
-    ("O3", "Construir uma camada educativa para usuários sem formação em finanças",
-     "Concluído", True),
-    ("O4", "Garantir linguagem neutra e separar informação histórica, interpretação, "
-           "simulação e recomendação", "Concluído", True),
-    ("O5", "Documentar fontes, tratamento dos dados e limitações", "Concluído", True),
-    ("O6", "Avaliar a compreensão da ferramenta por usuários sem formação em finanças",
-     "Aguarda parecer do Comitê de Ética em Pesquisa", False),
+RESEARCH_NOTE = (
+    "O recorte da pesquisa segue em definição com a orientação e pode ser ajustado conforme "
+    "os resultados do projeto."
 )
 
 # Pergunta que cada módulo responde e o que oferece, por caminho da página.
@@ -175,18 +171,16 @@ def build_context_html() -> str:
 
 
 def build_research_html() -> str:
-    rows = "".join(
-        f'<tr><td class="ab-code">{escape(code)}</td><td>{escape(goal)}</td>'
-        f'<td><span class="ab-status {"ok" if done else "pending"}">{escape(status)}</span></td></tr>'
-        for code, goal, status, done in SPECIFIC_OBJECTIVES
+    cards = "".join(
+        f'<div class="ab-card"><h3>{escape(title)}</h3><p>{escape(text)}</p></div>'
+        for title, text in RESEARCH_GOALS
     )
     body = (
-        f'<blockquote class="ab-question">{escape(RESEARCH_QUESTION)}</blockquote>'
-        f'<div class="ab-card ab-objective"><h3>Objetivo geral</h3><p>{escape(GENERAL_OBJECTIVE)}</p></div>'
-        '<table class="ab-table"><thead><tr><th>#</th><th>Objetivo específico</th><th>Situação</th></tr></thead>'
-        f"<tbody>{rows}</tbody></table>"
+        f'<p class="ab-aim">{escape(RESEARCH_AIM)}</p>'
+        f'<div class="ab-cards ab-cards-3">{cards}</div>'
+        f'<p class="ab-note">{escape(RESEARCH_NOTE)}</p>'
     )
-    return _section("02 · Pesquisa", "Pergunta de pesquisa e objetivos", body)
+    return _section("02 · Pesquisa", "O que a pesquisa busca", body)
 
 
 def build_modules_html() -> str:
@@ -309,9 +303,8 @@ ABOUT_CSS = """
 .ab-n { font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; font-size: .74rem; color: #5f5f5f; }
 .ab-module h3 { margin-top: 8px !important; }
 .ab-q { color: #c8102e !important; font-weight: 600; }
-.ab-question { margin: 14px 0 0; padding: 18px 22px; border: 1px solid #2a2a2a; border-left: 4px solid #c8102e;
-  background: linear-gradient(90deg, rgba(200,16,46,.06), #fff 60%); font-size: 1.05rem; line-height: 1.65; color: #111; font-style: italic; }
-.ab-objective { margin-top: 14px; border-top-color: #111; }
+.ab-aim { margin: 14px 0 0; padding: 18px 22px; border: 1px solid #2a2a2a; border-left: 4px solid #c8102e;
+  background: linear-gradient(90deg, rgba(200,16,46,.06), #fff 60%); font-size: 1.05rem; line-height: 1.65; color: #111; }
 .ab-table { width: 100%; margin-top: 14px; border-collapse: collapse; border: 1px solid #2a2a2a; background: #fff;
   box-shadow: 0 8px 22px rgba(17,17,17,.06); font-size: .9rem; }
 .ab-table th, .ab-table td { padding: 10px 14px; text-align: left; vertical-align: top; border: 0; border-bottom: 1px solid #e4e1da; color: #111; }
@@ -319,10 +312,6 @@ ABOUT_CSS = """
 .ab-table thead th { background: linear-gradient(180deg, #2b2b31, #1b1b1f); color: #fff; font-size: .72rem; letter-spacing: .1em;
   text-transform: uppercase; border-bottom: 2px solid #c8102e; }
 .ab-kv tbody th { width: 220px; background: #f6f4ef; font-weight: 700; border-right: 1px solid #2a2a2a; }
-.ab-code { width: 56px; font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; font-weight: 700; color: #c8102e !important; }
-.ab-status { display: inline-block; padding: 2px 8px; font-size: .78rem; font-weight: 700; border: 1px solid; }
-.ab-status.ok { color: #166534; border-color: #166534; background: #f0fdf4; }
-.ab-status.pending { color: #92400e; border-color: #92400e; background: #fffbeb; }
 .ab-groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
 .ab-group { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 10px 14px; background: #fff;
   border: 1px solid #2a2a2a; box-shadow: 0 4px 12px rgba(17,17,17,.05); }

@@ -30,13 +30,16 @@ def test_page_no_longer_has_the_welcome_banner_or_inaccurate_claims():
     assert "tempo real" not in html.replace("Dados em tempo real: as séries são históricas", "")
 
 
-def test_research_question_and_all_objectives_are_shown():
-    html = _page_html()
-    assert about.RESEARCH_QUESTION in html
-    assert about.GENERAL_OBJECTIVE in html
-    for code in ("O1", "O2", "O3", "O4", "O5", "O6"):
-        assert f">{code}<" in html
-    assert "Comitê de Ética em Pesquisa" in html  # O6 ainda pendente
+def test_research_section_is_a_short_overview():
+    html = about.build_research_html()
+    assert about.RESEARCH_AIM in html
+    assert html.count('class="ab-card"') == len(about.RESEARCH_GOALS)
+    for title, _ in about.RESEARCH_GOALS:
+        assert title in html
+    assert "aprendizado de máquina" in html
+    # Sem pergunta fechada nem situação de cada objetivo.
+    assert "Pergunta de pesquisa" not in html
+    assert "Situação" not in html
 
 
 def test_modules_follow_the_menu_order():
