@@ -173,6 +173,45 @@ Item A8 do plano de ampliação, aprovado em 24/10/2026. O bloco fica na Anális
 
 ---
 
+## 2.5 Comparação com uma referência (`benchmark.py`)
+
+Item A2 do plano de ampliação, aprovado em 24/10/2026. O bloco fica na Análise Individual, logo depois do gráfico "Evolução Temporal". A referência serve **só de contexto**: não é meta, e não há beta, regressão nem detecção de cruzamentos. A decisão N07 continua valendo.
+
+- **Referências disponíveis**, todas do catálogo: Ibovespa (`^BVSP`), S&P 500 (`^GSPC`), Bitcoin (`BTC-USD`) e Ouro, contrato futuro (`GC=F`).
+- **Sugestão automática.** A tela mostra o motivo de cada sugestão.
+
+| Ativo | Referência sugerida | Motivo exibido |
+| --- | --- | --- |
+| Ações Brasil e ETFs de ações da B3 | Ibovespa | Principal índice de ações da B3 |
+| `IVVB11.SA` | S&P 500 | ETF que acompanha o S&P 500, em reais |
+| Ações dos EUA, ETFs de ações e REITs com mercado "EUA" | S&P 500 | Reúne 500 grandes empresas dos EUA |
+| Criptomoedas (inclusive digitadas, sufixo `-USD`) e `HASH11.SA` | Bitcoin | Maior criptomoeda por capitalização |
+| `GOLD11.SA` | Ouro (`GC=F`) | Acompanha o preço do ouro |
+| FIIs | **Nenhuma** | Não há índice de FIIs (IFIX) na fonte: `IFIX.SA` retorna uma única observação (24/10/2026), e o Ibovespa, de ações, não representaria bem esse mercado |
+| Europa, Ásia, ETFs globais e de renda fixa, índices, câmbio, futuros, taxas e tickers digitados fora desses casos | **Nenhuma** | Sem referência adequada no catálogo. O parecer prefere não mostrar a forçar uma escolha pouco representativa |
+
+- **Escolha do usuário.** Uma lista permite trocar a referência ou **desativar** a comparação ("Nenhuma"). A sugestão aparece marcada como "sugerida". O próprio ativo nunca aparece como referência de si mesmo.
+- **Alinhamento.** As duas séries usam o período carregado e a frequência escolhida, e a comparação considera **só as datas comuns**.
+  - Na frequência diária, alinha pela data.
+  - Nas agregadas, alinha pelo fim do período (`PeriodEnd`), porque o último pregão de cada mercado pode cair em dias diferentes. A data exibida é a do último pregão do ativo no período.
+  - As duas séries recebem Base 100 na primeira data comum.
+- **Texto.** "Entre [data] e [data] (datas comuns aos dois), o ativo variou X% e a referência, Y%". O texto não diz que um "superou" o outro.
+- **Avisos automáticos.**
+  - índice em pontos: a Base 100 compara só a variação percentual;
+  - moedas diferentes ou índice de empresas cotadas em outra moeda: parte da diferença pode vir do câmbio. Exemplos: `IVVB11` × S&P 500, `HASH11` × Bitcoin, `GOLD11` × ouro;
+  - na frequência diária, criptomoeda comparada com ativo de bolsa: o calendário é diferente e só entram as datas comuns;
+  - frequência semestral ou anual: poucos pontos de comparação.
+- **Falta de dados da referência.** Se não houver dados da referência em datas comuns, a tela informa e não exibe o gráfico. É o caso do modo de demonstração quando a referência não está no pacote salvo.
+- **Explicação assistida.** O bloco usa só o roteiro fixo "Como ler este gráfico" (`referencia_base100`). O contexto enviado à LLM não foi alterado, conforme o parecer.
+
+**Limitações.**
+
+- A Base 100 depende da data inicial: começar em outro dia muda o desenho.
+- Nenhuma referência representa perfeitamente todos os ativos da categoria.
+- Os valores consideram só o preço de fechamento, sem dividendos.
+
+---
+
 ## 3. Indicadores técnicos (`indicators.py`, `indicators_extra.py`)
 
 Os indicadores são **transformações matemáticas do histórico**. O Argos os usa para descrever tendência, momentum e dispersão, e **não** os converte em sinais de compra ou venda. As descrições exibidas na interface vêm de `core/indicator_docs.py`.

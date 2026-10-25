@@ -1,6 +1,6 @@
 # Arquitetura do Sistema — Argos
 
-**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 864 passando, cobertura de `core/` em 100% (2.563 instruções)
+**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 888 passando, cobertura de `core/` em 100% (2.642 instruções)
 
 Este documento descreve como o Argos é organizado: camadas, módulos, páginas, fluxo de dados, configuração e convenções. Os cálculos estão detalhados em `docs/metodologia_de_calculo.md`; as fontes e o tratamento dos dados, em `docs/fontes_e_tratamento_de_dados.md`; o catálogo de ativos, em `docs/catalogo-de-ativos.md`; a explicação assistida, em `docs/llm_7b_implementacao.md`.
 
@@ -123,6 +123,7 @@ argos/
 | `data_availability.py` | Período solicitado × período disponível, número de observações e avisos |
 | `data_quality.py` | Alertas de qualidade da série diária (mudança de patamar desfeita, variação atípica, preço repetido, volume ausente, intervalos sem dados, histórico curto), com limiares por tipo de série |
 | `drawdown_episodes.py` | Episódios de queda (pico, fundo, recuperação) e durações; quedas não recuperadas sem estimativa |
+| `benchmark.py` | Referência de comparação sugerida por ativo (Ibovespa, S&P 500, Bitcoin, ouro), alinhamento em Base 100 nas datas comuns e avisos de moeda e calendário |
 | `extreme_moves.py` | Variações entre fechamentos consecutivos, maiores altas e quedas, contagem por direção e marca de período em andamento |
 | `trailing_returns.py` | Variação por prazo (1 mês a 10 anos) até a última observação, com datas efetivas e taxa equivalente ao ano |
 | `currency.py` | Unidade de cotação de cada ativo (moeda, taxa em %, pontos) |
@@ -312,7 +313,7 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 ## 13. Testes e qualidade
 
-- **864 testes**, cobertura de `core/` em **100%** (2.563 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
+- **888 testes**, cobertura de `core/` em **100%** (2.642 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
 - `app/` **não** tem testes de renderização: páginas e componentes são conferidos manualmente no navegador (roteiro em `docs/roteiro_conferencia_navegador.md`). Há, porém:
   - **testes de componentes** que montam o HTML e o layout dos gráficos de `app/ui` sem o Streamlit (`test_ui_components.py`, `test_landing.py`), verificando escape de texto, conteúdo do modal, layout base dos gráficos e ausência de cantos arredondados no CSS próprio;
   - **testes estruturais** que leem o código-fonte das páginas (`test_chart_guides.py`, `test_simulation_texts.py`): todo gráfico tem roteiro de leitura, os textos novos usam linguagem neutra e o texto obrigatório da simulação está presente.

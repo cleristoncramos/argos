@@ -5,7 +5,7 @@
 [![Aplicação online](https://img.shields.io/badge/app-argos--datalab.streamlit.app-C8102E)](https://argos-datalab.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.63-FF4B4B?logo=streamlit&logoColor=white)
-![Testes](https://img.shields.io/badge/testes-864%20aprovados-2E7D32)
+![Testes](https://img.shields.io/badge/testes-888%20aprovados-2E7D32)
 ![Cobertura](https://img.shields.io/badge/cobertura%20do%20core-100%25-2E7D32)
 ![PIBITI UFPI](https://img.shields.io/badge/PIBITI-UFPI%202026%E2%80%932027-1F1F1F)
 
@@ -87,6 +87,7 @@ Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferra
 - Painel de disponibilidade de dados (período solicitado × disponível) e exportação em CSV.
 - Variação por prazo (1, 3 e 6 meses, no ano, 1, 2, 3, 5 e 10 anos), com as datas usadas, variação acumulada e taxa equivalente ao ano; a base é o período carregado.
 - Maiores altas e quedas do período na frequência escolhida, com as datas e os fechamentos comparados, e a contagem de variações positivas e negativas.
+- Comparação com uma referência de mercado em Base 100 (Ibovespa, S&P 500, Bitcoin ou ouro), sugerida conforme o ativo, com motivo explicado, datas comuns, avisos de moeda e calendário e opção de trocar ou desativar.
 - Alertas de qualidade dos dados: mudança de patamar que se desfaz em poucos dias, variações diárias atípicas, preço sem variação, dias sem volume, intervalos sem dados e histórico curto. Os alertas indicam o que merece atenção, sem afirmar erro ou irregularidade (também na Comparação, por ativo).
 
 ### Comparação de Ativos
@@ -363,7 +364,7 @@ Depois, inicie a aplicação com `ARGOS_DEMO_MODE=true`. Um aviso na interface i
 
 ## Testes e qualidade
 
-A suíte possui **864 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
+A suíte possui **888 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
 
 - integridade do catálogo e validação de tickers e datas;
 - tratamento de dados, lacunas de calendário e agregação por frequência;

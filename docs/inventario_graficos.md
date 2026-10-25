@@ -9,6 +9,7 @@ da explicação assistida (Bloco 7).
 | Página | Gráfico / bloco | Identificador do roteiro | Caixa "O que significa?" já existente |
 | --- | --- | --- | --- |
 | Análise Individual | Evolução temporal | `evolucao_temporal` | — |
+| Análise Individual | Comparação com uma referência, Base 100 (A2, 24/10/2026) | `referencia_base100` | — |
 | Análise Individual | Volatilidade anualizada por mês | `volatilidade_mensal` | `volatilidade` |
 | Análise Individual | Variação percentual | `variacao_percentual` | — |
 | Análise Individual | Mapa de calor sazonal | `mapa_sazonal` | `sazonalidade` |

@@ -116,6 +116,13 @@ from core.formatters import format_number_br
 from core.llm_builders import individual_context, window_context
 from core.returns_utils import simple_returns
 from core.trailing_returns import base_description, trailing_returns
+from core.benchmark import (
+    BENCHMARKS,
+    align_with_benchmark,
+    benchmark_notes,
+    describe_comparison,
+    suggest_benchmark,
+)
 from core.extreme_moves import (
     DEFAULT_TOP as EXTREMES_TOP,
     direction_counts,
@@ -496,6 +503,94 @@ fig_line = apply_custom_layout(fig_line)
 with st.container(border=True):
     st.plotly_chart(fig_line, use_container_width=True, config=PLOTLY_CONFIG)
     render_chart_guide("evolucao_temporal")
+
+# -------------------------------------------------------
+# Comparação com uma referência (A2): contexto em Base 100
+# -------------------------------------------------------
+st.markdown("#### Comparação com uma referência")
+st.markdown(
+    "Para dar contexto, a trajetória do ativo pode ser vista ao lado de uma referência "
+    "de mercado, as duas começando em 100. A referência é **só um ponto de comparação**: "
+    "não é uma meta nem indica o que o ativo deveria ter feito."
+)
+
+suggestion = suggest_benchmark(symbol, current_asset)
+NO_REFERENCE = "Nenhuma (desativar)"
+reference_options = [NO_REFERENCE] + [
+    ticker for ticker in BENCHMARKS if ticker.upper() != symbol.upper()
+]
+
+
+def reference_label(option: str) -> str:
+    if option == NO_REFERENCE:
+        return option
+    label = f"{BENCHMARKS[option]} ({option})"
+    return f"{label} · sugerida" if option == suggestion.ticker else label
+
+
+reference = st.selectbox(
+    "Referência de comparação",
+    reference_options,
+    index=reference_options.index(suggestion.ticker) if suggestion.ticker in reference_options else 0,
+    format_func=reference_label,
+    key=f"reference_{symbol}",
+)
+
+if suggestion.ticker:
+    st.caption(f"Sugestão automática: {BENCHMARKS[suggestion.ticker]}, porque {suggestion.reason}.")
+else:
+    st.caption(
+        f"Sem referência sugerida para este ativo: {suggestion.reason}. Você pode escolher "
+        "uma referência na lista ou deixá-la desativada."
+    )
+
+if reference != NO_REFERENCE:
+    try:
+        reference_raw = download_active_data(
+            symbol=reference,
+            start_date=start_date.strftime("%Y-%m-%d"),
+            end_date=end_date.strftime("%Y-%m-%d"),
+            interval="1d",
+        )
+    except Exception:
+        reference_raw = None
+
+    aligned = pd.DataFrame()
+    if reference_raw is not None and not reference_raw.empty:
+        reference_df = select_primary_variable(
+            aggregate_by_frequency(prepare_dataframe(reference_raw), frequency), "Close"
+        )
+        aligned = align_with_benchmark(df, reference_df, frequency)
+
+    if aligned.empty:
+        st.info(
+            f"Não foi possível obter dados de {BENCHMARKS[reference]} em datas comuns com o "
+            "ativo neste período."
+        )
+    else:
+        st.markdown(describe_comparison(aligned, symbol.upper(), BENCHMARKS[reference]))
+        fig_reference = go.Figure()
+        fig_reference.add_trace(go.Scatter(
+            x=aligned["Date"], y=aligned["Ativo"], name=symbol.upper(), mode="lines",
+            line=dict(color="#C8102E", width=2.5),
+            hovertemplate="%{x|%d/%m/%Y}<br>" + symbol.upper() + ": %{y:.1f}<extra></extra>",
+        ))
+        fig_reference.add_trace(go.Scatter(
+            x=aligned["Date"], y=aligned["Referência"], name=BENCHMARKS[reference], mode="lines",
+            line=dict(color="#475569", width=2, dash="dash"),
+            hovertemplate="%{x|%d/%m/%Y}<br>" + BENCHMARKS[reference] + ": %{y:.1f}<extra></extra>",
+        ))
+        fig_reference.add_hline(y=100, line_color="#94a3b8", line_width=1)
+        fig_reference = apply_custom_layout(fig_reference, show_legend=True)
+        fig_reference.update_layout(
+            yaxis_title="Base 100 (primeira data comum = 100)",
+            legend=dict(orientation="h", y=1.1, x=0),
+        )
+        with st.container(border=True):
+            st.plotly_chart(fig_reference, use_container_width=True, config=PLOTLY_CONFIG)
+            render_chart_guide("referencia_base100")
+        for note in benchmark_notes(symbol, reference, frequency):
+            st.caption(f"ℹ️ {note}")
 
 
 # =====================

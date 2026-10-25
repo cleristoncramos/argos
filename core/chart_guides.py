@@ -26,6 +26,12 @@ CHART_GUIDES: Dict[str, Dict[str, str]] = {
         "cuidado": "A escala do eixo e o período escolhido mudam a impressão visual. Os valores não incluem dividendos.",
         "nao_permite": "Concluir o que ocorrerá depois nem se o valor atual está alto ou baixo.",
     },
+    "referencia_base100": {
+        "mede": "A trajetória do ativo e de uma referência de mercado, as duas começando em 100 na primeira data comum.",
+        "mostra": "Se, no período, o ativo variou mais ou menos que a referência e em quais trechos as duas trajetórias se afastaram.",
+        "cuidado": "A referência é só um ponto de comparação, não uma meta. Moedas, unidades (pontos ou preço) e calendários podem diferir, e a escolha da data inicial muda o desenho.",
+        "nao_permite": "Concluir que a diferença observada continuará nem que o ativo deveria ter acompanhado a referência.",
+    },
     "volatilidade_mensal": {
         "mede": "A intensidade das oscilações dos retornos em cada mês, anualizada.",
         "mostra": "Quais meses tiveram oscilação maior ou menor; as barras em destaque são os meses de maior oscilação do período.",
