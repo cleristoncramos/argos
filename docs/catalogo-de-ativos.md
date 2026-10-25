@@ -1,12 +1,12 @@
-# 📚 Catálogo de Ativos — Argos DataLab
+# 📚 Catálogo de Ativos — Argos
 
-> Catálogo dos ativos financeiros disponibilizados pelo **Argos DataLab** para consulta, análise exploratória, comparação de desempenho, indicadores técnicos e métricas de risco.
+> Catálogo dos ativos financeiros disponibilizados pelo **Argos** para consulta, análise exploratória, comparação de desempenho, indicadores técnicos e métricas de risco.
 
 ---
 
 ## 1. Visão geral
 
-O **Argos DataLab** mantém um catálogo centralizado de ativos para padronizar a seleção, a organização e a identificação dos instrumentos usados pela aplicação.
+O **Argos** mantém um catálogo centralizado de ativos para padronizar a seleção, a organização e a identificação dos instrumentos usados pela aplicação.
 
 O catálogo é implementado em:
 
@@ -964,11 +964,11 @@ Antes de fazer commit de uma alteração no catálogo:
 
 ### 37.1 Aviso metodológico
 
-A presença de um ativo neste catálogo significa apenas que ele foi **selecionado para fazer parte do universo de análise do Argos DataLab**. Isso não significa recomendação de investimento, indicação de compra ou venda, avaliação de qualidade, previsão de valorização, garantia de liquidez ou garantia de disponibilidade permanente dos dados.
+A presença de um ativo neste catálogo significa apenas que ele foi **selecionado para fazer parte do universo de análise do Argos**. Isso não significa recomendação de investimento, indicação de compra ou venda, avaliação de qualidade, previsão de valorização, garantia de liquidez ou garantia de disponibilidade permanente dos dados.
 
 ### 37.2 Aviso acadêmico
 
-O Argos DataLab é desenvolvido para fins de pesquisa, estudo, ensino, análise exploratória e desenvolvimento tecnológico (PIBITI UFPI 2026–2027). As funcionalidades atuais constituem um **protótipo evolutivo**. O catálogo faz parte da infraestrutura metodológica do projeto e poderá ser atualizado conforme a pesquisa avança.
+O Argos é desenvolvido para fins de pesquisa, estudo, ensino, análise exploratória e desenvolvimento tecnológico (PIBITI UFPI 2026–2027). As funcionalidades atuais constituem um **protótipo evolutivo**. O catálogo faz parte da infraestrutura metodológica do projeto e poderá ser atualizado conforme a pesquisa avança.
 
 ---
 
@@ -1098,4 +1098,4 @@ O modo de demonstração usa um pacote de dados salvos com poucos ativos (`data/
 
 ---
 
-**Argos DataLab — Catálogo centralizado de ativos financeiros.**
+**Argos — Catálogo centralizado de ativos financeiros.**
