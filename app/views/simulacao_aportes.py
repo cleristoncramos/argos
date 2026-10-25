@@ -23,7 +23,8 @@ import streamlit as st
 
 from app.ui.page_header import render_page_header
 from app.ui.data_info import render_analysis_summary, render_availability_messages
-from app.ui.what_if import WHAT_IF_CSS, WHAT_IF_HOW_TO_READ, build_what_if_html
+from app.ui.colors import tone_of
+from app.ui.what_if import WHAT_IF_CSS, WHAT_IF_HOW_TO_READ, build_what_if_html, format_money
 from app.ui.chart_guide import render_chart_guide
 from app.ui.llm_explain import asset_name, render_explain_section
 from app.ui.sidebar import render_asset_controls
@@ -552,18 +553,23 @@ for column, title, summary in (
     with column:
         with st.container(border=True):
             st.markdown(f"#### {title}")
-            st.metric(
-                "Valor final hipotético",
-                format_number(summary["Valor final"]),
-            )
+            # Ordem de leitura: quanto entrou, quanto valeria e a variação.
             st.metric(
                 "Total investido",
-                format_number(summary["Total investido"]),
+                format_money(summary["Total investido"], money_prefix),
             )
             st.metric(
-                "Retorno sobre o investido",
-                format_return_pct(summary["Retorno sobre o investido"]),
+                "Valor final hipotético",
+                format_money(summary["Valor final"], money_prefix),
             )
+            # A chave dá a classe CSS que pinta o retorno de verde ou vermelho
+            # (app/ui/design.py).
+            return_tone = tone_of(summary["Retorno sobre o investido"])
+            with st.container(key=f"sim_return_{return_tone}_{title.split()[-1].lower()}"):
+                st.metric(
+                    "Retorno sobre o investido",
+                    format_return_pct(summary["Retorno sobre o investido"]),
+                )
             st.caption(
                 f"Menor retorno ao longo do caminho: "
                 f"{format_return_pct(summary['Menor retorno no caminho'])} · "
