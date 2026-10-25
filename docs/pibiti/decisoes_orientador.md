@@ -101,3 +101,15 @@ Plano avaliado: `docs/plano_ampliacao_catalogo_e_analises.md`. Autorização de 
 | Registros pedidos | Critérios e lista final do catálogo; inclusões, substituições e exclusões justificadas; metodologia dos novos cálculos; testes e conferência das telas; atualização do modo demo; limitações; ajustes do cronograma |
 
 Status: recebido em 24/10/2026. Original do parecer: a arquivar fora do repositório.
+
+## Orientação sobre a validação do deploy (25/10/2026)
+
+| Assunto | Orientação |
+|---|---|
+| Encerramento das fases 1 a 3 | Registrar como "implementação concluída; validação do deploy pendente" até a conferência da versão publicada no Streamlit Community Cloud; depois, "publicação verificada", sem marcar itens como aprovados antes da conferência |
+| Conferência do deploy | Fazer agora, enquanto as mudanças estão recentes, em tabela com data, responsável, branch e commit, cobrindo A4, A1, A7, A8, catálogo (148 ativos), A2, A3, explicação assistida e navegação/exportação |
+| Modo demo | Primeiro snapshot do catálogo ampliado pode ser antecipado após a conferência do deploy; não substitui a atualização final e o roteiro completo sem internet de janeiro/2027 |
+| O6 | Preparação documental segue em paralelo; antes da coleta, identificar a versão da plataforma avaliada e os recursos disponíveis aos participantes |
+| Novas funcionalidades | Não abrir neste ciclo; foco em versão verificada, reproduzível e pronta para avaliação e demonstração |
+
+Status: recebido em 25/10/2026. Original da mensagem: a arquivar fora do repositório.

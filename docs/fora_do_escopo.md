@@ -21,7 +21,7 @@ Plano 2, item 8.7. Atualizado em 10/10/2026. Itens "fora" não serão feitos nes
 | Revisão dos textos por pessoa da área de educação | Adiado (depois do congelamento) | Decisão N23; entra em versão posterior de correção de textos |
 | Integração com a API de modelo de linguagem (7B) | Condicionado | Só se a validação de prompts (7A) cumprir todos os limiares e o orientador aprovar |
 | Coleta de dados com usuários (O6) | Condicionado | Exige parecer favorável do CEP antes de começar; apenas adultos, com TCLE |
-| Testes automatizados de renderização da interface | Fora | Verificação visual manual por roteiro; há testes estruturais do código das páginas |
+| Testes automatizados de renderização da interface | Parcial (25/10/2026) | Teste de fumaça com Streamlit AppTest (`tests/test_app_smoke.py`): a página inicial e o estado inicial de cada página abrem sem exceção. Interações e conferência visual seguem por roteiro (`docs/verificacao_publicacao.md`) |
 
 ## Itens deste plano ainda por fazer
 

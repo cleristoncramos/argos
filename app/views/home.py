@@ -278,6 +278,8 @@ for row_start in range(0, len(MENU_PAGES), 3):
     columns = st.columns(3, gap="small")
     for offset, column in enumerate(columns):
         index = row_start + offset
+        if index >= len(MENU_PAGES):  # última fileira incompleta (ex.: 7 páginas)
+            break
         spec = MENU_PAGES[index]
         with column, st.container(key=f"fs_{index}"):
             st.markdown(

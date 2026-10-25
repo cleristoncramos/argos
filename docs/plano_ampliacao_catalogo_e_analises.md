@@ -324,9 +324,49 @@ O texto completo da decisão está em [`pibiti/decisoes_orientador.md`](pibiti/d
 | 24/10/2026 | A1 — variação por janelas | **Implementado** | `core/trailing_returns.py` e `app/ui/trailing_table.py` (100% de cobertura no `core`). Base explícita (período carregado, fechamentos diários), datas usadas, "—" sem histórico, início ajustado marcado, variação acumulada separada da taxa equivalente ao ano. Metodologia em [`metodologia_de_calculo.md`](metodologia_de_calculo.md), seção 2.3. Conferido no navegador com PETR4 (5 e 10 anos) e ^TNX (tabela não exibida para taxas) |
 | 24/10/2026 | A7 — tempo de recuperação das quedas | **Implementado** | `core/drawdown_episodes.py` e `app/ui/drawdown_table.py` (100% de cobertura no `core`). Três maiores quedas com início (pico), fundo, recuperação do pico, duração de cada etapa em dias corridos (com aproximação em meses ou anos) e "não recuperado até a última observação disponível", sem estimativa. Metodologia em [`metodologia_de_calculo.md`](metodologia_de_calculo.md), seção 4.1. Conferido no navegador com PETR4 (10 anos, mensal) e BTC (5 anos, diário, com uma queda não recuperada) |
 | 24/10/2026 | A8 — maiores altas e quedas | **Implementado** | `core/extreme_moves.py` e `app/ui/extremes_table.py` (100% de cobertura no `core`). Cinco maiores altas e cinco maiores quedas com período, datas e fechamentos comparados, contagem de variações positivas e negativas e marca "(em andamento)" no último período incompleto. A nota informa que a tabela não mede a contribuição desses períodos para o resultado total. Metodologia em [`metodologia_de_calculo.md`](metodologia_de_calculo.md), seção 2.4. Conferido no navegador com PETR4 (5 anos, mensal e diário) |
-| 24/10/2026 | **Fase 1 concluída** (A4, A1, A7 e A8) | Concluída | Próxima etapa do cronograma aprovado: ampliação do catálogo (fase 2) |
+| 24/10/2026 | **Fase 1** (A4, A1, A7 e A8) | Implementação concluída; validação do deploy pendente | Próxima etapa do cronograma aprovado: ampliação do catálogo (fase 2) |
 | 24/10/2026 | Fase 2 — ampliação do catálogo | **Implementada** | 120 → 148 ativos: 29 inclusões (8 criptomoedas, 10 ações brasileiras, 2 dos EUA, 3 FIIs, 4 ETFs de ações da B3, `GOLD11` e `HASH11` classificados pela exposição) e 1 exclusão (`XPML11.SA`, por descontinuidade na fonte, substituído por `VISC11.SA`). `CPTS11.SA` não entrou por dados sem continuidade. Conferência técnica, capitalização com fonte e data, exclusões e logos em [`catalogo-de-ativos.md`](catalogo-de-ativos.md), seção 40. Logos sem fonte utilizável passaram a mostrar o ícone da classe (antes apareciam quebrados) |
 | 24/10/2026 | A2 — referência automática | **Implementado** | `core/benchmark.py` (100% de cobertura): sugestão por ativo com motivo explicado, troca ou desativação pelo usuário, Base 100 só nas datas comuns, avisos de moeda, unidade e calendário, e nenhuma sugestão quando não há referência adequada (FIIs, Europa, Ásia, ETFs globais e de renda fixa e outros). Novo roteiro `referencia_base100`; contexto da LLM inalterado. Metodologia em [`metodologia_de_calculo.md`](metodologia_de_calculo.md), seção 2.5. Conferido no navegador com PETR4, IVVB11, ETH e MXRF11 |
 | 25/10/2026 | A3 — panorama do catálogo (primeira versão) | **Implementado** | Página "Panorama do Catálogo" (módulo 06): consulta de um grupo por vez sob demanda, com cache e limite de 25 ativos; ordem inicial por nome; retorno ao lado de volatilidade e queda máxima; período e início dos dados indicados; aviso de que a ordem não é recomendação; falhas parciais vazias, nunca zero. `core/panorama.py` com 100% de cobertura. Metodologia em [`metodologia_de_calculo.md`](metodologia_de_calculo.md), seção 5.2. Conferido no navegador com Ações Brasil (22 ativos) e Treasury |
-| 25/10/2026 | **Fase 3 concluída** (A2 e primeira versão da A3) | Concluída | Próxima etapa do cronograma: atualização dos dados salvos do modo demo, integração e revisão (janeiro/2027) |
+| 25/10/2026 | **Fase 3** (A2 e primeira versão da A3) | Implementação concluída; validação do deploy pendente | Próxima etapa do cronograma: atualização dos dados salvos do modo demo, integração e revisão (janeiro/2027) |
 | 24/10/2026 | Achado da calibração | Registrado | XPML11.SA tem, na fonte, três pregões (14 a 16/01/2026) cotados a cerca de 1/100 do nível habitual. Retornos, volatilidade e queda máxima que incluem essas datas são afetados. A causa não foi verificada; o alerta informa o usuário. Decidir na revisão do catálogo (fase 2) se o ativo permanece ou se a série precisa de tratamento documentado |
+
+---
+
+## 11. Atualização de 25/10/2026 — Fases 1 a 3
+
+Conforme registro do desenvolvedor, as fases 1, 2 e 3 foram implementadas
+e publicadas, incluindo A4, A1, A7, A8, ampliação do catálogo para 148
+ativos, A2 e a primeira versão de A3.
+
+As entregas possuem testes, metodologia documentada e registro no plano.
+Permanece pendente a conferência manual da versão publicada no Streamlit
+Community Cloud.
+
+A próxima atividade imediata é verificar o deploy e registrar os resultados
+por funcionalidade, com identificação do commit publicado.
+
+A regeneração preliminar dos dados do modo demo poderá ser antecipada.
+Permanecem previstos para janeiro de 2027 a atualização final dos dados
+salvos, os testes completos sem internet e a revisão geral preparatória
+para o congelamento de fevereiro de 2027.
+
+A preparação documental do O6 continuará em paralelo.
+
+**Situação das fases 1 a 3:** implementação concluída; validação do deploy pendente.
+
+**Conferência 1 da versão publicada (25/10/2026, commit `6ab02d1`):** registrada em [`verificacao_publicacao.md`](verificacao_publicacao.md). A4, A1, A7, A8, catálogo, A2 e A3 foram conferidos. A página inicial apresentou `IndexError`, já corrigido localmente, com um teste de fumaça novo. A correção ainda precisa ser publicada e reconferida. O modo demo completo não reproduz as respostas de IA salvas (período do pacote diferente), o que fica para o primeiro snapshot. Situação: conferida com pendência; ainda não "publicação verificada".
+
+**Organização sugerida pelo orientador (25/10/2026):**
+
+| Momento | Atividade |
+| --- | --- |
+| Agora | Conferir o deploy e corrigir eventuais diferenças em relação à versão local |
+| Após a conferência | Gerar um primeiro snapshot do catálogo ampliado e testar os novos recursos no modo demo |
+| Novembro–dezembro/2026 | Corrigir falhas, preparar o O6 e manter documentação e dados organizados |
+| Janeiro/2027 | Atualizar o snapshot final, executar o roteiro completo sem internet e revisar o pacote |
+| Fevereiro/2027 | Congelar a versão identificada por commit/tag, com evidências dos testes |
+
+Nenhuma funcionalidade nova será aberta neste ciclo: o objetivo é transformar
+as entregas em uma versão verificada, reproduzível e pronta para avaliação e
+demonstração.
