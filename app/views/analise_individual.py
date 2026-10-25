@@ -62,6 +62,14 @@ from app.ui.season_explorer import (
 )
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
+from app.ui.extremes_table import (
+    EXTREMES_NOTES,
+    FORMATTERS as EXTREMES_FORMATTERS,
+    HEADER_LABELS as EXTREMES_HEADER_LABELS,
+    RATE_NOTE as EXTREMES_RATE_NOTE,
+    build_extremes_display,
+    extremes_intro,
+)
 from app.ui.trailing_table import (
     FORMATTERS as TRAILING_FORMATTERS,
     HEADER_LABELS,
@@ -108,6 +116,12 @@ from core.formatters import format_number_br
 from core.llm_builders import individual_context, window_context
 from core.returns_utils import simple_returns
 from core.trailing_returns import base_description, trailing_returns
+from core.extreme_moves import (
+    DEFAULT_TOP as EXTREMES_TOP,
+    direction_counts,
+    extreme_moves,
+    period_changes,
+)
 
 
 st.set_page_config(
@@ -564,6 +578,46 @@ fig_bar.update_traces(
 with st.container(border=True):
     st.plotly_chart(fig_bar, use_container_width=True, config=PLOTLY_CONFIG)
     render_chart_guide("variacao_percentual")
+
+# -------------------------------------------------------
+# Maiores altas e quedas (A8): extremos das variações por período
+# -------------------------------------------------------
+st.markdown("#### Maiores altas e quedas")
+
+if currency.kind == "rate":
+    st.caption(EXTREMES_RATE_NOTE)
+else:
+    _availability = st.session_state.get("asset_availability")
+    changes = period_changes(
+        df,
+        frequency,
+        last_observation=getattr(_availability, "available_end", None),
+    )
+    if changes.empty:
+        st.info("Não há variações suficientes para listar altas e quedas.")
+    else:
+        highs, lows = extreme_moves(changes, top=EXTREMES_TOP)
+        st.markdown(extremes_intro(frequency, direction_counts(changes)))
+        col_highs, col_lows = st.columns(2)
+        for column, title, moves, empty_text in (
+            (col_highs, "Maiores altas", highs, "Nenhuma variação positiva no período."),
+            (col_lows, "Maiores quedas", lows, "Nenhuma variação negativa no período."),
+        ):
+            with column:
+                st.markdown(f"**{title}**")
+                if moves.empty:
+                    st.caption(empty_text)
+                else:
+                    render_table(
+                        build_extremes_display(moves),
+                        list(EXTREMES_HEADER_LABELS),
+                        EXTREMES_FORMATTERS,
+                        header_labels=EXTREMES_HEADER_LABELS,
+                        max_height=None,
+                        min_width=320,
+                        wrap_header=True,
+                    )
+        st.caption(EXTREMES_NOTES)
 
 
 # =====================

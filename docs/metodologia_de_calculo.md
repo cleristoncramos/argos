@@ -150,6 +150,29 @@ Item A1 do plano de ampliação, aprovado em 24/10/2026. A tabela fica na Análi
 
 ---
 
+## 2.4 Maiores altas e quedas (`extreme_moves.py`)
+
+Item A8 do plano de ampliação, aprovado em 24/10/2026. O bloco fica na Análise Individual, logo depois do gráfico "Variação Percentual".
+
+- **Série usada.** A mesma série do gráfico, na **frequência escolhida**. Cada variação é `fechamento do período / fechamento do período anterior − 1`. A primeira observação não tem variação.
+- **Extremos.** As 5 maiores variações positivas e as 5 maiores negativas. Cada linha traz:
+  - o rótulo do período ("23/10/2026", "semana até 23/10/2026", "out/2026", "2º sem. 2026" ou "2026");
+  - as duas datas e os dois fechamentos comparados.
+
+  Em empate, a ordem é a cronológica. Variações nulas não entram em nenhuma das listas.
+- **Contagem.** Mostra quantas variações foram positivas, negativas e nulas, e a proporção de positivas.
+- **Período em andamento.** O último período recebe a marca "(em andamento)" quando o fim do calendário dele, obtido por `data_processor.period_end`, fica mais de 4 dias corridos depois da última observação diária. Na frequência semanal o limite é 3 dias, porque a semana termina no domingo e o último pregão normal é sexta-feira. Na frequência diária não há marca.
+- **O que o bloco não faz.** Não calcula quanto esses períodos contribuíram para o resultado total, nem afirma que poucos períodos explicam a maior parte dele. A nota da tela diz isso explicitamente. Essa contribuição exigiria uma análise própria.
+- **Taxas de juros** (`^IRX`, `^FVX`, `^TNX`, `^TYX`). O bloco não é exibido, pela mesma razão da seção 2.3.
+
+**Limitações.**
+
+- Só preço de fechamento, sem ajuste por proventos: quedas em datas ex-proventos podem aparecer entre as maiores.
+- Os extremos dependem da frequência e do período carregado. Mudar qualquer um deles muda a lista.
+- Variações de um período em andamento não se comparam diretamente às de períodos completos. A marca existe para isso.
+
+---
+
 ## 3. Indicadores técnicos (`indicators.py`, `indicators_extra.py`)
 
 Os indicadores são **transformações matemáticas do histórico**. O Argos os usa para descrever tendência, momentum e dispersão, e **não** os converte em sinais de compra ou venda. As descrições exibidas na interface vêm de `core/indicator_docs.py`.
