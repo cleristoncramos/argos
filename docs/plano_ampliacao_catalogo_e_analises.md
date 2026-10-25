@@ -374,3 +374,56 @@ A preparação documental do O6 continuará em paralelo.
 Nenhuma funcionalidade nova será aberta neste ciclo: o objetivo é transformar
 as entregas em uma versão verificada, reproduzível e pronta para avaliação e
 demonstração.
+
+---
+
+## 12. Atualização de 25/10/2026 — Estabilização e preparação do congelamento
+
+Conforme conferência registrada pelo desenvolvedor, as fases 1 a 3 estão
+publicadas e verificadas no Streamlit Community Cloud.
+
+O erro identificado na página inicial foi corrigido, com inclusão de teste de
+regressão. O primeiro snapshot do modo de demonstração foi gerado e os dois
+achados identificados nessa preparação foram resolvidos.
+
+Novembro e dezembro de 2026 ficam destinados a eventuais correções e à
+preparação documental do O6, em paralelo, sem previsão de novas ampliações
+funcionais neste ciclo.
+
+Em janeiro de 2027 serão realizados:
+- geração do snapshot final;
+- execução local do roteiro completo com internet desativada;
+- teste de consumo de memória da aplicação no Streamlit Community Cloud;
+- consolidação das evidências e revisão das pendências.
+
+O congelamento permanece previsto para fevereiro de 2027, condicionado à
+resolução das falhas críticas e à identificação da versão por commit/tag.
+
+A conclusão do primeiro snapshot não equivale à conclusão da validação offline
+final. A preparação do O6 não autoriza o início da coleta com participantes.
+
+**Escopo dos dois testes de janeiro (orientação de 25/10/2026).** São verificações separadas:
+
+- o **teste sem internet** é executado na **instalação local**, com `ARGOS_DEMO_MODE=true` e o pacote de dados salvos;
+- o **teste de memória** verifica a **aplicação hospedada** no Streamlit Community Cloud, que roda com dados consultados na fonte e não usa o pacote do modo demo.
+
+### 12.1 Registro atual: entregas, versão publicada e snapshot
+
+| Entrega | Commit da implementação | Data |
+| --- | --- | --- |
+| A4 — alertas de qualidade dos dados | `b6c7657` | 24/10/2026 |
+| A1 — variação por prazo | `91ad1b9` | 24/10/2026 |
+| A7 — maiores quedas e recuperação | `d7885c4` | 24/10/2026 |
+| A8 — maiores altas e quedas (fim da fase 1) | `ea31028` | 24/10/2026 |
+| Fase 2 — catálogo com 148 ativos | `bddcceb` | 24/10/2026 |
+| A2 — referência de mercado | `343e399` | 24/10/2026 |
+| A3 — Panorama do Catálogo, primeira versão (fim da fase 3) | `6ab02d1` | 25/10/2026 |
+| Correção da página inicial e teste de fumaça (regressão) | `958b729` | 25/10/2026 |
+
+| Registro | Identificação |
+| --- | --- |
+| Conferência da versão publicada | 25/10/2026. Conferência 1 sobre o commit `6ab02d1` (encontrou o erro da página inicial); conferência 2 sobre o commit **`958b729`**, com **publicação verificada** das fases 1 a 3. Registro em [`verificacao_publicacao.md`](verificacao_publicacao.md) (commit `3d65056`) |
+| Endereço e branch | https://argos-datalab.streamlit.app · `main` |
+| Snapshot preliminar do modo demo | **`v1.1-demo-preliminar`**, coletado em 25/10/2026: 148 ativos, de 01/12/2020 a 23/10/2026; impressão SHA-256 do manifesto `56f2822f28f3d155…`. Gerado pela versão de `scripts/gerar_dados_demo.py` registrada no commit `60ce73b` (`--catalog --start 2020-12-01`). Dados em `data/demo/`, fora do Git. Descrição em [`demonstracao.md`](demonstracao.md), seção 2.3.2 |
+| Pacote anterior do modo demo | `v1.0-demo`, coletado em 10/10/2026 (5 ativos), guardado em `data/demo_2026-10-10/`, fora do Git |
+| Testes no momento do registro | 908 testes passando; cobertura de `core/` em 100% |

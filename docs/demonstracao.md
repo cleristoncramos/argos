@@ -84,7 +84,7 @@ Ativos propostos para o manifesto (ajustar):
 | Respostas de LLM salvas e validadas | Pendente (dependem da 7A/7B); sem elas, texto fixo |
 | Auditoria de recursos remotos nas páginas | Teste automatizado passando (518 testes, `core/` a 100%) |
 | Execução sem internet | **Concluída em 10/10/2026**, sem falhas |
-| Teste de memória (Streamlit Cloud) | Pendente |
+| Teste de memória (Streamlit Cloud) | Pendente (janeiro/2027). Verifica a aplicação hospedada, que roda com dados da fonte e não usa este pacote; é separado do teste sem internet, feito na instalação local |
 
 ### 2.3.2 Primeiro snapshot do catálogo ampliado (25/10/2026)
 
@@ -117,8 +117,8 @@ Nenhum erro na tela.
 **Pendências para janeiro/2027:**
 
 - gerar o snapshot final;
-- executar o roteiro completo **com a internet desligada**;
-- fazer o teste de memória no Streamlit Cloud com o pacote de 148 ativos;
+- executar o roteiro completo **com a internet desligada**, na instalação local (`ARGOS_DEMO_MODE=true`);
+- fazer, separadamente, o teste de consumo de memória da aplicação hospedada no Streamlit Cloud, que usa dados da fonte e não o pacote salvo;
 - decidir se o pacote vai para o repositório (termos do Yahoo Finance) ou se fica só no pacote da demonstração.
 
 ### 2.4 Critério de aceite (condição para congelar)
