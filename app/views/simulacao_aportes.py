@@ -657,7 +657,9 @@ for label, column in (
         }
     )
 
-st.table(pd.DataFrame(rows).set_index("Estratégia"))
+# A chave dá a classe usada pelo CSS de app/ui/design.py (textos centralizados).
+with st.container(key="simulation_windows_table"):
+    st.table(pd.DataFrame(rows).set_index("Estratégia"))
 
 st.plotly_chart(
     build_windows_chart(outcomes, symbol.upper()),

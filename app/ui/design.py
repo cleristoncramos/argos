@@ -62,6 +62,11 @@ GLOBAL_CSS = f"""
 [class*="st-key-sim_return_positive"] [data-testid="stMetricValue"] {{ color: #15803D; }}
 [class*="st-key-sim_return_negative"] [data-testid="stMetricValue"] {{ color: #B91C1C; }}
 
+/* Tabela das janelas da Simulação: tudo centralizado, exceto o nome da estratégia */
+.st-key-simulation_windows_table th,
+.st-key-simulation_windows_table td {{ text-align: center !important; }}
+.st-key-simulation_windows_table tbody th {{ text-align: left !important; }}
+
 /* Detalhes do processamento (app/ui/data_info.py): grade compacta */
 .pd-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); border: 1px solid {LINE_SOFT}; background: {PAPER}; }}
 .pd-cell {{ padding: 8px 12px; border-right: 1px solid {LINE_SOFT}; border-bottom: 1px solid {LINE_SOFT}; }}
