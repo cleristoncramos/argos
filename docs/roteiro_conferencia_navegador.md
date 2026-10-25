@@ -82,7 +82,7 @@ Para cada cenário que falhou, preencher:
 
 ## Anexo — Bloco 2 (sazonalidade por anos, meses e janela)
 
-Página: **Análise Individual**, seção "Padrões Sazonais", bloco "Recorte por anos e meses". Use `BTC-USD`, período longo (5 anos ou mais), frequência diária.
+Página: **Análise Individual**, seção "Padrões Sazonais", bloco "Explorar anos e meses" (abas "Anos comparados à média" e "Variação entre dois meses"; os resultados aparecem ao mudar as escolhas, sem botão). Use `BTC-USD`, período longo (5 anos ou mais), frequência diária.
 
 | ID | Passos | Resultado esperado |
 | --- | --- | --- |

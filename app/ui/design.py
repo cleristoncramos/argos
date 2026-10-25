@@ -49,21 +49,21 @@ GLOBAL_CSS = f"""
 /* Cartões com a mesma altura na fileira: cartão do ativo ao lado do resumo
    (render_analysis_summary) e destaques da Comparação (highlight_cards) */
 .st-key-analysis_summary [data-testid="stHorizontalBlock"],
-.st-key-highlight_cards [data-testid="stHorizontalBlock"] {{ align-items: stretch !important; }}
+[class*="st-key-highlight_cards"] [data-testid="stHorizontalBlock"] {{ align-items: stretch !important; }}
 .st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stVerticalBlock"],
 .st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stElementContainer"],
 .st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdown"],
 .st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdownContainer"],
 .st-key-analysis_summary .asset-card,
-.st-key-highlight_cards [data-testid="stColumn"] [data-testid="stVerticalBlock"],
-.st-key-highlight_cards [data-testid="stElementContainer"],
-.st-key-highlight_cards [data-testid="stMarkdown"],
-.st-key-highlight_cards [data-testid="stMarkdownContainer"],
-.st-key-highlight_cards [data-testid="stMarkdownContainer"] > div {{ height: 100% !important; }}
+[class*="st-key-highlight_cards"] [data-testid="stColumn"] [data-testid="stVerticalBlock"],
+[class*="st-key-highlight_cards"] [data-testid="stElementContainer"],
+[class*="st-key-highlight_cards"] [data-testid="stMarkdown"],
+[class*="st-key-highlight_cards"] [data-testid="stMarkdownContainer"],
+[class*="st-key-highlight_cards"] [data-testid="stMarkdownContainer"] > div {{ height: 100% !important; }}
 .st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdown"] > div,
-.st-key-highlight_cards [data-testid="stMarkdown"] > div {{ display: flex; flex-direction: column; height: 100%; }}
+[class*="st-key-highlight_cards"] [data-testid="stMarkdown"] > div {{ display: flex; flex-direction: column; height: 100%; }}
 .st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdownContainer"],
-.st-key-highlight_cards [data-testid="stMarkdownContainer"] {{ flex: 1; margin: 0 !important; }}
+[class*="st-key-highlight_cards"] [data-testid="stMarkdownContainer"] {{ flex: 1; margin: 0 !important; }}
 
 /* Abas das páginas (st.tabs): botões de mesma largura; a aba ativa fica com fundo vermelho */
 [data-testid="stMain"] [data-testid="stTabs"] [role="tablist"] {{ display: flex; gap: 8px; width: 100%; border: none; }}

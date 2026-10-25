@@ -1,6 +1,6 @@
 # Arquitetura do Sistema — Argos
 
-**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 817 passando, cobertura de `core/` em 100% (2.274 instruções)
+**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 824 passando, cobertura de `core/` em 100% (2.274 instruções)
 
 Este documento descreve como o Argos é organizado: camadas, módulos, páginas, fluxo de dados, configuração e convenções. Os cálculos estão detalhados em `docs/metodologia_de_calculo.md`; as fontes e o tratamento dos dados, em `docs/fontes_e_tratamento_de_dados.md`; o catálogo de ativos, em `docs/catalogo-de-ativos.md`; a explicação assistida, em `docs/llm_7b_implementacao.md`.
 
@@ -67,6 +67,7 @@ argos/
 │   │   ├── metric_card.py           # Card de métrica
 │   │   ├── page_header.py           # Cabeçalho padrão das páginas de análise (sem ícones)
 │   │   ├── pages.py                 # Ordem oficial das páginas (menu, home e Get Started)
+│   │   ├── season_explorer.py       # Frases e células do bloco "Explorar anos e meses"
 │   │   ├── sidebar.py               # Seleção de ativo, período e frequência
 │   │   ├── state.py                 # Estado inicial da sessão
 │   │   ├── tables.py                # Tabelas padronizadas
@@ -171,7 +172,7 @@ A navegação é registrada em `app/main.py` com `st.navigation`, a partir da li
 | Página | Arquivo | O que faz |
 | --- | --- | --- |
 | Início | `views/home.py` | Apresentação, botão **Get Started**, vídeo dos recursos, mosaico animado do catálogo, tutorial em 3 passos, atalhos para os módulos e botão do modal acadêmico; sem barra lateral |
-| Análise Individual | `views/analise_individual.py` | Série temporal, estatísticas, volatilidade mensal anualizada, variação por período, padrões sazonais e recorte por anos, meses e janela de retorno |
+| Análise Individual | `views/analise_individual.py` | Série temporal, estatísticas, volatilidade mensal anualizada, variação por período, padrões sazonais e o bloco "Explorar anos e meses" (anos × média e variação entre dois meses) |
 | Comparação de Ativos | `views/comparacao_ativos.py` | De 2 a 5 ativos, escolhidos por grupo com filtros opcionais de subclasse e mercado: base 100, período comum opcional, risco, correlação, sazonalidade comparada, tendência histórica (retorno móvel e razão) e dados tabulares |
 | Indicadores Técnicos | `views/indicadores_tecnicos.py` | Linha ou candles, médias móveis, Bollinger, RSI, MACD, ATR, volatilidade móvel e volume |
 | Risco e Retorno | `views/risco_retorno.py` | Retorno, volatilidade, Sharpe, drawdown (com data), melhor e pior período, distribuição de retornos |
@@ -303,7 +304,7 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 ## 13. Testes e qualidade
 
-- **817 testes**, cobertura de `core/` em **100%** (2.274 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
+- **824 testes**, cobertura de `core/` em **100%** (2.274 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
 - `app/` **não** tem testes de renderização: páginas e componentes são conferidos manualmente no navegador (roteiro em `docs/roteiro_conferencia_navegador.md`). Há, porém:
   - **testes de componentes** que montam o HTML e o layout dos gráficos de `app/ui` sem o Streamlit (`test_ui_components.py`, `test_landing.py`), verificando escape de texto, conteúdo do modal, layout base dos gráficos e ausência de cantos arredondados no CSS próprio;
   - **testes estruturais** que leem o código-fonte das páginas (`test_chart_guides.py`, `test_simulation_texts.py`): todo gráfico tem roteiro de leitura, os textos novos usam linguagem neutra e o texto obrigatório da simulação está presente.

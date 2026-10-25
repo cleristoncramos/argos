@@ -5,7 +5,7 @@
 [![Aplicação online](https://img.shields.io/badge/app-argos--datalab.streamlit.app-C8102E)](https://argos-datalab.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.63-FF4B4B?logo=streamlit&logoColor=white)
-![Testes](https://img.shields.io/badge/testes-817%20aprovados-2E7D32)
+![Testes](https://img.shields.io/badge/testes-824%20aprovados-2E7D32)
 ![Cobertura](https://img.shields.io/badge/cobertura%20do%20core-100%25-2E7D32)
 ![PIBITI UFPI](https://img.shields.io/badge/PIBITI-UFPI%202026%E2%80%932027-1F1F1F)
 
@@ -83,7 +83,7 @@ Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferra
 - Atalhos de período (1, 3, 5 e 10 anos) ou intervalo personalizado; frequência diária, semanal, mensal, semestral ou anual.
 - Visão geral (primeiro e último valor, retorno total, observações) e evolução temporal do preço.
 - Volatilidade anualizada mês a mês, com destaque para os meses de maior oscilação.
-- Mapa de calor de retornos mensais (mês × ano), média por mês do calendário, recorte por anos e **janela sazonal** (por exemplo, de setembro a outubro em cada ano).
+- Mapa de calor de retornos mensais (mês × ano), média por mês do calendário e o bloco **Explorar anos e meses**, com duas abas: anos escolhidos comparados à média histórica e variação entre dois meses do calendário em cada ano (por exemplo, de junho a dezembro), sempre com uma frase-resumo em linguagem simples.
 - Painel de disponibilidade de dados (período solicitado × disponível) e exportação em CSV.
 
 ### Comparação de Ativos
@@ -358,7 +358,7 @@ Depois, inicie a aplicação com `ARGOS_DEMO_MODE=true`. Um aviso na interface i
 
 ## Testes e qualidade
 
-A suíte possui **817 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
+A suíte possui **824 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
 
 - integridade do catálogo e validação de tickers e datas;
 - tratamento de dados, lacunas de calendário e agregação por frequência;
