@@ -1,4 +1,4 @@
-# Roteiro de Conferência no Navegador — Argos DataLab
+# Roteiro de Conferência no Navegador — Argos
 
 **Criado em:** 09/10/2026 · **Plano 2, Bloco 1 (tarefas 1.1 e 1.2)** · **Quem executa:** o autor do projeto · **Tempo estimado:** 45 a 60 minutos
 

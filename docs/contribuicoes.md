@@ -1,10 +1,10 @@
-# Registro de Contribuições — Argos DataLab
+# Registro de Contribuições — Argos
 
 **Criado em:** 09/10/2026 · **Atualizar a cada marco do projeto**
 
 **Finalidade:** documentar quem fez o quê no Argos, para sustentar a definição de autoria de qualquer artigo ou demonstração. A autoria deve ser definida **antes** da submissão e baseada em contribuição substancial e em responsabilidade pelo trabalho.
 
-**Escopo deste registro:** somente o projeto Argos DataLab. **Nenhum trabalho colaborativo com outros projetos ou pessoas está registrado aqui**, porque nada foi confirmado (decisão de 09/10/2026). O tema será tratado no próximo plano.
+**Escopo deste registro:** somente o projeto Argos. **Nenhum trabalho colaborativo com outros projetos ou pessoas está registrado aqui**, porque nada foi confirmado (decisão de 09/10/2026). O tema será tratado no próximo plano.
 
 **Estado:** os papéis abaixo são uma **proposta de preenchimento** para o autor revisar e corrigir. Nada aqui foi confirmado por terceiros.
 

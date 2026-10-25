@@ -1,4 +1,4 @@
-# Fontes e Tratamento de Dados — Argos DataLab
+# Fontes e Tratamento de Dados — Argos
 
 **Atualizado em:** 07/10/2026 · Módulos: `core/data_loader.py`, `core/data_processor.py`, `core/data_availability.py`, `core/ticker_input.py`, `core/periods.py`, `core/date_validation.py`
 

@@ -1,4 +1,4 @@
-# Metodologia de Cálculo — Argos DataLab
+# Metodologia de Cálculo — Argos
 
 **Atualizado em:** 10/10/2026 (Plano 2, blocos 1 a 6) · Módulos: `core/analyzer.py`, `core/returns_utils.py`, `core/seasonality.py`, `core/trend.py`, `core/indicators.py`, `core/indicators_extra.py`, `core/risk_metrics.py`, `core/comparison.py`, `core/simulation.py`, `core/features.py`
 

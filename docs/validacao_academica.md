@@ -1,4 +1,4 @@
-# Validação Acadêmica — Argos DataLab
+# Validação Acadêmica — Argos
 
 **Status:** rascunho para revisão do orientador · **Atualizado em:** 10/10/2026 (Plano 2)
 **Decisão registrada:** pergunta de pesquisa **A** escolhida em 07/10/2026.

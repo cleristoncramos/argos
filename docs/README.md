@@ -1,6 +1,6 @@
-﻿# Documentação do Projeto — Argos DataLab
+﻿# Documentação do Projeto — Argos
 
-Este diretório organiza o histórico técnico do Argos DataLab em duas fases de desenvolvimento:
+Este diretório organiza o histórico técnico do Argos em duas fases de desenvolvimento:
 
 - **Fase 1:** consolidação, validação e publicação do MVP.
 - **Fase 2:** transformação do MVP em uma plataforma analítica mais robusta.

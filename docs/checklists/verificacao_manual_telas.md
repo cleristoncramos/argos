@@ -1,6 +1,6 @@
-# Verificação manual das telas — Argos DataLab
+# Verificação manual das telas — Argos
 
-**Finalidade:** registrar a conferência manual das interfaces do Argos DataLab nos modos offline, demonstração e live, incluindo o recurso "Explicar com IA" (etapa 7B).
+**Finalidade:** registrar a conferência manual das interfaces do Argos nos modos offline, demonstração e live, incluindo o recurso "Explicar com IA" (etapa 7B).
 
 **Data da verificação:** 12/10/2026 (preenchimento parcial; itens `PENDENTE` serão concluídos em nova verificação)  
 **Responsável:** Clériston de Castro Ramos  
