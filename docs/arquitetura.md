@@ -1,6 +1,6 @@
 # Arquitetura do Sistema — Argos
 
-**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 824 passando, cobertura de `core/` em 100% (2.274 instruções)
+**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 840 passando, cobertura de `core/` em 100% (2.407 instruções)
 
 Este documento descreve como o Argos é organizado: camadas, módulos, páginas, fluxo de dados, configuração e convenções. Os cálculos estão detalhados em `docs/metodologia_de_calculo.md`; as fontes e o tratamento dos dados, em `docs/fontes_e_tratamento_de_dados.md`; o catálogo de ativos, em `docs/catalogo-de-ativos.md`; a explicação assistida, em `docs/llm_7b_implementacao.md`.
 
@@ -118,6 +118,7 @@ argos/
 | `demo_mode.py` | Modo de demonstração: leitura dos CSVs salvos, manifesto com hash SHA-256 e reamostragem por frequência |
 | `data_processor.py` | Preparação dos dados, agregação por frequência e seleção da variável principal |
 | `data_availability.py` | Período solicitado × período disponível, número de observações e avisos |
+| `data_quality.py` | Alertas de qualidade da série diária (mudança de patamar desfeita, variação atípica, preço repetido, volume ausente, intervalos sem dados, histórico curto), com limiares por tipo de série |
 | `currency.py` | Unidade de cotação de cada ativo (moeda, taxa em %, pontos) |
 | `formatters.py` | Formatação numérica no padrão brasileiro |
 | `exports.py` | Geração de CSV para download e nomes de arquivo seguros |
@@ -200,6 +201,7 @@ data_processor.prepare_dataframe()   OHLCV ordenado, datas válidas
 data_processor.aggregate_by_frequency() + select_primary_variable("Close")
         ▼                             coluna Value = fechamento do período
 data_availability.assess_availability()   solicitado × disponível; barra se insuficiente
+data_quality.assess_data_quality()        alertas da série diária (não altera os dados)
         ▼
 analyzer.calculate_returns() → risk_metrics.calculate_drawdown() → build_risk_summary()
         ▼
@@ -304,7 +306,7 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 ## 13. Testes e qualidade
 
-- **824 testes**, cobertura de `core/` em **100%** (2.274 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
+- **840 testes**, cobertura de `core/` em **100%** (2.407 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
 - `app/` **não** tem testes de renderização: páginas e componentes são conferidos manualmente no navegador (roteiro em `docs/roteiro_conferencia_navegador.md`). Há, porém:
   - **testes de componentes** que montam o HTML e o layout dos gráficos de `app/ui` sem o Streamlit (`test_ui_components.py`, `test_landing.py`), verificando escape de texto, conteúdo do modal, layout base dos gráficos e ausência de cantos arredondados no CSS próprio;
   - **testes estruturais** que leem o código-fonte das páginas (`test_chart_guides.py`, `test_simulation_texts.py`): todo gráfico tem roteiro de leitura, os textos novos usam linguagem neutra e o texto obrigatório da simulação está presente.

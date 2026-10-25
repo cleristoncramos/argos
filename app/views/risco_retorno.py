@@ -50,6 +50,7 @@ from core.analyzer import calculate_returns
 from core.assets import ASSETS
 from core.config import ANNUALIZATION_FACTORS
 from core.data_availability import assess_availability
+from core.data_quality import assess_data_quality
 from app.ui.data_cache import download_active_data
 from core.data_processor import (
     aggregate_by_frequency,
@@ -296,6 +297,7 @@ if load_analysis:
     st.session_state["risk_return_df"] = df_risk
     st.session_state["risk_return_availability"] = availability
     st.session_state["risk_return_fetched_at"] = datetime.now()
+    st.session_state["risk_return_quality"] = assess_data_quality(df_prepared, symbol, start_date)
 
 
 # =====================
@@ -359,6 +361,7 @@ render_analysis_summary(
         ("Taxa livre de risco anual", f"{risk_free_rate_pct:.2f}%".replace(".", ",")),
     ],
     details_label="Detalhes do processamento",
+    quality_alerts=st.session_state.get("risk_return_quality"),
 )
 
 st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)

@@ -78,6 +78,7 @@ from core.assets import ASSETS
 from core.config import ANNUALIZATION_FACTORS
 from core.currency import currency_info
 from core.data_availability import assess_availability
+from core.data_quality import assess_data_quality
 from app.ui.data_cache import download_active_data
 from core.data_loader import validate_data
 from core.data_processor import (
@@ -266,6 +267,7 @@ if load_data:
         st.session_state["asset_monthly_vol"] = df_monthly_vol
         st.session_state["asset_availability"] = availability
         st.session_state["asset_fetched_at"] = datetime.now()
+        st.session_state["asset_quality"] = assess_data_quality(df_prepared, symbol, start_date)
 
 
 # =====================
@@ -332,6 +334,7 @@ render_analysis_summary(
         ("Valores ausentes", missing_str),
     ],
     details_label="Detalhes do processamento e qualidade dos dados",
+    quality_alerts=st.session_state.get("asset_quality"),
 )
 
 st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)

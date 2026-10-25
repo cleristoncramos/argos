@@ -112,3 +112,25 @@ def test_table_header_wrap_and_centered_percent():
     assert text == "-5,00%" and "text-align:center" in style and "color:" in style
     assert "text-align:center" in percent_cell(center=True)(None)[1]
     assert "text-align:right" in percent_cell()(0.1)[1]
+
+
+def test_quality_alert_boxes():
+    from app.ui.data_info import (
+        QUALITY_INTRO,
+        build_comparison_quality_markdown,
+        build_quality_alerts_markdown,
+    )
+    from core.data_quality import QualityAlert
+
+    jump = QualityAlert("info", "atypical_jump", "Variações diárias muito acima do habitual", "Texto A.")
+    flat = QualityAlert("info", "flat_prices", "Preço sem variação", "Texto B.")
+
+    single = build_quality_alerts_markdown([jump, flat])
+    assert single.startswith(QUALITY_INTRO)
+    assert "- **Variações diárias muito acima do habitual.** Texto A.\n- **Preço sem variação.** Texto B." in single
+    assert "não indicam, por si só, erro" in single
+
+    grouped = build_comparison_quality_markdown({"AAA": [jump], "BBB": []}, label=lambda t: f"Ativo {t}")
+    assert "- **Ativo AAA**\n  - **Variações diárias muito acima do habitual.** Texto A." in grouped
+    assert "BBB" not in grouped
+    assert build_comparison_quality_markdown({"BBB": []}) == ""

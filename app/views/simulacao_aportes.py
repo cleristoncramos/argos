@@ -33,6 +33,7 @@ from app.ui.state import initialize_asset_state
 from core.assets import ASSETS
 from core.currency import currency_info
 from core.data_availability import assess_availability
+from core.data_quality import assess_data_quality
 from app.ui.data_cache import download_active_data
 from core.llm_builders import simulation_context
 from core.data_processor import (
@@ -382,6 +383,7 @@ if load_history:
     st.session_state["simulation_daily"] = df_daily
     st.session_state["simulation_availability"] = availability
     st.session_state["simulation_fetched_at"] = datetime.now()
+    st.session_state["simulation_quality"] = assess_data_quality(df_prepared, symbol, start_date)
     st.session_state["simulation_query"] = {
         "symbol": symbol,
         "start_date": start_date,
@@ -439,6 +441,7 @@ render_analysis_summary(
         ("Premissas", SIMULATION_ASSUMPTIONS[0].upper() + SIMULATION_ASSUMPTIONS[1:]),
     ],
     details_label="Detalhes do processamento e premissas",
+    quality_alerts=st.session_state.get("simulation_quality"),
 )
 
 for note in simulation_notes(symbol):

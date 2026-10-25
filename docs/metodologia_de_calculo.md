@@ -70,6 +70,58 @@ A média histórica representa o comportamento agregado dos anos disponíveis; u
 
 ---
 
+## 2.2 Alertas de qualidade dos dados (`data_quality.py`)
+
+Item A4 do plano de ampliação, aprovado em 24/10/2026. Os alertas sinalizam situações que **merecem atenção antes da interpretação**. Eles **não concluem** que há erro, fraude ou manipulação: o mesmo sinal pode vir de um evento real, de um ajuste não aplicado pela fonte ou de falha no registro.
+
+- **Onde aparecem:**
+  - nas quatro páginas de ativo único, em um quadro "Atenção aos dados" abaixo do resumo de disponibilidade e na linha "Verificações de qualidade" dos detalhes do processamento;
+  - na Comparação, em um quadro agrupado por ativo.
+- **Quais dados:** a série **diária** baixada, antes da agregação pela frequência e, na Comparação, antes do recorte para o período comum.
+
+| Verificação | Regra | Nível |
+| --- | --- | --- |
+| Mudança de patamar que se desfaz | Salto atípico (linha abaixo) que, em até 5 observações, desfaz pelo menos 75% do movimento: a distância para o nível anterior fica abaixo de 25% do tamanho do salto. O movimento de volta não é contado de novo | Aviso |
+| Variação diária atípica | Variação diária, em módulo, acima do limiar do tipo de série **e** de pelo menos 8 desvios típicos do próprio ativo, em escore robusto: (r − mediana) / (1,4826 × MAD) | Informação |
+| Preço sem variação | Fechamento idêntico em pelo menos 10 observações seguidas (5 para criptomoedas, negociadas todos os dias) | Informação |
+| Dias sem volume | Mais de 20% dos dias com volume zero ou ausente. **Só para séries em que o volume se aplica**: não vale para índices, taxas de juros, câmbio e VIX | Informação |
+| Intervalo sem dados | Mais de 15 dias corridos entre duas observações diárias. O Ano-Novo chinês chega a cerca de 11 dias | Informação |
+| Histórico curto | Menos de 3 anos de dados, quando a série começa depois do início pedido (o ativo não tem mais dados na fonte) | Informação |
+
+Limiares de variação diária por tipo de série, identificado pelo ticker (vale também para "Digitar ticker"):
+
+| Tipo | Identificação | Limiar |
+| --- | --- | ---: |
+| Ações, ETFs, FIIs e REITs | demais tickers | 25% |
+| Criptomoedas | sufixo `-USD` | 50% |
+| Commodities (futuros) | sufixo `=F` | 30% |
+| Índices | prefixo `^` ou sufixo `.SS` | 15% |
+| Índice de volatilidade | `^VIX` | 100% |
+| Câmbio | sufixo `=X` | 10% |
+| Taxas de juros | `^IRX`, `^FVX`, `^TNX`, `^TYX` | não verificadas: perto de zero, variações percentuais enormes são normais |
+
+**Calibração (24/10/2026).** Os limiares são **heurísticas iniciais**, ajustadas sobre os 120 ativos do catálogo com 5 anos de dados diários do Yahoo Finance. Resultado: 13 dos 120 ativos recebem algum alerta, sendo 2 avisos.
+
+- **XPML11.SA, aviso.** O preço foi de cerca de R$ 110 para R$ 1,07 em 14/01/2026 e voltou a cerca de R$ 110 em 19/01/2026, com volume cerca de 100 vezes maior nesses dias.
+- **NG=F, aviso.** Alta de 46% em 27/01/2022, desfeita no dia seguinte, no vencimento do contrato.
+- **Informações:**
+  - variações atípicas em XRP, ADA, TRX, META, BABA, Samsung, SK hynix, Alibaba HK, prata e gás natural;
+  - preço repetido no USDCNY (câmbio administrado);
+  - dias sem volume na platina.
+- **Fora do catálogo:**
+  - DHN-USD recebe aviso e duas informações;
+  - HYPE recebe histórico curto.
+- **Ajuste feito na calibração.** A primeira versão tratava como "descontinuidade" qualquer retorno a até 20% do nível anterior. Isso marcava como descontinuidade a alta de cerca de 27–30% de Samsung e SK hynix em 31/07/2026, que só foi corrigida em parte. A regra passou a exigir que o preço desfaça pelo menos 75% do movimento.
+
+**Limitações.**
+
+- Os alertas não substituem a verificação em outra fonte nem explicam a causa do evento.
+- Os limiares podem gerar alertas para eventos reais relevantes, como resultados e notícias. O texto informa essa possibilidade.
+- Ativos fora dos padrões de ticker acima recebem os limiares de ações.
+- Os alertas não corrigem nem removem dados: as análises continuam usando a série como a fonte a entrega.
+
+---
+
 ## 3. Indicadores técnicos (`indicators.py`, `indicators_extra.py`)
 
 Os indicadores são **transformações matemáticas do histórico**. O Argos os usa para descrever tendência, momentum e dispersão, e **não** os converte em sinais de compra ou venda. As descrições exibidas na interface vêm de `core/indicator_docs.py`.

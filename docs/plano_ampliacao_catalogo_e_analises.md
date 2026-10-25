@@ -313,3 +313,12 @@ O texto completo da decisão está em [`pibiti/decisoes_orientador.md`](pibiti/d
 - atualização do modo demo;
 - limitações;
 - ajustes do cronograma.
+
+---
+
+## 10. Registro de execução
+
+| Data | Item | Situação | Registro |
+| --- | --- | --- | --- |
+| 24/10/2026 | A4 — alertas de qualidade dos dados | **Implementado** | `core/data_quality.py` (100% de cobertura), quadro "Atenção aos dados" nas cinco páginas de análise e linha "Verificações de qualidade" nos detalhes. Metodologia, limiares, calibração e limitações em [`metodologia_de_calculo.md`](metodologia_de_calculo.md), seção 2.2. Conferido no navegador com XPML11.SA (aviso de mudança de patamar em 14/01/2026), DHN-USD pelo "Digitar ticker" e a Comparação XPML11 × MXRF11 |
+| 24/10/2026 | Achado da calibração | Registrado | XPML11.SA tem, na fonte, três pregões (14 a 16/01/2026) cotados a cerca de 1/100 do nível habitual. Retornos, volatilidade e queda máxima que incluem essas datas são afetados. A causa não foi verificada; o alerta informa o usuário. Decidir na revisão do catálogo (fase 2) se o ativo permanece ou se a série precisa de tratamento documentado |

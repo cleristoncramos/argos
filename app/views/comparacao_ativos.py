@@ -22,7 +22,7 @@ from app.ui.chart_guide import render_chart_guide
 from app.ui.asset_cards import render_selected_asset_cards
 from app.ui.colors import tone_icon, tone_of
 from app.ui.comparison_info import render_comparison_notes
-from app.ui.data_info import DATA_SOURCE, render_catalog_notice
+from app.ui.data_info import DATA_SOURCE, render_catalog_notice, render_comparison_quality_alerts
 from app.ui.disclaimers import (
     render_footer_disclaimer,
     render_methodology_limitations,
@@ -70,6 +70,7 @@ from core.comparison_checks import (
 from core.config import ANNUALIZATION_FACTORS, config
 from core.currency import currency_info
 from app.ui.data_cache import download_active_data
+from core.data_quality import assess_data_quality
 from core.data_processor import (
     aggregate_by_frequency,
     prepare_dataframe,
@@ -920,6 +921,12 @@ if load_comparison:
             )
         st.stop()
 
+    # Alertas de qualidade de cada série diária, antes de recortar o período comum
+    quality_by_asset = {
+        symbol: assess_data_quality(frame, symbol, start_date)
+        for symbol, frame in downloaded.items()
+    }
+
     # Períodos históricos de cada ativo (datas diárias, antes de agregar)
     period_check = check_period_divergence(
         build_spans({s: d["Date"] for s, d in downloaded.items()})
@@ -1045,6 +1052,7 @@ if load_comparison:
     st.session_state["comparison_period_check"] = period_check
     st.session_state["comparison_used_spans"] = used_spans
     st.session_state["comparison_fetched_at"] = datetime.now()
+    st.session_state["comparison_quality"] = quality_by_asset
 
 
 # ==========================================================
@@ -1111,6 +1119,15 @@ if period_check is not None:
             aligned_to_common=aligned_to_common,
         )
     )
+
+render_comparison_quality_alerts(
+    {
+        ticker: alerts
+        for ticker, alerts in (st.session_state.get("comparison_quality") or {}).items()
+        if ticker in compared_tickers
+    },
+    label=get_asset_full_name,
+)
 
 consulted = fetched_at.strftime("%d/%m/%Y às %H:%M") if fetched_at else "—"
 st.caption(

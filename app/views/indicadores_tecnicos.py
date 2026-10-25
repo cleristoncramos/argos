@@ -43,6 +43,7 @@ from core.assets import ASSETS
 from core.config import ANNUALIZATION_FACTORS, LONG_FREQUENCIES
 from core.currency import currency_info
 from core.data_availability import assess_availability
+from core.data_quality import assess_data_quality
 from app.ui.data_cache import download_active_data
 from core.data_processor import aggregate_by_frequency, prepare_dataframe
 from core.exports import csv_filename, dataframe_to_csv_bytes
@@ -421,6 +422,7 @@ if load_analysis:
 
         # Datas diárias baixadas, guardadas antes de agregar pela frequência
         daily_dates = df["Date"].copy()
+        quality_alerts = assess_data_quality(df, symbol, start_date)
 
         if frequency != "Diário":
             df = aggregate_by_frequency(df, frequency)[
@@ -496,6 +498,7 @@ if load_analysis:
         st.session_state["indicators_df"] = df
         st.session_state["indicators_availability"] = availability
         st.session_state["indicators_fetched_at"] = datetime.now()
+        st.session_state["indicators_quality"] = quality_alerts
 
 
 # =====================
@@ -578,6 +581,7 @@ render_analysis_summary(
         ),
     ],
     details_label="Detalhes do processamento",
+    quality_alerts=st.session_state.get("indicators_quality"),
 )
 
 st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
