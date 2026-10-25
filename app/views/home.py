@@ -66,7 +66,8 @@ st.markdown(
     -webkit-background-clip: text; background-clip: text; color: transparent; }
 .hero-tagline { margin-top: 18px; padding-left: 14px; border-left: 3px solid #c8102e; font-size: clamp(1.2rem, 2vw, 1.5rem);
     line-height: 1.3; font-weight: 650; color: #111; animation: rise .6s .2s ease both; }
-.hero-sub { margin-top: 14px; max-width: 560px; font-size: 1rem; line-height: 1.7; color: #4a4a4a; animation: rise .6s .28s ease both; }
+.hero-sub { margin-top: 14px; font-size: 1rem; line-height: 1.7; color: #4a4a4a; text-align: justify; hyphens: auto;
+    animation: rise .6s .28s ease both; }
 .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); margin: 24px 0 18px; border: 1px solid #2a2a2a;
     background: #fff; box-shadow: 0 10px 26px rgba(17, 17, 17, .08);
     animation: rise .6s .36s ease both; }
@@ -89,17 +90,16 @@ st.markdown(
 .st-key-cta_start p, .st-key-cta_academic p { color: inherit !important; font-weight: 700 !important; }
 
 /* ---------- vídeo ---------- */
-.st-key-hero_video { border: 1px solid #2a2a2a; background: #fff; gap: 0 !important; animation: rise .8s .2s ease both;
+.st-key-hero_video { margin-top: 36px; border: 1px solid #2a2a2a; background: #fff; gap: 0 !important; animation: rise .8s .2s ease both;
     box-shadow: 0 30px 60px rgba(17, 17, 17, .16), 0 0 0 6px rgba(255, 255, 255, .6);
     transform: perspective(1600px) rotateY(-3deg) rotateX(1.5deg); transition: transform .6s ease; }
 .st-key-hero_video:hover { transform: none; }
 .st-key-hero_video video { display: block; width: 100%; }
 .st-key-hero_video [data-testid="stElementContainer"],
 .st-key-hero_video [data-testid="stMarkdownContainer"] { margin: 0 !important; }
-.video-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px;
+.video-bar { display: flex; align-items: center; padding: 8px 12px;
     border-bottom: 2px solid #c8102e; background: linear-gradient(180deg, #2b2b31, #1b1b1f); color: #fff; font-size: .7rem; font-weight: 700;
     letter-spacing: .14em; text-transform: uppercase; }
-.video-bar em { font-style: normal; color: #ff9b9b; }
 .video-caption { margin-top: 10px; color: #5f5f5f; font-size: .78rem; }
 .video-missing { aspect-ratio: 16/9; display: grid; place-items: center; color: #5f5f5f; }
 
@@ -180,9 +180,13 @@ with col_text:
 <div class="hero-title">Argos</div>
 <div class="hero-tagline">Plataforma de Análise Histórica de Ativos Financeiros</div>
 <div class="hero-sub">
-  Explore o histórico de ações, criptomoedas, FIIs, commodities e índices.
-  Compare ativos, leia indicadores técnicos e meça risco e retorno, com
-  explicações em linguagem simples e foco educacional.
+  Consulte o histórico de {stats["assets"]} ativos do catálogo, entre ações brasileiras e
+  americanas, ETFs, FIIs, criptomoedas, moedas, commodities, índices e renda fixa, com
+  dados do Yahoo Finance. Analise um ativo por vez, compare vários na mesma base,
+  acompanhe indicadores técnicos, meça risco e retorno, observe a sazonalidade,
+  simule aportes periódicos e veja o catálogo inteiro em um panorama. Cada gráfico
+  traz um roteiro de leitura em linguagem simples, e alertas de qualidade indicam
+  trechos dos dados que merecem atenção.
 </div>
 <div class="hero-stats">
   <div><b>{stats["assets"]}</b><small>ativos</small></div>
@@ -209,7 +213,7 @@ with col_text:
 with col_video:
     with st.container(key="hero_video"):
         st.markdown(
-            '<div class="video-bar"><span>▶ Tour pelos recursos</span><em>~1 min</em></div>',
+            '<div class="video-bar"><span>▶ Tour pelos recursos</span></div>',
             unsafe_allow_html=True,
         )
         if FEATURES_VIDEO.exists():
@@ -218,7 +222,7 @@ with col_video:
             st.markdown('<div class="video-missing">Vídeo indisponível</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="video-caption">Análise individual, comparação, indicadores técnicos, '
-        "risco e retorno, sazonalidade e simulação de aportes em uma animação curta.</div>",
+        "risco e retorno, sazonalidade e simulação de aportes.</div>",
         unsafe_allow_html=True,
     )
 
