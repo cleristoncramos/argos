@@ -122,6 +122,34 @@ Limiares de variação diária por tipo de série, identificado pelo ticker (val
 
 ---
 
+## 2.3 Variação por prazo (`trailing_returns.py`)
+
+Item A1 do plano de ampliação, aprovado em 24/10/2026. A tabela fica na Análise Individual, logo depois de "Visão Geral do Ativo".
+
+- **Prazos.** 1, 3 e 6 meses, "No ano" e 1, 2, 3, 5 e 10 anos, todos até a última observação disponível.
+- **Base, explícita na tela.** É o **período carregado na barra lateral**, com os **fechamentos diários**. A tabela não baixa um histórico mais longo: prazos maiores que a base aparecem como "—" e o texto orienta a ampliar o período. O cartão "Retorno Total" usa os valores agregados pela frequência escolhida, e a nota da tabela avisa que os dois números podem diferir.
+- **Data-alvo do início.**
+  - Nas janelas comuns, é a data da última observação menos o prazo, pelo calendário: 23/10/2026 − 5 anos = 23/10/2021.
+  - Em "No ano", é 31/12 do ano anterior.
+- **Valor inicial.** É o último fechamento na data-alvo ou antes dela.
+  - Se a base começa depois da data-alvo, mas até 31 dias depois (7 dias para janelas menores que 1 ano), usa o primeiro fechamento disponível e marca a data com **\***, de "início ajustado".
+  - A tolerância de 31 dias cobre os atalhos de período da barra lateral, que começam no primeiro dia do mês seguinte.
+  - Fora da tolerância, a janela fica indisponível ("—").
+- **Variação acumulada.** `valor final / valor inicial − 1`.
+- **Taxa equivalente ao ano.**
+  - Só para prazos de 1 ano ou mais, calculada como `(1 + variação acumulada)^(1/anos) − 1`.
+  - "Anos" é o prazo efetivo em anos de calendário completos mais a fração restante em `dias / 365,25`.
+  - Uma janela de exatamente 1 ano tem taxa igual à variação acumulada. Em prazos menores, a coluna mostra "não se aplica", porque anualizar meses amplia oscilações de curto prazo.
+- **Taxas de juros** (`^IRX`, `^FVX`, `^TNX`, `^TYX`). A tabela não é exibida, porque a variação percentual do nível da taxa não equivale ao retorno de um título.
+
+**Limitações.**
+
+- Só preço de fechamento: sem dividendos, custos, impostos ou inflação. Por isso, os números diferem de plataformas que usam preço ajustado por proventos.
+- A taxa equivalente ao ano é uma média geométrica do prazo e não descreve o caminho: anos muito diferentes podem produzir a mesma taxa.
+- Com o "início ajustado", o prazo efetivo é um pouco menor que o rótulo. A data real fica visível na coluna "Início".
+
+---
+
 ## 3. Indicadores técnicos (`indicators.py`, `indicators_extra.py`)
 
 Os indicadores são **transformações matemáticas do histórico**. O Argos os usa para descrever tendência, momentum e dispersão, e **não** os converte em sinais de compra ou venda. As descrições exibidas na interface vêm de `core/indicator_docs.py`.

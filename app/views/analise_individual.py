@@ -62,6 +62,14 @@ from app.ui.season_explorer import (
 )
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
+from app.ui.trailing_table import (
+    FORMATTERS as TRAILING_FORMATTERS,
+    HEADER_LABELS,
+    RATE_NOTE,
+    TRAILING_NOTES,
+    build_trailing_display,
+    trailing_intro,
+)
 from app.ui.tables import (
     date_cell,
     number_cell,
@@ -99,6 +107,7 @@ from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.formatters import format_number_br
 from core.llm_builders import individual_context, window_context
 from core.returns_utils import simple_returns
+from core.trailing_returns import base_description, trailing_returns
 
 
 st.set_page_config(
@@ -268,6 +277,7 @@ if load_data:
         st.session_state["asset_availability"] = availability
         st.session_state["asset_fetched_at"] = datetime.now()
         st.session_state["asset_quality"] = assess_data_quality(df_prepared, symbol, start_date)
+        st.session_state["asset_daily"] = df_prepared[["Date", "Close"]].copy()
 
 
 # =====================
@@ -407,6 +417,31 @@ render_explain_section(
     ),
     key="analise_individual",
 )
+
+# -------------------------------------------------------
+# Variação por prazo (A1): janelas fixas até a última observação
+# -------------------------------------------------------
+st.markdown("### Variação por prazo")
+
+daily_closes = st.session_state.get("asset_daily")
+trailing_base = base_description(daily_closes)
+
+if currency.kind == "rate":
+    st.caption(RATE_NOTE)
+elif trailing_base is None:
+    st.info("Carregue os dados novamente para ver a variação por prazo.")
+else:
+    st.markdown(trailing_intro(*trailing_base))
+    render_table(
+        build_trailing_display(trailing_returns(daily_closes)),
+        list(HEADER_LABELS),
+        TRAILING_FORMATTERS,
+        header_labels=HEADER_LABELS,
+        max_height=None,
+        min_width=720,
+        wrap_header=True,
+    )
+    st.caption(TRAILING_NOTES)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
