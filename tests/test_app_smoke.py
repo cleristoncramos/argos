@@ -13,16 +13,19 @@ from pathlib import Path
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from app.ui.pages import MENU_PAGES
+from app.ui.pages import ANALYSIS_PAGES, MENU_PAGES
 
 APP = Path(__file__).resolve().parents[1] / "app"
 
 
-def test_home_opens_with_one_card_per_page():
+def test_home_opens_with_one_card_per_analysis_module():
     at = AppTest.from_file(str(APP / "main.py"), default_timeout=60)
     at.run()
     assert not at.exception, [e.message for e in at.exception]
-    assert len(at.get("page_link")) == len(MENU_PAGES)
+    # "Sobre o Projeto" fica só no menu principal, sem cartão na página inicial.
+    links = at.get("page_link")
+    assert len(links) == len(ANALYSIS_PAGES) == len(MENU_PAGES) - 1
+    assert all("sobre_projeto" not in link.proto.page for link in links)
 
 
 @pytest.mark.parametrize("spec", MENU_PAGES, ids=lambda spec: spec.title)

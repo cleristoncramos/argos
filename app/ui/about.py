@@ -13,7 +13,7 @@ from html import escape
 from typing import Iterable, Mapping
 
 from app.ui.landing import ACADEMIC_INFO
-from app.ui.pages import MENU_PAGES
+from app.ui.pages import ANALYSIS_PAGES
 
 SUBTITLE = "Plataforma de Análise Histórica de Ativos Financeiros"
 
@@ -91,13 +91,6 @@ MODULE_DETAILS = {
          "Ordem inicial por nome; a ordenação não é recomendação",
          "Dados indisponíveis aparecem vazios, nunca como zero"),
     ),
-    "views/sobre_projeto.py": (
-        "O que é o sistema, como foi construído e quais são seus limites?",
-        ("Pergunta de pesquisa, objetivos e situação de cada um",
-         "Metodologia, dados e catálogo",
-         "Qualidade, reprodutibilidade e escopo",
-         "Contexto acadêmico e aviso legal"),
-    ),
 }
 
 METHODOLOGY = (
@@ -145,7 +138,7 @@ def build_hero_html(stats: Mapping[str, int]) -> str:
         (stats["assets"], "ativos"),
         (stats["groups"], "grupos"),
         (stats["classes"], "classes"),
-        (len(MENU_PAGES) - 1, "módulos de análise"),
+        (len(ANALYSIS_PAGES), "módulos de análise"),
         (5, "frequências"),
     )
     cells = "".join(f'<div><b>{value}</b><span>{escape(label)}</span></div>' for value, label in facts)
@@ -198,7 +191,8 @@ def build_research_html() -> str:
 
 def build_modules_html() -> str:
     cards = []
-    for number, spec in enumerate(MENU_PAGES, 1):
+    # Só os módulos de análise; esta própria página não tem cartão.
+    for number, spec in enumerate(ANALYSIS_PAGES, 1):
         question, items = MODULE_DETAILS[spec.path]
         bullets = "".join(f"<li>{escape(item)}</li>" for item in items)
         cards.append(
@@ -282,7 +276,8 @@ def build_disclaimer_html() -> str:
 
 ABOUT_CSS = """
 <style>
-.block-container { max-width: 1180px !important; }
+/* Largura total, como nas demais páginas (sem limite lateral) */
+.block-container { max-width: none !important; }
 @keyframes ab-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 .ab-hero { padding: 26px 30px 22px; border: 1px solid #2a2a2a; animation: ab-rise .5s ease both;
   background: radial-gradient(700px 260px at 100% 0%, rgba(200,16,46,.10), transparent 65%), #fff;

@@ -178,7 +178,7 @@ argos/
 
 ## 6. Páginas e navegação
 
-A navegação é registrada em `app/main.py` com `st.navigation`, a partir da lista única de `app/ui/pages.py`, que também define a ordem dos atalhos "Primeiros passos" da página inicial e o destino do botão **Get Started** (a primeira página). A ordem segue o fluxo de estudo: análises primeiro e "Sobre o Projeto" por último, como informação institucional. A página inicial é a padrão; nas demais, o item "Início" fica oculto no menu e um ícone de casa leva de volta a ela.
+A navegação é registrada em `app/main.py` com `st.navigation`, a partir da lista única de `app/ui/pages.py`, que também define a ordem dos atalhos "Primeiros passos" da página inicial (só os módulos de análise; "Sobre o Projeto" fica apenas no menu) e o destino do botão **Get Started** (a primeira página). A ordem segue o fluxo de estudo: análises primeiro e "Sobre o Projeto" por último, como informação institucional. A página inicial é a padrão; nas demais, o item "Início" fica oculto no menu e um ícone de casa leva de volta a ela.
 
 | Página | Arquivo | O que faz |
 | --- | --- | --- |

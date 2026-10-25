@@ -4,7 +4,7 @@ import re
 
 from app.ui import about
 from app.ui.landing import ACADEMIC_INFO, catalog_stats
-from app.ui.pages import MENU_PAGES
+from app.ui.pages import ANALYSIS_PAGES, MENU_PAGES
 from core.assets import ASSET_GROUPS, ASSETS
 
 
@@ -41,9 +41,11 @@ def test_research_question_and_all_objectives_are_shown():
 
 def test_modules_follow_the_menu_order():
     html = about.build_modules_html()
-    positions = [html.index(spec.title) for spec in MENU_PAGES]
+    positions = [html.index(spec.title) for spec in ANALYSIS_PAGES]
     assert positions == sorted(positions)
-    assert set(about.MODULE_DETAILS) == {spec.path for spec in MENU_PAGES}
+    assert set(about.MODULE_DETAILS) == {spec.path for spec in ANALYSIS_PAGES}
+    # A própria página Sobre o Projeto não tem cartão na seção de módulos.
+    assert MENU_PAGES[-1].title not in html
 
 
 def test_catalog_numbers_come_from_the_catalog():

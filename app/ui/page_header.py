@@ -11,10 +11,7 @@ from html import escape
 
 import streamlit as st
 
-from app.ui.pages import MENU_PAGES
-
-# Páginas de análise numeradas; "Sobre o Projeto" (a última) é institucional.
-ANALYSIS_PAGES = MENU_PAGES[:-1]
+from app.ui.pages import ANALYSIS_PAGES
 
 
 def build_page_header_html(path: str, subtitle: str) -> str:

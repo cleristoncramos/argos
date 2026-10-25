@@ -10,7 +10,7 @@ if PROJECT_ROOT not in sys.path:
 
 from app.ui.academic_dialog import show_academic_dialog  # noqa: E402
 from app.ui.landing import FEATURES_VIDEO, build_mosaic_html, catalog_stats  # noqa: E402
-from app.ui.pages import MENU_PAGES, START_PAGE  # noqa: E402
+from app.ui.pages import ANALYSIS_PAGES, START_PAGE  # noqa: E402
 from core.asset_logos import get_asset_logo_url  # noqa: E402
 from core.assets import ASSETS  # noqa: E402
 
@@ -37,7 +37,8 @@ st.markdown(
     -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
             mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
 }
-.block-container { max-width: 1240px !important; padding-top: 1.2rem !important; padding-bottom: 1rem !important; }
+/* Largura total, como nas demais páginas (sem limite lateral) */
+.block-container { max-width: none !important; padding-top: 1.2rem !important; padding-bottom: 1rem !important; }
 
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
@@ -273,14 +274,15 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Mesma ordem do menu principal (app/ui/pages.py)
-for row_start in range(0, len(MENU_PAGES), 3):
+# Módulos de análise, na mesma ordem do menu principal (app/ui/pages.py);
+# a página Sobre o Projeto fica só no menu.
+for row_start in range(0, len(ANALYSIS_PAGES), 3):
     columns = st.columns(3, gap="small")
     for offset, column in enumerate(columns):
         index = row_start + offset
-        if index >= len(MENU_PAGES):  # última fileira incompleta (ex.: 7 páginas)
+        if index >= len(ANALYSIS_PAGES):  # última fileira incompleta
             break
-        spec = MENU_PAGES[index]
+        spec = ANALYSIS_PAGES[index]
         with column, st.container(key=f"fs_{index}"):
             st.markdown(
                 f'<div class="fs-top"><span class="fs-icon">{spec.icon}</span>'

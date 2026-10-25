@@ -2,7 +2,8 @@
 Ordem oficial das páginas do sistema.
 
 O menu principal (`app/main.py`) e os atalhos "Primeiros passos" da página
-inicial são montados a partir desta lista, para nunca divergirem. As análises
+inicial são montados a partir desta lista, para nunca divergirem. Os atalhos
+mostram só os módulos de análise; "Sobre o Projeto" fica apenas no menu. As análises
 vêm primeiro, na ordem do fluxo de estudo, e "Sobre o Projeto" fica no fim,
 como informação institucional. O botão "Get Started" abre a primeira página.
 """
@@ -15,7 +16,7 @@ class PageSpec:
     path: str          # relativo a app/main.py
     title: str
     icon: str
-    description: str   # texto do cartão "Primeiros passos"
+    description: str   # texto do cartão "Primeiros passos" (módulos de análise)
 
 
 HOME_PAGE = PageSpec("views/home.py", "Início", "🏠", "")
@@ -36,6 +37,10 @@ MENU_PAGES = (
     PageSpec("views/sobre_projeto.py", "Sobre o Projeto", "📊",
              "Objetivos, metodologia de cálculo, fontes de dados e limitações."),
 )
+
+# Módulos de análise (numerados no cabeçalho e com cartão em "Primeiros passos").
+# "Sobre o Projeto", a última página, é institucional: só aparece no menu.
+ANALYSIS_PAGES = MENU_PAGES[:-1]
 
 # Destino do botão "Get Started": a primeira página do menu.
 START_PAGE = MENU_PAGES[0]
