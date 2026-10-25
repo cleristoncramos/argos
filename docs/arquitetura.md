@@ -24,7 +24,7 @@ O Argos é uma **ferramenta de pesquisa, educação financeira e apoio à interp
 | Plotly | Gráficos interativos |
 | pandas / NumPy | Manipulação de séries e cálculos |
 | yfinance | Obtenção de dados históricos (Yahoo Finance) |
-| pytest + pytest-cov | Testes automatizados (cobertura mínima de 80%, medida em `core/`) |
+| pytest + pytest-cov | Testes automatizados (cobertura mínima de 95%, medida em `core/`) |
 | GitHub Actions | Rotina que mantém o app publicado ativo (`.github/workflows/keep-alive.yml`) |
 | Streamlit Community Cloud | Hospedagem pública (`app/main.py`, branch `main`) |
 | Biblioteca padrão (`urllib`) | Cliente da API de modelo de linguagem, sem dependência externa |
@@ -317,7 +317,7 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 ## 13. Testes e qualidade
 
-- **908 testes**, cobertura de `core/` em **100%** (2.695 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
+- **908 testes**, cobertura de `core/` em **100%** (2.695 instruções; mínimo de 95% exigido pelo `pytest.ini`, igual à meta da versão congelada).
 - `app/` **não** tem testes de renderização: páginas e componentes são conferidos manualmente no navegador (roteiro em `docs/roteiro_conferencia_navegador.md`). Há, porém:
   - **testes de componentes** que montam o HTML e o layout dos gráficos de `app/ui` sem o Streamlit (`test_ui_components.py`, `test_landing.py`), verificando escape de texto, conteúdo do modal, layout base dos gráficos e ausência de cantos arredondados no CSS próprio;
   - **testes estruturais** que leem o código-fonte das páginas (`test_chart_guides.py`, `test_simulation_texts.py`): todo gráfico tem roteiro de leitura, os textos novos usam linguagem neutra e o texto obrigatório da simulação está presente.

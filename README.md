@@ -3,7 +3,7 @@
 **Plataforma de Análise Histórica de Ativos Financeiros: análise exploratória de ativos, comparação de desempenho, indicadores técnicos e métricas de risco, com finalidade educacional e de pesquisa.**
 
 [![Aplicação online](https://img.shields.io/badge/app-argos--datalab.streamlit.app-C8102E)](https://argos-datalab.streamlit.app)
-![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.63-FF4B4B?logo=streamlit&logoColor=white)
 ![Testes](https://img.shields.io/badge/testes-908%20aprovados-2E7D32)
 ![Cobertura](https://img.shields.io/badge/cobertura%20do%20core-100%25-2E7D32)
@@ -281,7 +281,7 @@ Versões usadas em produção (fixadas em [`app/requirements.txt`](app/requireme
 
 ### Pré-requisitos
 
-- Python 3.10 ou superior
+- Python 3.12 ou superior (exigido pelo NumPy 2.5; testado no 3.13 e no 3.14)
 - Git
 
 ### Passo a passo
@@ -408,7 +408,7 @@ Gere o relatório de cobertura em HTML:
 python -m pytest --cov=core --cov-report=term-missing --cov-report=html
 ```
 
-O relatório fica em `htmlcov/index.html`. O `pytest.ini` exige cobertura mínima de **80%**; para a versão congelada, a meta é de **95% no `core/`**.
+O relatório fica em `htmlcov/index.html`. O `pytest.ini` exige cobertura mínima de **95% no `core/`**, a meta da versão congelada; a suíte falha abaixo disso.
 
 > [!NOTE]
 > O projeto ainda não tem pipeline de integração contínua: os testes devem ser executados localmente antes de cada commit. Depois de cada publicação relevante, a versão no ar é conferida por funcionalidade, com data, commit e evidências, em [`docs/verificacao_publicacao.md`](docs/verificacao_publicacao.md). Registro detalhado em [`TESTES.md`](TESTES.md) e [`docs/checkpoint_qualidade.md`](docs/checkpoint_qualidade.md).
