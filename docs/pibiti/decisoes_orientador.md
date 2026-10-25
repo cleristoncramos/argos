@@ -76,3 +76,28 @@ Fonte da política de dados: https://developers.openai.com/api/docs/guides/your-
 Sequência do próximo ciclo: 7B controlada, modo demo com dados salvos, preparação documental do O6 em paralelo, comparação de três a cinco ativos, congelamento da demo e documentação final.
 
 Status: recebida em 12/10/2026. Original da mensagem: a arquivar fora do repositório.
+
+## Parecer sobre o plano de ampliação do catálogo e de novas análises (24/10/2026)
+
+Plano avaliado: `docs/plano_ampliacao_catalogo_e_analises.md`. Autorização de desenvolvimento gradual, sem nova aprovação para cada detalhe, dentro dos limites abaixo. A aprovação não confirma a verificação dos tickers nem substitui as autorizações éticas do O6.
+
+| Assunto | Decisão |
+|---|---|
+| Identidade do Argos | Aproveitar formas de apresentação de plataformas de mercado, **sem** valuation, preço-alvo, preço justo ou teto, recomendação, pontuação, classificação de ativos como oportunidade ou previsão |
+| Catálogo | **Aprovada** a ampliação de 120 para cerca de 150 ativos, por diversidade de classes, setores, mercados e usos. 150 é referência, não meta: o catálogo pode fechar com menos. Cada inclusão passa por conferência técnica (ticker, histórico, moeda e mercado, classificação, coleta e processamento, documentação e modo demo). Classificações podem ser corrigidas (ex.: ETFs de ouro ou criptoativos classificados pela exposição). Substituições pontuais dispensam nova consulta, desde que justificadas no registro do catálogo |
+| Critérios para criptomoedas | Pelo menos 3 anos de histórico na fonte; relevância por capitalização (fonte e data registradas); diversidade de usos; dados suficientes; nenhuma seleção motivada só por altas recentes. Os 3 anos são critério de entrada, não garantia de suficiência para todas as análises |
+| Grupo "Criptomoedas recentes" | **Não criar** nesta rodada; esses ativos seguem pelo "Digitar ticker", com alertas de dados |
+| Caso DHN | Pode ser exemplo didático, separando observação de hipótese: o salto de preço não autoriza afirmar baixa liquidez, concentração, manipulação ou erro da fonte sem evidência adicional |
+| A1 — variação por janelas | **Aprovada.** Mostrar as datas usadas, "—" sem histórico suficiente, distinguir variação acumulada de taxa equivalente anual e deixar explícito se usa todo o histórico ou só o recorte da interface |
+| A2 — referência automática | **Aprovada**, sem regressão, beta ou cruzamentos (não altera a N07). Referência de comparação, não meta; escolha explicada; pode ser desativada e, se viável, trocada; período comum ou aviso de disponibilidade; aviso de moeda e calendário. Sem referência adequada, não mostrar |
+| A3 — panorama do catálogo | **Aprovada com implementação gradual**: por grupo selecionado, ordenação inicial por nome, retorno ao lado de volatilidade e queda máxima, período e histórico indicados, aviso de que a ordem não é recomendação, falhas parciais sem preencher com zero, cache e limites. Sem destacar "vencedores" ou "oportunidades". Pode ser reduzida ou adiada |
+| A4 — alertas de qualidade | **Aprovada, prioridade alta.** Indicar situações que merecem atenção, sem concluir erro, fraude ou manipulação. Limiares são heurísticas iniciais documentadas e testadas, considerando a classe do ativo; ausência de volume não reprova séries em que o campo não é pertinente |
+| A7 — recuperação das quedas | **Aprovada.** Distinguir início, fundo, recuperação, duração e queda não recuperada ("não recuperado até a última observação disponível", sem estimativa). Definir a unidade da duração (dias corridos, observações ou períodos) |
+| A8 — maiores altas e quedas | **Aprovada**, com datas e frequência. Descrever os extremos sem afirmar que poucos dias explicam o resultado, salvo se essa contribuição for calculada |
+| A5 e A6 — câmbio, dividendos e inflação | **Plano 3**, após o congelamento, com especificação própria (fonte, alinhamento de datas, metodologia, limitações, testes, textos e contexto da LLM). Preço ajustado deve ser descrito como a fonte o trata, sem equivaler a simulação completa de reinvestimento |
+| Cronograma | Nov/2026: A4, A1, A7, A8. Nov–dez/2026: catálogo. Dez/2026: A2 e primeira versão da A3. Jan/2027: dados salvos, integração e revisão. Fev/2027: congelamento. Depois: A5, A6 e extensões. A estrutura do modo demo vem antes do catálogo ampliado; os dados salvos podem ser regenerados depois. O O6 segue em paralelo |
+| Ordem de preservação em caso de conflito | 1) estabilidade e segurança da 7B; 2) modo demo; 3) O6; 4) alertas e análises simples; 5) catálogo; 6) referência automática; 7) panorama |
+| Explicação assistida | Novas funções nascem com "Como ler este gráfico". Catálogo novo não exige mudar o prompt congelado; cada novo tipo de análise ou mudança no contexto da API passa por testes de compatibilidade, rastreabilidade e neutralidade. Visualização não coberta pela LLM pode sair só com explicação fixa |
+| Registros pedidos | Critérios e lista final do catálogo; inclusões, substituições e exclusões justificadas; metodologia dos novos cálculos; testes e conferência das telas; atualização do modo demo; limitações; ajustes do cronograma |
+
+Status: recebido em 24/10/2026. Original do parecer: a arquivar fora do repositório.

@@ -1,8 +1,8 @@
 # Plano de ampliação do catálogo e de novas análises
 
-**Status:** proposta para discussão com o orientador · **Elaborado em:** 24/10/2026 · **Referência externa analisada:** Investidor10 (investidor10.com.br), consulta em 24/10/2026
+**Status:** **aprovado com delimitações pelo orientador em 24/10/2026** (registro em [`pibiti/decisoes_orientador.md`](pibiti/decisoes_orientador.md)); a seção 9 resume os limites e prevalece sobre o texto original · **Elaborado em:** 24/10/2026 · **Referência externa analisada:** Investidor10 (investidor10.com.br), consulta em 24/10/2026
 
-Este plano responde a três perguntas: (1) o que plataformas de mercado, como o Investidor10, oferecem em análise de séries históricas; (2) se o catálogo do Argos deve crescer, inclusive com criptomoedas recentes; e (3) quais novas análises cabem no objetivo do projeto. Nada aqui altera o sistema por enquanto: cada item depende de aprovação.
+Este plano responde a três perguntas: (1) o que plataformas de mercado, como o Investidor10, oferecem em análise de séries históricas; (2) se o catálogo do Argos deve crescer, inclusive com criptomoedas recentes; e (3) quais novas análises cabem no objetivo do projeto. A execução é gradual e segue o cronograma aprovado (seção 9).
 
 ---
 
@@ -92,13 +92,16 @@ Por isso, a ampliação deve ser feita **uma vez, em lote, antes de gerar os dad
 
 ## 4. Criptomoedas recentes com altas fortes: análise e posição proposta
 
-O ranking de maiores altas em 30 dias do Investidor10 mostrava, em 24/10/2026, o token **DHN (Dohrnii) com +14.067%**. No Yahoo Finance, o fechamento mensal do DHN ficou entre US$ 3 e US$ 6 de outubro/2025 a setembro/2026 e saltou para **US$ 479,63 em outubro/2026**, cerca de 145 vezes em um mês. Esse padrão é típico de token com **baixa liquidez e oferta concentrada**, e não de crescimento sustentado.
+O ranking de maiores altas em 30 dias do Investidor10 mostrava, em 24/10/2026, o token **DHN (Dohrnii) com +14.067%**.
+
+- **Observação.** No Yahoo Finance, o fechamento mensal do DHN ficou entre US$ 3 e US$ 6 de outubro/2025 a setembro/2026 e foi de **US$ 479,63 em outubro/2026**, cerca de 145 vezes o mês anterior.
+- **Hipóteses, não demonstradas.** Um salto dessa ordem pode ter várias explicações: baixa negociação, oferta concentrada, evento do próprio projeto ou falha da fonte. Os dados de preço, sozinhos, não permitem afirmar nenhuma delas. O ponto didático é a **necessidade de investigar** antes de interpretar, não a atribuição de uma causa.
 
 **Riscos de incluir criptomoedas pelo desempenho recente:**
 
 1. **Viés de seleção e de sobrevivência.** Escolher ativos *porque* subiram ensina a conclusão errada: que altas passadas indicam altas futuras. Os textos do Argos combatem exatamente essa leitura.
 2. **Histórico curto.** Por exemplo, HYPE tem cerca de 2 anos de dados (694 observações). Sazonalidade, janelas móveis e volatilidade mensal ficam pouco confiáveis.
-3. **Qualidade dos dados.** Saltos de 100 vezes podem combinar movimento real, baixa negociação e falhas da fonte. O Argos hoje não sinaliza isso.
+3. **Qualidade dos dados.** Saltos dessa ordem merecem atenção e verificação. O Argos hoje não sinaliza isso.
 4. **Aparência de recomendação.** Uma lista curada com "as que mais subiram" lê-se como sugestão de compra.
 
 **Posição proposta:**
@@ -123,7 +126,7 @@ Todos os tickers abaixo foram verificados no Yahoo Finance em 24/10/2026 (data d
 | Criptomoedas (+8) | LTC-USD, BCH-USD, XLM-USD, DOT-USD, NEAR-USD, AAVE-USD, UNI7083-USD, HBAR-USD | 2014 a 2020 | Usos distintos (pagamento, infraestrutura, finanças descentralizadas), todas com mais de 5 anos de dados |
 | Ações Brasil (+10) | PRIO3, SBSP3, EMBJ3, BPAC11, RDOR3, EQTL3, GGBR4, VIVT3, RADL3, TOTS3 | 2000 a 2020 | Cobre setores ausentes: petróleo independente, saneamento, aeronáutica, banco de investimento, saúde, energia, siderurgia, telecomunicações, farmácias e tecnologia |
 | FIIs Brasil (+4) | KNCR11, CPTS11, HGRU11, VISC11 | 2014 a 2018 | Fundos de papel (recebíveis) e de renda urbana e shopping |
-| ETFs de ações (+6) | BOVA11, SMAL11, IVVB11, DIVO11, GOLD11, HASH11 | 2008 a 2021 | ETFs da B3 em reais: Ibovespa, small caps, S&P 500, dividendos, ouro e cesta de criptoativos |
+| ETFs da B3 (+6) | BOVA11, SMAL11, IVVB11, DIVO11, GOLD11, HASH11 | 2008 a 2021 | ETFs em reais: Ibovespa, small caps, S&P 500, dividendos, ouro e cesta de criptoativos. Classificar pela exposição (GOLD11 junto ao ouro, HASH11 junto a criptoativos), não só pela bolsa |
 | Ações EUA (+2) | a definir (ex.: um nome de saúde e um de consumo) | — | Opcional, para equilibrar setores |
 
 **Reserva** (atendem aos critérios e podem substituir alguma inclusão): **SUI20947-USD** (dados desde mai/2023) e **APT21794-USD** (desde out/2022).
@@ -136,7 +139,7 @@ Todos os tickers abaixo foram verificados no Yahoo Finance em 24/10/2026 (data d
 - **CPLE6:** sem dados no Yahoo.
 - **VGHF11:** cerca de 2,7 anos de histórico.
 
-**Grupo novo opcional, "Criptomoedas recentes":** só se o orientador aprovar. Ficaria com um aviso fixo de histórico curto e sem entrar nas análises que exigem muitos anos (sazonalidade e janelas longas).
+**Grupo "Criptomoedas recentes":** não será criado nesta rodada (parecer de 24/10/2026). Esses ativos seguem acessíveis pelo "Digitar ticker", com os alertas da A4.
 
 ---
 
@@ -256,3 +259,57 @@ As fases respeitam as prioridades do orientador (seção 1, item 3). As fases 1 
 5. Aprovar A3 (panorama do catálogo), avaliando o risco de leitura como ranking de recomendação.
 6. Confirmar que A5 e A6 (câmbio, dividendos e inflação) ficam para depois do congelamento.
 7. Confirmar o encaixe das fases 1 a 3 entre a 7B, o modo demo e o O6.
+
+---
+
+## 9. Parecer do orientador (24/10/2026): delimitações aprovadas
+
+O texto completo da decisão está em [`pibiti/decisoes_orientador.md`](pibiti/decisoes_orientador.md). Em caso de divergência com as seções anteriores, valem estes limites.
+
+**Não autorizado nesta rodada:** valuation, preço justo, preço teto, recomendação, pontuação de ativos, classificação de ativos como oportunidade e previsão.
+
+| Item | Situação | Requisitos acrescentados pelo parecer |
+| --- | --- | --- |
+| Catálogo | Aprovado (cerca de 150) | 150 é referência, não meta. Conferência técnica de cada inclusão; classificação pela exposição; substituições justificadas no registro do catálogo |
+| Criptomoedas | Critérios aprovados | 3 anos de histórico, capitalização com fonte e data, diversidade de usos, dados suficientes, nada motivado só por alta recente. Sem grupo "recentes" |
+| A1 | Aprovada | Datas efetivamente usadas; "—" sem histórico; acumulada × taxa anual; base explícita (todo o histórico ou recorte da interface) |
+| A2 | Aprovada | Referência de comparação, não meta; escolha explicada; desativável e, se viável, substituível; período comum; avisos de moeda e calendário; sem referência adequada, não mostrar |
+| A3 | Aprovada, gradual | Por grupo; ordenação inicial por nome; retorno com volatilidade e queda máxima; período e histórico; aviso de não recomendação; falhas parciais sem zeros; cache e limites; sem destacar "vencedores" |
+| A4 | Aprovada, prioridade alta | Sinalizar sem concluir erro ou manipulação; limiares como heurísticas documentadas e testadas; regras por classe; ausência de volume não reprova séries em que o campo não se aplica |
+| A7 | Aprovada | Início, fundo, recuperação, duração e "não recuperado até a última observação disponível"; unidade da duração definida |
+| A8 | Aprovada | Extremos com datas e frequência; sem afirmar que poucos dias explicam o resultado, salvo cálculo próprio |
+| A5, A6 | Plano 3 | Especificação própria; preço ajustado descrito como a fonte o trata |
+
+**Cronograma aprovado.** Substitui a seção 7.
+
+| Período | Entrega |
+| --- | --- |
+| Antes das novas funções | Estabilidade da 7B, estrutura do modo demo e preparação documental do O6 |
+| Novembro/2026 | A4, A1, A7 e A8 |
+| Novembro a dezembro/2026 | Ampliação do catálogo |
+| Dezembro/2026 | A2 e primeira versão da A3 |
+| Janeiro/2027 | Atualização dos dados salvos, integração e revisão (testes sem internet) |
+| Fevereiro/2027 | Congelamento |
+| Depois do congelamento | A5, A6 e demais extensões |
+
+**Ordem de preservação em caso de conflito:**
+
+1. 7B;
+2. modo demo;
+3. O6;
+4. alertas e análises simples;
+5. catálogo;
+6. referência automática;
+7. panorama.
+
+**Explicação assistida.** As novas funções nascem com "Como ler este gráfico". Os novos ativos não exigem mudar o prompt congelado. Um novo tipo de análise só entra no contexto da LLM após testes de compatibilidade, rastreabilidade e neutralidade. Até lá, a função usa apenas a explicação fixa.
+
+**Registros a manter durante a execução:**
+
+- critérios e lista final do catálogo;
+- inclusões, substituições e exclusões justificadas;
+- metodologia dos novos cálculos;
+- testes e conferência das telas;
+- atualização do modo demo;
+- limitações;
+- ajustes do cronograma.

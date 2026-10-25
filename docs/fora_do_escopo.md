@@ -10,6 +10,8 @@ Plano 2, item 8.7. Atualizado em 10/10/2026. Itens "fora" não serão feitos nes
 | Tabela comparativa com mais de 5 ativos | Fora | Decisão N06 |
 | Simulação com datas livres ou novas modalidades | Fora | Decisão N04: manter as janelas móveis existentes; o exemplo "depositar em setembro e retirar em outubro" é atendido pela janela sazonal (N04b) |
 | Dividendos, câmbio, inflação, custos e impostos nos cálculos | Fora | O escopo usa preço de fechamento; os avisos informam isso |
+| Câmbio (valores em reais) e dividendos/inflação (A5 e A6 do plano de ampliação) | Adiado (Plano 3) | Parecer de 24/10/2026: mudam premissas de cálculo e comunicação; exigem especificação própria depois do congelamento |
+| Valuation, preço justo, preço teto, pontuação de ativos e grupo "Criptomoedas recentes" | Fora | Parecer de 24/10/2026 sobre `docs/plano_ampliacao_catalogo_e_analises.md`; criptomoedas recentes seguem pelo "Digitar ticker" |
 | Perfil, renda ou objetivos do usuário | Fora | Evita configurar recomendação individual |
 | Frequências semestral e anual | **Implementado em 24/10/2026** | Semestres de janeiro a junho e de julho a dezembro; ano civil |
 | Filtros de Mercado e Subclasse no seletor da Comparação | **Implementado em 24/10/2026** | Grupo → Subclasse e Mercado → Ativos, com opções encadeadas |
