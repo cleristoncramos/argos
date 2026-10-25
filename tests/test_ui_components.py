@@ -100,3 +100,15 @@ def test_analysis_pages_use_the_shared_summary_block():
         source = (views / f"{name}.py").read_text(encoding="utf-8")
         assert "render_analysis_summary(" in source, name
         assert "col_expander" not in source, name  # o expansor não fica mais ao lado do cartão
+
+
+def test_table_header_wrap_and_centered_percent():
+    df = pd.DataFrame({"Nome": ["A"], "Retorno": [-0.05]})
+    wrapped = build_table_html(df, ["Nome", "Retorno"], wrap_header=True)
+    assert '<th style="white-space:normal;">Retorno</th>' in wrapped
+    assert "<th>Retorno</th>" in build_table_html(df, ["Nome", "Retorno"])
+
+    text, style = percent_cell(colored=True, center=True)(-0.05)
+    assert text == "-5,00%" and "text-align:center" in style and "color:" in style
+    assert "text-align:center" in percent_cell(center=True)(None)[1]
+    assert "text-align:right" in percent_cell()(0.1)[1]

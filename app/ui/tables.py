@@ -49,22 +49,25 @@ def number_cell(value) -> Cell:
     return format_number_br(value), _RIGHT
 
 
-def percent_cell(*, fraction: bool = True, colored: bool = False) -> Formatter:
+def percent_cell(*, fraction: bool = True, colored: bool = False, center: bool = False) -> Formatter:
     """
     fraction=True: valor em fração (0,12 -> 12,00%).
     fraction=False: valor já em percentual (12 -> 12,00%).
     colored=True: verde para positivo, vermelho para negativo.
+    center=True: centraliza a célula (o padrão é alinhar à direita).
     """
+    align = _CENTER + "font-variant-numeric:tabular-nums;" if center else _RIGHT
+
     def _format(value) -> Cell:
         try:
             number = float(value)
         except (TypeError, ValueError):
-            return "—", _RIGHT
+            return "—", align
         if pd.isna(number):
-            return "—", _RIGHT
+            return "—", align
 
         text = format_return_pct(number if fraction else number / 100)
-        style = _RIGHT
+        style = align
         if colored and number != 0:
             color = POSITIVE_FG if number > 0 else NEGATIVE_FG
             style += f"color:{color};font-weight:600;"
@@ -87,13 +90,18 @@ def build_table_html(
     header_labels: dict[str, str] | None = None,
     max_height: int | None = None,
     min_width: int = 800,
+    wrap_header: bool = False,
 ) -> str:
-    """HTML da tabela. Todo texto de célula e cabeçalho é escapado."""
+    """
+    HTML da tabela. Todo texto de célula e cabeçalho é escapado.
+    wrap_header=True deixa cabeçalhos longos quebrarem em mais de uma linha.
+    """
     formatters = formatters or {}
     header_labels = header_labels or {}
+    th_style = ' style="white-space:normal;"' if wrap_header else ""
 
     header = "".join(
-        f"<th>{escape(str(header_labels.get(c, c)))}</th>" for c in columns
+        f"<th{th_style}>{escape(str(header_labels.get(c, c)))}</th>" for c in columns
     )
 
     rows = []
@@ -122,6 +130,7 @@ def render_table(
     header_labels: dict[str, str] | None = None,
     max_height: int | None = 400,
     min_width: int = 800,
+    wrap_header: bool = False,
     iframe: bool = False,
 ) -> None:
     """
@@ -135,6 +144,7 @@ def render_table(
     html = build_table_html(
         dataframe, columns, formatters,
         header_labels=header_labels, max_height=max_height, min_width=min_width,
+        wrap_header=wrap_header,
     )
     if iframe:
         components.html(html, height=(max_height or 400) + 20, scrolling=True)

@@ -24,6 +24,7 @@ import streamlit as st
 from app.ui.page_header import render_page_header
 from app.ui.data_info import render_analysis_summary, render_availability_messages
 from app.ui.colors import tone_of
+from app.ui.tables import date_cell, percent_cell, render_table
 from app.ui.what_if import WHAT_IF_CSS, WHAT_IF_HOW_TO_READ, build_what_if_html, format_money
 from app.ui.chart_guide import render_chart_guide
 from app.ui.llm_explain import asset_name, render_explain_section
@@ -636,30 +637,32 @@ for label, column in (
         {
             "Estratégia": label,
             "Janelas analisadas": summary["Janelas analisadas"],
-            SIMULATION_WINDOW_LABELS["Pior janela"]: format_return_pct(
-                summary["Pior janela"]
-            ),
-            SIMULATION_WINDOW_LABELS["Início da pior janela"]: format_date(
-                summary["Início da pior janela"]
-            ),
-            SIMULATION_WINDOW_LABELS["Mediana"]: format_return_pct(
-                summary["Mediana"]
-            ),
-            SIMULATION_WINDOW_LABELS["Melhor janela"]: format_return_pct(
-                summary["Melhor janela"]
-            ),
-            SIMULATION_WINDOW_LABELS["Início da melhor janela"]: format_date(
-                summary["Início da melhor janela"]
-            ),
-            SIMULATION_WINDOW_LABELS["Janelas com retorno positivo"]: format_return_pct(
-                summary["Janelas com retorno positivo"]
-            ),
+            SIMULATION_WINDOW_LABELS["Pior janela"]: summary["Pior janela"],
+            SIMULATION_WINDOW_LABELS["Início da pior janela"]: summary["Início da pior janela"],
+            SIMULATION_WINDOW_LABELS["Mediana"]: summary["Mediana"],
+            SIMULATION_WINDOW_LABELS["Melhor janela"]: summary["Melhor janela"],
+            SIMULATION_WINDOW_LABELS["Início da melhor janela"]: summary["Início da melhor janela"],
+            SIMULATION_WINDOW_LABELS["Janelas com retorno positivo"]: summary["Janelas com retorno positivo"],
         }
     )
 
-# A chave dá a classe usada pelo CSS de app/ui/design.py (textos centralizados).
-with st.container(key="simulation_windows_table"):
-    st.table(pd.DataFrame(rows).set_index("Estratégia"))
+windows_table = pd.DataFrame(rows)
+return_cell = percent_cell(colored=True, center=True)
+render_table(
+    windows_table,
+    list(windows_table.columns),
+    {
+        "Janelas analisadas": lambda v: (str(int(v)), "text-align:center;"),
+        SIMULATION_WINDOW_LABELS["Pior janela"]: return_cell,
+        SIMULATION_WINDOW_LABELS["Início da pior janela"]: date_cell,
+        SIMULATION_WINDOW_LABELS["Mediana"]: return_cell,
+        SIMULATION_WINDOW_LABELS["Melhor janela"]: return_cell,
+        SIMULATION_WINDOW_LABELS["Início da melhor janela"]: date_cell,
+        SIMULATION_WINDOW_LABELS["Janelas com retorno positivo"]: percent_cell(center=True),
+    },
+    max_height=None,
+    wrap_header=True,
+)
 
 st.plotly_chart(
     build_windows_chart(outcomes, symbol.upper()),
