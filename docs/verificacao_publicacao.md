@@ -42,6 +42,40 @@ Pedido do orientador em 25/10/2026: conferir a versão efetivamente publicada da
    - **Encaminhamento.** Resolver no primeiro snapshot do catálogo ampliado: alinhar o período do pacote com o das respostas salvas, ou regravar as respostas sobre o pacote.
 3. **Referência no modo demo (observação).** O pacote atual não inclui o Ibovespa (`^BVSP`). No modo demo, `PETR4.SA` mostra a mensagem de dados da referência indisponíveis, sem erro. Incluir `^BVSP` no próximo snapshot.
 
+### Situação ao fim da conferência 1
+
+**Implementação concluída; publicação conferida com pendência.** A correção da página inicial precisava ser publicada e reconferida (ver conferência 2).
+
+## Conferência 2 — 25/10/2026 (reconferência após a correção)
+
+| Campo | Valor |
+| --- | --- |
+| Data | 25/10/2026 |
+| Responsável | Clériston de Castro Ramos (desenvolvedor) |
+| Método | O mesmo roteiro automatizado da conferência 1, repetido por inteiro sobre o endereço público |
+| Branch | `main` |
+| Commit publicado | `958b729` ("fix: grade da página inicial com número de páginas não múltiplo de 3; teste de fumaça e registro da conferência do deploy") |
+| Como o commit foi identificado | A página inicial publicada deixou de exibir o `IndexError` e passou a mostrar o rodapé, comportamento introduzido nesse commit. O novo deploy já estava ativo cerca de 25 s após o push |
+
+| Bloco | Resultado observado | Situação |
+| --- | --- | --- |
+| Navegação | A página inicial abre sem exceção, com os 7 cartões e o rodapé ([evidência](evidencias/deploy_2026-10-25/cloud_home_corrigida.png)). As 7 páginas do menu abrem sem erro | Verificado |
+| A4 | Igual à conferência 1: quadro para `XPML11.SA`, análise completa (7 gráficos); nenhum quadro para `PETR4.SA` | Verificado |
+| A1 | Igual à conferência 1 (base explícita, datas usadas, início ajustado, "—" sem histórico) | Verificado |
+| A7 | Igual à conferência 1 (quedas recuperadas e a de -53,06% como não recuperada) | Verificado |
+| A8 | Igual à conferência 1 (mensal e diário, período em andamento marcado) | Verificado |
+| Catálogo | 148 ativos somados pelo Panorama nos 13 grupos; 148 na página inicial e na página Sobre | Verificado |
+| A2 | Igual à conferência 1 (`PETR4.SA` × Ibovespa, `IVVB11.SA` com aviso de câmbio, `MXRF11.SA` sem sugestão) | Verificado |
+| A3 | 13 grupos sem erro, ordem inicial por nome em todos, aviso presente, taxas com "—" e nota | Verificado, com a ressalva da conferência 1 (falha parcial não ocorreu; coberta por testes) |
+| Explicação assistida | Desligada na versão pública (decisão N22), com os roteiros fixos presentes. O ajuste entre o pacote de dados salvos e as respostas salvas segue para o primeiro snapshot (achado 2) | Verificado na versão pública; pendência no modo demo |
+| Exportação | "Baixar CSV" gerou `PETR4.SA_dados_tratados.csv` com 61 linhas | Verificado |
+
 ### Situação
 
-**Implementação concluída; publicação conferida com pendência.** A correção da página inicial precisa ser publicada e reconferida antes de registrar "publicação verificada".
+**Publicação verificada** das fases 1 a 3 (commit `958b729`). Ressalvas registradas:
+
+- o caminho de falha parcial do panorama não ocorreu na conferência e segue coberto pelos testes automáticos;
+- no modo demo completo, as respostas de IA salvas não coincidem com o período do pacote de dados (achado 2);
+- o pacote não inclui o Ibovespa (achado 3).
+
+Os dois últimos pontos são do modo de demonstração, não da versão publicada, e entram no primeiro snapshot do catálogo ampliado.
