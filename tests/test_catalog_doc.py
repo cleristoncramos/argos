@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from core.assets import ASSETS
+from core.assets import ASSETS, CATALOG_SIZE
 from core.catalog_notice import CATALOG_DISCLAIMER_TEXT, CATALOG_SELECTION_TEXT
 
 DOC_PATH = Path(__file__).resolve().parents[1] / "docs" / "catalogo-de-ativos.md"
@@ -11,7 +11,7 @@ def _read_doc() -> str:
 
 
 def _tickers_from_doc(text: str) -> list[str]:
-    section = text.split("Lista consolidada dos 120 tickers", 1)[1]
+    section = text.split(f"Lista consolidada dos {CATALOG_SIZE} tickers", 1)[1]
     block = section.split("```text", 1)[1].split("```", 1)[0]
     return [line.strip() for line in block.splitlines() if line.strip()]
 
@@ -24,3 +24,9 @@ def test_doc_contains_selection_texts():
     normalized = " ".join(_read_doc().split())
     assert " ".join(CATALOG_SELECTION_TEXT.split()) in normalized
     assert " ".join(CATALOG_DISCLAIMER_TEXT.split()) in normalized
+
+
+def test_home_video_animation_shows_catalog_size():
+    animation = (DOC_PATH.parents[1] / "scripts" / "video_recursos" / "animacao.html").read_text(encoding="utf-8")
+    assert f'<div class="title">{CATALOG_SIZE} ativos,' in animation
+    assert f'data-count="{CATALOG_SIZE}"' in animation

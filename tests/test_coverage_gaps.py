@@ -38,7 +38,7 @@ def test_validate_catalog_accepts_current_catalog():
 def test_validate_catalog_rejects_wrong_size(monkeypatch):
     monkeypatch.setattr(assets, "ASSETS", _copy_catalog()[:-1])
 
-    with pytest.raises(ValueError, match="120"):
+    with pytest.raises(ValueError, match=str(assets.CATALOG_SIZE)):
         assets.validate_catalog()
 
 

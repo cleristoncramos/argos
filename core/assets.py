@@ -15,6 +15,10 @@ from typing import Any
 
 AssetRecord = dict[str, str]
 
+# Tamanho conferido do catálogo. Alterar junto com a lista e com o registro
+# de inclusões e exclusões em docs/catalogo-de-ativos.md.
+CATALOG_SIZE = 148
+
 
 CATEGORY_METADATA: dict[str, dict[str, str]] = {
     "Criptomoeda": {
@@ -123,6 +127,16 @@ ASSETS: list[AssetRecord] = [
     _asset("AVAX-USD", "Avalanche", "Criptomoeda", "Smart contracts", "Global", "Plataforma blockchain", "crypto"),
     _asset("TRX-USD", "TRON", "Criptomoeda", "Blockchain", "Global", "Rede blockchain focada em aplicações descentralizadas", "crypto"),
     _asset("LINK-USD", "Chainlink", "Criptomoeda", "Oracle", "Global", "Rede de oráculos para aplicações blockchain", "crypto"),
+    _asset("LTC-USD", "Litecoin", "Criptomoeda", "Pagamentos", "Global", "Criptomoeda de pagamentos derivada do Bitcoin", "crypto"),
+    _asset("BCH-USD", "Bitcoin Cash", "Criptomoeda", "Pagamentos", "Global", "Bifurcação do Bitcoin voltada a pagamentos", "crypto"),
+    _asset("XLM-USD", "Stellar", "Criptomoeda", "Pagamentos", "Global", "Rede para pagamentos e remessas internacionais", "crypto"),
+    _asset("DOT-USD", "Polkadot", "Criptomoeda", "Interoperabilidade", "Global", "Rede que conecta diferentes blockchains", "crypto"),
+    _asset("NEAR-USD", "NEAR Protocol", "Criptomoeda", "Smart contracts", "Global", "Plataforma de contratos inteligentes", "crypto"),
+    _asset("AAVE-USD", "Aave", "Criptomoeda", "Finanças descentralizadas", "Global", "Protocolo de empréstimos descentralizados", "crypto"),
+    _asset("UNI7083-USD", "Uniswap", "Criptomoeda", "Finanças descentralizadas", "Global", "Protocolo de negociação descentralizada", "crypto"),
+    _asset("HBAR-USD", "Hedera", "Criptomoeda", "Infraestrutura", "Global", "Rede de registro distribuído para aplicações corporativas", "crypto"),
+    # Classificado pela exposição (cesta de criptoativos), embora seja um ETF negociado na B3.
+    _asset("HASH11.SA", "Hashdex Nasdaq Crypto Index (HASH11)", "Criptomoeda", "Cesta de criptoativos (ETF)", "Brasil/B3", "ETF da B3 que acompanha uma cesta de criptoativos", "crypto", data_type="etf"),
 
     _asset("PETR4.SA", "Petrobras PN", "Ação", "Energia", "Brasil/B3", "Petróleo e gás", "br_stocks"),
     _asset("VALE3.SA", "Vale", "Ação", "Mineração", "Brasil/B3", "Mineração e metais", "br_stocks"),
@@ -136,6 +150,16 @@ ASSETS: list[AssetRecord] = [
     _asset("RENT3.SA", "Localiza", "Ação", "Serviços", "Brasil/B3", "Locação de veículos", "br_stocks"),
     _asset("AXIA3.SA", "Axia Energia (Antiga Eletrobras)", "Ação", "Energia elétrica", "Brasil/B3", "Geração e transmissão de energia", "br_stocks"),
     _asset("SUZB3.SA", "Suzano", "Ação", "Papel e celulose", "Brasil/B3", "Celulose e papel", "br_stocks"),
+    _asset("PRIO3.SA", "PRIO", "Ação", "Energia", "Brasil/B3", "Exploração e produção de petróleo", "br_stocks"),
+    _asset("SBSP3.SA", "Sabesp", "Ação", "Saneamento", "Brasil/B3", "Água e esgoto", "br_stocks"),
+    _asset("EMBJ3.SA", "Embraer", "Ação", "Aeroespacial", "Brasil/B3", "Aviões comerciais, executivos e de defesa", "br_stocks"),
+    _asset("BPAC11.SA", "BTG Pactual", "Ação", "Bancos", "Brasil/B3", "Banco de investimento", "br_stocks"),
+    _asset("RDOR3.SA", "Rede D'Or", "Ação", "Saúde", "Brasil/B3", "Hospitais", "br_stocks"),
+    _asset("EQTL3.SA", "Equatorial", "Ação", "Energia elétrica", "Brasil/B3", "Distribuição e transmissão de energia", "br_stocks"),
+    _asset("GGBR4.SA", "Gerdau PN", "Ação", "Siderurgia", "Brasil/B3", "Aço", "br_stocks"),
+    _asset("VIVT3.SA", "Vivo (Telefônica Brasil)", "Ação", "Telecomunicações", "Brasil/B3", "Telefonia e internet", "br_stocks"),
+    _asset("RADL3.SA", "Raia Drogasil", "Ação", "Varejo farmacêutico", "Brasil/B3", "Farmácias", "br_stocks"),
+    _asset("TOTS3.SA", "TOTVS", "Ação", "Tecnologia", "Brasil/B3", "Software de gestão empresarial", "br_stocks"),
 
     _asset("AAPL", "Apple", "Ação", "Tecnologia", "EUA", "Eletrônicos e serviços", "us_stocks"),
     _asset("MSFT", "Microsoft", "Ação", "Tecnologia", "EUA", "Software e computação em nuvem", "us_stocks"),
@@ -152,6 +176,8 @@ ASSETS: list[AssetRecord] = [
     _asset("LLY", "Eli Lilly", "Ação", "Farmacêutica", "EUA", "Medicamentos", "us_stocks"),
     _asset("WMT", "Walmart", "Ação", "Varejo", "EUA", "Varejo e supermercados", "us_stocks"),
     _asset("XOM", "Exxon Mobil", "Ação", "Energia", "EUA", "Petróleo e gás", "us_stocks"),
+    _asset("JNJ", "Johnson & Johnson", "Ação", "Saúde", "EUA", "Medicamentos e dispositivos médicos", "us_stocks"),
+    _asset("KO", "Coca-Cola", "Ação", "Consumo", "EUA", "Bebidas", "us_stocks"),
 
     _asset("ASML", "ASML Holding", "Ação", "Semicondutores", "Holanda", "Equipamentos para fabricação de chips", "europe_stocks"),
     _asset("SAP", "SAP", "Ação", "Software", "Alemanha", "Software empresarial", "europe_stocks"),
@@ -181,6 +207,10 @@ ASSETS: list[AssetRecord] = [
     _asset("DIA", "SPDR Dow Jones Industrial Average", "ETF", "Large Cap", "EUA", "Replica o Dow Jones", "equity_etfs"),
     _asset("VEA", "Vanguard FTSE Developed Markets", "ETF", "Internacional", "Global", "Mercados desenvolvidos fora dos EUA", "equity_etfs"),
     _asset("VOO", "Vanguard S&P 500", "ETF", "Large Cap EUA", "EUA", "Replica o S&P 500", "equity_etfs"),
+    _asset("BOVA11.SA", "iShares Ibovespa (BOVA11)", "ETF", "Brasil", "Brasil/B3", "Replica o Ibovespa", "equity_etfs"),
+    _asset("SMAL11.SA", "iShares Small Cap (SMAL11)", "ETF", "Small Caps", "Brasil/B3", "Replica o índice de small caps da B3", "equity_etfs"),
+    _asset("IVVB11.SA", "iShares S&P 500 (IVVB11)", "ETF", "Large Cap EUA", "Brasil/B3", "S&P 500 cotado em reais (inclui a variação do dólar)", "equity_etfs"),
+    _asset("DIVO11.SA", "It Now IDIV (DIVO11)", "ETF", "Dividendos", "Brasil/B3", "Replica o índice de dividendos da B3", "equity_etfs"),
 
     _asset("BND", "Vanguard Total Bond Market", "ETF", "Bonds EUA", "EUA", "Mercado amplo de títulos americanos", "fixed_income_etfs"),
     _asset("AGG", "iShares Core U.S. Aggregate Bond", "ETF", "Bonds EUA", "EUA", "Renda fixa americana ampla", "fixed_income_etfs"),
@@ -198,8 +228,10 @@ ASSETS: list[AssetRecord] = [
     _asset("MXRF11.SA", "Maxi Renda", "FII", "Papel", "Brasil/B3", "Fundo imobiliário de recebíveis", "brazil_fiis"),
     _asset("HGLG11.SA", "Pátria Log", "FII", "Logística", "Brasil/B3", "Imóveis logísticos", "brazil_fiis"),
     _asset("KNRI11.SA", "Kinea Renda Imobiliária", "FII", "Híbrido", "Brasil/B3", "Escritórios e imóveis logísticos", "brazil_fiis"),
-    _asset("XPML11.SA", "XP Malls", "FII", "Shopping", "Brasil/B3", "Shopping centers", "brazil_fiis"),
     _asset("BTLG11.SA", "BTG Logística", "FII", "Logística", "Brasil/B3", "Galpões logísticos", "brazil_fiis"),
+    _asset("KNCR11.SA", "Kinea Rendimentos", "FII", "Papel", "Brasil/B3", "Fundo de recebíveis imobiliários", "brazil_fiis"),
+    _asset("HGRU11.SA", "Pátria Renda Urbana", "FII", "Renda urbana", "Brasil/B3", "Imóveis urbanos de varejo e educação", "brazil_fiis"),
+    _asset("VISC11.SA", "Vinci Shopping Centers", "FII", "Shopping", "Brasil/B3", "Shopping centers", "brazil_fiis"),
 
     _asset("^BVSP", "Ibovespa", "Índice", "Ações", "Brasil", "Principal índice da B3", "indexes"),
     _asset("^GSPC", "S&P 500", "Índice", "Large Cap", "EUA", "500 grandes empresas americanas", "indexes"),
@@ -237,6 +269,8 @@ ASSETS: list[AssetRecord] = [
     _asset("CC=F", "Cacau", "Commodity", "Agrícola", "EUA/ICE", "Cacau", "commodities"),
     _asset("SB=F", "Açúcar", "Commodity", "Agrícola", "EUA/ICE", "Açúcar", "commodities"),
     _asset("CT=F", "Algodão", "Commodity", "Agrícola", "EUA/ICE", "Algodão", "commodities"),
+    # Classificado pela exposição (ouro), embora seja um ETF negociado na B3.
+    _asset("GOLD11.SA", "Trend Ouro (GOLD11)", "Commodity", "Metal precioso", "Brasil/B3", "ETF da B3 que acompanha o preço do ouro em reais", "commodities", data_type="etf"),
 
     _asset("^IRX", "Treasury 13 Semanas", "Renda Fixa", "Curto prazo", "EUA", "Yield de Treasury de 13 semanas", "treasury"),
     _asset("^FVX", "Treasury 5 Anos", "Renda Fixa", "Médio prazo", "EUA", "Yield de Treasury de 5 anos", "treasury"),
@@ -359,9 +393,9 @@ def validate_catalog() -> None:
         "data_type",
     }
 
-    if len(ASSETS) != 120:
+    if len(ASSETS) != CATALOG_SIZE:
         raise ValueError(
-            f"O catálogo deveria conter 120 ativos, mas contém {len(ASSETS)}."
+            f"O catálogo deveria conter {CATALOG_SIZE} ativos, mas contém {len(ASSETS)}."
         )
 
     tickers = [asset["ticker"] for asset in ASSETS]
@@ -393,6 +427,7 @@ __all__ = [
     "ASSETS",
     "ASSET_BY_TICKER",
     "ASSET_GROUPS",
+    "CATALOG_SIZE",
     "CATEGORY_METADATA",
     "get_asset",
     "get_assets",

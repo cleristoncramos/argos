@@ -9,7 +9,7 @@
 ![Cobertura](https://img.shields.io/badge/cobertura%20do%20core-100%25-2E7D32)
 ![PIBITI UFPI](https://img.shields.io/badge/PIBITI-UFPI%202026%E2%80%932027-1F1F1F)
 
-O **Argos** reúne em uma única plataforma o histórico de **120 ativos em 13 grupos** (ações, criptomoedas, FIIs, REITs, ETFs, commodities, câmbio, índices e taxas de juros) e transforma esses dados em gráficos interativos, métricas quantitativas e textos explicativos em linguagem simples. Foi desenvolvido no **Programa Institucional de Bolsas de Iniciação em Desenvolvimento Tecnológico e Inovação (PIBITI) da Universidade Federal do Piauí**, ciclo 2026–2027.
+O **Argos** reúne em uma única plataforma o histórico de **148 ativos em 13 grupos** (ações, criptomoedas, FIIs, REITs, ETFs, commodities, câmbio, índices e taxas de juros) e transforma esses dados em gráficos interativos, métricas quantitativas e textos explicativos em linguagem simples. Foi desenvolvido no **Programa Institucional de Bolsas de Iniciação em Desenvolvimento Tecnológico e Inovação (PIBITI) da Universidade Federal do Piauí**, ciclo 2026–2027.
 
 > [!IMPORTANT]
 > O Argos tem finalidade **exclusivamente acadêmica, educacional e de desenvolvimento tecnológico**. As informações, métricas e visualizações descrevem dados históricos e **não constituem recomendação, indicação ou aconselhamento de investimento**.
@@ -73,7 +73,7 @@ Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferra
 
 - Nome, frase de efeito e botão **Get Started**, que abre a Análise Individual.
 - Vídeo animado e ilustrativo com um tour pelos recursos do sistema, com os logotipos reais dos ativos do catálogo.
-- Mosaico animado e lento com os 120 ativos do catálogo: logotipo, ticker e nome.
+- Mosaico animado e lento com os ativos do catálogo: logotipo, ticker e nome.
 - Tutorial em três passos e atalhos de "primeiros passos" para cada módulo.
 - Botão **Informações acadêmicas**, que abre um modal com os logotipos da UFPI e do CEAD, a identificação do trabalho, as tecnologias e as bases de dados.
 
@@ -131,25 +131,25 @@ Recurso experimental, resultado da etapa de pesquisa 7B, que gera um texto educa
 
 ## Catálogo de ativos
 
-O catálogo fica em [`core/assets.py`](core/assets.py) e reúne **120 ativos em 13 grupos e 9 classes**:
+O catálogo fica em [`core/assets.py`](core/assets.py) e reúne **148 ativos em 13 grupos e 9 classes** (ampliado em 24/10/2026):
 
 | Grupo | Classe | Ativos | Exemplos |
 | --- | --- | ---: | --- |
-| Criptomoedas | Criptomoeda | 10 | BTC-USD, ETH-USD, SOL-USD |
-| Ações Brasil | Ação | 12 | PETR4.SA, VALE3.SA, ITUB4.SA |
-| Ações EUA | Ação | 15 | AAPL, MSFT, NVDA |
+| Criptomoedas | Criptomoeda | 19 | BTC-USD, ETH-USD, LTC-USD, HASH11.SA (ETF da B3) |
+| Ações Brasil | Ação | 22 | PETR4.SA, VALE3.SA, SBSP3.SA |
+| Ações EUA | Ação | 17 | AAPL, MSFT, JNJ |
 | Ações Europa | Ação | 8 | ASML, SAP, NESN.SW |
 | Ações Ásia | Ação | 8 | TSM, SONY, 005930.KS |
-| ETFs de ações | ETF | 10 | SPY, QQQ, VTI |
+| ETFs de ações | ETF | 14 | SPY, QQQ, BOVA11.SA |
 | ETFs de renda fixa | ETF | 6 | BND, AGG, TLT |
 | REITs / mercado imobiliário | REIT | 5 | VNQ, O, PLD |
-| FIIs Brasil | FII | 5 | MXRF11.SA, HGLG11.SA, KNRI11.SA |
+| FIIs Brasil | FII | 7 | MXRF11.SA, HGLG11.SA, KNCR11.SA |
 | Índices de mercado | Índice | 12 | ^BVSP, ^GSPC, ^IXIC |
 | Forex | Forex | 8 | USDBRL=X, EURUSD=X, USDJPY=X |
-| Commodities | Commodity | 14 | GC=F, SI=F, CL=F |
+| Commodities | Commodity | 15 | GC=F, CL=F, GOLD11.SA (ETF da B3) |
 | Treasury / taxas de juros | Renda Fixa | 7 | ^IRX, ^TNX, ^TYX |
 
-Além do catálogo, qualquer ticker disponível no Yahoo Finance pode ser digitado diretamente (por exemplo, `PETR4.SA`, `BRK-B`, `^BVSP`, `GC=F`). A lista completa, com critérios de inclusão, está em [`docs/catalogo-de-ativos.md`](docs/catalogo-de-ativos.md).
+Além do catálogo, qualquer ticker disponível no Yahoo Finance pode ser digitado diretamente (por exemplo, `PETR4.SA`, `BRK-B`, `^BVSP`, `GC=F`). A lista completa, com critérios de inclusão e o registro da ampliação (inclusões, exclusões e conferência técnica), está em [`docs/catalogo-de-ativos.md`](docs/catalogo-de-ativos.md).
 
 ---
 

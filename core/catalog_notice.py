@@ -1,15 +1,20 @@
 """Texto oficial sobre o critério de seleção dos ativos do catálogo."""
 
+from core.assets import CATALOG_SIZE
+
 CATALOG_SELECTION_TEXT = (
     "A seleção de ativos adotada no Argos possui natureza intencional e "
-    "não probabilística. O catálogo inicial é composto por 120 instrumentos "
+    f"não probabilística. O catálogo é composto por {CATALOG_SIZE} instrumentos "
     "financeiros organizados em 13 grupos e 9 classes, incluindo criptomoedas, ações "
     "brasileiras e internacionais, ETFs, FIIs, REITs, índices, pares cambiais, "
     "commodities e taxas de juros. A escolha considerou critérios combinados de "
     "representatividade por classe, diversidade geográfica, cobertura setorial, "
     "relevância econômica, liquidez ou notoriedade, disponibilidade de séries "
     "históricas, compatibilidade com os tickers utilizados pelo Yahoo Finance e "
-    "valor educacional para a análise de risco, retorno, correlação e sazonalidade."
+    "valor educacional para a análise de risco, retorno, correlação e sazonalidade. "
+    "A ampliação de outubro de 2026 seguiu os mesmos critérios, com conferência "
+    "técnica de cada inclusão, e priorizou a diversidade de classes, setores, "
+    "mercados e usos, e não o desempenho recente."
 )
 
 CATALOG_DISCLAIMER_TEXT = (

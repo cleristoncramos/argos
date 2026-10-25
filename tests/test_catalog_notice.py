@@ -3,6 +3,7 @@ from core.catalog_notice import (
     CATALOG_SELECTION_TEXT,
     CATALOG_SHORT_NOTE,
 )
+from core.assets import CATALOG_SIZE
 from core.disclaimers import contains_forbidden_phrase
 
 
@@ -12,5 +13,6 @@ def test_catalog_texts_use_neutral_language():
 
 
 def test_catalog_text_mentions_size_groups_and_classes():
-    assert "120" in CATALOG_SELECTION_TEXT
+    assert f"composto por {CATALOG_SIZE} instrumentos" in CATALOG_SELECTION_TEXT
+    assert "não o desempenho recente" in CATALOG_SELECTION_TEXT
     assert "13 grupos e 9 classes" in CATALOG_SELECTION_TEXT

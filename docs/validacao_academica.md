@@ -20,7 +20,7 @@ A pergunta reúne cinco conceitos. Para poder respondê-la, cada um precisa de u
 | Conceito | Definição operacional proposta | Como verificar | Situação |
 | --- | --- | --- | --- |
 | Indicadores técnicos clássicos | SMA, EMA, Bollinger, RSI, MACD, ATR, volatilidade móvel e volume, com fórmulas, parâmetros e limitações documentados | Revisão de `core/indicator_docs.py` e dos testes de cada indicador | Implementado e testado |
-| Múltiplas classes de ativos | 120 ativos em 13 grupos do catálogo | `docs/catalogo-de-ativos.md`, `validate_catalog` | Implementado |
+| Múltiplas classes de ativos | 148 ativos em 13 grupos do catálogo (ampliado em 24/10/2026) | `docs/catalogo-de-ativos.md`, `validate_catalog` | Implementado |
 | Apoio à interpretação | Cada métrica tem definição em linguagem simples, unidade, leitura (descritiva) e limitação | Auditoria de conteúdo (seção 5.2) | Implementado; falta auditoria formal |
 | Compreensível para usuários sem formação em finanças | Pessoas sem formação em finanças, economia, contabilidade ou áreas afins interpretam corretamente as métricas e os gráficos | Avaliação com usuários (seção 5.3) | **Não realizada** |
 | Rigor metodológico | Fórmulas documentadas, cálculos testados, ausência de informação futura, parâmetros e limitações visíveis, resultados reproduzíveis | Lista de critérios (seção 5.1) | Em grande parte atendido |

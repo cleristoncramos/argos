@@ -2,6 +2,7 @@ import pytest
 
 from core.assets import (
     ASSETS,
+    CATALOG_SIZE,
     ASSET_BY_TICKER,
     get_asset,
     get_assets,
@@ -11,8 +12,10 @@ from core.assets import (
 )
 
 
-def test_catalog_has_120_assets():
-    assert len(ASSETS) == 120
+def test_catalog_has_expected_size():
+    # Ampliação de 24/10/2026: 120 - 1 (XPML11) + 29 = 148.
+    assert CATALOG_SIZE == 148
+    assert len(ASSETS) == CATALOG_SIZE
 
 
 def test_catalog_has_unique_tickers():
@@ -76,7 +79,8 @@ def test_get_assets_filters_by_class():
         asset_class="Criptomoeda",
     )
 
-    assert len(crypto_assets) == 10
+    # 18 criptomoedas e o ETF HASH11, classificado pela exposição.
+    assert len(crypto_assets) == 19
     assert all(
         asset["class"] == "Criptomoeda"
         for asset in crypto_assets
@@ -105,7 +109,7 @@ def test_get_assets_filters_by_data_type():
         data_type="crypto",
     )
 
-    assert len(crypto_assets) == 10
+    assert len(crypto_assets) == 18
     assert all(
         asset["data_type"] == "crypto"
         for asset in crypto_assets
@@ -117,7 +121,7 @@ def test_get_assets_filters_by_group():
         group="commodities",
     )
 
-    assert len(commodity_assets) == 14
+    assert len(commodity_assets) == 15  # 14 futuros e o ETF GOLD11
     assert all(
         asset["group"] == "commodities"
         for asset in commodity_assets
@@ -136,7 +140,7 @@ def test_get_assets_with_no_match_returns_empty_list():
 def test_get_tickers_from_default_catalog():
     tickers = get_tickers()
 
-    assert len(tickers) == 120
+    assert len(tickers) == CATALOG_SIZE
     assert "BTC-USD" in tickers
     assert "PETR4.SA" in tickers
     assert "^TNX" in tickers
@@ -203,14 +207,14 @@ def test_filter_assets_ignores_empty_filters():
 
     assert len(filter_assets(ASSETS, group=None, market=None)) == len(ASSETS)
     tickers = [a["ticker"] for a in filter_assets(ASSETS, group="commodities", subcategory="Metal precioso")]
-    assert tickers == ["GC=F", "SI=F", "PL=F"]
+    assert tickers == ["GC=F", "SI=F", "PL=F", "GOLD11.SA"]
 
 
 def test_facet_values_depend_on_the_other_filters():
     from core.assets import ASSETS, facet_values
 
     markets = facet_values(ASSETS, "market", group="commodities")
-    assert markets == ["EUA/CBOT", "EUA/COMEX", "EUA/ICE", "EUA/NYMEX", "Global/ICE"]
+    assert markets == ["Brasil/B3", "EUA/CBOT", "EUA/COMEX", "EUA/ICE", "EUA/NYMEX", "Global/ICE"]
     # Com o mercado escolhido, só sobram subclasses existentes nesse mercado
     assert facet_values(ASSETS, "subcategory", group="commodities", market="EUA/COMEX") == [
         "Metal industrial",
@@ -233,7 +237,8 @@ def test_single_market_groups_hide_the_market_filter():
     from core.assets import ASSETS, facet_values
 
     # Grupos com um só mercado não exibem o filtro (a página só mostra com 2+ opções)
-    for group in ("crypto", "br_stocks", "us_stocks", "fixed_income_etfs", "reits", "brazil_fiis", "forex", "treasury"):
+    for group in ("br_stocks", "us_stocks", "fixed_income_etfs", "reits", "brazil_fiis", "forex", "treasury"):
         assert len(facet_values(ASSETS, "market", group=group)) == 1
-    for group in ("europe_stocks", "asia_stocks", "equity_etfs", "indexes", "commodities"):
+    # Criptomoedas e commodities ganharam ETFs da B3 (HASH11 e GOLD11) em 24/10/2026.
+    for group in ("crypto", "europe_stocks", "asia_stocks", "equity_etfs", "indexes", "commodities"):
         assert len(facet_values(ASSETS, "market", group=group)) > 1

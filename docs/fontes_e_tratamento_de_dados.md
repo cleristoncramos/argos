@@ -12,7 +12,7 @@ Este documento responde a quatro perguntas: de onde vêm os dados, o que o siste
 - **Natureza:** fonte pública e **não oficial**. O Yahoo Finance não fornece garantia contratual de disponibilidade, exatidão ou continuidade, e o `yfinance` não é um produto do Yahoo. A tela exibe a fonte e o horário da consulta.
 - **Granularidade baixada:** apenas diária (`interval="1d"`). Séries semanais e mensais são **derivadas localmente** por agregação (seção 4).
 - **Preços usados:** `Open`, `High`, `Low`, `Close` e `Volume`, com `auto_adjust=False`. A variável principal das análises é `Close`. O sistema **não usa** `Adj Close` e, portanto, não incorpora dividendos ao retorno: os retornos são de preço, não de retorno total.
-- **Catálogo:** 120 ativos em 13 grupos (`docs/catalogo-de-ativos.md`). O catálogo é uma **amostra inicial**, não o universo do mercado. O usuário avançado pode digitar outro ticker do Yahoo Finance (seção 6).
+- **Catálogo:** 148 ativos em 13 grupos (ampliado em 24/10/2026) (`docs/catalogo-de-ativos.md`). O catálogo é uma **amostra inicial**, não o universo do mercado. O usuário avançado pode digitar outro ticker do Yahoo Finance (seção 6).
 
 ## 2. Download
 

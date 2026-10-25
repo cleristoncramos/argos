@@ -427,7 +427,7 @@ def test_normal_mode_still_uses_the_source(monkeypatch):
 # ----------------------------------------------------------------------
 def test_logos_are_disabled_in_demo_mode():
     assert asset_logos.get_asset_logo_url("BTC-USD", "crypto").startswith("https://")
-    assert asset_logos.get_asset_logo_url("^GSPC", "indexes").startswith("https://")
+    assert asset_logos.get_asset_logo_url("EMBJ3.SA", "br_stocks").startswith("https://")
     assert asset_logos.get_asset_logo_url("GC=F", "commodities") is None
     assert asset_logos.get_asset_logo_url("aapl", "us_stocks").endswith("/AAPL.png")
     with _env(ARGOS_DEMO_MODE="true"):

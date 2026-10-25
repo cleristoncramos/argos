@@ -110,7 +110,7 @@ argos/
 
 | Módulo | Responsabilidade |
 | --- | --- |
-| `assets.py` | Catálogo de 120 ativos (13 grupos, 9 classes; ver "Termos do catálogo" na seção 11), busca, filtros encadeados (`filter_assets`, `facet_values`), hierarquia e validação automática do catálogo |
+| `assets.py` | Catálogo de 148 ativos (`CATALOG_SIZE`; 13 grupos, 9 classes; ver "Termos do catálogo" na seção 11), busca, filtros encadeados (`filter_assets`, `facet_values`), hierarquia e validação automática do catálogo |
 | `asset_logos.py` | Resolução do logo do ativo (CoinCap e Financial Modeling Prep), com fallback para emoji; sem logos remotos no modo de demonstração |
 | `catalog_notice.py` | Aviso de que o catálogo é uma amostra inicial |
 | `config.py` | Frequências suportadas (diária, semanal, mensal, semestral e anual) e fatores de anualização |
@@ -316,7 +316,7 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 - `app/` **não** tem testes de renderização: páginas e componentes são conferidos manualmente no navegador (roteiro em `docs/roteiro_conferencia_navegador.md`). Há, porém:
   - **testes de componentes** que montam o HTML e o layout dos gráficos de `app/ui` sem o Streamlit (`test_ui_components.py`, `test_landing.py`), verificando escape de texto, conteúdo do modal, layout base dos gráficos e ausência de cantos arredondados no CSS próprio;
   - **testes estruturais** que leem o código-fonte das páginas (`test_chart_guides.py`, `test_simulation_texts.py`): todo gráfico tem roteiro de leitura, os textos novos usam linguagem neutra e o texto obrigatório da simulação está presente.
-- Testes verificam, entre outros: ausência de informação futura nos indicadores, linguagem neutra nos textos, catálogo (120 ativos, tickers únicos, campos obrigatórios), disponibilidade de dados, bordas de agregação, modo de demonstração e todo o fluxo da explicação assistida com cliente simulado.
+- Testes verificam, entre outros: ausência de informação futura nos indicadores, linguagem neutra nos textos, catálogo (148 ativos, tickers únicos, campos obrigatórios, lista igual à do documento do catálogo), disponibilidade de dados, bordas de agregação, modo de demonstração e todo o fluxo da explicação assistida com cliente simulado.
 - Não há pipeline de integração contínua: os testes são executados localmente antes de cada commit.
 - O acompanhamento por fase está em `docs/checkpoint_qualidade.md`; as pendências, em `docs/checklist_pendencias.md`.
 

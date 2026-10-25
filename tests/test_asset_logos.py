@@ -103,26 +103,29 @@ def test_reit_logo_url():
     )
 
 
-def test_fii_logo_url():
+def test_fii_without_logo_at_source_returns_none():
     logo_url = get_asset_logo_url(
         "MXRF11.SA",
         "brazil_fiis",
     )
 
-    assert logo_url == (
-        STOCK_LOGO_BASE_URL.format(
-            ticker="MXRF11.SA",
-        )
-    )
+    assert logo_url is None
 
 
 def test_special_logo_map():
     logo_url = get_asset_logo_url(
-        "^GSPC",
-        "indexes",
+        "EMBJ3.SA",
+        "br_stocks",
     )
 
-    assert logo_url == SPECIAL_LOGO_MAP["^GSPC"]
+    assert logo_url == SPECIAL_LOGO_MAP["EMBJ3.SA"]
+
+
+def test_crypto_symbol_override_and_b3_etfs_in_other_groups():
+    assert _crypto_symbol_from_ticker("UNI7083-USD") == "uni"
+    assert get_asset_logo_url("UNI7083-USD", "crypto") == CRYPTO_LOGO_BASE_URL.format(symbol="uni")
+    # ETF da B3 classificado em outro grupo usa a fonte de ações.
+    assert get_asset_logo_url("XYZW11.SA", "crypto") == STOCK_LOGO_BASE_URL.format(ticker="XYZW11.SA")
 
 
 def test_indexes_without_special_mapping_return_none():
@@ -184,10 +187,11 @@ def test_logo_url_is_cached():
     assert first_result == second_result
     assert get_asset_logo_url.cache_info().hits >= 1
 
-def test_blank_source_logos_fall_back_to_icon():
-    from core.asset_logos import BLANK_LOGOS, get_asset_logo_url
+def test_unavailable_source_logos_fall_back_to_icon():
+    from core.asset_logos import UNAVAILABLE_LOGOS, get_asset_logo_url
 
     get_asset_logo_url.cache_clear()
-    for ticker in BLANK_LOGOS:
+    assert {"V", "QQQ", "KNRI11.SA", "GOLD11.SA", "HASH11.SA"} <= UNAVAILABLE_LOGOS
+    for ticker in UNAVAILABLE_LOGOS:
         assert get_asset_logo_url(ticker, "us_stocks") is None
         assert get_asset_logo_url(ticker.lower(), "equity_etfs") is None
