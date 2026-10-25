@@ -6,6 +6,13 @@ Execute UMA vez, com internet, antes do congelamento da versão:
     python scripts/gerar_dados_demo.py
     python scripts/gerar_dados_demo.py --years 5 --frozen-version v1.0-demo
     python scripts/gerar_dados_demo.py --verify      # só confere os hashes
+    python scripts/gerar_dados_demo.py --catalog --start 2020-12-01   # catálogo inteiro
+
+Com --catalog, o pacote inclui todos os ativos de core/assets.py (com os nomes
+do catálogo). Com --start, o início é fixo; sem ele, conta --years anos para
+trás a partir do fim. O início precisa cobrir o período das respostas de LLM
+salvas em data/llm_demo.json (04/01/2021 a 31/12/2025) para que elas valham
+também no modo de dados salvos.
 
 Grava um CSV diário por ativo, o manifesto (data da coleta, período, fonte e
 hash SHA-256 de cada arquivo) e, se ainda não existir, o arquivo vazio de
@@ -132,6 +139,8 @@ def main(argv=None, fetch=fetch_yahoo, today=None) -> int:
     parser.add_argument("--out", default=os.path.join(PROJECT_ROOT, "data", "demo"))
     parser.add_argument("--years", type=int, default=5)
     parser.add_argument("--end", default=None, help="AAAA-MM-DD (exclusivo)")
+    parser.add_argument("--start", default=None, help="AAAA-MM-DD (substitui --years)")
+    parser.add_argument("--catalog", action="store_true", help="todos os ativos de core/assets.py")
     parser.add_argument("--frozen-version", default="v1.0-demo")
     parser.add_argument("--tickers", nargs="*", default=None)
     parser.add_argument("--verify", action="store_true")
@@ -146,10 +155,17 @@ def main(argv=None, fetch=fetch_yahoo, today=None) -> int:
 
     today = today or date.today()
     end = args.end or today.isoformat()
-    start = (datetime.strptime(end, "%Y-%m-%d") - timedelta(days=365 * args.years)).strftime("%Y-%m-%d")
-    names = dict(DEFAULT_ASSETS)
-    tickers = args.tickers or [t for t, _ in DEFAULT_ASSETS]
-    assets = [(t.upper(), names.get(t.upper(), t.upper())) for t in tickers]
+    start = args.start or (
+        datetime.strptime(end, "%Y-%m-%d") - timedelta(days=365 * args.years)
+    ).strftime("%Y-%m-%d")
+    if args.catalog:
+        from core.assets import ASSETS
+
+        assets = [(a["ticker"], a["name"]) for a in ASSETS]
+    else:
+        names = dict(DEFAULT_ASSETS)
+        tickers = args.tickers or [t for t, _ in DEFAULT_ASSETS]
+        assets = [(t.upper(), names.get(t.upper(), t.upper())) for t in tickers]
 
     manifest = build_package(
         fetch, assets, start, end, args.out, args.frozen_version, today.isoformat()

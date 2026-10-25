@@ -479,6 +479,24 @@ def test_generator_main_and_verify():
     assert demo_mode.load_manifest(tmp)["period"]["end_exclusive"] == "2026-01-31"
 
 
+def test_generator_catalog_and_fixed_start():
+    from datetime import date
+
+    from core.assets import ASSETS as CATALOG
+
+    tmp = tempfile.mkdtemp(prefix="argos_demo_")
+    _TMP.append(tmp)
+    code = gerador.main(
+        ["--out", tmp, "--catalog", "--start", "2020-12-01", "--end", "2021-02-01"],
+        fetch=_fake_fetch,
+        today=date(2026, 10, 25),
+    )
+    assert code == 0
+    manifest = demo_mode.load_manifest(tmp)
+    assert [(a["ticker"], a["name"]) for a in manifest["assets"]] == [(a["ticker"], a["name"]) for a in CATALOG]
+    assert manifest["period"] == {"start": "2020-12-01", "end_exclusive": "2021-02-01"}
+
+
 def test_generator_default_assets_match_the_plan():
     assert [t for t, _ in gerador.DEFAULT_ASSETS] == ["BTC-USD", "AAPL", "PETR4.SA", "^GSPC", "GC=F"]
 

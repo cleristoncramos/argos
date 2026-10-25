@@ -359,6 +359,8 @@ A preparação documental do O6 continuará em paralelo.
 
 **Conferência 2 (25/10/2026, commit `958b729`):** a correção foi publicada e a versão foi reconferida por inteiro. As 7 páginas e a página inicial abrem sem erro, e todos os blocos repetem os resultados da conferência 1. **Situação das fases 1 a 3: publicação verificada.** As ressalvas (falha parcial do panorama coberta só por testes; ajustes do modo demo) estão em [`verificacao_publicacao.md`](verificacao_publicacao.md). Próximo passo: primeiro snapshot do catálogo ampliado no modo demo, resolvendo os achados 2 e 3.
 
+**Primeiro snapshot do modo demo (25/10/2026):** 148 ativos, de 01/12/2020 a 23/10/2026 (versão `v1.1-demo-preliminar`). Os achados 2 e 3 foram resolvidos: as 5 telas com respostas de IA salvas as reproduzem no modo demo completo, e a referência Ibovespa funciona offline. Os recursos novos (A1, A2, A3, A7 e A8) foram conferidos no modo demo. Seguem para janeiro/2027 o snapshot final, o roteiro completo sem internet e o teste de memória (`docs/demonstracao.md`, seção 2.3.2).
+
 **Organização sugerida pelo orientador (25/10/2026):**
 
 | Momento | Atividade |

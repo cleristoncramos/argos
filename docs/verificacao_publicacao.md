@@ -79,3 +79,5 @@ Pedido do orientador em 25/10/2026: conferir a versão efetivamente publicada da
 - o pacote não inclui o Ibovespa (achado 3).
 
 Os dois últimos pontos são do modo de demonstração, não da versão publicada, e entram no primeiro snapshot do catálogo ampliado.
+
+**Atualização (25/10/2026):** os achados 2 e 3 foram resolvidos no primeiro snapshot do catálogo ampliado (`docs/demonstracao.md`, seção 2.3.2). Com `ARGOS_DEMO_MODE=true`, as 5 telas exibem as respostas de IA salvas e a referência Ibovespa funciona offline.

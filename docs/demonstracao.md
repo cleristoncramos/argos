@@ -48,7 +48,7 @@ ARGOS_DEMO_MODE=true
 
 | Item | Proposta |
 | --- | --- |
-| Conjunto de dados | 5 ativos (tabela abaixo), 5 anos até a data da coleta, frequência diária; semanal e mensal derivadas localmente |
+| Conjunto de dados | Desde 25/10/2026, o catálogo inteiro (148 ativos), de 01/12/2020 até a coleta (seção 2.3.2). Antes: 5 ativos (tabela abaixo), 5 anos até a data da coleta. Frequência diária; semanal e mensal derivadas localmente |
 | Formato | CSV por ativo em `data/demo/` (sem dependência extra; Parquet exigiria `pyarrow` e mais memória) |
 | Manifesto | `data/demo/manifest.json`: ativos, período, frequência, data da coleta, fonte, versão do Argos e **hash SHA-256** de cada arquivo |
 | Gerador | `scripts/gerar_dados_demo.py` (baixa uma vez, com internet, e grava arquivos + manifesto) |
@@ -85,6 +85,41 @@ Ativos propostos para o manifesto (ajustar):
 | Auditoria de recursos remotos nas páginas | Teste automatizado passando (518 testes, `core/` a 100%) |
 | Execução sem internet | **Concluída em 10/10/2026**, sem falhas |
 | Teste de memória (Streamlit Cloud) | Pendente |
+
+### 2.3.2 Primeiro snapshot do catálogo ampliado (25/10/2026)
+
+Antecipado por orientação de 25/10/2026, depois da conferência da versão publicada (`docs/verificacao_publicacao.md`). **Não substitui** a atualização final e o roteiro completo sem internet de janeiro/2027.
+
+| Item | Valor |
+| --- | --- |
+| Comando | `python scripts/gerar_dados_demo.py --catalog --start 2020-12-01 --frozen-version v1.1-demo-preliminar`. As opções `--catalog` (todos os ativos de `core/assets.py`) e `--start` (início fixo) foram criadas nesta data |
+| Ativos | **148**, o catálogo inteiro, incluindo o Ibovespa (`^BVSP`) |
+| Período | 01/12/2020 a 23/10/2026 (último pregão antes da coleta). Só o `HASH11.SA` começa depois (26/04/2021), porque o fundo foi lançado nessa data |
+| Tamanho | cerca de 26 MB (CSV diários), integridade conferida pelos hashes do manifesto (`--verify`) |
+| Versão exibida na faixa | "Versão congelada v1.1-demo-preliminar · dados salvos em 25/10/2026" |
+| Pacote anterior | `data/demo_2026-10-10/` (5 ativos, 11/10/2021 a 09/10/2026), guardado fora do Git |
+
+**Achados da conferência resolvidos.**
+
+- **Achado 2 (respostas de IA salvas):** o período do pacote agora cobre o cenário congelado das respostas de `data/llm_demo.json` (AAPL, 04/01/2021 a 31/12/2025, diário). Com `ARGOS_DEMO_MODE=true`, as 5 telas exibem a **resposta salva**, e não o texto fixo: Análise Individual, janela sazonal (setembro → outubro), Risco e Retorno, Simulação de Aportes e Comparação AAPL × ^GSPC. A chave do contexto reconstruída pelo pacote coincide com a salva (`f3230ab8b2626a39` na Análise Individual).
+- **Achado 3 (referência):** com o Ibovespa no pacote, a comparação com uma referência (A2) funciona offline. Exemplo: `PETR4.SA` × Ibovespa.
+
+**Recursos novos conferidos no modo demo:**
+
+- variação por prazo (A1);
+- maiores altas e quedas (A8);
+- maiores quedas e recuperação (A7);
+- referência de mercado (A2), com `AAPL` × S&P 500 e `PETR4.SA` × Ibovespa;
+- Panorama do Catálogo (A3), com Ações Brasil, 22 ativos e nenhum sem dados.
+
+Nenhum erro na tela.
+
+**Pendências para janeiro/2027:**
+
+- gerar o snapshot final;
+- executar o roteiro completo **com a internet desligada**;
+- fazer o teste de memória no Streamlit Cloud com o pacote de 148 ativos;
+- decidir se o pacote vai para o repositório (termos do Yahoo Finance) ou se fica só no pacote da demonstração.
 
 ### 2.4 Critério de aceite (condição para congelar)
 
