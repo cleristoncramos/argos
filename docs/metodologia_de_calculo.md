@@ -216,6 +216,30 @@ Sharpe         = média(excesso) / desvio-padrão(excesso, ddof=1) × √k
 
 **Distribuição de retornos.** Histograma dos retornos por período em faixas de 5 pontos percentuais (de "abaixo de −30%" a "acima de 30%"). Descreve o passado, não projeta resultados.
 
+### 4.1 Maiores quedas e tempo de recuperação (`drawdown_episodes.py`)
+
+Item A7 do plano de ampliação, aprovado em 24/10/2026. A tabela fica na página Risco e Retorno, logo abaixo do gráfico de drawdown, e mostra os **3 episódios mais profundos** do período.
+
+- **Série usada.** A mesma do gráfico de drawdown: fechamentos na **frequência escolhida** na barra lateral. Com frequência mensal, as datas são fechamentos mensais e as durações ficam com a resolução de um mês.
+- **Episódio.**
+  - Começa em um **pico**, o maior valor até então, quando o valor seguinte fica abaixo dele.
+  - O **fundo** é o menor valor antes da recuperação; em caso de empate, vale a primeira data.
+  - A **recuperação** é a primeira observação com valor **igual ou maior** que o do pico. Depois dela, um novo episódio só começa com nova queda.
+- **Queda.** `valor no fundo / valor no pico − 1`, igual ao drawdown do fundo.
+- **Durações, em dias corridos entre as datas das observações.**
+  - do pico ao fundo;
+  - do fundo à recuperação;
+  - duração total, do pico à recuperação.
+
+  A tela acrescenta uma aproximação em meses (dias / 30,44) ou anos (dias / 365,25) para facilitar a leitura. O número de períodos da frequência fica registrado em `Períodos em queda`.
+- **Queda não recuperada.** Se o valor não volta ao pico até a última observação, a tela mostra "não recuperado até a última observação disponível". A duração total conta até essa última observação e **não há estimativa** de quando a recuperação ocorreria.
+
+**Limitações.**
+
+- O resultado depende da frequência: em fechamentos mensais, uma queda e recuperação dentro do mesmo mês não aparece.
+- Os episódios usam só o preço de fechamento, sem dividendos, que em ativos com proventos altos encurtariam o tempo de recuperação do investimento.
+- O período carregado corta episódios. Uma queda iniciada antes do início dos dados começa no primeiro pico disponível.
+
 ---
 
 ## 5. Comparação de ativos (`comparison.py`, `comparison_checks.py`)

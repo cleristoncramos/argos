@@ -40,6 +40,13 @@ from app.ui.llm_explain import asset_name, render_explain_section
 from app.ui.metric_card import render_metric_card
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
+from app.ui.drawdown_table import (
+    DRAWDOWN_TABLE_NOTES,
+    FORMATTERS as DRAWDOWN_FORMATTERS,
+    HEADER_LABELS as DRAWDOWN_HEADER_LABELS,
+    build_drawdown_display,
+    drawdown_intro,
+)
 from app.ui.tables import (
     date_cell,
     number_cell,
@@ -59,6 +66,7 @@ from core.data_processor import (
 )
 from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.llm_builders import risk_context
+from core.drawdown_episodes import DEFAULT_TOP, largest_drawdowns
 from core.risk_metrics import (
     build_risk_summary,
     calculate_drawdown,
@@ -568,6 +576,28 @@ with st.container(border=True):
         config=PLOTLY_CONFIG,
     )
     render_chart_guide("drawdown")
+
+# -------------------------------------------------------
+# Maiores quedas e tempo de recuperação (A7)
+# -------------------------------------------------------
+st.markdown("### Maiores quedas e recuperação")
+
+top_drawdowns = largest_drawdowns(df_risk, top=DEFAULT_TOP, value_col="Value")
+
+if top_drawdowns.empty:
+    st.info("Não houve queda em relação a um pico anterior no período analisado.")
+else:
+    st.markdown(drawdown_intro(frequency, len(top_drawdowns)))
+    render_table(
+        build_drawdown_display(top_drawdowns),
+        list(DRAWDOWN_HEADER_LABELS),
+        DRAWDOWN_FORMATTERS,
+        header_labels=DRAWDOWN_HEADER_LABELS,
+        max_height=None,
+        min_width=760,
+        wrap_header=True,
+    )
+    st.caption(DRAWDOWN_TABLE_NOTES)
 
 
 # =====================

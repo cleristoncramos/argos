@@ -5,7 +5,7 @@
 [![Aplicação online](https://img.shields.io/badge/app-argos--datalab.streamlit.app-C8102E)](https://argos-datalab.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.63-FF4B4B?logo=streamlit&logoColor=white)
-![Testes](https://img.shields.io/badge/testes-850%20aprovados-2E7D32)
+![Testes](https://img.shields.io/badge/testes-857%20aprovados-2E7D32)
 ![Cobertura](https://img.shields.io/badge/cobertura%20do%20core-100%25-2E7D32)
 ![PIBITI UFPI](https://img.shields.io/badge/PIBITI-UFPI%202026%E2%80%932027-1F1F1F)
 
@@ -108,6 +108,7 @@ Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferra
 - Retorno acumulado, retorno médio, **volatilidade anualizada**, **Índice de Sharpe** (com taxa livre de risco configurável), **drawdown máximo** e a data do fundo da maior queda.
 - Percentual de períodos positivos, melhor e pior período.
 - Curva de drawdown e distribuição dos retornos por faixas.
+- Maiores quedas e tempo de recuperação: pico, fundo, data em que o preço voltou ao pico e duração de cada etapa; quedas ainda não recuperadas aparecem como tal, sem estimativa.
 
 ### Simulação de Aportes
 
@@ -361,7 +362,7 @@ Depois, inicie a aplicação com `ARGOS_DEMO_MODE=true`. Um aviso na interface i
 
 ## Testes e qualidade
 
-A suíte possui **850 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
+A suíte possui **857 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
 
 - integridade do catálogo e validação de tickers e datas;
 - tratamento de dados, lacunas de calendário e agregação por frequência;
