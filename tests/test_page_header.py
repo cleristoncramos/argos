@@ -16,7 +16,7 @@ ICON_HEADING = re.compile(r'(st\.(?:title|header|subheader)\(f?"|"#{1,5} |\btitl
 def test_header_uses_menu_title_and_numbering():
     html = build_page_header_html("views/comparacao_ativos.py", "Subtítulo <x>")
     assert '<h1 class="pg-title">Comparação de Ativos</h1>' in html
-    assert "Módulo 02 de 05" in html
+    assert "Módulo 02 de 06" in html
     assert "Subtítulo &lt;x&gt;" in html
 
 

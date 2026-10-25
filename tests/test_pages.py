@@ -14,6 +14,7 @@ def test_menu_order_puts_analyses_first_and_about_last():
         "Indicadores Técnicos",
         "Risco e Retorno",
         "Simulação de Aportes",
+        "Panorama do Catálogo",
         "Sobre o Projeto",
     ]
 

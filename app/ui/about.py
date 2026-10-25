@@ -84,6 +84,13 @@ MODULE_DETAILS = {
          "Premissas explícitas: sem dividendos, custos, impostos ou inflação",
          "Valor hipotético; não considera perfil, renda ou objetivos"),
     ),
+    "views/panorama_catalogo.py": (
+        "Como os ativos de um mesmo grupo se comportaram no mesmo período?",
+        ("Todos os ativos de um grupo, consultados um grupo por vez",
+         "Variação no período e em 12 meses ao lado da volatilidade e da queda máxima",
+         "Ordem inicial por nome; a ordenação não é recomendação",
+         "Dados indisponíveis aparecem vazios, nunca como zero"),
+    ),
     "views/sobre_projeto.py": (
         "O que é o sistema, como foi construído e quais são seus limites?",
         ("Pergunta de pesquisa, objetivos e situação de cada um",

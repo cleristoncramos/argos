@@ -31,6 +31,8 @@ MENU_PAGES = (
              "Volatilidade, Sharpe, drawdown máximo e distribuição dos retornos."),
     PageSpec("views/simulacao_aportes.py", "Simulação de Aportes", "🧪",
              "E se eu tivesse investido? Simulação histórica, sem custos nem impostos."),
+    PageSpec("views/panorama_catalogo.py", "Panorama do Catálogo", "🗂️",
+             "Todos os ativos de um grupo no mesmo período: variação, volatilidade e queda máxima."),
     PageSpec("views/sobre_projeto.py", "Sobre o Projeto", "📊",
              "Objetivos, metodologia de cálculo, fontes de dados e limitações."),
 )

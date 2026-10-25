@@ -331,6 +331,44 @@ Em **decimal**. Só estes dois recursos: sem regressão de tendência e sem dete
 
 Cuidados: a janela fica visível no título; a razão acumulada **depende da data inicial**, e um cruzamento da linha por zero pode mudar se o período mudar; o retorno móvel é menos sensível ao ponto de partida e deve ser lido junto com a razão; os dados não permitem concluir que um ativo continuará acima do outro.
 
+
+### 5.2 Panorama do catálogo (`panorama.py`)
+
+Item A3 do plano de ampliação. Primeira versão, aprovada em 24/10/2026, na página "Panorama do Catálogo" (módulo 06).
+
+**Consulta.**
+
+- Um **grupo por vez**, só quando o usuário clica em "Gerar panorama".
+- Os ativos do grupo são consultados um a um pelo cache de 1 hora do sistema, com barra de progresso e limite de 25 ativos por consulta. O maior grupo tem 22.
+- Período: 1, 3 ou 5 anos, com os mesmos atalhos da barra lateral das outras páginas. Fechamentos diários.
+- Na conferência, a primeira consulta das Ações Brasil (22 ativos) levou cerca de 10 s. Com o cache, cerca de 3 s.
+
+**Métricas por ativo.** Calculadas sobre o trecho do período em que o ativo tem dados:
+
+| Coluna | Cálculo |
+| --- | --- |
+| Variação no período | último fechamento / primeiro fechamento − 1 |
+| Variação em 12 meses | janela de 1 ano até a última observação, com as regras da seção 2.3. Fica vazia se não houver 12 meses |
+| Volatilidade anualizada | desvio-padrão dos retornos diários × √252 |
+| Queda máxima | menor valor de `fechamento / máximo acumulado − 1` |
+| Dados desde | primeira data disponível. Recebe **\*** quando começa mais de 10 dias depois do início pedido |
+| Alertas de dados | quantidade de alertas de `core/data_quality.py` (seção 2.2) |
+
+**Neutralidade, conforme o parecer.**
+
+- **Ordem inicial por nome.** O usuário pode ordenar por qualquer coluna, em ordem crescente ou decrescente. Os valores vazios ficam sempre no fim.
+- **Retorno sempre ao lado de risco.** Nenhuma linha é destacada, e a cor das variações indica só o sinal.
+- **Aviso fixo no topo:** "A ordem da tabela não é uma recomendação".
+- **Falhas parciais.** Ativo sem dados ou com falha na consulta fica com as métricas vazias ("—"), **nunca com zero**, e é listado em um aviso.
+- **Taxas de juros** (`^IRX`, `^FVX`, `^TNX`, `^TYX`): sem variação, volatilidade nem queda, com nota explicativa.
+
+**Limitações da primeira versão.**
+
+- Os ativos com histórico menor têm métricas sobre um trecho mais curto, marcado com \*. Por isso, as linhas nem sempre são comparáveis entre si.
+- Considera só o preço de fechamento, sem dividendos. Em fundos e ETFs que distribuem rendimentos, como FIIs e `BIL`, a variação de preço subestima o retorno total.
+- Não há gráfico nem exportação. Esses recursos ficam para uma versão posterior, se mantida.
+- Modo de demonstração: só os ativos do pacote salvo aparecem, e os demais grupos podem ficar vazios.
+
 ---
 
 ## 6. Simulação histórica de aportes (`simulation.py`)

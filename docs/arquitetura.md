@@ -1,6 +1,6 @@
 # Arquitetura do Sistema — Argos
 
-**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 888 passando, cobertura de `core/` em 100% (2.642 instruções)
+**Status:** protótipo evolutivo · **Atualizado em:** 24/10/2026 · **Testes:** 899 passando, cobertura de `core/` em 100% (2.695 instruções)
 
 Este documento descreve como o Argos é organizado: camadas, módulos, páginas, fluxo de dados, configuração e convenções. Os cálculos estão detalhados em `docs/metodologia_de_calculo.md`; as fontes e o tratamento dos dados, em `docs/fontes_e_tratamento_de_dados.md`; o catálogo de ativos, em `docs/catalogo-de-ativos.md`; a explicação assistida, em `docs/llm_7b_implementacao.md`.
 
@@ -46,7 +46,8 @@ argos/
 │   │   ├── comparacao_ativos.py
 │   │   ├── indicadores_tecnicos.py
 │   │   ├── risco_retorno.py
-│   │   └── simulacao_aportes.py
+│   │   ├── simulacao_aportes.py
+│   │   └── panorama_catalogo.py
 │   ├── ui/                      # Componentes reutilizáveis
 │   │   ├── about.py                 # Conteúdo da página Sobre o Projeto (testável)
 │   │   ├── academic_dialog.py       # Modal "Informações acadêmicas"
@@ -69,6 +70,7 @@ argos/
 │   │   ├── metric_card.py           # Card de métrica
 │   │   ├── page_header.py           # Cabeçalho padrão das páginas de análise (sem ícones)
 │   │   ├── pages.py                 # Ordem oficial das páginas (menu, home e Get Started)
+│   │   ├── panorama_table.py        # Textos e tabela da página Panorama do Catálogo
 │   │   ├── season_explorer.py       # Frases e células do bloco "Explorar anos e meses"
 │   │   ├── sidebar.py               # Seleção de ativo, período e frequência
 │   │   ├── state.py                 # Estado inicial da sessão
@@ -125,6 +127,7 @@ argos/
 | `drawdown_episodes.py` | Episódios de queda (pico, fundo, recuperação) e durações; quedas não recuperadas sem estimativa |
 | `benchmark.py` | Referência de comparação sugerida por ativo (Ibovespa, S&P 500, Bitcoin, ouro), alinhamento em Base 100 nas datas comuns e avisos de moeda e calendário |
 | `extreme_moves.py` | Variações entre fechamentos consecutivos, maiores altas e quedas, contagem por direção e marca de período em andamento |
+| `panorama.py` | Panorama de um grupo: métricas por ativo, ordenação com vazios no fim e período coberto |
 | `trailing_returns.py` | Variação por prazo (1 mês a 10 anos) até a última observação, com datas efetivas e taxa equivalente ao ano |
 | `currency.py` | Unidade de cotação de cada ativo (moeda, taxa em %, pontos) |
 | `formatters.py` | Formatação numérica no padrão brasileiro |
@@ -185,6 +188,7 @@ A navegação é registrada em `app/main.py` com `st.navigation`, a partir da li
 | Indicadores Técnicos | `views/indicadores_tecnicos.py` | Linha ou candles, médias móveis, Bollinger, RSI, MACD, ATR, volatilidade móvel e volume |
 | Risco e Retorno | `views/risco_retorno.py` | Retorno, volatilidade, Sharpe, drawdown (com data), melhor e pior período, distribuição de retornos |
 | Simulação de Aportes | `views/simulacao_aportes.py` | Simulação histórica com valor hipotético; não é recomendação nem previsão |
+| Panorama do Catálogo | `views/panorama_catalogo.py` | Todos os ativos de um grupo no mesmo período: variação no período e em 12 meses, volatilidade, queda máxima, início dos dados e alertas; consulta por grupo sob demanda, ordem inicial por nome |
 | Sobre o Projeto | `views/sobre_projeto.py` | Contexto, pergunta de pesquisa e objetivos (com situação), módulos na ordem do menu, metodologia, dados e catálogo, qualidade e escopo, contexto acadêmico e aviso legal. Conteúdo em `app/ui/about.py` |
 
 **Modal acadêmico.** O botão "Informações acadêmicas" da página inicial abre `app/ui/academic_dialog.py` (`st.dialog`), com três abas: identificação do trabalho, tecnologias e bases de dados. O conteúdo é montado por funções puras de `app/ui/landing.py`, cobertas por `tests/test_landing.py`.
@@ -313,7 +317,7 @@ As variáveis podem vir do ambiente ou de `.streamlit/secrets.toml` (ignorado pe
 
 ## 13. Testes e qualidade
 
-- **888 testes**, cobertura de `core/` em **100%** (2.642 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
+- **899 testes**, cobertura de `core/` em **100%** (2.695 instruções; meta mínima de 80% no `pytest.ini` e de 95% para a versão congelada).
 - `app/` **não** tem testes de renderização: páginas e componentes são conferidos manualmente no navegador (roteiro em `docs/roteiro_conferencia_navegador.md`). Há, porém:
   - **testes de componentes** que montam o HTML e o layout dos gráficos de `app/ui` sem o Streamlit (`test_ui_components.py`, `test_landing.py`), verificando escape de texto, conteúdo do modal, layout base dos gráficos e ausência de cantos arredondados no CSS próprio;
   - **testes estruturais** que leem o código-fonte das páginas (`test_chart_guides.py`, `test_simulation_texts.py`): todo gráfico tem roteiro de leitura, os textos novos usam linguagem neutra e o texto obrigatório da simulação está presente.
