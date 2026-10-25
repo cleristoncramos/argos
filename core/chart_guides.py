@@ -144,6 +144,12 @@ CHART_GUIDES: Dict[str, Dict[str, str]] = {
         "nao_permite": "Prever a oscilação futura.",
     },
     # ---------------------------------------------------------------- Simulação histórica
+    "simulacao_se_investido": {
+        "mede": "Quanto um valor aplicado de uma só vez, na data escolhida, valeria em cada dia até o último dado disponível.",
+        "mostra": "O caminho do investimento hipotético: as altas e quedas que teriam sido atravessadas até o valor final.",
+        "cuidado": "Considera só a variação do preço de fechamento, sem dividendos, custos, impostos nem inflação; outra data de compra muda o resultado.",
+        "nao_permite": "Concluir que o mesmo valor investido hoje terá resultado parecido no futuro.",
+    },
     "simulacao_caminho": {
         "mede": "O valor hipotético da carteira ao longo do tempo, para aporte único e para aportes periódicos.",
         "mostra": "O que teria ocorrido com o valor investido em cada estratégia no período selecionado.",

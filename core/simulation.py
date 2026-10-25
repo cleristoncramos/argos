@@ -11,7 +11,7 @@ Não é previsão nem recomendação. Premissas simplificadoras:
 - o aporte é executado ao preço da observação em que ocorre.
 """
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -253,4 +253,75 @@ def summarize_windows(
         "Melhor janela": float(values.max()),
         "Início da melhor janela": outcomes.loc[best_pos, "Start_Date"],
         "Janelas com retorno positivo": float((values > 0).mean()),
+    }
+
+
+# Opções de "há quanto tempo" da calculadora "Se você tivesse investido".
+WHAT_IF_LOOKBACKS = {
+    "1 ano": 1,
+    "2 anos": 2,
+    "3 anos": 3,
+    "5 anos": 5,
+    "10 anos": 10,
+}
+
+
+def lookback_start(end_date, years: int) -> pd.Timestamp:
+    """Data `years` anos antes de `end_date` (mesmo dia e mês)."""
+    if int(years) != years or years < 1:
+        raise ValueError("O número de anos deve ser inteiro e >= 1.")
+    return pd.Timestamp(end_date).normalize() - pd.DateOffset(years=int(years))
+
+
+def what_if(
+    df: pd.DataFrame,
+    amount: float,
+    start_date=None,
+    value_col: str = "Value",
+) -> Dict[str, object]:
+    """
+    "Se você tivesse investido `amount` em `start_date`, quanto teria hoje?"
+
+    Compra na primeira observação a partir de `start_date` (ou na primeira
+    da série) e avalia na última observação disponível. Considera apenas a
+    variação do preço: sem dividendos, custos, impostos ou inflação.
+
+    A taxa anualizada só é calculada para prazos de pelo menos 1 ano; em
+    prazos menores ela exageraria variações de curto prazo.
+    """
+    _validate_amount(amount)
+    data = _prepare_prices(df, value_col)
+
+    if start_date is not None:
+        data = data[data["Date"] >= pd.Timestamp(start_date)].reset_index(drop=True)
+        if len(data) < 2:
+            raise ValueError(
+                "Não há ao menos 2 observações a partir da data escolhida."
+            )
+
+    values = amount * data["Price"] / data["Price"].iloc[0]
+    final_value = float(values.iloc[-1])
+    start, end = data["Date"].iloc[0], data["Date"].iloc[-1]
+    years = (end - start).days / 365.25
+    annual_rate: Optional[float] = (
+        (final_value / amount) ** (1 / years) - 1 if years >= 1 else None
+    )
+    low, high = values.idxmin(), values.idxmax()
+
+    return {
+        "Valor investido": float(amount),
+        "Valor final": final_value,
+        "Resultado": final_value - float(amount),
+        "Retorno total": final_value / float(amount) - 1,
+        "Retorno anualizado": annual_rate,
+        "Anos": years,
+        "Data da compra": start,
+        "Preço na compra": float(data["Price"].iloc[0]),
+        "Data final": end,
+        "Preço final": float(data["Price"].iloc[-1]),
+        "Menor valor": float(values.iloc[low]),
+        "Data do menor valor": data["Date"].iloc[low],
+        "Maior valor": float(values.iloc[high]),
+        "Data do maior valor": data["Date"].iloc[high],
+        "Trajetória": pd.DataFrame({"Date": data["Date"], "Value": values}),
     }

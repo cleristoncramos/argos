@@ -47,6 +47,17 @@ GLOBAL_CSS = f"""
 .pg-sub {{ margin: 12px 0 0; max-width: 860px; padding-left: 12px; border-left: 3px solid {ACCENT};
     color: #3f3f3f; font-size: 1.02rem; line-height: 1.6; }}
 
+/* Cartão do ativo com a mesma altura do resumo ao lado (render_analysis_summary) */
+.st-key-analysis_summary [data-testid="stHorizontalBlock"] {{ align-items: stretch !important; }}
+.st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stVerticalBlock"],
+.st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stElementContainer"],
+.st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdown"],
+.st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdown"] > div,
+.st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdownContainer"],
+.st-key-analysis_summary .asset-card {{ height: 100% !important; }}
+.st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdown"] > div {{ display: flex; flex-direction: column; }}
+.st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdownContainer"] {{ flex: 1; margin: 0 !important; }}
+
 /* Detalhes do processamento (app/ui/data_info.py): grade compacta */
 .pd-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); border: 1px solid {LINE_SOFT}; background: {PAPER}; }}
 .pd-cell {{ padding: 8px 12px; border-right: 1px solid {LINE_SOFT}; border-bottom: 1px solid {LINE_SOFT}; }}

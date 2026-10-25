@@ -4,7 +4,9 @@ import pytest
 
 from core.simulation import (
     SIMULATION_DISCLAIMER,
+    WHAT_IF_LOOKBACKS,
     compare_strategies,
+    lookback_start,
     non_simulable_reason,
     rolling_window_outcomes,
     simulate_lump_sum,
@@ -12,6 +14,7 @@ from core.simulation import (
     simulation_notes,
     summarize_simulation,
     summarize_windows,
+    what_if,
 )
 
 
@@ -219,3 +222,62 @@ def test_disclaimer_states_limits():
     assert "não é previsão" in text
     assert "não é recomendação" in text
     assert "dividendos" in text
+
+
+# ---------- calculadora "Se você tivesse investido" ----------
+
+def make_daily(values, start="2020-01-01", freq="D"):
+    dates = pd.date_range(start, periods=len(values), freq=freq)
+    return pd.DataFrame({"Date": dates, "Value": values})
+
+
+def test_what_if_doubles_and_tracks_extremes():
+    result = what_if(make_prices([100.0, 80.0, 250.0, 200.0]), 1000.0)
+
+    assert result["Valor final"] == pytest.approx(2000.0)
+    assert result["Resultado"] == pytest.approx(1000.0)
+    assert result["Retorno total"] == pytest.approx(1.0)
+    assert result["Menor valor"] == pytest.approx(800.0)
+    assert result["Maior valor"] == pytest.approx(2500.0)
+    assert result["Data do menor valor"] == pd.Timestamp("2024-02-29")
+    assert result["Preço na compra"] == 100.0 and result["Preço final"] == 200.0
+    assert result["Trajetória"]["Value"].iloc[0] == pytest.approx(1000.0)
+    # Menos de 1 ano: não anualiza.
+    assert result["Retorno anualizado"] is None
+
+
+def test_what_if_annualizes_over_one_year():
+    # 2 anos e um dia com o preço quadruplicando: ~100% ao ano.
+    df = pd.DataFrame({
+        "Date": pd.to_datetime(["2020-01-01", "2022-01-02"]),
+        "Value": [10.0, 40.0],
+    })
+    result = what_if(df, 500.0)
+
+    assert result["Anos"] == pytest.approx(732 / 365.25)
+    assert result["Retorno anualizado"] == pytest.approx(4 ** (365.25 / 732) - 1)
+
+
+def test_what_if_starts_at_first_observation_on_or_after_date():
+    df = make_daily([10.0, 20.0, 40.0, 30.0])
+    result = what_if(df, 100.0, start_date="2020-01-02")
+
+    assert result["Data da compra"] == pd.Timestamp("2020-01-02")
+    assert result["Valor final"] == pytest.approx(150.0)
+
+
+def test_what_if_rejects_late_start_and_bad_amount():
+    df = make_daily([10.0, 20.0, 30.0])
+
+    with pytest.raises(ValueError, match="2 observações"):
+        what_if(df, 100.0, start_date="2020-01-03")
+    with pytest.raises(ValueError):
+        what_if(df, 0.0)
+
+
+def test_lookback_start_and_options():
+    assert lookback_start("2025-06-15 16:00", 3) == pd.Timestamp("2022-06-15")
+    assert lookback_start("2024-02-29", 1) == pd.Timestamp("2023-02-28")
+    assert list(WHAT_IF_LOOKBACKS.values()) == [1, 2, 3, 5, 10]
+    with pytest.raises(ValueError):
+        lookback_start("2025-01-01", 0)

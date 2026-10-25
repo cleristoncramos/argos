@@ -5,7 +5,7 @@
 [![Aplicação online](https://img.shields.io/badge/app-argos--datalab.streamlit.app-C8102E)](https://argos-datalab.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.63-FF4B4B?logo=streamlit&logoColor=white)
-![Testes](https://img.shields.io/badge/testes-806%20aprovados-2E7D32)
+![Testes](https://img.shields.io/badge/testes-817%20aprovados-2E7D32)
 ![Cobertura](https://img.shields.io/badge/cobertura%20do%20core-100%25-2E7D32)
 ![PIBITI UFPI](https://img.shields.io/badge/PIBITI-UFPI%202026%E2%80%932027-1F1F1F)
 
@@ -56,7 +56,7 @@ Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferra
 | Qual ativo foi mais longe no mesmo período? Eles se movem juntos? | Comparação de Ativos |
 | O que dizem as médias móveis, as Bandas de Bollinger, o RSI e o MACD? | Indicadores Técnicos |
 | Quanto o ativo oscilou e qual foi a maior queda desde um pico? | Risco e Retorno |
-| E se eu tivesse investido um valor fixo todo mês? | Simulação de Aportes |
+| Se eu tivesse investido R$ 1.000 há 1 ano, quanto teria hoje? E com um valor fixo todo mês? | Simulação de Aportes |
 
 **Princípios do projeto:**
 
@@ -109,6 +109,8 @@ Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferra
 
 ### Simulação de Aportes
 
+- Cartão do ativo e resumo da disponibilidade dos dados, como nas demais páginas de ativo único.
+- Calculadora "Se você tivesse investido": o usuário informa o valor e há quanto tempo (1, 2, 3, 5 ou 10 anos, todo o período ou uma data) e vê o valor final, o ganho ou a perda, a variação total e anual, o pior e o melhor momento do caminho e o gráfico da trajetória.
 - Aporte único versus aportes periódicos com o mesmo total investido.
 - Janelas históricas de horizonte fixo, com menor, mediano e maior resultado e a proporção de janelas positivas.
 - Premissas explícitas: preço de fechamento, sem dividendos, taxas, impostos ou inflação.
@@ -356,7 +358,7 @@ Depois, inicie a aplicação com `ARGOS_DEMO_MODE=true`. Um aviso na interface i
 
 ## Testes e qualidade
 
-A suíte possui **806 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
+A suíte possui **817 testes automatizados**, com **100% de cobertura no pacote `core/`**. Ela verifica, entre outros pontos:
 
 - integridade do catálogo e validação de tickers e datas;
 - tratamento de dados, lacunas de calendário e agregação por frequência;

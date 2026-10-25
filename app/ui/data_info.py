@@ -80,13 +80,16 @@ def render_analysis_summary(
     disponibilidade (alturas parecidas) e, abaixo, em largura total, os
     avisos e um expansor compacto com os detalhes do processamento.
     """
-    col_logo, col_info = st.columns([1, 3], vertical_alignment="center")
-    with col_logo:
-        if asset:
-            render_asset_hero_logo(asset)
-    with col_info:
-        if availability is not None:
-            render_data_availability(availability, fetched_at, show_messages=False)
+    # A chave dá a classe st-key-analysis_summary, usada pelo CSS de
+    # app/ui/design.py para o cartão ocupar a mesma altura do resumo.
+    with st.container(key="analysis_summary"):
+        col_logo, col_info = st.columns([1, 3])
+        with col_logo:
+            if asset:
+                render_asset_hero_logo(asset)
+        with col_info:
+            if availability is not None:
+                render_data_availability(availability, fetched_at, show_messages=False)
 
     if availability is not None:
         render_availability_messages(availability)
