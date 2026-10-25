@@ -34,11 +34,12 @@ O **Argos** reúne em uma única plataforma o histórico de **148 ativos em 13 g
 11. [Testes e qualidade](#testes-e-qualidade)
 12. [Publicação](#publicação)
 13. [Identidade visual](#identidade-visual)
-14. [Documentação complementar](#documentação-complementar)
-15. [Como contribuir](#como-contribuir)
-16. [Contexto acadêmico](#contexto-acadêmico)
-17. [Aviso legal e metodológico](#aviso-legal-e-metodológico)
-18. [Licença](#licença)
+14. [Situação do projeto](#situação-do-projeto)
+15. [Documentação complementar](#documentação-complementar)
+16. [Como contribuir](#como-contribuir)
+17. [Contexto acadêmico](#contexto-acadêmico)
+18. [Aviso legal e metodológico](#aviso-legal-e-metodológico)
+19. [Licença](#licença)
 
 ---
 
@@ -75,21 +76,21 @@ Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferra
 - Nome, frase de efeito e botão **Get Started**, que abre a Análise Individual.
 - Vídeo animado e ilustrativo com um tour pelos recursos do sistema, com os logotipos reais dos ativos do catálogo.
 - Mosaico animado e lento com os ativos do catálogo: logotipo, ticker e nome.
-- Tutorial em três passos e atalhos de "primeiros passos" para cada módulo.
+- Tutorial em três passos e cartões de "Primeiros passos" para os seis módulos de análise (a página Sobre o Projeto fica no menu principal).
 - Botão **Informações acadêmicas**, que abre um modal com os logotipos da UFPI e do CEAD, a identificação do trabalho, as tecnologias e as bases de dados.
 
 ### Análise Individual
 
 - Seleção guiada por grupo de ativos ou digitação livre do ticker, com validação de formato e de existência na fonte.
 - Atalhos de período (1, 3, 5 e 10 anos) ou intervalo personalizado; frequência diária, semanal, mensal, semestral ou anual.
-- Visão geral (primeiro e último valor, retorno total, observações) e evolução temporal do preço.
-- Volatilidade anualizada mês a mês, com destaque para os meses de maior oscilação.
-- Mapa de calor de retornos mensais (mês × ano), média por mês do calendário e o bloco **Explorar anos e meses**, com duas abas: anos escolhidos comparados à média histórica e variação entre dois meses do calendário em cada ano (por exemplo, de junho a dezembro), sempre com uma frase-resumo em linguagem simples.
-- Painel de disponibilidade de dados (período solicitado × disponível) e exportação em CSV.
-- Variação por prazo (1, 3 e 6 meses, no ano, 1, 2, 3, 5 e 10 anos), com as datas usadas, variação acumulada e taxa equivalente ao ano; a base é o período carregado.
-- Maiores altas e quedas do período na frequência escolhida, com as datas e os fechamentos comparados, e a contagem de variações positivas e negativas.
-- Comparação com uma referência de mercado em Base 100 (Ibovespa, S&P 500, Bitcoin ou ouro), sugerida conforme o ativo, com motivo explicado, datas comuns, avisos de moeda e calendário e opção de trocar ou desativar.
-- Alertas de qualidade dos dados: mudança de patamar que se desfaz em poucos dias, variações diárias atípicas, preço sem variação, dias sem volume, intervalos sem dados e histórico curto. Os alertas indicam o que merece atenção, sem afirmar erro ou irregularidade (também na Comparação, por ativo).
+- Cartão do ativo ao lado do resumo de disponibilidade (período solicitado × disponível) e **alertas de qualidade dos dados**: mudança de patamar que se desfaz em poucos dias, variações diárias atípicas, preço sem variação, dias sem volume, intervalos sem dados e histórico curto. Os alertas indicam o que merece atenção, sem afirmar erro ou irregularidade.
+- Visão geral (primeiro e último valor, retorno total, observações).
+- **Variação por prazo** (1, 3 e 6 meses, no ano, 1, 2, 3, 5 e 10 anos), com as datas usadas, variação acumulada e taxa equivalente ao ano; a base é o período carregado, informada na tela.
+- Evolução temporal do preço e **comparação com uma referência de mercado** em Base 100 (Ibovespa, S&P 500, Bitcoin ou ouro), sugerida conforme o ativo, com o motivo da escolha, datas comuns, avisos de moeda e calendário e opção de trocar ou desativar; sem sugestão quando não há referência adequada (como para FIIs).
+- Volatilidade anualizada mês a mês.
+- Variação percentual por período e **maiores altas e quedas**, com as datas e os fechamentos comparados e a contagem de variações positivas e negativas.
+- Mapa de calor de retornos mensais (mês × ano), média por mês do calendário e o bloco **Explorar anos e meses**: anos escolhidos comparados à média histórica e variação entre dois meses do calendário em cada ano, sempre com uma frase-resumo em linguagem simples.
+- Dados processados em tabela e exportação em CSV.
 
 ### Comparação de Ativos
 
@@ -99,6 +100,7 @@ Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferra
 - Matriz de correlação dos retornos, resumo comparativo e destaques descritivos do período.
 - Tendência histórica com **retorno móvel** (3, 6 ou 12 meses) e **razão de desempenho** em relação a um ativo de referência.
 - Sazonalidade comparada entre os ativos.
+- Alertas de qualidade dos dados agrupados por ativo.
 
 ### Indicadores Técnicos
 
@@ -129,7 +131,7 @@ Dados de mercado estão amplamente disponíveis, mas interpretá-los exige ferra
 
 ### Sobre o Projeto
 
-- Contexto e público, pergunta de pesquisa e objetivos com a situação de cada um, módulos, metodologia, dados e catálogo, qualidade, escopo e contexto acadêmico.
+- Contexto e público, pergunta de pesquisa e objetivos com a situação de cada um, os seis módulos de análise, metodologia, dados e catálogo, qualidade, escopo e contexto acadêmico.
 
 ### Explicação assistida por IA (opcional, desligada por padrão)
 
@@ -180,6 +182,10 @@ Resumo das principais convenções. A descrição completa, com fórmulas, unida
 | RSI | Janela 14, suavização de Wilder, níveis de referência 30 e 70 |
 | MACD | `EMA_12 − EMA_26`, linha de sinal `EMA_9` |
 | Sem informação futura | Cada indicador em uma data usa apenas dados até essa data (verificado por testes) |
+| Variação por prazo | `valor final / valor no início da janela − 1`; taxa anual `(1 + variação)^(1/anos) − 1` só para prazos de 1 ano ou mais, com anos de calendário |
+| Quedas e recuperação | Episódio do pico ao fundo e à volta ao pico; durações em dias corridos; queda não recuperada sem estimativa |
+| Referência de mercado | Ativo e referência em Base 100 só nas datas comuns, sem beta nem regressão |
+| Alertas de qualidade | Heurísticas por tipo de série (ex.: variação diária acima de 25% em ações e 50% em criptomoedas, e atípica para o próprio ativo), calibradas no catálogo e documentadas |
 
 ---
 
@@ -189,10 +195,10 @@ Resumo das principais convenções. A descrição completa, com fórmulas, unida
 | --- | --- | --- |
 | **Yahoo Finance** (via `yfinance`) | Séries diárias de abertura, máxima, mínima, fechamento e volume | Base de todas as análises; consulta sob demanda com cache de 1 hora |
 | **Catálogo interno** | Ticker, nome, classe, mercado e descrição dos ativos | Seleção guiada e organização da interface |
-| **Pacote de demonstração** | CSVs congelados com manifesto e hash SHA-256 | Apresentações e avaliação sem depender da internet |
+| **Pacote de demonstração** | CSVs congelados dos 148 ativos, com manifesto e hash SHA-256 | Apresentações e avaliação sem depender da internet |
 | **CoinCap** e **Financial Modeling Prep** | Logotipos públicos de criptomoedas, ações, ETFs, REITs e FIIs | Identificação visual dos ativos |
 
-**Tratamento:** os dados diários são baixados uma única vez; as frequências semanal, mensal, semestral e anual são derivadas localmente por agregação (abertura, máxima, mínima, fechamento e volume somado). Datas inválidas são descartadas, e falhas temporárias da fonte não ficam guardadas em cache.
+**Tratamento:** os dados diários são baixados uma única vez; as frequências semanal, mensal, semestral e anual são derivadas localmente por agregação (abertura, máxima, mínima, fechamento e volume somado). Datas inválidas são descartadas, e falhas temporárias da fonte não ficam guardadas em cache. A série diária passa por verificações automáticas de qualidade, que geram alertas na tela sem alterar nem remover dados.
 
 **Limitações conhecidas:**
 
@@ -220,7 +226,8 @@ core/data_processor     limpeza, ordenação e agregação por frequência
 core/data_availability  período solicitado × disponível
 core/data_quality       alertas de qualidade da série diária
         ▼
-core/analyzer, risk_metrics, indicators, comparison, seasonality, simulation, trend
+core/analyzer, risk_metrics, indicators, comparison, seasonality, simulation, trend,
+     trailing_returns, extreme_moves, drawdown_episodes, benchmark, panorama
         ▼
 st.session_state        resultado da "consulta confirmada"
         ▼
@@ -234,7 +241,7 @@ argos/
 ├── app/
 │   ├── main.py                  # Ponto de entrada: navegação e estilo comum
 │   ├── requirements.txt         # Dependências fixadas para o Streamlit Community Cloud
-│   ├── views/                   # Páginas (home, análises, simulação, sobre)
+│   ├── views/                   # Páginas (home, análises, simulação, panorama, sobre)
 │   ├── ui/                      # Componentes de interface (barra lateral, cartões, tabelas, modal, estilo)
 │   └── assets/                  # Logotipos institucionais e vídeo da página inicial
 ├── core/                        # Regras analíticas, dados, métricas, indicadores e textos educativos
@@ -353,11 +360,13 @@ A aplicação funciona sem nenhuma configuração adicional. Os recursos opciona
 
 Para apresentações e avaliações com usuários, o Argos pode rodar **sem internet**, a partir de um pacote de dados congelado (CSVs e manifesto com data da coleta e hash SHA-256 de cada arquivo).
 
-Gere o pacote uma vez, com internet:
+Gere o pacote uma vez, com internet, para o catálogo inteiro e a partir de uma data fixa:
 
 ```bash
-python scripts/gerar_dados_demo.py
+python scripts/gerar_dados_demo.py --catalog --start 2020-12-01
 ```
+
+O início em 01/12/2020 cobre o período das respostas de IA salvas em `data/llm_demo.json` (04/01/2021 a 31/12/2025), para que elas também apareçam no modo de dados salvos. Sem `--catalog`, o gerador usa só cinco ativos de referência.
 
 Confira a integridade dos arquivos pelos hashes:
 
@@ -365,7 +374,12 @@ Confira a integridade dos arquivos pelos hashes:
 python scripts/gerar_dados_demo.py --verify
 ```
 
-Depois, inicie a aplicação com `ARGOS_DEMO_MODE=true`. Um aviso na interface indica que os dados são salvos. Estratégia completa em [`docs/demonstracao.md`](docs/demonstracao.md) e [`docs/versao_congelada.md`](docs/versao_congelada.md).
+Depois, inicie a aplicação com `ARGOS_DEMO_MODE=true`. Um aviso na interface indica a versão do pacote e a data dos dados salvos.
+
+- **Snapshot atual:** `v1.1-demo-preliminar`, de 25/10/2026, com 148 ativos de 01/12/2020 a 23/10/2026. O pacote fica fora do Git, por causa dos termos de uso da fonte.
+- **Validação:** o teste completo sem internet é feito na **instalação local**. O teste de memória verifica, separadamente, a aplicação hospedada no Streamlit Community Cloud.
+
+Estratégia completa em [`docs/demonstracao.md`](docs/demonstracao.md) e [`docs/versao_congelada.md`](docs/versao_congelada.md).
 
 ---
 
@@ -378,7 +392,9 @@ A suíte possui **908 testes automatizados**, com **100% de cobertura no pacote 
 - retornos, volatilidade, Sharpe, drawdown, base 100 e correlação;
 - indicadores técnicos, inclusive a ausência de informação futura;
 - sazonalidade, janelas de retorno e simulação de aportes;
-- modo de demonstração, explicação assistida e componentes de interface.
+- alertas de qualidade dos dados, variação por prazo, quedas e recuperação, maiores altas e quedas, referência de mercado e panorama do catálogo;
+- modo de demonstração, explicação assistida e componentes de interface;
+- **teste de fumaça** (Streamlit AppTest): a página inicial e o estado inicial de cada página abrem sem exceção.
 
 Execute os testes:
 
@@ -395,7 +411,7 @@ python -m pytest --cov=core --cov-report=term-missing --cov-report=html
 O relatório fica em `htmlcov/index.html`. O `pytest.ini` exige cobertura mínima de **80%**; para a versão congelada, a meta é de **95% no `core/`**.
 
 > [!NOTE]
-> O projeto ainda não tem pipeline de integração contínua: os testes devem ser executados localmente antes de cada commit. Registro detalhado em [`TESTES.md`](TESTES.md) e [`docs/checkpoint_qualidade.md`](docs/checkpoint_qualidade.md).
+> O projeto ainda não tem pipeline de integração contínua: os testes devem ser executados localmente antes de cada commit. Depois de cada publicação relevante, a versão no ar é conferida por funcionalidade, com data, commit e evidências, em [`docs/verificacao_publicacao.md`](docs/verificacao_publicacao.md). Registro detalhado em [`TESTES.md`](TESTES.md) e [`docs/checkpoint_qualidade.md`](docs/checkpoint_qualidade.md).
 
 ---
 
@@ -432,6 +448,23 @@ Os logotipos institucionais ficam em `app/assets/institucional/`, com a origem r
 
 ---
 
+## Situação do projeto
+
+| Etapa | Situação |
+| --- | --- |
+| Plano de ampliação do catálogo e das análises | Aprovado pelo orientador em 24/10/2026 ([`docs/plano_ampliacao_catalogo_e_analises.md`](docs/plano_ampliacao_catalogo_e_analises.md)) |
+| Fase 1: alertas de qualidade, variação por prazo, quedas e recuperação, maiores altas e quedas | Publicação verificada em 25/10/2026 |
+| Fase 2: catálogo de 120 para 148 ativos, com conferência técnica de cada inclusão | Publicação verificada em 25/10/2026 |
+| Fase 3: referência de mercado e Panorama do Catálogo (primeira versão) | Publicação verificada em 25/10/2026 |
+| Modo de demonstração | Primeiro snapshot do catálogo ampliado gerado e conferido em 25/10/2026 |
+| Novembro e dezembro de 2026 | Correções eventuais e preparação documental do O6, sem novas ampliações funcionais |
+| Janeiro de 2027 | Snapshot final, roteiro completo sem internet (local), teste de memória no Streamlit Cloud e consolidação das evidências |
+| Fevereiro de 2027 | Congelamento da versão, identificada por commit e tag |
+
+A coleta de dados com participantes (O6) depende de parecer favorável do Comitê de Ética em Pesquisa e não começa antes disso.
+
+---
+
 ## Documentação complementar
 
 | Documento | Conteúdo |
@@ -439,7 +472,10 @@ Os logotipos institucionais ficam em `app/assets/institucional/`, com a origem r
 | [`docs/arquitetura.md`](docs/arquitetura.md) | Camadas, módulos, fluxo de dados e decisões de projeto |
 | [`docs/metodologia_de_calculo.md`](docs/metodologia_de_calculo.md) | Fórmulas, unidades e convenções de todas as métricas |
 | [`docs/fontes_e_tratamento_de_dados.md`](docs/fontes_e_tratamento_de_dados.md) | Coleta, preparação, frequências e limitações da fonte |
-| [`docs/catalogo-de-ativos.md`](docs/catalogo-de-ativos.md) | Catálogo completo e critérios de inclusão |
+| [`docs/catalogo-de-ativos.md`](docs/catalogo-de-ativos.md) | Catálogo completo, critérios de inclusão e registro da ampliação |
+| [`docs/plano_ampliacao_catalogo_e_analises.md`](docs/plano_ampliacao_catalogo_e_analises.md) | Plano aprovado de ampliação, registro de execução e cronograma |
+| [`docs/verificacao_publicacao.md`](docs/verificacao_publicacao.md) | Conferência da versão publicada, com commits e evidências |
+| [`docs/inventario_graficos.md`](docs/inventario_graficos.md) | Gráficos do sistema e seus roteiros "Como ler este gráfico" |
 | [`docs/fora_do_escopo.md`](docs/fora_do_escopo.md) | O que a plataforma deliberadamente não faz |
 | [`docs/demonstracao.md`](docs/demonstracao.md) | Estratégia de demonstração e modo offline |
 | [`docs/versao_congelada.md`](docs/versao_congelada.md) | Procedimento de congelamento da versão de avaliação |
