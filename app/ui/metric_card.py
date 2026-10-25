@@ -44,7 +44,7 @@ def build_metric_card_html(
         text, tone = badge
         fg, bg = tone_style(tone)
         badge_html = (
-            '<div style="margin-top:12px;">'
+            '<div style="margin-top:auto;padding-top:12px;">'
             f'<span style="font-size:0.85rem;font-weight:600;padding:4px 8px;'
             f'display:inline-block;background-color:{bg};color:{fg};">{escape(text)}</span>'
             "</div>"
@@ -55,7 +55,7 @@ def build_metric_card_html(
         "border:1px solid #2a2a2a;border-top:3px solid #c8102e;padding:20px;box-shadow:0 8px 22px rgba(17,17,17,.07);"
         "display:flex;flex-direction:column;height:100%;\">"
         '<div style="color:#64748b;font-size:0.75rem;font-weight:700;text-transform:uppercase;'
-        'letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;">'
+        'letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:flex-start;line-height:1.6;min-height:3.2em;">'
         f"{escape(title)} {tooltip_html}</div>"
         f'<div style="color:#0f172a;font-size:{value_size};font-weight:700;line-height:1.2;'
         f"font-family:'Inter',sans-serif;letter-spacing:-0.5px;\">{value}</div>"

@@ -1170,35 +1170,38 @@ for i, symbol in enumerate(summary_numeric["Ativo"].tolist()):
 st.header("Destaques do Período")
 
 if not summary_numeric.empty:
-    highlight_cols = st.columns(4)
-    with highlight_cols[0]:
-        render_highlight(
-            HIGHLIGHT_LABELS["max_return"],
-            extreme_row(summary_numeric, "Retorno total", largest=True),
-            "Retorno total",
-            format_return_pct,
-        )
-    with highlight_cols[1]:
-        render_highlight(
-            HIGHLIGHT_LABELS["min_return"],
-            extreme_row(summary_numeric, "Retorno total", largest=False),
-            "Retorno total",
-            format_return_pct,
-        )
-    with highlight_cols[2]:
-        render_highlight(
-            HIGHLIGHT_LABELS["min_drawdown"],
-            extreme_row(summary_numeric, "Drawdown máximo", largest=True),
-            "Drawdown máximo",
-            format_return_pct,
-        )
-    with highlight_cols[3]:
-        render_highlight(
-            HIGHLIGHT_LABELS["max_sharpe"],
-            extreme_row(summary_numeric, "Sharpe", largest=True),
-            "Sharpe",
-            lambda v: f"Sharpe: {format_number_br(v)}",
-        )
+    # A chave dá a classe usada pelo CSS de app/ui/design.py: os quatro
+    # cartões ficam com a mesma altura, mesmo com títulos de tamanhos diferentes.
+    with st.container(key="highlight_cards"):
+        highlight_cols = st.columns(4)
+        with highlight_cols[0]:
+            render_highlight(
+                HIGHLIGHT_LABELS["max_return"],
+                extreme_row(summary_numeric, "Retorno total", largest=True),
+                "Retorno total",
+                format_return_pct,
+            )
+        with highlight_cols[1]:
+            render_highlight(
+                HIGHLIGHT_LABELS["min_return"],
+                extreme_row(summary_numeric, "Retorno total", largest=False),
+                "Retorno total",
+                format_return_pct,
+            )
+        with highlight_cols[2]:
+            render_highlight(
+                HIGHLIGHT_LABELS["min_drawdown"],
+                extreme_row(summary_numeric, "Drawdown máximo", largest=True),
+                "Drawdown máximo",
+                format_return_pct,
+            )
+        with highlight_cols[3]:
+            render_highlight(
+                HIGHLIGHT_LABELS["max_sharpe"],
+                extreme_row(summary_numeric, "Sharpe", largest=True),
+                "Sharpe",
+                lambda v: f"Sharpe: {format_number_br(v)}",
+            )
 
     st.caption(
         "Os destaques descrevem o desempenho observado no período analisado. "

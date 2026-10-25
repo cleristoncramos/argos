@@ -36,7 +36,6 @@ GLOBAL_CSS = f"""
 [data-testid="stExpander"] details {{ border: 1px solid {LINE} !important; background: {PAPER}; }}
 [data-testid="stAlertContainer"] {{ border: 1px solid {LINE} !important; }}
 [data-testid="stVerticalBlockBorderWrapper"] {{ border-color: {LINE} !important; }}
-[data-baseweb="tab-list"] {{ border-bottom: 1px solid {LINE}; }}
 [data-testid="stMain"] hr {{ border-color: {LINE_SOFT} !important; opacity: 1; }}
 
 /* Cabeçalho das páginas de análise (app/ui/page_header.py) */
@@ -47,16 +46,44 @@ GLOBAL_CSS = f"""
 .pg-sub {{ margin: 12px 0 0; max-width: 860px; padding-left: 12px; border-left: 3px solid {ACCENT};
     color: #3f3f3f; font-size: 1.02rem; line-height: 1.6; }}
 
-/* Cartão do ativo com a mesma altura do resumo ao lado (render_analysis_summary) */
-.st-key-analysis_summary [data-testid="stHorizontalBlock"] {{ align-items: stretch !important; }}
+/* Cartões com a mesma altura na fileira: cartão do ativo ao lado do resumo
+   (render_analysis_summary) e destaques da Comparação (highlight_cards) */
+.st-key-analysis_summary [data-testid="stHorizontalBlock"],
+.st-key-highlight_cards [data-testid="stHorizontalBlock"] {{ align-items: stretch !important; }}
 .st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stVerticalBlock"],
 .st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stElementContainer"],
 .st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdown"],
-.st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdown"] > div,
 .st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdownContainer"],
-.st-key-analysis_summary .asset-card {{ height: 100% !important; }}
-.st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdown"] > div {{ display: flex; flex-direction: column; }}
-.st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdownContainer"] {{ flex: 1; margin: 0 !important; }}
+.st-key-analysis_summary .asset-card,
+.st-key-highlight_cards [data-testid="stColumn"] [data-testid="stVerticalBlock"],
+.st-key-highlight_cards [data-testid="stElementContainer"],
+.st-key-highlight_cards [data-testid="stMarkdown"],
+.st-key-highlight_cards [data-testid="stMarkdownContainer"],
+.st-key-highlight_cards [data-testid="stMarkdownContainer"] > div {{ height: 100% !important; }}
+.st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdown"] > div,
+.st-key-highlight_cards [data-testid="stMarkdown"] > div {{ display: flex; flex-direction: column; height: 100%; }}
+.st-key-analysis_summary [data-testid="stColumn"]:first-child [data-testid="stMarkdownContainer"],
+.st-key-highlight_cards [data-testid="stMarkdownContainer"] {{ flex: 1; margin: 0 !important; }}
+
+/* Abas das páginas (st.tabs): botões de mesma largura; a aba ativa fica com fundo vermelho */
+[data-testid="stMain"] [data-testid="stTabs"] [role="tablist"] {{ display: flex; gap: 8px; width: 100%; border: none; }}
+[data-testid="stMain"] [data-testid="stTabs"] .react-aria-SelectionIndicator {{ display: none; }}
+[data-testid="stMain"] [data-testid="stTab"] {{
+    flex: 1 1 0; display: flex; justify-content: center; align-items: center; margin: 0; padding: 10px 12px;
+    background: {PAPER}; border: 1px solid {LINE}; box-shadow: 0 2px 6px rgba(17, 17, 17, .06);
+    cursor: pointer; transition: background .15s;
+}}
+[data-testid="stMain"] [data-testid="stTab"]:hover {{ background: {PAPER_ALT}; }}
+[data-testid="stMain"] [data-testid="stTab"] p {{ margin: 0; font-weight: 600; color: {INK}; white-space: nowrap; }}
+[data-testid="stMain"] [data-testid="stTab"][aria-selected="true"] {{
+    background: linear-gradient(180deg, #D7193A 0%, #B50E29 100%); border-color: #7A0A1C;
+    box-shadow: 0 6px 16px rgba(200, 16, 46, .25);
+}}
+[data-testid="stMain"] [data-testid="stTab"][aria-selected="true"] p {{ color: #FFFFFF; }}
+@media (max-width: 760px) {{
+    [data-testid="stMain"] [data-testid="stTabs"] [role="tablist"] {{ flex-wrap: wrap; }}
+    [data-testid="stMain"] [data-testid="stTab"] {{ flex: 1 1 30%; }}
+}}
 
 /* Retorno da Simulação de Aportes: verde se positivo, vermelho se negativo */
 [class*="st-key-sim_return_positive"] [data-testid="stMetricValue"] {{ color: #15803D; }}
