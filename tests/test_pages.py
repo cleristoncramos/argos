@@ -1,5 +1,6 @@
 """Ordem das páginas: menu principal, "Primeiros passos" e Get Started alinhados."""
 
+import ast
 from pathlib import Path
 
 from app.ui.pages import HOME_PAGE, MENU_PAGES, START_PAGE
@@ -40,3 +41,15 @@ def test_menu_and_home_are_built_from_the_same_list():
     for title in ("Sobre o Projeto", "Simulação de Aportes"):
         assert f'title="{title}"' not in main
         assert f'"{title}"' not in home
+
+
+def test_every_date_field_uses_the_brazilian_format():
+    # Todo campo de data é digitado como dd/mm/aaaa.
+    calls = 0
+    for path in APP.rglob("*.py"):
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if isinstance(node, ast.Call) and getattr(node.func, "attr", "") == "date_input":
+                calls += 1
+                formats = [k.value.value for k in node.keywords if k.arg == "format"]
+                assert formats == ["DD/MM/YYYY"], f"{path.name}:{node.lineno}"
+    assert calls == 5

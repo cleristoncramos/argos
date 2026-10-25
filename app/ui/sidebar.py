@@ -407,6 +407,7 @@ def render_asset_controls(
                     "asset_start_date",
                     period_start_date(DEFAULT_PERIOD, today),
                 ),
+                format="DD/MM/YYYY",
                 key=f"{button_key}_start_date",
             )
 
@@ -416,6 +417,7 @@ def render_asset_controls(
                     "asset_end_date",
                     today,
                 ),
+                format="DD/MM/YYYY",
                 key=f"{button_key}_end_date",
             )
         else:

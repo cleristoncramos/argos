@@ -816,12 +816,14 @@ with st.sidebar:
     if selected_period == "Personalizado":
         st.date_input(
             "Data inicial",
+            format="DD/MM/YYYY",
             key=COMPARISON_START_DATE_WIDGET_KEY,
             on_change=sync_comparison_start_date,
         )
 
         st.date_input(
             "Data final",
+            format="DD/MM/YYYY",
             key=COMPARISON_END_DATE_WIDGET_KEY,
             on_change=sync_comparison_end_date,
         )
