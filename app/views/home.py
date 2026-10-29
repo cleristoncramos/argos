@@ -122,24 +122,44 @@ st.markdown(
 .step p { margin: 0; color: #4a4a4a !important; font-size: .9rem; line-height: 1.6; }
 .step kbd { padding: 0 5px; border: 1px solid #2a2a2a; background: #fff; color: #111; font-size: .78rem; font-family: inherit; }
 
-/* ---------- primeiros passos ---------- */
-[class*="st-key-fs_"] { height: 100%; padding: 20px 20px 12px; background: #fff; border: 1px solid #2a2a2a; box-shadow: 0 10px 26px rgba(17, 17, 17, .08);
-    transition: transform .25s ease, box-shadow .25s ease; }
-[class*="st-key-fs_"]:hover { transform: translateY(-3px);
-    box-shadow: inset 0 3px 0 #c8102e, 0 16px 34px rgba(17, 17, 17, .13); }
-.fs-top { display: flex; justify-content: space-between; align-items: center; }
-.fs-icon { font-size: 1.4rem; }
-.fs-n { font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; font-size: .72rem; color: #5f5f5f; }
-.fs-title { margin-top: 10px; color: #111; font-weight: 750; font-size: 1.02rem; }
-.fs-desc { margin-top: 6px; color: #4a4a4a; font-size: .87rem; line-height: 1.55; min-height: 4.1em; }
+/* ---------- primeiros passos: seis etapas lado a lado ---------- */
+.st-key-first_steps { position: relative; padding-top: 30px; }
+.st-key-first_steps::before { content: ""; position: absolute; top: 9px; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, #c8102e 0%, #e11d48 45%, #f97316 100%); opacity: .55; }
+.st-key-first_steps [data-testid="stHorizontalBlock"] { align-items: stretch; }
+.st-key-first_steps [data-testid="stColumn"] { display: flex; flex-direction: column; align-self: stretch; }
+.st-key-first_steps [data-testid="stColumn"] > [data-testid="stVerticalBlock"],
+.st-key-first_steps [data-testid="stColumn"] [data-testid="stLayoutWrapper"] { flex: 1 1 auto; }
+[class*="st-key-fs_"] { position: relative; flex: 1 1 auto; padding: 18px 18px 14px; background: #fff; border: 1px solid #2a2a2a;
+    box-shadow: 0 10px 26px rgba(17, 17, 17, .07); gap: 0 !important;
+    transition: transform .25s ease, box-shadow .25s ease, background .25s ease; }
+[class*="st-key-fs_"]::before { content: ""; position: absolute; top: -27px; left: 18px; width: 12px; height: 12px;
+    border-radius: 50% !important; background: #fff; border: 2px solid #c8102e; box-shadow: 0 0 0 4px #f6f4ef;
+    transition: background .25s ease; }
+[class*="st-key-fs_"]:hover { transform: translateY(-4px); background: linear-gradient(180deg, #fff 0%, #fbf1f1 100%);
+    box-shadow: inset 0 3px 0 #c8102e, 0 18px 36px rgba(17, 17, 17, .13); }
+[class*="st-key-fs_"]:hover::before { background: #c8102e; }
+[class*="st-key-fs_"] > div:last-child { margin-top: auto; width: 100%; }
+.fs-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.fs-n { font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; font-size: 1.9rem; font-weight: 800; line-height: 1;
+    letter-spacing: -.04em; background: linear-gradient(135deg, #B50E29 0%, #E11D48 55%, #F97316 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+.fs-icon { font-size: 1.25rem; }
+.fs-title { margin-top: 14px; color: #111; font-weight: 750; font-size: .98rem; line-height: 1.25; }
+.fs-desc { margin: 8px 0 12px; color: #4a4a4a; font-size: .83rem; line-height: 1.55; }
+[class*="st-key-fs_"] [data-testid="stPageLink"] { width: 100%; padding-top: 10px; border-top: 1px solid #e4e1da; }
 [class*="st-key-fs_"] [data-testid="stPageLink"] a { padding: 0 !important; background: transparent !important; }
-[class*="st-key-fs_"] [data-testid="stPageLink"] p { color: #c8102e !important; font-weight: 700 !important; font-size: .86rem !important; }
+[class*="st-key-fs_"] [data-testid="stPageLink"] p { color: #c8102e !important; font-weight: 700 !important; font-size: .82rem !important; }
 
 /* ---------- rodapé ---------- */
 .home-footer { margin-top: 60px; padding: 16px 0 6px; border-top: 1px solid #2a2a2a; display: flex;
     justify-content: space-between; gap: 18px; flex-wrap: wrap; color: #5f5f5f; font-size: .76rem; }
 .home-footer b { color: #111; letter-spacing: .1em; }
 
+@media (max-width: 1200px) {
+    .st-key-first_steps [data-testid="stHorizontalBlock"] { flex-wrap: wrap; row-gap: 40px; }
+    .st-key-first_steps [data-testid="stColumn"] { flex: 1 1 calc(33.333% - 1rem) !important; min-width: 200px; }
+}
 @media (max-width: 900px) {
     .steps { grid-template-columns: 1fr; }
     .step { border-right: 0; border-bottom: 1px solid #2a2a2a; }
@@ -280,17 +300,14 @@ st.markdown(
 
 # Módulos de análise, na mesma ordem do menu principal (app/ui/pages.py);
 # a página Sobre o Projeto fica só no menu.
-for row_start in range(0, len(ANALYSIS_PAGES), 3):
-    columns = st.columns(3, gap="small")
-    for offset, column in enumerate(columns):
-        index = row_start + offset
-        if index >= len(ANALYSIS_PAGES):  # última fileira incompleta
-            break
-        spec = ANALYSIS_PAGES[index]
+# Todos lado a lado, como etapas de uma linha do tempo.
+with st.container(key="first_steps"):
+    columns = st.columns(len(ANALYSIS_PAGES), gap="small")
+    for index, (column, spec) in enumerate(zip(columns, ANALYSIS_PAGES)):
         with column, st.container(key=f"fs_{index}"):
             st.markdown(
-                f'<div class="fs-top"><span class="fs-icon">{spec.icon}</span>'
-                f'<span class="fs-n">{index + 1:02d}</span></div>'
+                f'<div class="fs-top"><span class="fs-n">{index + 1:02d}</span>'
+                f'<span class="fs-icon">{spec.icon}</span></div>'
                 f'<div class="fs-title">{spec.title}</div><div class="fs-desc">{spec.description}</div>',
                 unsafe_allow_html=True,
             )

@@ -36,7 +36,7 @@ def test_menu_and_home_are_built_from_the_same_list():
     main = (APP / "main.py").read_text(encoding="utf-8")
     home = (APP / "views" / "home.py").read_text(encoding="utf-8")
     assert "for spec in MENU_PAGES" in main and '"Menu Principal": [home_page, *menu_pages]' in main
-    assert "ANALYSIS_PAGES[index]" in home and "st.switch_page(START_PAGE.path)" in home
+    assert "zip(columns, ANALYSIS_PAGES)" in home and "st.switch_page(START_PAGE.path)" in home
     # Nenhuma das duas telas mantém uma lista própria de páginas
     for title in ("Sobre o Projeto", "Simulação de Aportes"):
         assert f'title="{title}"' not in main
