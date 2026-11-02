@@ -116,6 +116,7 @@ from core.formatters import format_number_br
 from core.llm_builders import individual_context, window_context
 from core.returns_utils import simple_returns
 from core.trailing_returns import base_description, trailing_returns
+from core.visualizations import gradient_fill
 from core.benchmark import (
     BENCHMARKS,
     align_with_benchmark,
@@ -489,7 +490,7 @@ fig_line.add_trace(go.Scatter(
     mode="lines",
     line=dict(color="#10B981", width=2.5),
     fill="tozeroy",
-    fillcolor="rgba(16, 185, 129, 0.15)",
+    fillgradient=gradient_fill("#10B981", df["Value"]),
     customdata=formatted_y,
     hovertemplate=(
         f"<b>Data:</b> %{{x|%d/%m/%Y}}<br>"

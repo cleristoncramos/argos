@@ -33,6 +33,40 @@ DEFAULT_PRICE_LABEL = "Preço na moeda de origem"
 BR_SEPARATORS = ",."
 
 
+def gradient_fill(
+    color: str,
+    values: Iterable[float],
+    base: float = 0.0,
+    opacity: float = 0.32,
+) -> dict:
+    """
+    Preenchimento vertical em gradiente para áreas sob uma linha.
+
+    A cor é mais forte junto à linha e some (fica transparente) em direção à
+    base, nos dois sentidos: acima da base (preço) e abaixo dela (drawdown).
+    `color` em hexadecimal (#RRGGBB); `base` é o nível onde a cor desaparece.
+    """
+    red, green, blue = (int(color.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    strong = f"rgba({red}, {green}, {blue}, {opacity})"
+    clear = f"rgba({red}, {green}, {blue}, 0)"
+
+    array = np.asarray(list(values), dtype=float)
+    array = array[np.isfinite(array)]
+    low = min(float(array.min()), base) if array.size else base
+    high = max(float(array.max()), base) if array.size else base
+    if high == low:
+        return dict(type="vertical", colorscale=[[0, clear], [1, clear]])
+
+    position = (base - low) / (high - low)
+    colorscale = []
+    if low < base:
+        colorscale.append([0, strong])
+    colorscale.append([position, clear])
+    if high > base:
+        colorscale.append([1, strong])
+    return dict(type="vertical", start=low, stop=high, colorscale=colorscale)
+
+
 def _finish(fig: go.Figure, context: str) -> go.Figure:
     """Aplica o padrão comum: contexto sob o título e separadores BR."""
     fig.update_layout(separators=BR_SEPARATORS)
@@ -567,7 +601,7 @@ def create_cumulative_return_chart(
                 width=2.5,
             ),
             fill="tozeroy",
-            fillcolor="rgba(37, 99, 235, 0.12)",
+            fillgradient=gradient_fill(COLORS["price"], result["Cumulative_Return"] * 100, opacity=0.28),
             hovertemplate=(
                 "Data: %{x|%d/%m/%Y}<br>"
                 "Retorno acumulado: %{y:.2f}%"
@@ -620,7 +654,7 @@ def create_drawdown_chart(
                 width=2,
             ),
             fill="tozeroy",
-            fillcolor="rgba(220, 38, 38, 0.18)",
+            fillgradient=gradient_fill(COLORS["negative"], df[drawdown_col] * 100),
             hovertemplate=(
                 "Data: %{x|%d/%m/%Y}<br>"
                 "Drawdown: %{y:.2f}%"

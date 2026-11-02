@@ -12,6 +12,7 @@ from core.visualizations import (
     create_rsi_chart,
     create_volume_chart,
     format_context,
+    gradient_fill,
 )
 
 
@@ -201,3 +202,41 @@ def test_chart_requires_expected_columns():
             symbol="BTC-USD",
             context="Contexto de teste",
         )
+
+
+def test_gradient_fill_fades_from_the_line_to_the_base():
+    # Acima da base (preço): transparente no zero, forte no topo.
+    up = gradient_fill("#10B981", [10, 30, 50])
+    assert up["type"] == "vertical" and (up["start"], up["stop"]) == (0, 50)
+    assert up["colorscale"] == [[0.0, "rgba(16, 185, 129, 0)"], [1, "rgba(16, 185, 129, 0.32)"]]
+
+    # Abaixo da base (drawdown): forte no fundo, transparente no zero.
+    down = gradient_fill("#DC2626", [0, -20, -40], opacity=0.3)
+    assert (down["start"], down["stop"]) == (-40, 0)
+    assert down["colorscale"] == [[0, "rgba(220, 38, 38, 0.3)"], [1.0, "rgba(220, 38, 38, 0)"]]
+
+
+def test_gradient_fill_handles_both_sides_and_a_custom_base():
+    both = gradient_fill("#2563EB", [-30, 10])
+    assert [stop for stop, _ in both["colorscale"]] == [0, 0.75, 1]
+    assert both["colorscale"][1][1].endswith(", 0)")
+
+    floor = gradient_fill("#C8102E", [800, 1100], base=750, opacity=0.22)
+    assert (floor["start"], floor["stop"]) == (750, 1100)
+
+
+def test_gradient_fill_without_variation_is_transparent():
+    for values in ([], [0, 0], [float("nan")]):
+        flat = gradient_fill("#2563EB", values)
+        assert "start" not in flat
+        assert all(color.endswith(", 0)") for _, color in flat["colorscale"])
+
+
+def test_area_charts_use_the_gradient_fill():
+    df = create_visualization_dataframe()
+    for fig in (
+        create_cumulative_return_chart(df, "AAPL", "contexto"),
+        create_drawdown_chart(df.assign(Drawdown=-0.1), "AAPL", "contexto"),
+    ):
+        area = fig.data[0]
+        assert area.fill == "tozeroy" and area.fillgradient.type == "vertical"

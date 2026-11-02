@@ -42,6 +42,7 @@ from core.data_processor import (
     select_primary_variable,
 )
 from core.formatters import format_return_pct
+from core.visualizations import gradient_fill
 from core.simulation_texts import (
     SIMULATION_ASSUMPTIONS,
     SIMULATION_MANDATORY_TEXT,
@@ -172,6 +173,10 @@ def build_what_if_chart(result: dict, symbol: str, prefix: str) -> go.Figure:
     """Quanto o valor investido valeria em cada data, desde a compra."""
     path = result["Trajetória"]
     amount = result["Valor investido"]
+    low = path["Value"].min()
+    high = path["Value"].max()
+    padding = (high - low) * 0.08 or amount * 0.05
+    axis_floor = max(min(low, amount) - padding, 0)
     fig = go.Figure()
 
     fig.add_trace(
@@ -182,7 +187,8 @@ def build_what_if_chart(result: dict, symbol: str, prefix: str) -> go.Figure:
             mode="lines",
             line=dict(color="#C8102E", width=2.2),
             fill="tozeroy",
-            fillcolor="rgba(200, 16, 46, 0.07)",
+            # O eixo não começa no zero: a cor some na base visível do gráfico.
+            fillgradient=gradient_fill("#C8102E", path["Value"], base=axis_floor, opacity=0.22),
             hovertemplate=(
                 f"%{{x|%d/%m/%Y}}<br>Valor: {prefix}%{{y:,.2f}}"
                 "<extra></extra>"
@@ -199,15 +205,11 @@ def build_what_if_chart(result: dict, symbol: str, prefix: str) -> go.Figure:
         annotation_position="bottom right",
     )
 
-    low = path["Value"].min()
-    high = path["Value"].max()
-    padding = (high - low) * 0.08 or amount * 0.05
-
     fig.update_layout(
         title=f"Quanto o valor investido valeria em cada data — {symbol}",
         xaxis_title="",
         yaxis_title="Valor do investimento",
-        yaxis_range=[max(min(low, amount) - padding, 0), max(high, amount) + padding],
+        yaxis_range=[axis_floor, max(high, amount) + padding],
         template="plotly_white",
         showlegend=False,
         paper_bgcolor="#F8FAFC",
