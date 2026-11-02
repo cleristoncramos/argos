@@ -554,16 +554,19 @@ drawdown_figure = create_drawdown_chart(
 
 drawdown_figure = apply_custom_layout(drawdown_figure, hide_x_title=True)
 
-# Marcador do drawdown máximo
-if worst_drawdown_date is not None:
-    min_dd_date = worst_drawdown_date
-    min_dd_val = df_risk["Drawdown"].min()
+# Marcador do drawdown máximo sobre a própria curva: usa os pontos já plotados
+# (em %), para ficar no fundo da queda, e não na base zero.
+drawdown_line = drawdown_figure.data[0]
+drawdown_values = np.asarray(drawdown_line.y, dtype=float)
+if worst_drawdown_date is not None and drawdown_values.size and not np.isnan(drawdown_values).all():
+    min_dd_pos = int(np.nanargmin(drawdown_values))
+    min_dd_date, min_dd_val = drawdown_line.x[min_dd_pos], drawdown_values[min_dd_pos]
 
     drawdown_figure.add_trace(go.Scatter(
         x=[min_dd_date], y=[min_dd_val],
         mode="markers+text",
         marker=dict(color="#991b1b", size=10, symbol="x"),
-        text=[f"Pior Queda: {min_dd_val*100:.2f}%"],
+        text=[f"Pior Queda: {min_dd_val:.2f}%"],
         textposition="bottom center",
         textfont=dict(color="#991b1b", size=11, family="Inter, Arial, sans-serif"),
         hoverinfo="skip"
