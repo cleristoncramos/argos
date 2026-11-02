@@ -143,7 +143,7 @@ if pg != home_page:
 render_demo_banner()
 
 # Monitor de RAM (limite do Streamlit Cloud). Fica antes de pg.run() porque as
-# páginas podem interromper a execução com st.stop(); o CSS o leva ao fim da barra lateral.
+# páginas podem interromper a execução com st.stop(); fica fixo no canto inferior esquerdo.
 render_memory_monitor()
 
 

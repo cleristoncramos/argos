@@ -24,6 +24,13 @@ def test_warning_starts_above_850_mb_of_1_gb():
     assert mm.is_near_limit(850.01)
 
 
+def test_badge_is_discreet_and_turns_red_near_the_limit():
+    ok = mm.memory_badge_html(246.05)
+    assert 'class="ram-badge ok"' in ok and "RAM 246 MB" in ok and "24% de 1024 MB" in ok
+    high = mm.memory_badge_html(900)
+    assert 'class="ram-badge high"' in high and "próximo do limite" in high
+
+
 def test_psutil_is_in_both_requirements_files():
     for path in ("requirements.txt", "app/requirements.txt"):
         lines = (ROOT / path).read_text(encoding="utf-8").splitlines()
