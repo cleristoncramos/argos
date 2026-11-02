@@ -44,7 +44,7 @@ html, body { width: 1280px; height: 720px; overflow: hidden; color: var(--ink);
 .chip.red { background: linear-gradient(135deg, #E11D48, #B50E29); color: #fff; }
 
 /* rodapé com capítulos */
-.bottom { height: 46px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(8, 1fr); position: relative; }
+.bottom { height: 46px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(9, 1fr); position: relative; }
 .bottom div { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9a9a9a;
               display: flex; align-items: center; padding-left: 12px; border-right: 1px solid var(--soft); transition: color .3s; }
 .bottom div:last-child { border-right: 0; }
@@ -72,6 +72,9 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
 .grow { transform: scaleY(0); transform-box: fill-box; transform-origin: bottom; }
 .on .grow { animation: grow .5s var(--d, 0s) cubic-bezier(.2,1.2,.4,1) forwards; }
 @keyframes grow { to { transform: none; } }
+.growx { transform: scaleX(0); transform-box: fill-box; transform-origin: var(--o, left); }
+.on .growx { animation: growx .6s var(--d, 0s) cubic-bezier(.2,1.1,.4,1) forwards; }
+@keyframes growx { to { transform: none; } }
 .fade { opacity: 0; } .on .fade { animation: fade .5s var(--d, 0s) ease forwards; }
 @keyframes fade { to { opacity: 1; } }
 
@@ -103,7 +106,7 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
 /* outro */
 .cta { margin-top: 30px; display: inline-flex; border: 1px solid var(--line); background: #fff; box-shadow: 0 18px 40px rgba(17,17,17,.14); }
 .cta span { padding: 16px 30px; font-size: 22px; font-weight: 800; }
-.cta span:first-child { background: linear-gradient(180deg, #D7193A, #B50E29); color: #fff; border-right: 1px solid var(--line); }
+.cta span:first-child { background: linear-gradient(180deg, #D7193A, #B50E29); color: #fff; }
 .on .cta span:first-child { animation: pulse 1.2s 1s ease-in-out infinite; }
 @keyframes pulse { 50% { background: #8f0b21; } }
 .disclaimer { margin-top: 26px; font-size: 15px; color: var(--muted); }
@@ -132,7 +135,7 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
         <div>
           <div class="kicker">01 · Catálogo</div>
           <div class="title">148 ativos,<br>13 grupos.</div>
-          <div class="lead">Ações do Brasil e do mundo, criptomoedas, FIIs, REITs e ETFs, lado a lado na mesma análise.</div>
+          <div class="lead">Ações do Brasil e do mundo, ETFs, FIIs, criptomoedas, moedas, commodities, índices e renda fixa.</div>
           <div class="big"><span data-count="148">0</span></div>
         </div>
         <div class="grid-assets" id="assetGrid"></div>
@@ -145,12 +148,12 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
         <div>
           <div class="kicker">02 · Análise individual</div>
           <div class="title">Um ativo,<br>a história inteira.</div>
-          <div class="lead">Preço ao longo do tempo, retorno do período e volatilidade de cada mês.</div>
+          <div class="lead">Preço, variação por prazo, comparação com uma referência de mercado e alertas de qualidade dos dados.</div>
           <div class="metrics">
             <div class="metric"><small>Retorno total</small><b class="pos" data-count="142" data-fmt="+%">0</b></div>
             <div class="metric"><small>Volatilidade</small><b data-count="48" data-fmt="%">0</b></div>
             <div class="metric"><small>Meses positivos</small><b data-count="58" data-fmt="%">0</b></div>
-            <div class="metric"><small>Observações</small><b data-count="1826">0</b></div>
+            <div class="metric"><small>Em 12 meses</small><b class="pos" data-count="38" data-fmt="+%">0</b></div>
           </div>
         </div>
         <div class="panel"><div class="panel-head"><span>Preço de fechamento · BTC-USD</span><span>5 anos</span></div>
@@ -197,7 +200,7 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
         <div>
           <div class="kicker">05 · Risco e retorno</div>
           <div class="title">Quanto caiu<br>no pior momento?</div>
-          <div class="lead">Drawdown máximo, volatilidade anualizada e Índice de Sharpe, com a taxa livre de risco que você escolher.</div>
+          <div class="lead">Drawdown, maiores quedas e o tempo de recuperação, volatilidade e Índice de Sharpe.</div>
           <div class="metrics">
             <div class="metric"><small>Drawdown máximo</small><b class="neg" id="ddMetric" data-count="-31" data-fmt="%">0</b></div>
             <div class="metric"><small>Sharpe</small><b data-count="0.62" data-dec="2">0</b></div>
@@ -215,8 +218,8 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
       <div class="cols">
         <div>
           <div class="kicker">06 · Sazonalidade</div>
-          <div class="title">Setembro é<br>mesmo ruim?</div>
-          <div class="lead">O mapa de calor mostra o retorno de cada mês em cada ano. Verde subiu, vermelho caiu.</div>
+          <div class="title">Os meses se<br>repetem?</div>
+          <div class="lead">O mapa de calor mostra o retorno de cada mês em cada ano. Verde subiu, vermelho caiu. Compare anos e meses à média histórica.</div>
         </div>
         <div class="panel"><div class="panel-head"><span>Retorno mensal (%) · mês × ano</span><span>BTC-USD</span></div>
           <div class="heat" id="heat"></div></div>
@@ -240,11 +243,28 @@ svg text { font-family: Consolas, monospace; font-size: 12px; fill: var(--muted)
       </div>
     </section>
 
-    <!-- 9. OUTRO -->
+    <!-- 9. PANORAMA -->
+    <section class="scene" data-name="Panorama">
+      <div class="cols">
+        <div>
+          <div class="kicker">08 · Panorama do catálogo</div>
+          <div class="title">Um grupo inteiro,<br>de uma vez.</div>
+          <div class="lead">Todos os ativos de um grupo no mesmo período: variação, volatilidade e queda máxima, lado a lado.</div>
+          <div class="chips">
+            <span class="chip red fade" style="--d:.6s">Variação</span><span class="chip fade" style="--d:.9s">Volatilidade</span>
+            <span class="chip fade" style="--d:1.2s">Queda máxima</span>
+          </div>
+        </div>
+        <div class="panel"><div class="panel-head"><span>Variação no período · Ações Brasil</span><span>mesmo período</span></div>
+          <svg id="panoChart" width="100%" height="440" viewBox="0 0 760 440"></svg></div>
+      </div>
+    </section>
+
+    <!-- 10. OUTRO -->
     <section class="scene intro" data-name="Comece">
       <div class="kicker">Argos</div>
       <h1 style="font-size:72px;margin-top:10px">Pronto para <span class="hl">começar</span>?</h1>
-      <div class="cta"><span>Get Started →</span><span>Informações acadêmicas</span></div>
+      <div class="cta"><span>Get Started →</span></div>
       <div class="disclaimer">Uso educacional e de pesquisa · PIBITI UFPI · Não é recomendação de investimento.</div>
     </section>
   </div>
@@ -350,7 +370,7 @@ document.getElementById("assetGrid").innerHTML = LOGOS.length
 (() => { const box = document.getElementById("heat"); const months = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
   let html = '<div></div>' + months.map(m => `<div class="lbl">${m}</div>`).join("");
   [2020, 2021, 2022, 2023, 2024, 2025, 2026].forEach((yr, r) => { html += `<div class="lbl">${yr}</div>`;
-    months.forEach((_, m) => { let v = (rnd() - .45) * 40; if (m === 8) v = -Math.abs(v) - 3; const a = Math.min(1, Math.abs(v) / 25);
+    months.forEach((_, m) => { const v = (rnd() - .45) * 40; const a = Math.min(1, Math.abs(v) / 25);
       const bg = v >= 0 ? `rgba(21,128,61,${.15 + a * .85})` : `rgba(200,16,46,${.15 + a * .85})`;
       html += `<div class="pop" style="--d:${.2 + (r * 12 + m) * .018}s;background:${bg};color:${a > .5 ? "#fff" : "#111"};border:1px solid #1f1f1f">${v.toFixed(0)}</div>`; }); });
   box.innerHTML = html;
@@ -366,6 +386,22 @@ document.getElementById("assetGrid").innerHTML = LOGOS.length
   const l1 = el("rect", { x: 70, y: 30, width: 14, height: 14, fill: "#f5f5f3", stroke: "#1f1f1f" }, svg); const t1 = el("text", { x: 90, y: 42 }, svg); t1.textContent = "total aportado";
   el("line", { x1: 210, x2: 234, y1: 37, y2: 37, stroke: "#15803d", "stroke-width": 3 }, svg); const t2 = el("text", { x: 240, y: 42 }, svg); t2.textContent = "valor da carteira";
   for (let k = 0; k < 7; k++) { const coin = el("text", { x: 100 + k * 90, y: -20, class: "coin", style: "font-size:26px" }, svg); coin.textContent = "🪙"; coin.dataset.delay = 1 + k * .35; }
+})();
+
+// ---------- panorama ----------
+(() => { const svg = document.getElementById("panoChart");
+  const rows = [["PRIO3.SA", 118], ["ITUB4.SA", 64], ["WEGE3.SA", 51], ["BBAS3.SA", 37], ["VALE3.SA", 18], ["PETR4.SA", 9], ["ABEV3.SA", -12], ["RDOR3.SA", -38]];
+  const mx = Math.max(...rows.map(r => Math.abs(r[1]))); const zero = 410; const span = 300; const h = 40;
+  [-50, 0, 50, 100].forEach(v => { const x = zero + span * v / mx; el("line", { x1: x, x2: x, y1: 24, y2: 400, stroke: v ? "#e5e5e5" : "#1f1f1f" }, svg);
+    const tx = el("text", { x: x - 12, y: 424 }, svg); tx.textContent = (v > 0 ? "+" : "") + v + "%"; });
+  rows.forEach(([ticker, v], i) => { const y = 34 + i * h; const w = span * Math.abs(v) / mx;
+    const src = logoOf(ticker);
+    if (src) el("image", { href: src, x: 14, y: y + 2, width: 28, height: 28, class: "fade", style: `--d:${.2 + i * .1}s` }, svg);
+    const name = el("text", { x: 50, y: y + 21, class: "fade", style: `--d:${.2 + i * .1}s;fill:#111;font-weight:700` }, svg); name.textContent = ticker.replace(".SA", "");
+    el("rect", { x: v >= 0 ? zero : zero - w, y: y + 4, width: w, height: 24, fill: v >= 0 ? "#15803d" : "#c8102e",
+      class: "growx", style: `--o:${v >= 0 ? "left" : "right"};--d:${.5 + i * .12}s` }, svg);
+    const val = el("text", { x: v >= 0 ? zero + w + 8 : zero - w - 48, y: y + 21, class: "fade", style: `--d:${1 + i * .12}s;fill:#111` }, svg);
+    val.textContent = (v > 0 ? "+" : "") + v + "%"; });
 })();
 
 // ---------- contadores e navio ----------
@@ -386,7 +422,7 @@ function dropCoins(scene) {
 }
 
 // ---------- linha do tempo ----------
-const DURATIONS = [5.5, 6.5, 7, 7, 7, 7, 6.5, 6.5, 5.5]; // segundos por cena
+const DURATIONS = [5.5, 6.5, 7, 7, 7, 7, 6.5, 6.5, 6.5, 5.5]; // segundos por cena
 const scenes = [...document.querySelectorAll(".scene")];
 const chapters = document.getElementById("chapters");
 scenes.slice(1).forEach(s => { const d = document.createElement("div"); d.textContent = s.dataset.name; chapters.appendChild(d); });

@@ -3,7 +3,7 @@ Grava o vídeo da página inicial (app/assets/video/argos_recursos.mp4).
 
 O vídeo é a animação de scripts/video_recursos/animacao.html: um tour curto e
 ilustrativo pelos recursos do Argos (catálogo, análise individual, comparação,
-indicadores, risco, sazonalidade e simulação). Os quadros vêm do screencast do
+indicadores, risco, sazonalidade, simulação e panorama). Os quadros vêm do screencast do
 Chromium (JPEG de alta qualidade) e são codificados em MP4 (H.264) pelo ffmpeg
 do imageio-ffmpeg.
 

@@ -44,7 +44,7 @@ st.markdown(
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
 
 /* ---------- barra superior ---------- */
-.st-key-topbar { padding: 10px 0 14px; border-bottom: 1px solid #e4e1da; animation: rise .5s ease both; }
+.st-key-topbar { padding: 10px 0 14px; border-bottom: 1px solid #2a2a2a; animation: rise .5s ease both; }
 .st-key-topbar_right { gap: 10px !important; }
 .st-key-topbar [data-testid="stMarkdownContainer"] { margin-bottom: 0 !important; }
 .brand { display: flex; align-items: center; gap: 10px; color: #111; font-weight: 800; letter-spacing: .16em;
@@ -95,6 +95,9 @@ st.markdown(
     transition: transform .15s ease, box-shadow .15s ease !important; }
 .st-key-cta_start button:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(200, 16, 46, .36) !important; }
 .st-key-cta_start p { color: inherit !important; font-weight: 700 !important; }
+/* Largura de dois cards de números, alinhado sob "grupos" e "módulos" */
+.st-key-cta_start { width: calc(50% - 6px) !important; align-self: flex-end; }
+.hero-note { text-align: right; }
 
 /* Informações acadêmicas: botão pequeno ao lado dos selos */
 .st-key-cta_academic button { min-height: 0 !important; height: auto; padding: 6px 12px !important; background: #fff !important;
@@ -129,19 +132,19 @@ st.markdown(
 /* ---------- tutorial ---------- */
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .step { position: relative; overflow: hidden; min-height: 210px; padding: 26px 26px 28px;
-    background: linear-gradient(155deg, #1d1d22 0%, #141417 100%); border: 1px solid #111;
-    box-shadow: 0 14px 30px rgba(17, 17, 17, .16); transition: transform .25s ease, box-shadow .25s ease; }
+    background: linear-gradient(155deg, #55555e 0%, #44444c 100%); border: 1px solid #3a3a42;
+    box-shadow: 0 14px 30px rgba(17, 17, 17, .14); transition: transform .25s ease, box-shadow .25s ease; }
 .step::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
     background: linear-gradient(90deg, #B50E29, #E11D48 55%, #F97316); }
 .step::after { content: attr(data-n); position: absolute; right: 14px; bottom: -22px; font-family: "JetBrains Mono", ui-monospace, Consolas, monospace;
-    font-size: 6.5rem; font-weight: 800; line-height: 1; letter-spacing: -.06em; color: rgba(255, 255, 255, .05); pointer-events: none; }
+    font-size: 6.5rem; font-weight: 800; line-height: 1; letter-spacing: -.06em; color: rgba(255, 255, 255, .08); pointer-events: none; }
 .step:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(17, 17, 17, .24); }
 .step-n { display: inline-block; padding: 3px 8px; font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; font-size: .72rem;
     font-weight: 700; color: #fff; letter-spacing: .1em; background: linear-gradient(135deg, #E11D48, #B50E29);
     box-shadow: 0 4px 12px rgba(225, 29, 72, .35); }
 .step h4 { margin: 16px 0 8px; color: #fff !important; font-size: 1.18rem; font-weight: 750; padding: 0 !important; }
-.step p { position: relative; margin: 0; color: #c9c9cf !important; font-size: .92rem; line-height: 1.65; }
-.step kbd { padding: 1px 6px; border: 1px solid #3a3a42; background: #26262c; color: #fff; font-size: .78rem; font-family: inherit; }
+.step p { position: relative; margin: 0; color: #e6e6ea !important; font-size: .92rem; line-height: 1.65; }
+.step kbd { padding: 1px 6px; border: 1px solid #6a6a74; background: #3a3a42; color: #fff; font-size: .78rem; font-family: inherit; }
 
 /* ---------- primeiros passos: seis etapas lado a lado ---------- */
 .st-key-first_steps { position: relative; padding-top: 30px; }
@@ -260,7 +263,7 @@ with col_video:
             st.markdown('<div class="video-missing">Vídeo indisponível</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="video-caption">Análise individual, comparação, indicadores técnicos, '
-        "risco e retorno, sazonalidade e simulação de aportes.</div>",
+        "risco e retorno, sazonalidade, simulação de aportes e panorama do catálogo.</div>",
         unsafe_allow_html=True,
     )
 
