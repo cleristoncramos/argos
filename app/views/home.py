@@ -31,8 +31,8 @@ st.markdown(
 }
 .stApp::before {
     content: ""; position: fixed; inset: 0; pointer-events: none;
-    background-image: linear-gradient(rgba(17, 17, 17, .035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(17, 17, 17, .035) 1px, transparent 1px);
+    background-image: linear-gradient(rgba(17, 17, 17, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17, 17, 17, .025) 1px, transparent 1px);
     background-size: 56px 56px;
     -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
             mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
@@ -45,15 +45,15 @@ st.markdown(
 
 /* ---------- barra superior ---------- */
 .topbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 14px;
-    border-bottom: 1px solid #2a2a2a; animation: rise .5s ease both; }
+    border-bottom: 1px solid #e4e1da; animation: rise .5s ease both; }
 .brand { display: flex; align-items: center; gap: 10px; color: #111; font-weight: 800; letter-spacing: .16em;
     font-size: .8rem; text-transform: uppercase; }
 .brand-mark { width: 26px; height: 26px; display: grid; place-items: center;
     background: linear-gradient(135deg, #E11D48, #B50E29); box-shadow: 0 4px 12px rgba(200, 16, 46, .3); color: #fff;
     font-size: .8rem; font-weight: 800; letter-spacing: 0; }
-.top-meta { display: flex; border: 1px solid #2a2a2a; font-size: .7rem; font-weight: 700; letter-spacing: .12em;
-    text-transform: uppercase; color: #111; background: #fff; box-shadow: 0 10px 26px rgba(17, 17, 17, .08); }
-.top-meta span { padding: 6px 12px; border-right: 1px solid #2a2a2a; }
+.top-meta { display: flex; border: 1px solid #e4e1da; font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: #3a3a3a; background: #fff; box-shadow: 0 4px 14px rgba(17, 17, 17, .05); }
+.top-meta span { padding: 6px 12px; border-right: 1px solid #e4e1da; }
 .top-meta span:last-child { border-right: 0; }
 .live { display: inline-block; width: 7px; height: 7px; background: #16a34a; margin-right: 7px; animation: blink 1.6s infinite; }
 
@@ -91,13 +91,13 @@ st.markdown(
 .st-key-cta_start button { background: linear-gradient(180deg, #D7193A 0%, #B50E29 100%) !important; border: 1px solid #7A0A1C !important;
     color: #fff !important; box-shadow: 0 10px 24px rgba(200, 16, 46, .28) !important; }
 .st-key-cta_start button:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(200, 16, 46, .36) !important; }
-.st-key-cta_academic button { background: #fff !important; border: 1px solid #2a2a2a !important; color: #111 !important;
-    box-shadow: 0 8px 20px rgba(17, 17, 17, .08) !important; }
+.st-key-cta_academic button { background: #fff !important; border: 1px solid #d8d4cc !important; color: #111 !important;
+    box-shadow: 0 6px 16px rgba(17, 17, 17, .06) !important; }
 .st-key-cta_academic button:hover { background: #111 !important; color: #fff !important; transform: translateY(-1px); }
 .st-key-cta_start p, .st-key-cta_academic p { color: inherit !important; font-weight: 700 !important; }
 
 /* ---------- vídeo ---------- */
-.st-key-hero_video { width: 90% !important; margin: 36px auto 0; border: 1px solid #2a2a2a; background: #fff; gap: 0 !important; animation: rise .8s .2s ease both;
+.st-key-hero_video { width: 90% !important; margin: 36px auto 0; border: 1px solid #d8d4cc; background: #fff; gap: 0 !important; animation: rise .8s .2s ease both;
     box-shadow: 0 30px 60px rgba(17, 17, 17, .16), 0 0 0 6px rgba(255, 255, 255, .6);
     transform: perspective(1600px) rotateY(-3deg) rotateX(1.5deg); transition: transform .6s ease; }
 .st-key-hero_video:hover { transform: none; }
@@ -111,23 +111,24 @@ st.markdown(
 .video-missing { aspect-ratio: 16/9; display: grid; place-items: center; color: #5f5f5f; }
 
 /* ---------- seções ---------- */
-.section { margin: 64px 0 18px; padding-top: 16px; border-top: 1px solid #2a2a2a; position: relative; display: grid;
-    grid-template-columns: 220px 1fr; gap: 24px; align-items: end; }
-.section-kicker { color: #c8102e; font-size: .72rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; }
-.section-title { color: #111; font-size: clamp(1.5rem, 2.8vw, 2.1rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.15; }
-.section-sub { margin-top: 6px; color: #5f5f5f; font-size: .95rem; line-height: 1.6; }
+.section { margin: 72px 0 22px; padding-top: 28px; border-top: 1px solid #e4e1da; }
+.section-kicker { display: flex; align-items: center; gap: 10px; color: #c8102e; font-size: .72rem; font-weight: 700;
+    letter-spacing: .2em; text-transform: uppercase; }
+.section-kicker::before { content: ""; width: 22px; height: 2px; background: linear-gradient(90deg, #B50E29, #F97316); }
+.section-title { margin-top: 10px; color: #111; font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.15; }
+.section-sub { margin-top: 8px; max-width: 760px; color: #5f5f5f; font-size: .95rem; line-height: 1.6; }
 
 /* ---------- tutorial ---------- */
-.steps { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid #2a2a2a; background: #fff; box-shadow: 0 10px 26px rgba(17, 17, 17, .08); }
-.step { padding: 22px 22px 24px; border-right: 1px solid #e4e1da; transition: background .2s ease; }
-.step:last-child { border-right: 0; }
-.step:hover { background: linear-gradient(180deg, #fff 0%, #fbeeee 100%); }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.step { padding: 22px 22px 24px; background: #fff; border: 1px solid #e4e1da; box-shadow: 0 8px 22px rgba(17, 17, 17, .05);
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+.step:hover { transform: translateY(-3px); border-color: #d8d4cc; box-shadow: 0 14px 30px rgba(17, 17, 17, .09); }
 .step-n { display: inline-block; padding: 3px 8px; font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; font-size: .74rem;
     font-weight: 700; color: #fff; letter-spacing: .1em; background: linear-gradient(135deg, #E11D48, #B50E29);
     box-shadow: 0 4px 10px rgba(200, 16, 46, .25); }
 .step h4 { margin: 10px 0 6px; color: #111 !important; font-size: 1.08rem; font-weight: 750; padding: 0 !important; }
 .step p { margin: 0; color: #4a4a4a !important; font-size: .9rem; line-height: 1.6; }
-.step kbd { padding: 0 5px; border: 1px solid #2a2a2a; background: #fff; color: #111; font-size: .78rem; font-family: inherit; }
+.step kbd { padding: 0 5px; border: 1px solid #d8d4cc; background: #f7f6f2; color: #111; font-size: .78rem; font-family: inherit; }
 
 /* ---------- primeiros passos: seis etapas lado a lado ---------- */
 .st-key-first_steps { position: relative; padding-top: 30px; }
@@ -137,14 +138,14 @@ st.markdown(
 .st-key-first_steps [data-testid="stColumn"] { display: flex; flex-direction: column; align-self: stretch; }
 .st-key-first_steps [data-testid="stColumn"] > [data-testid="stVerticalBlock"],
 .st-key-first_steps [data-testid="stColumn"] [data-testid="stLayoutWrapper"] { flex: 1 1 auto; }
-[class*="st-key-fs_"] { position: relative; flex: 1 1 auto; padding: 18px 18px 14px; background: #fff; border: 1px solid #2a2a2a;
-    box-shadow: 0 10px 26px rgba(17, 17, 17, .07); gap: 0 !important;
+[class*="st-key-fs_"] { position: relative; flex: 1 1 auto; padding: 18px 18px 14px; background: #fff; border: 1px solid #e4e1da;
+    box-shadow: 0 8px 22px rgba(17, 17, 17, .05); gap: 0 !important;
     transition: transform .25s ease, box-shadow .25s ease, background .25s ease; }
 [class*="st-key-fs_"]::before { content: ""; position: absolute; top: -27px; left: 18px; width: 12px; height: 12px;
     border-radius: 50% !important; background: #fff; border: 2px solid #c8102e; box-shadow: 0 0 0 4px #f6f4ef;
     transition: background .25s ease; }
-[class*="st-key-fs_"]:hover { transform: translateY(-4px); background: linear-gradient(180deg, #fff 0%, #fbf1f1 100%);
-    box-shadow: inset 0 3px 0 #c8102e, 0 18px 36px rgba(17, 17, 17, .13); }
+[class*="st-key-fs_"]:hover { transform: translateY(-4px); border-color: #d8d4cc;
+    box-shadow: inset 0 3px 0 #c8102e, 0 16px 32px rgba(17, 17, 17, .1); }
 [class*="st-key-fs_"]:hover::before { background: #c8102e; }
 [class*="st-key-fs_"] > div:last-child { margin-top: auto; width: 100%; }
 .fs-top { display: flex; justify-content: space-between; align-items: flex-start; }
@@ -159,7 +160,7 @@ st.markdown(
 [class*="st-key-fs_"] [data-testid="stPageLink"] p { color: #c8102e !important; font-weight: 700 !important; font-size: .82rem !important; }
 
 /* ---------- rodapé ---------- */
-.home-footer { margin-top: 60px; padding: 16px 0 6px; border-top: 1px solid #2a2a2a; display: flex;
+.home-footer { margin-top: 88px; padding: 18px 0 6px; border-top: 1px solid #e4e1da; display: flex;
     justify-content: space-between; gap: 18px; flex-wrap: wrap; color: #5f5f5f; font-size: .76rem; }
 .home-footer b { color: #111; letter-spacing: .1em; }
 
@@ -171,9 +172,6 @@ st.markdown(
     .steps { grid-template-columns: 1fr; }
     .hero-stats { grid-template-columns: repeat(2, 1fr); }
     .st-key-hero_video, .video-caption { width: 100% !important; }
-    .step { border-right: 0; border-bottom: 1px solid #2a2a2a; }
-    .step:last-child { border-bottom: 0; }
-    .section { grid-template-columns: 1fr; gap: 6px; }
     .top-meta span:not(:first-child) { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
@@ -262,9 +260,9 @@ st.markdown(
     f"""
 <div class="section">
   <div class="section-kicker">01 · Catálogo</div>
-  <div><div class="section-title">Um mosaico do mercado, em um só lugar</div>
+  <div class="section-title">Um mosaico do mercado, em um só lugar</div>
   <div class="section-sub">{stats["assets"]} ativos organizados em {stats["groups"]} grupos: do Bitcoin à
-  Petrobras, do ouro ao S&amp;P 500. Passe o mouse para pausar.</div></div>
+  Petrobras, do ouro ao S&amp;P 500. Passe o mouse para pausar.</div>
 </div>
 """,
     unsafe_allow_html=True,
@@ -278,8 +276,8 @@ st.markdown(
     """
 <div class="section">
   <div class="section-kicker">02 · Tutorial rápido</div>
-  <div><div class="section-title">Sua primeira análise em 3 passos</div>
-  <div class="section-sub">Leva menos de um minuto. Todas as páginas de análise seguem o mesmo fluxo.</div></div>
+  <div class="section-title">Sua primeira análise em 3 passos</div>
+  <div class="section-sub">Leva menos de um minuto. Todas as páginas de análise seguem o mesmo fluxo.</div>
 </div>
 <div class="steps">
   <div class="step"><div class="step-n">PASSO 01</div><h4>Escolha o ativo</h4>
@@ -300,8 +298,8 @@ st.markdown(
     """
 <div class="section">
   <div class="section-kicker">03 · Primeiros passos</div>
-  <div><div class="section-title">Por onde começar</div>
-  <div class="section-sub">Cada módulo responde a uma pergunta diferente sobre os dados históricos.</div></div>
+  <div class="section-title">Por onde começar</div>
+  <div class="section-sub">Cada módulo responde a uma pergunta diferente sobre os dados históricos.</div>
 </div>
 """,
     unsafe_allow_html=True,

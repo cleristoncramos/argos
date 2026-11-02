@@ -171,8 +171,8 @@ html,body{margin:0;background:transparent;font-family:"Source Sans 3","Source Sa
 .mosaic:hover .track{animation-play-state:paused}
 @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .tile{position:relative;display:flex;align-items:center;gap:12px;min-width:196px;padding:8px 14px 8px 10px;
-  background:linear-gradient(180deg,#fff 0%,#faf9f6 100%);border:1px solid #2a2a2a;
-  box-shadow:0 6px 14px rgba(17,17,17,.08);transition:transform .2s ease,box-shadow .2s ease}
+  background:linear-gradient(180deg,#fff 0%,#faf9f6 100%);border:1px solid #e4e1da;
+  box-shadow:0 4px 12px rgba(17,17,17,.05);transition:transform .2s ease,box-shadow .2s ease}
 .tile::before{content:"";position:absolute;left:-1px;top:-1px;bottom:-1px;width:4px;background:var(--c)}
 .tile:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(17,17,17,.14)}
 .logo{position:relative;flex:none;width:54px;height:54px;background:#fff;border:1px solid #d6d3cc;display:grid;place-items:center;overflow:hidden}
