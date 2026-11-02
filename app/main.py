@@ -18,6 +18,7 @@ reload_if_changed(Path(PROJECT_ROOT))
 
 from app.ui.demo_banner import render_demo_banner
 from app.ui.design import apply_global_style
+from app.ui.memory_monitor import render_memory_monitor
 from app.ui.pages import HOME_PAGE, MENU_PAGES
 
 # ==========================================================
@@ -141,8 +142,13 @@ if pg != home_page:
 # ==========================================================
 render_demo_banner()
 
+# Monitor de RAM (limite do Streamlit Cloud). Fica antes de pg.run() porque as
+# páginas podem interromper a execução com st.stop(); o CSS o leva ao fim da barra lateral.
+render_memory_monitor()
+
 
 # ==========================================================
 # 6. Executa a Página Selecionada
 # ==========================================================
 pg.run()
+
