@@ -53,6 +53,7 @@ from app.ui.tables import (
     percent_cell,
     render_table,
 )
+from core.analysis_feasibility import diagnose_series, infeasibility_markdown, unknown_infeasibility
 from core.analyzer import calculate_returns
 from core.assets import ASSETS
 from core.config import ANNUALIZATION_FACTORS
@@ -279,18 +280,15 @@ if load_analysis:
                 annualization_factor=float(annualization_factor),
                 annual_risk_free_rate=annual_risk_free_rate,
             )
-        except ValueError:
+        except ValueError as error:
             st.session_state["risk_return_loaded"] = False
             st.session_state["risk_return_query"] = None
             st.session_state.pop("risk_return_metrics", None)
             st.session_state.pop("risk_return_df", None)
 
-            st.error(
-                f"Não foi possível calcular as métricas de risco para '{symbol}'. "
-                "O ativo tem preços iguais ou abaixo de zero no período (como o petróleo "
-                "WTI em abril de 2020), o que impede calcular retorno percentual e "
-                "drawdown. Tente outro período ou outro ativo."
-            )
+            # Explica a causa real, com as datas e os valores envolvidos.
+            diagnosis = diagnose_series(df_primary["Date"], df_primary["Value"]) or unknown_infeasibility(error)
+            st.error(infeasibility_markdown(diagnosis, symbol.upper(), "as métricas de risco e retorno"))
             st.stop()
 
     st.session_state["risk_return_loaded"] = True

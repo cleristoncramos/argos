@@ -24,6 +24,11 @@ def prepare_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     - Volume
 
     Também cria as colunas derivadas Year, Month e YearMonth.
+
+    Datas sem preço de fechamento são descartadas: ocorrem quando o pregão do
+    dia ainda não terminou (a fonte já informa a abertura, mas não o
+    fechamento) ou quando a fonte não registrou o fechamento. Mantê-las
+    interromperia o cálculo de retornos, drawdown e métricas de risco.
     """
     if df is None or df.empty:
         return pd.DataFrame()
@@ -49,6 +54,10 @@ def prepare_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     ]
 
     df_processed = df_processed[available_columns].copy()
+
+    if "Close" in df_processed.columns:
+        df_processed["Close"] = pd.to_numeric(df_processed["Close"], errors="coerce")
+        df_processed = df_processed.dropna(subset=["Close"])
 
     df_processed = df_processed.sort_values(
         "Date",

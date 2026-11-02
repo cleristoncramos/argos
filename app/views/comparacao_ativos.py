@@ -46,6 +46,7 @@ from app.ui.tables import (
     text_cell,
 )
 
+from core.analysis_feasibility import diagnose_series, infeasibility_summary, unknown_infeasibility
 from core.analyzer import calculate_returns
 from core.assets import ASSETS, facet_values, filter_assets
 from core.demo_mode import catalog_assets, is_demo_mode
@@ -105,9 +106,8 @@ from core.ticker_input import validate_ticker
 MAX_COMPARED = 5
 
 NON_POSITIVE_WARNING = (
-    "Símbolos excluídos por terem preços iguais ou abaixo de zero no período, "
-    "o que impede o cálculo de retorno, drawdown e Base 100 (ex.: petróleo WTI "
-    "em abril de 2020): "
+    "Ativos excluídos da comparação porque a série não permite calcular retorno, "
+    "drawdown e Base 100: "
 )
 
 PLOTLY_CONFIG = {
@@ -968,10 +968,10 @@ if load_comparison:
             try:
                 df_returns = calculate_returns(df_primary, "Value")
                 asset_data[symbol] = calculate_drawdown(df_returns, "Value")
-            except ValueError:
-                # Preços iguais ou abaixo de zero (ex.: petróleo WTI em abril de
-                # 2020) impedem retorno percentual, drawdown e Base 100.
-                non_positive_symbols.append(symbol)
+            except ValueError as error:
+                # Guarda o motivo real (preço ≤ 0, data sem fechamento etc.).
+                diagnosis = diagnose_series(df_primary["Date"], df_primary["Value"]) or unknown_infeasibility(error)
+                non_positive_symbols.append(infeasibility_summary(diagnosis, symbol))
 
     if len(asset_data) < 2:
         st.session_state["comparison_loaded"] = False
@@ -985,7 +985,7 @@ if load_comparison:
                 + ", ".join(failed_symbols)
             )
         if non_positive_symbols:
-            st.warning(NON_POSITIVE_WARNING + ", ".join(non_positive_symbols))
+            st.warning(NON_POSITIVE_WARNING + "; ".join(non_positive_symbols))
         st.stop()
 
     used_spans = build_spans(
@@ -1099,7 +1099,7 @@ if failed_symbols:
     )
 
 if non_positive_symbols:
-    st.warning(NON_POSITIVE_WARNING + ", ".join(non_positive_symbols))
+    st.warning(NON_POSITIVE_WARNING + "; ".join(non_positive_symbols))
 
 
 # =====================

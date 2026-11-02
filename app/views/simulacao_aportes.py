@@ -41,6 +41,7 @@ from core.data_processor import (
     prepare_dataframe,
     select_primary_variable,
 )
+from core.analysis_feasibility import diagnose_series, infeasibility_markdown, unknown_infeasibility
 from core.formatters import format_return_pct
 from core.visualizations import gradient_fill
 from core.simulation_texts import (
@@ -420,7 +421,8 @@ try:
         every=int(every),
     )
 except ValueError as error:
-    st.error(f"Não foi possível simular este ativo: {error}")
+    diagnosis = diagnose_series(prices["Date"], prices["Value"]) or unknown_infeasibility(error)
+    st.error(infeasibility_markdown(diagnosis, symbol.upper(), "a simulação de aportes"))
     st.stop()
 
 
