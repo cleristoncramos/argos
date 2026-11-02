@@ -495,21 +495,21 @@ cumulative_return_figure = create_cumulative_return_chart(
 
 cumulative_return_figure = apply_custom_layout(cumulative_return_figure, hide_x_title=True)
 
-# Cálculo local do retorno acumulado para injetar os marcadores de topo e fundo
-df_risk["Cum_Ret"] = (1 + df_risk["Simple_Return"].fillna(0)).cumprod() - 1
-if not df_risk.empty and not df_risk["Cum_Ret"].isna().all():
-    max_idx = df_risk["Cum_Ret"].idxmax()
-    min_idx = df_risk["Cum_Ret"].idxmin()
-    max_date = df_risk.loc[max_idx, "Date"]
-    max_val = df_risk.loc[max_idx, "Cum_Ret"]
-    min_date = df_risk.loc[min_idx, "Date"]
-    min_val = df_risk.loc[min_idx, "Cum_Ret"]
+# Marcadores de topo e fundo sobre a própria curva: usam os pontos já plotados
+# (em %), para ficarem na extremidade da linha, e não na base zero.
+cumulative_line = cumulative_return_figure.data[0]
+cumulative_values = np.asarray(cumulative_line.y, dtype=float)
+if cumulative_values.size and not np.isnan(cumulative_values).all():
+    max_pos = int(np.nanargmax(cumulative_values))
+    min_pos = int(np.nanargmin(cumulative_values))
+    max_date, max_val = cumulative_line.x[max_pos], cumulative_values[max_pos]
+    min_date, min_val = cumulative_line.x[min_pos], cumulative_values[min_pos]
 
     cumulative_return_figure.add_trace(go.Scatter(
         x=[max_date], y=[max_val],
         mode="markers+text",
         marker=dict(color="#166534", size=12, symbol="triangle-up"),
-        text=[f"Máx: {max_val*100:.2f}%"],
+        text=[f"Máx: {max_val:.2f}%"],
         textposition="top center",
         textfont=dict(color="#166534", size=11, family="Inter, Arial, sans-serif"),
         hoverinfo="skip"
@@ -519,7 +519,7 @@ if not df_risk.empty and not df_risk["Cum_Ret"].isna().all():
         x=[min_date], y=[min_val],
         mode="markers+text",
         marker=dict(color="#991b1b", size=12, symbol="triangle-down"),
-        text=[f"Mín: {min_val*100:.2f}%"],
+        text=[f"Mín: {min_val:.2f}%"],
         textposition="bottom center",
         textfont=dict(color="#991b1b", size=11, family="Inter, Arial, sans-serif"),
         hoverinfo="skip"
