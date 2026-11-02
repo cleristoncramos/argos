@@ -44,8 +44,9 @@ st.markdown(
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
 
 /* ---------- barra superior ---------- */
-.topbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 14px;
-    border-bottom: 1px solid #e4e1da; animation: rise .5s ease both; }
+.st-key-topbar { padding: 10px 0 14px; border-bottom: 1px solid #e4e1da; animation: rise .5s ease both; }
+.st-key-topbar_right { gap: 10px !important; }
+.st-key-topbar [data-testid="stMarkdownContainer"] { margin-bottom: 0 !important; }
 .brand { display: flex; align-items: center; gap: 10px; color: #111; font-weight: 800; letter-spacing: .16em;
     font-size: .8rem; text-transform: uppercase; }
 .brand-mark { width: 26px; height: 26px; display: grid; place-items: center;
@@ -85,16 +86,23 @@ st.markdown(
 .hero-note { margin-top: 8px; color: #5f5f5f; font-size: .76rem; }
 
 /* ---------- botões ---------- */
-.st-key-cta_start button, .st-key-cta_academic button {
-    min-height: 50px; font-weight: 700 !important; letter-spacing: .03em;
-    transition: background .15s ease, color .15s ease, transform .15s ease !important; }
-.st-key-cta_start button { background: linear-gradient(180deg, #D7193A 0%, #B50E29 100%) !important; border: 1px solid #7A0A1C !important;
-    color: #fff !important; box-shadow: 0 10px 24px rgba(200, 16, 46, .28) !important; }
+/* Get Started: gradiente que se desloca devagar */
+@keyframes flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+.st-key-cta_start button { min-height: 52px; font-weight: 700 !important; letter-spacing: .04em; color: #fff !important;
+    background: linear-gradient(110deg, #9F0C24 0%, #C8102E 25%, #E11D48 50%, #F0563A 70%, #C8102E 100%) !important;
+    background-size: 260% 100% !important; animation: flow 9s ease-in-out infinite;
+    border: 1px solid #7A0A1C !important; box-shadow: 0 10px 24px rgba(200, 16, 46, .28) !important;
+    transition: transform .15s ease, box-shadow .15s ease !important; }
 .st-key-cta_start button:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(200, 16, 46, .36) !important; }
-.st-key-cta_academic button { background: #fff !important; border: 1px solid #d8d4cc !important; color: #111 !important;
-    box-shadow: 0 6px 16px rgba(17, 17, 17, .06) !important; }
-.st-key-cta_academic button:hover { background: #111 !important; color: #fff !important; transform: translateY(-1px); }
-.st-key-cta_start p, .st-key-cta_academic p { color: inherit !important; font-weight: 700 !important; }
+.st-key-cta_start p { color: inherit !important; font-weight: 700 !important; }
+
+/* Informações acadêmicas: botão pequeno ao lado dos selos */
+.st-key-cta_academic button { min-height: 0 !important; height: auto; padding: 6px 12px !important; background: #fff !important;
+    border: 1px solid #e4e1da !important; box-shadow: 0 4px 14px rgba(17, 17, 17, .05) !important; color: #3a3a3a !important;
+    transition: background .15s ease, color .15s ease !important; }
+.st-key-cta_academic button p { font-size: .68rem !important; font-weight: 700 !important; letter-spacing: .12em;
+    text-transform: uppercase; color: inherit !important; }
+.st-key-cta_academic button:hover { background: #111 !important; color: #fff !important; border-color: #111 !important; }
 
 /* ---------- vídeo ---------- */
 .st-key-hero_video { width: 90% !important; margin: 36px auto 0; border: 1px solid #d8d4cc; background: #fff; gap: 0 !important; animation: rise .8s .2s ease both;
@@ -111,7 +119,7 @@ st.markdown(
 .video-missing { aspect-ratio: 16/9; display: grid; place-items: center; color: #5f5f5f; }
 
 /* ---------- seções ---------- */
-.section { margin: 72px 0 22px; padding-top: 28px; border-top: 1px solid #e4e1da; }
+.section { margin: 72px 0 22px; padding-top: 28px; border-top: 1px solid #2a2a2a; }
 .section-kicker { display: flex; align-items: center; gap: 10px; color: #c8102e; font-size: .72rem; font-weight: 700;
     letter-spacing: .2em; text-transform: uppercase; }
 .section-kicker::before { content: ""; width: 22px; height: 2px; background: linear-gradient(90deg, #B50E29, #F97316); }
@@ -120,15 +128,20 @@ st.markdown(
 
 /* ---------- tutorial ---------- */
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.step { padding: 22px 22px 24px; background: #fff; border: 1px solid #e4e1da; box-shadow: 0 8px 22px rgba(17, 17, 17, .05);
-    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
-.step:hover { transform: translateY(-3px); border-color: #d8d4cc; box-shadow: 0 14px 30px rgba(17, 17, 17, .09); }
-.step-n { display: inline-block; padding: 3px 8px; font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; font-size: .74rem;
+.step { position: relative; overflow: hidden; min-height: 210px; padding: 26px 26px 28px;
+    background: linear-gradient(155deg, #1d1d22 0%, #141417 100%); border: 1px solid #111;
+    box-shadow: 0 14px 30px rgba(17, 17, 17, .16); transition: transform .25s ease, box-shadow .25s ease; }
+.step::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, #B50E29, #E11D48 55%, #F97316); }
+.step::after { content: attr(data-n); position: absolute; right: 14px; bottom: -22px; font-family: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    font-size: 6.5rem; font-weight: 800; line-height: 1; letter-spacing: -.06em; color: rgba(255, 255, 255, .05); pointer-events: none; }
+.step:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(17, 17, 17, .24); }
+.step-n { display: inline-block; padding: 3px 8px; font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; font-size: .72rem;
     font-weight: 700; color: #fff; letter-spacing: .1em; background: linear-gradient(135deg, #E11D48, #B50E29);
-    box-shadow: 0 4px 10px rgba(200, 16, 46, .25); }
-.step h4 { margin: 10px 0 6px; color: #111 !important; font-size: 1.08rem; font-weight: 750; padding: 0 !important; }
-.step p { margin: 0; color: #4a4a4a !important; font-size: .9rem; line-height: 1.6; }
-.step kbd { padding: 0 5px; border: 1px solid #d8d4cc; background: #f7f6f2; color: #111; font-size: .78rem; font-family: inherit; }
+    box-shadow: 0 4px 12px rgba(225, 29, 72, .35); }
+.step h4 { margin: 16px 0 8px; color: #fff !important; font-size: 1.18rem; font-weight: 750; padding: 0 !important; }
+.step p { position: relative; margin: 0; color: #c9c9cf !important; font-size: .92rem; line-height: 1.65; }
+.step kbd { padding: 1px 6px; border: 1px solid #3a3a42; background: #26262c; color: #fff; font-size: .78rem; font-family: inherit; }
 
 /* ---------- primeiros passos: seis etapas lado a lado ---------- */
 .st-key-first_steps { position: relative; padding-top: 30px; }
@@ -160,7 +173,7 @@ st.markdown(
 [class*="st-key-fs_"] [data-testid="stPageLink"] p { color: #c8102e !important; font-weight: 700 !important; font-size: .82rem !important; }
 
 /* ---------- rodapé ---------- */
-.home-footer { margin-top: 88px; padding: 18px 0 6px; border-top: 1px solid #e4e1da; display: flex;
+.home-footer { margin-top: 88px; padding: 18px 0 6px; border-top: 1px solid #2a2a2a; display: flex;
     justify-content: space-between; gap: 18px; flex-wrap: wrap; color: #5f5f5f; font-size: .76rem; }
 .home-footer b { color: #111; letter-spacing: .1em; }
 
@@ -185,15 +198,17 @@ stats = catalog_stats(ASSETS)
 # ==========================================================
 # BARRA SUPERIOR
 # ==========================================================
-st.markdown(
-    """
-<div class="topbar">
-  <div class="brand"><span class="brand-mark">A</span>Argos</div>
-  <div class="top-meta"><span><i class="live"></i>Online</span><span>PIBITI</span><span>UFPI · CEAD</span></div>
-</div>
-""",
-    unsafe_allow_html=True,
-)
+with st.container(key="topbar", horizontal=True, horizontal_alignment="distribute", vertical_alignment="center"):
+    st.markdown('<div class="brand"><span class="brand-mark">A</span>Argos</div>', unsafe_allow_html=True, width="content")
+    with st.container(key="topbar_right", horizontal=True, vertical_alignment="center", width="content"):
+        st.markdown(
+            '<div class="top-meta"><span><i class="live"></i>Online</span><span>PIBITI</span><span>UFPI · CEAD</span></div>',
+            unsafe_allow_html=True,
+            width="content",
+        )
+        with st.container(key="cta_academic", width="content"):
+            if st.button("Informações acadêmicas"):
+                show_academic_dialog()
 
 # ==========================================================
 # HERO: TEXTO, BOTÕES E VÍDEO
@@ -224,13 +239,9 @@ with col_text:
 """,
         unsafe_allow_html=True,
     )
-    cta_start, cta_academic = st.columns(2)
-    with cta_start, st.container(key="cta_start"):
+    with st.container(key="cta_start"):
         if st.button("Get Started  →", use_container_width=True):
             st.switch_page(START_PAGE.path)
-    with cta_academic, st.container(key="cta_academic"):
-        if st.button("Informações acadêmicas", use_container_width=True):
-            show_academic_dialog()
     st.markdown(
         '<div class="hero-note">Finalidade educacional e de pesquisa. '
         "Não constitui recomendação de investimento.</div>",
@@ -280,11 +291,11 @@ st.markdown(
   <div class="section-sub">Leva menos de um minuto. Todas as páginas de análise seguem o mesmo fluxo.</div>
 </div>
 <div class="steps">
-  <div class="step"><div class="step-n">PASSO 01</div><h4>Escolha o ativo</h4>
+  <div class="step" data-n="01"><div class="step-n">PASSO 01</div><h4>Escolha o ativo</h4>
     <p>Na barra lateral, escolha o grupo e o ativo ou digite o ticker direto, como <kbd>PETR4.SA</kbd> ou <kbd>BTC-USD</kbd>.</p></div>
-  <div class="step"><div class="step-n">PASSO 02</div><h4>Defina o período</h4>
+  <div class="step" data-n="02"><div class="step-n">PASSO 02</div><h4>Defina o período</h4>
     <p>Use os atalhos de 1, 3, 5 ou 10 anos ou escolha as datas. Ajuste a frequência: diária, semanal, mensal, semestral ou anual.</p></div>
-  <div class="step"><div class="step-n">PASSO 03</div><h4>Carregue e explore</h4>
+  <div class="step" data-n="03"><div class="step-n">PASSO 03</div><h4>Carregue e explore</h4>
     <p>Clique em <kbd>Carregar dados</kbd>: gráficos interativos, métricas com explicações e exportação em CSV.</p></div>
 </div>
 """,
