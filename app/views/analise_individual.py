@@ -990,7 +990,7 @@ else:
             entry_name = st.selectbox(
                 "Mês de partida (fechamento)",
                 options=ORDERED_MONTHS,
-                index=ORDERED_MONTHS.index("Jun"),
+                index=ORDERED_MONTHS.index("Set"),
                 format_func=month_label,
                 key=f"season_entry_{symbol}",
             )
@@ -998,7 +998,7 @@ else:
             exit_name = st.selectbox(
                 "Mês de chegada (fechamento)",
                 options=ORDERED_MONTHS,
-                index=ORDERED_MONTHS.index("Dez"),
+                index=ORDERED_MONTHS.index("Out"),
                 format_func=month_label,
                 key=f"season_exit_{symbol}",
                 help="Se vier antes do mês de partida no calendário, é o do ano seguinte.",
