@@ -1,6 +1,5 @@
 import os
 import sys
-from datetime import datetime
 
 
 PROJECT_ROOT = os.path.abspath(
@@ -30,6 +29,7 @@ from app.ui.chart_guide import render_chart_guide
 from app.ui.llm_explain import asset_name, render_explain_section
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
+from core.clock import now_brasilia
 from core.assets import ASSETS
 from core.currency import currency_info
 from core.data_availability import assess_availability
@@ -385,7 +385,7 @@ if load_history:
     st.session_state["simulation_prices"] = df
     st.session_state["simulation_daily"] = df_daily
     st.session_state["simulation_availability"] = availability
-    st.session_state["simulation_fetched_at"] = datetime.now()
+    st.session_state["simulation_fetched_at"] = now_brasilia()
     st.session_state["simulation_quality"] = assess_data_quality(df_prepared, symbol, start_date)
     st.session_state["simulation_query"] = {
         "symbol": symbol,

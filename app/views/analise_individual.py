@@ -1,6 +1,5 @@
 import os
 import sys
-from datetime import datetime
 from html import escape
 
 
@@ -84,6 +83,7 @@ from app.ui.tables import (
     percent_cell,
     render_table,
 )
+from core.clock import now_brasilia
 from core.analyzer import (
     ORDERED_MONTHS,
     calculate_percentage_change,
@@ -297,7 +297,7 @@ if load_data:
         st.session_state["asset_validation"] = validation
         st.session_state["asset_monthly_vol"] = df_monthly_vol
         st.session_state["asset_availability"] = availability
-        st.session_state["asset_fetched_at"] = datetime.now()
+        st.session_state["asset_fetched_at"] = now_brasilia()
         st.session_state["asset_quality"] = assess_data_quality(df_prepared, symbol, start_date)
         st.session_state["asset_daily"] = df_prepared[["Date", "Close"]].copy()
 

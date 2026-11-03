@@ -1,8 +1,9 @@
-from datetime import date, datetime, timedelta
+from datetime import timedelta
 
 import streamlit as st
 import streamlit.components.v1 as components
 
+from core.clock import today_brasilia
 from core.assets import ASSETS
 from core.config import config
 from app.ui.data_cache import download_active_data
@@ -208,7 +209,7 @@ def _fetch_recent(ticker: str):
     Baixa ~15 dias do ticker só para verificar se ele existe e tem dados.
     Sem cache próprio: app/ui/data_cache já faz cache dos downloads.
     """
-    end = date.today()
+    end = today_brasilia()
     start = end - timedelta(days=15)
     return download_active_data(
         symbol=ticker,
@@ -398,7 +399,7 @@ def render_asset_controls(
             width="stretch",
         )
 
-        today = datetime.now().date()
+        today = today_brasilia()
 
         if selected_period == "Personalizado":
             start_date = st.date_input(

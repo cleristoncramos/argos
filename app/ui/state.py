@@ -2,6 +2,7 @@ from datetime import date
 
 import streamlit as st
 
+from core.clock import today_brasilia
 from core.periods import DEFAULT_PERIOD, period_start_date
 
 
@@ -12,14 +13,14 @@ def get_default_start_date() -> date:
     Usa a mesma regra da barra lateral, para que o estado inicial e o
     seletor de período nunca divirjam.
     """
-    return period_start_date(DEFAULT_PERIOD, date.today())
+    return period_start_date(DEFAULT_PERIOD, today_brasilia())
 
 
 ASSET_DEFAULTS = {
     "asset_symbol": "BTC-USD",
     "asset_period": DEFAULT_PERIOD,
     "asset_start_date": get_default_start_date(),
-    "asset_end_date": date.today(),
+    "asset_end_date": today_brasilia(),
     "asset_frequency": "Mensal",
     "asset_loaded": False,
     "asset_query": None,
@@ -30,7 +31,7 @@ COMPARISON_DEFAULTS = {
     "comparison_symbols_text": "BTC-USD,AAPL,SPY",
     "comparison_period": DEFAULT_PERIOD,
     "comparison_start_date": get_default_start_date(),
-    "comparison_end_date": date.today(),
+    "comparison_end_date": today_brasilia(),
     "comparison_frequency": "Mensal",
     "comparison_risk_free_rate_pct": 0.0,
     "comparison_loaded": False,
@@ -56,7 +57,7 @@ def initialize_asset_state() -> None:
         {
             **ASSET_DEFAULTS,
             "asset_start_date": get_default_start_date(),
-            "asset_end_date": date.today(),
+            "asset_end_date": today_brasilia(),
         }
     )
 
@@ -67,6 +68,6 @@ def initialize_comparison_state() -> None:
         {
             **COMPARISON_DEFAULTS,
             "comparison_start_date": get_default_start_date(),
-            "comparison_end_date": date.today(),
+            "comparison_end_date": today_brasilia(),
         }
     )

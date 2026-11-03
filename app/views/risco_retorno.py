@@ -1,6 +1,5 @@
 import os
 import sys
-from datetime import datetime
 
 
 PROJECT_ROOT = os.path.abspath(
@@ -53,6 +52,7 @@ from app.ui.tables import (
     percent_cell,
     render_table,
 )
+from core.clock import now_brasilia
 from core.analysis_feasibility import diagnose_series, infeasibility_markdown, unknown_infeasibility
 from core.analyzer import calculate_returns
 from core.assets import ASSETS
@@ -302,7 +302,7 @@ if load_analysis:
     st.session_state["risk_return_metrics"] = metrics
     st.session_state["risk_return_df"] = df_risk
     st.session_state["risk_return_availability"] = availability
-    st.session_state["risk_return_fetched_at"] = datetime.now()
+    st.session_state["risk_return_fetched_at"] = now_brasilia()
     st.session_state["risk_return_quality"] = assess_data_quality(df_prepared, symbol, start_date)
 
 

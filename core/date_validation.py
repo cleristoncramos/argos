@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import date, datetime
+from core.clock import today_brasilia
 
 
 @dataclass(frozen=True)
@@ -28,7 +29,7 @@ def validate_date_range(start, end, today: date | None = None) -> DateRangeCheck
     """
     start_date = _as_date(start)
     end_date = _as_date(end)
-    reference = _as_date(today) or date.today()
+    reference = _as_date(today) or today_brasilia()
 
     if start_date is None or end_date is None:
         return DateRangeCheck(False, "Informe a data inicial e a data final.")

@@ -1,6 +1,5 @@
 import os
 import sys
-from datetime import date, datetime
 
 PROJECT_ROOT = os.path.abspath(
     os.path.join(
@@ -34,6 +33,7 @@ from app.ui.panorama_table import (
 )
 from app.ui.sidebar import GROUP_MAPPING
 from app.ui.tables import render_table
+from core.clock import now_brasilia, today_brasilia
 from core.assets import ASSET_GROUPS, ASSETS
 from core.data_processor import prepare_dataframe
 from core.demo_mode import catalog_assets
@@ -86,7 +86,7 @@ with st.sidebar:
 # Consulta (só ao clicar, um grupo por vez)
 # ==========================================================
 if load:
-    today = date.today()
+    today = today_brasilia()
     start = period_start_date(period, today)
     assets = [a for a in catalog if a["group"] == group][:MAX_ASSETS_PER_QUERY]
     data = {}
@@ -107,7 +107,7 @@ if load:
 
     st.session_state["panorama_table"] = build_panorama(data, assets, start)
     st.session_state["panorama_query"] = {"group": group, "period": period, "start": start}
-    st.session_state["panorama_fetched_at"] = datetime.now()
+    st.session_state["panorama_fetched_at"] = now_brasilia()
 
 query = st.session_state.get("panorama_query")
 table = st.session_state.get("panorama_table")

@@ -1,6 +1,6 @@
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import timedelta
 from html import escape
 
 PROJECT_ROOT = os.path.abspath(
@@ -46,6 +46,7 @@ from app.ui.tables import (
     text_cell,
 )
 
+from core.clock import now_brasilia, today_brasilia
 from core.analysis_feasibility import diagnose_series, infeasibility_summary, unknown_infeasibility
 from core.analyzer import calculate_returns
 from core.assets import ASSETS, facet_values, filter_assets
@@ -266,7 +267,7 @@ def add_custom_ticker() -> None:
 # Estado inicial
 # ==========================================================
 def initialize_comparison_state() -> None:
-    today = datetime.now().date()
+    today = today_brasilia()
     asset_period = st.session_state.get("comparison_period", DEFAULT_PERIOD)
 
     asset_start_date = st.session_state.get(
@@ -811,7 +812,7 @@ with st.sidebar:
     )
 
     selected_period = st.session_state[COMPARISON_PERIOD_STATE_KEY]
-    today = datetime.now().date()
+    today = today_brasilia()
 
     if selected_period == "Personalizado":
         st.date_input(
@@ -1053,7 +1054,7 @@ if load_comparison:
     st.session_state["comparison_summary"] = summary
     st.session_state["comparison_period_check"] = period_check
     st.session_state["comparison_used_spans"] = used_spans
-    st.session_state["comparison_fetched_at"] = datetime.now()
+    st.session_state["comparison_fetched_at"] = now_brasilia()
     st.session_state["comparison_quality"] = quality_by_asset
 
 

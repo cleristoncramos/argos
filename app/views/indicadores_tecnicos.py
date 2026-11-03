@@ -1,6 +1,5 @@
 import os
 import sys
-from datetime import datetime
 
 
 PROJECT_ROOT = os.path.abspath(
@@ -39,6 +38,7 @@ from app.ui.indicator_docs import (
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
 from app.ui.tables import date_cell, number_cell, render_table
+from core.clock import now_brasilia
 from core.assets import ASSETS
 from core.config import ANNUALIZATION_FACTORS, LONG_FREQUENCIES
 from core.currency import currency_info
@@ -497,7 +497,7 @@ if load_analysis:
 
         st.session_state["indicators_df"] = df
         st.session_state["indicators_availability"] = availability
-        st.session_state["indicators_fetched_at"] = datetime.now()
+        st.session_state["indicators_fetched_at"] = now_brasilia()
         st.session_state["indicators_quality"] = quality_alerts
 
 
