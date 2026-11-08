@@ -2,6 +2,7 @@
 
 **Status:** rascunho para revisão do orientador · **Atualizado em:** 10/10/2026 (Plano 2)
 **Decisão registrada:** pergunta de pesquisa **A** escolhida em 07/10/2026.
+**Em revisão (07/11/2026):** a reunião de 07/11/2026 propôs incluir previsão e apoio à decisão. A pergunta A continua vigente até a confirmação escrita do orientador; a proposta está na seção 10 e em [`plano_reformulacao_preditiva.md`](plano_reformulacao_preditiva.md).
 
 Este documento traduz a pergunta de pesquisa em objetivos, hipóteses, critérios verificáveis e um protocolo de validação, e indica o que já está feito no projeto e o que falta. Ele cumpre a seção 14 da ata de 06/10/2026. Os cálculos estão em `docs/metodologia_de_calculo.md`; as fontes e o tratamento de dados, em `docs/fontes_e_tratamento_de_dados.md`; a arquitetura, em `docs/arquitetura.md`.
 
@@ -273,3 +274,36 @@ Registrado para não se perder, mas **fora do escopo da pergunta A**. Só será 
 3. Implementar os testes de valores de referência (seção 5.1).
 4. Preparar o questionário de interpretação e o roteiro da avaliação (seção 5.3).
 5. Montar o relatório metodológico (seção 7) à medida que cada parte for concluída.
+
+---
+
+## 10. Proposta de reformulação (07/11/2026, pendente de confirmação)
+
+A reunião de 07/11/2026 propôs que o Argos deixe de se limitar à análise histórica. Detalhes, incompatibilidades e plano em [`plano_reformulacao_preditiva.md`](plano_reformulacao_preditiva.md).
+
+**Pergunta proposta.** Como integrar análise histórica, modelos preditivos e explicações por modelos de linguagem em uma plataforma compreensível para pessoas sem formação em finanças, avaliando desempenho fora da amostra, incerteza, utilidade decisória e compreensão dos resultados?
+
+**O que muda neste documento, se confirmada:**
+
+| Seção | Mudança |
+| --- | --- |
+| 1. Pergunta e objetivos | Nova pergunta; objetivos para as camadas preditiva e decisória, além da descritiva |
+| 2. Hipóteses | Hipóteses sobre desempenho fora da amostra em relação a referências simples e sobre compreensão da incerteza |
+| 5.1 Validação técnica | Protocolo de aprendizado de máquina: divisões temporais, referência ingênua obrigatória, teste final usado uma única vez, separação que considera o horizonte do alvo |
+| 5.3 Avaliação com usuários | Medir compreensão da incerteza e confiança excessiva na estimativa |
+| 5.4 Neutralidade | Passa a valer só para a camada descritiva; a camada experimental segue regras de autorização |
+| 5.5 LLM | Nova família de protocolo com avaliação própria; a 7A fica como registro da finalidade anterior |
+| 8. Trabalho futuro | Previsão e validação temporal deixam de ser trabalho futuro |
+
+**Métricas por objeto (proposta).**
+
+| Objeto | Métricas |
+| --- | --- |
+| Retorno ou preço previsto | MAE e RMSE, sempre comparados com a referência |
+| Direção | Taxa de acerto e métricas que considerem o desequilíbrio entre classes |
+| Probabilidade | Brier score e análise de calibração |
+| Intervalo de previsão | Cobertura observada e largura |
+| Estratégia | Retorno líquido, drawdown, volatilidade, giro e exposição |
+| Explicação da LLM | Fidelidade, clareza, completude e comunicação da incerteza |
+
+RMSE não é percentual de acerto, e uma boa previsão média não demonstra, sozinha, uma estratégia rentável.

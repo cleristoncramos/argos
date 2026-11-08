@@ -442,3 +442,19 @@ Em aberto:
 - [x] 8.7 O que ficou fora, com motivo: `docs/fora_do_escopo.md`
 - [ ] Commit do Bloco 8
 
+---
+
+## Adendo de 07/11/2026 — proposta de reformulação preditiva
+
+Origem: reunião de 07/11/2026. Plano completo, incompatibilidades e decisões pendentes (R1 a R13) em [`plano_reformulacao_preditiva.md`](plano_reformulacao_preditiva.md). Nenhuma regra vigente foi alterada até a confirmação escrita do orientador.
+
+Etapa 0 — revisão de escopo:
+- [x] Registrar a proposta, o diagnóstico, as incompatibilidades e o plano por etapas (`docs/plano_reformulacao_preditiva.md`)
+- [x] Auditar `docs/pibiti/decisoes_orientador.md` quanto à evidência de cada decisão (seção "Auditoria de 07/11/2026")
+- [x] Restaurar `docs/pibiti/cep/checklist_submissao_cep.md`, que continha por engano uma cópia de `tests/test_edu_layer.py` desde o commit `80bc485`
+- [x] Registrar a proposta em `validacao_academica.md` (seção 10), `fora_do_escopo.md`, no checklist do CEP (seção 6) e em `pibiti/escopo_relatorios.md`
+- [ ] Obter a confirmação escrita do orientador sobre o que foi adotado (R1) e sobre as decisões R2 a R13
+- [ ] Encaminhar a consulta institucional ou jurídica sobre recomendação (R2)
+- [ ] Criar a tag da versão histórica, depois da decisão R4
+- [ ] Revisar as minutas do CEP e do TCLE, conforme a decisão R9
+- [ ] Atualizar a seção Pesquisa da página "Sobre o Projeto" depois de R5

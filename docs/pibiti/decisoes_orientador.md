@@ -2,6 +2,19 @@
 
 Registro das decisões e aprovações do Prof. Dr. Arlino Henrique Magalhães de Araújo que condicionam o andamento do projeto. Cada entrada guarda **data, forma da evidência e texto/resumo**.
 
+## Auditoria de 07/11/2026
+
+O documento de sugestões da reunião de 07/11/2026 alerta que textos redigidos como se fossem do orientador são **minutas**: não constituem aprovação, assinatura ou autorização institucional. Por isso, as entradas deste registro foram classificadas pela evidência disponível no repositório:
+
+| Situação | Entradas | Significado |
+| --- | --- | --- |
+| Com documento no repositório | 07/10/2026 (ata da reunião) | Evidência própria: `docs/ata_reuniao_2026-10-07.md` |
+| Com indicação "arquivar o texto original" | Entradas de 10/10, 11/10, 12/10, 24/10 e 25/10/2026 | O original **não foi arquivado**. Valem como registro de trabalho até o orientador confirmar o conteúdo |
+| "Encaminhado" | Encaminhamentos de 12/10/2026 | Registram o que foi enviado ao orientador, não uma decisão dele |
+
+**Pendência (R13 do [`plano_reformulacao_preditiva.md`](../plano_reformulacao_preditiva.md)):** confirmar com o orientador quais decisões são dele, arquivar os originais (mensagens com data e remetente) fora do repositório e anotar aqui a confirmação. Até lá, os relatórios do PIBITI não devem citar estas entradas como aprovação formal.
+
+
 | Data | Assunto | Decisão | Evidência |
 |---|---|---|---|
 | 07/10/2026 | Transição 7A → 7B (LLM) | Aprovada **condicionalmente**: só depois que a 7A atingir todos os limiares, condições e limites | Ata `docs/ata_reuniao_2026-10-07.md` |
@@ -113,3 +126,13 @@ Status: recebido em 24/10/2026. Original do parecer: a arquivar fora do reposit�
 | Novas funcionalidades | Não abrir neste ciclo; foco em versão verificada, reproduzível e pronta para avaliação e demonstração |
 
 Status: recebido em 25/10/2026. Original da mensagem: a arquivar fora do repositório.
+
+## Reunião de 07/11/2026: proposta de reformulação
+
+| Assunto | Conteúdo | Situação | Evidência |
+|---|---|---|---|
+| Novo direcionamento | Incorporar previsão de séries temporais, aprendizado de máquina e apoio à decisão de investimento, com linguagem acessível e rigor metodológico | **Proposta**, a confirmar por escrito | Reunião de 07/11/2026; documento de sugestões `reunião 07.11.2026.docx` (fora do repositório) |
+| Detalhamento | Três camadas (descritiva, preditiva, decisória); recomendação pública só após análise regulatória; ambiente experimental restrito; nova família de protocolo da LLM; validação temporal fora da amostra; congelamento só da versão histórica | Sugestões, não decisões | Mesmo documento |
+| Decisões pendentes | R1 a R13 | Aguardando o orientador | [`plano_reformulacao_preditiva.md`](../plano_reformulacao_preditiva.md), seção 5 |
+
+Status: proposta recebida em 07/11/2026. Nenhuma regra vigente foi alterada.

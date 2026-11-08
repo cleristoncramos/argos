@@ -85,3 +85,19 @@ Objetivo geral (ver `docs/validacao_academica.md`, seção 1.2): desenvolver e a
 Sugestão de redação (ajustar ao modelo oficial):
 
 > O plano de trabalho formal foi mantido como referência. Durante a execução, e com o acordo do orientador, o escopo foi ampliado e reorganizado conforme o quadro acima, sem alterar o objetivo geral: as novas funcionalidades servem à interpretação por pessoas sem formação em finanças, com rigor e sem recomendação.
+
+---
+
+## Alteração em avaliação (07/11/2026)
+
+A reunião de 07/11/2026 propôs ampliar o escopo para previsão de séries temporais, aprendizado de máquina e apoio à decisão, com recomendação pública condicionada a análise regulatória. Se confirmada, a alteração entra no quadro de mudança de escopo do Relatório Parcial com:
+
+| Campo | Conteúdo a registrar |
+| --- | --- |
+| Alteração | Inclusão das camadas preditiva e decisória; nova pergunta de pesquisa |
+| Justificativa | Decisão do orientador (data e evidência a registrar) |
+| Conexão com o objetivo geral | O plano de trabalho "Análise de Dados para Apoio à Tomada de Decisão em Investimentos no Mercado Financeiro" passa a ter avaliação quantitativa do apoio à decisão, além da interpretação |
+| Riscos | Desempenho dos modelos inferior à referência; enquadramento regulatório; prazo do O6 |
+| Entregas | Versão histórica congelada; piloto preditivo experimental (etapas 1 a 3 até 31/03/2027) |
+
+Detalhes em [`../plano_reformulacao_preditiva.md`](../plano_reformulacao_preditiva.md).
