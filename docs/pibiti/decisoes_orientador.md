@@ -224,3 +224,9 @@ Condições: arquivar o registro exato da B3 e sua identificação; verificar mo
 **Evidência:** texto recebido pelo desenvolvedor em 08/11/2026. **Pendente:** arquivar fora do repositório a mensagem original (data e remetente).
 
 Status: recebida em 08/11/2026. Confirmação original: a arquivar.
+
+## Decisão pendente após o desenvolvimento oficial (08/11/2026)
+
+| # | Decisão | Opções |
+|---|---|---|
+| D1 | Destino do período final da v1, com o critério 3 não atendido nos dois ativos ([relatório](../preditivo/desenvolvimento_oficial_v1.md)) | (a) encerrar a v1 por não elegibilidade, preservando o período final; (b) abrir o período final só para completar o estudo, sem possibilidade de habilitar sinal |

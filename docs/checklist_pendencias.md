@@ -476,7 +476,8 @@ Etapa 0 — revisão de escopo:
 - [x] Conferência externa pela B3 das três datas, arquivada; política de qualidade implementada e testada, com os dois tratamentos
 - [x] Decisão P1 (08/11/2026): substituição pontual pela B3 na visão derivada; condições cumpridas e política 1.0 com hash registrado
 - [ ] Arquivar a mensagem original da decisão P1
-- [ ] Desenvolvimento oficial com a política decidida
+- [x] Desenvolvimento oficial com a política 1.0 (08/11/2026): R² positivo em 3 de 8 dobras nos dois ativos; critério 3 não atendido (`docs/preditivo/desenvolvimento_oficial_v1.md`)
+- [ ] Decisão do orientador: encerrar a v1 por não elegibilidade ou abrir o período final para completar o estudo
 - [ ] Arquivar a mensagem original da manifestação do orientador sobre o snapshot
 - [ ] Condições da seção 12 do protocolo antes de abrir a avaliação final: hash da versão consolidada, dados e configuração congelados, testes de alinhamento e expurgo, conferência de custos, caixa e referências
 - [ ] Revisar as minutas do CEP e do TCLE, conforme a decisão R9
