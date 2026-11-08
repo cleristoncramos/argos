@@ -267,3 +267,15 @@ A ocorrência de PETR4 em 02/04/2014 permanece **em investigação**. A conferê
 Permanecem pendentes: a confirmação da formalização do embargo nas reestimações, a coleta oficial, a investigação das ocorrências e a decisão sobre a finalidade do período final (seção 12 do protocolo).
 
 Nenhum resultado preliminar autoriza habilitação de sinais ou abertura automática da avaliação final.
+
+### 7.3 Coleta oficial — snapshot do piloto
+
+A coleta oficial do piloto usa a data de corte de 30/10/2026 e preserva os dados retornados pelas fontes, sem correções automáticas. A data da coleta é a data real de execução, distinta da data de corte dos preços.
+
+O congelamento do snapshot não equivale à aprovação de integridade para a modelagem, ao congelamento da configuração nem à autorização de abertura da avaliação final.
+
+A ocorrência de PETR4 em 02/04/2014 e as demais verificações são registradas no manifesto. Qualquer tratamento posterior é documentado sem sobrescrever os arquivos originais. A decisão sobre manter, corrigir ou excluir a observação, e quais amostras isso afeta, é tomada antes da rodada oficial do desenvolvimento. Se a coleta oficial retornar valores diferentes dos observados no ensaio, a diferença é registrada; não se escolhe a versão mais conveniente.
+
+Sequência a partir daqui: snapshot congelado → investigação e decisão sobre integridade → confirmação do embargo → configuração consolidada → desenvolvimento oficial → decisão sobre encerrar a v1 ou abrir o período final.
+
+A avaliação final permanece bloqueada.

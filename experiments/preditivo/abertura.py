@@ -15,8 +15,8 @@ import json
 from pathlib import Path
 
 from experiments.preditivo import config
-from experiments.preditivo.dados import sha256
 from experiments.preditivo.registro import hashes_atuais
+from experiments.preditivo.util import sha256
 
 CONDICOES_SECAO_12 = (
     "1_decisoes_incorporadas_ao_protocolo",

@@ -1,7 +1,7 @@
 """
 Ponto de entrada do piloto. Uso, a partir da raiz do repositório:
 
-    python -m experiments.preditivo.executar coletar        # coleta e congela os dados (uma vez)
+    python -m experiments.preditivo.executar coletar        # coleta e congela um snapshot (uma vez)
     python -m experiments.preditivo.executar listar-datas   # lista de datas elegíveis do período final
     python -m experiments.preditivo.executar desenvolver    # 8 dobras de 2014 a 2021, sem ler o período final
     python -m experiments.preditivo.executar final --confirmo-abertura   # travado até a seção 12 do protocolo
@@ -21,9 +21,9 @@ import pandas as pd
 from core.clock import now_brasilia
 from experiments.preditivo import config
 from experiments.preditivo.abertura import DATAS_ELEGIVEIS, verificar_abertura
-from experiments.preditivo.amostras import construir_amostras, realizadas_ate
+from experiments.preditivo.amostras import construir_amostras, realizadas_ate, validar_precos
 from experiments.preditivo.avaliacao import prever_anos
-from experiments.preditivo.dados import carregar, coletar_e_congelar, sha256
+from experiments.preditivo.dados import carregar, coletar_e_congelar
 from experiments.preditivo.divisoes import primeira_data_avaliada
 from experiments.preditivo.elegibilidade import avaliar
 from experiments.preditivo.estatistica import (
@@ -36,6 +36,7 @@ from experiments.preditivo.estatistica import (
 )
 from experiments.preditivo.estrategia import backtest, datas_de_decisao
 from experiments.preditivo.registro import registrar
+from experiments.preditivo.util import sha256
 
 RESULTADOS = config.RAIZ / "resultados"
 
@@ -60,6 +61,7 @@ def resumo_previsoes(previsoes: pd.DataFrame) -> dict:
 
 def desenvolver_ativo(ativo: str, precos: pd.DataFrame) -> tuple[pd.DataFrame, list[dict], list[dict]]:
     """Oito dobras anuais (2014 a 2021) só com preços anteriores à primeira data do período final."""
+    precos = validar_precos(precos)
     limite = primeira_data_final(precos)
     passado = precos[precos["Date"] < limite].reset_index(drop=True)
     amostras = construir_amostras(passado)
@@ -72,13 +74,20 @@ def desenvolver_ativo(ativo: str, precos: pd.DataFrame) -> tuple[pd.DataFrame, l
     return previsoes, ajustes, dobras
 
 
-def comando_coletar(_args) -> int:
-    manifesto = coletar_e_congelar()
+def comando_coletar(args) -> int:
+    manifesto = coletar_e_congelar(motivo_nova_tentativa=args.nova_tentativa)
     verificacoes = {chave: manifesto[chave] for chave in (
         "triagem_retorno_preco_vs_ajustado_por_proventos", "desdobramentos_na_fonte",
         "verificacao_ohlc", "variacoes_do_fator_sem_evento")}
-    registrar("coleta", {"arquivos": manifesto["arquivos"], **verificacoes})
-    print(f"Dados congelados em {config.DADOS} ({len(manifesto['arquivos'])} arquivos).")
+    registrar("coleta", {"snapshot": manifesto["snapshot"], "situacao": manifesto["situacao"],
+                         "arquivos": manifesto["arquivos"], "conferencia_das_series": manifesto["conferencia_das_series"],
+                         **verificacoes})
+    print(f"Snapshot {manifesto['snapshot']} congelado em {config.DADOS / manifesto['snapshot']}.")
+    print(f"  situação: {manifesto['situacao']}")
+    for nome, serie in manifesto["conferencia_das_series"].items():
+        print(f"  {nome}: {serie['linhas']} linhas, {serie['inicio']} a {serie['fim']}, "
+              f"repetidas {len(serie['datas_repetidas'])}, não finitos {serie['valores_nao_finitos']}, "
+              f"sha256 {manifesto['arquivos'][nome]['sha256'][:16]}…")
     for ativo in manifesto["parametros"]["ativos"]:
         print(f"  {ativo}: "
               f"{len(verificacoes['triagem_retorno_preco_vs_ajustado_por_proventos'][ativo])} datas na triagem de proventos; "
@@ -98,6 +107,7 @@ def comando_listar_datas(_args) -> int:
     corte = pd.Timestamp(config.DATA_CORTE)
     lista = {}
     for ativo, serie in precos.items():
+        serie = validar_precos(serie)
         amostras = construir_amostras(serie)
         primeira = primeira_data_final(serie)
         elegiveis = amostras[(amostras["decision_date"] >= primeira) & realizadas_ate(amostras, corte)]
@@ -141,6 +151,7 @@ def embargos_periodo_final(anos=config.ANOS_FINAIS) -> dict:
 
 
 def avaliar_final_ativo(ativo: str, precos: pd.DataFrame, cdi: pd.DataFrame, elegiveis: list[str]) -> dict:
+    precos = validar_precos(precos)
     amostras = construir_amostras(precos)
     embargos = embargos_periodo_final()
     previsoes, ajustes = prever_anos(amostras, precos["Date"], config.ANOS_FINAIS, embargos, ativo)
@@ -197,7 +208,10 @@ def comando_final(args) -> int:
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="Piloto preditivo do Argos (experimento local).")
     sub = parser.add_subparsers(dest="comando", required=True)
-    sub.add_parser("coletar").set_defaults(funcao=comando_coletar)
+    coletar = sub.add_parser("coletar")
+    coletar.add_argument("--nova-tentativa", metavar="MOTIVO", default=None,
+                         help="motivo de uma nova coleta (a anterior é preservada)")
+    coletar.set_defaults(funcao=comando_coletar)
     sub.add_parser("listar-datas").set_defaults(funcao=comando_listar_datas)
     sub.add_parser("desenvolver").set_defaults(funcao=comando_desenvolver)
     final = sub.add_parser("final")

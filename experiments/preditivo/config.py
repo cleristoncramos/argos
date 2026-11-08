@@ -10,8 +10,8 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent
 PROJETO = RAIZ.parents[1]
-DADOS = RAIZ / "dados"
-MANIFESTO = DADOS / "manifest.json"
+DADOS = RAIZ / "dados"                # um subdiretório por snapshot (snap-AAAAMMDD-NN), fora do Git
+SNAPSHOT = RAIZ / "snapshot.json"     # ponteiro versionado: snapshot vigente e tentativas anteriores
 REGISTRO = RAIZ / "registro.jsonl"
 CONDICOES = RAIZ / "condicoes_abertura.json"
 MARCA_FINAL_USADO = RAIZ / "avaliacao_final_usada.json"

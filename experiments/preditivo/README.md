@@ -32,7 +32,9 @@ pip install -r experiments/preditivo/requirements.txt
 python -m experiments.preditivo.executar coletar
 ```
 
-Coleta e congela os dados uma única vez (preços ajustados, série bruta e CDI da SGS 12) em `experiments/preditivo/dados/`, com `manifest.json`. Não sobrescreve um manifesto existente. Os CSVs ficam fora do Git; o manifesto é versionado.
+Cria um **snapshot** com identificador próprio (`snap-AAAAMMDD-NN`) em `experiments/preditivo/dados/<snapshot>/`, com os preços ajustados, a série bruta com os eventos, a resposta original do BCB (SGS 12, em % ao dia) e a tabela convertida para decimal. O que as fontes retornaram é preservado sem correções. `snapshot.json` (versionado) aponta o snapshot vigente e guarda as tentativas anteriores. Uma nova coleta só ocorre com motivo registrado (`--nova-tentativa "motivo"`) e recebe outro identificador, sem apagar a anterior.
+
+O manifesto (versionado) registra o commit da implementação, as versões das dependências, os parâmetros explícitos da coleta, os hashes, a conferência de cada série (cobertura, contagem, ordenação, datas repetidas e valores não finitos) e a situação, com três estados separados: snapshot (coletado e congelado), verificação de integridade (com ou sem pendência) e elegibilidade para a modelagem. Os CSVs e a resposta do BCB ficam fora do Git.
 
 **Guarda dos dados brutos:** os hashes do manifesto permitem conferir os arquivos, mas não reconstruí-los. Depois da coleta, guardar uma cópia dos CSVs em armazenamento controlado, fora do Git.
 

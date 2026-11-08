@@ -469,7 +469,9 @@ Etapa 0 — revisão de escopo:
 - [ ] Confirmar com o orientador a formalização do embargo nas reestimações do período final (protocolo, seção 6.3)
 - [ ] Decidir, depois do desenvolvimento oficial, se a v1 é encerrada (por falha no critério 3) ou se o período final é aberto para completar o estudo, registrando a decisão antes de qualquer abertura
 - [ ] Arquivar os dados brutos coletados em armazenamento controlado, fora do Git (o manifesto só guarda hashes)
-- [ ] Coleta oficial e congelamento dos dados (`executar coletar`) e investigação das datas da triagem e das inconsistências OHLC
+- [x] Coletor com snapshots identificados, sem sobrescrita, manifesto com commit, versões, parâmetros, conferência das séries e situação de integridade separada (08/11/2026)
+- [ ] Coleta oficial do snapshot (`executar coletar`), com cópia de segurança dos arquivos fora do Git
+- [ ] Investigar as ocorrências de integridade (PETR4 em 02/04/2014 e demais) e decidir o tratamento antes do desenvolvimento oficial, sem sobrescrever os originais
 - [ ] Condições da seção 12 do protocolo antes de abrir a avaliação final: hash da versão consolidada, dados e configuração congelados, testes de alinhamento e expurgo, conferência de custos, caixa e referências
 - [ ] Revisar as minutas do CEP e do TCLE, conforme a decisão R9
 - [ ] Atualizar a seção Pesquisa da página "Sobre o Projeto" depois de R5

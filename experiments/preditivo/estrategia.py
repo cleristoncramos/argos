@@ -45,6 +45,8 @@ class CaixaCDI:
     def __init__(self, cdi: pd.DataFrame):
         serie = cdi.sort_values("data")
         self.datas = pd.DatetimeIndex(pd.to_datetime(serie["data"]))
+        if self.datas.duplicated().any():
+            raise ValueError("A série do CDI tem datas repetidas: conferir o snapshot antes de usar.")
         self.log_acumulado = np.concatenate([[0.0], np.cumsum(np.log1p(serie["taxa"].to_numpy(dtype=float)))])
 
     def fator(self, anterior: pd.Timestamp, atual: pd.Timestamp) -> float:
