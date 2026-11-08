@@ -253,3 +253,29 @@ Próxima atividade: concluir o arquivamento da v1 e preparar uma proposta delimi
 **Evidência:** texto recebido pelo desenvolvedor em 08/11/2026. **Pendente:** arquivar fora do repositório a mensagem original (data e remetente).
 
 Status: recebida em 08/11/2026. Confirmação original: a arquivar.
+
+## V2 — Autorização do piloto preditivo v2 (08/11/2026)
+
+Referência: [`proposta_piloto_v2.md`](../preditivo/proposta_piloto_v2.md). Consolidação: [`protocolo_piloto_v2.md`](../preditivo/protocolo_piloto_v2.md).
+
+Abrangência: implementação, testes e desenvolvimento do piloto v2, sem abertura automática do período final. A ampliação da grade é uma investigação justificada, não uma promessa de melhora, e não busca recuperar a aprovação da v1.
+
+| ID | Decisão |
+|---|---|
+| V2-1 | Aprovada a grade 0,1 · 1 · 10 · 100 · 1000 · 10⁴ · 10⁵ · 10⁶, sem outras mudanças de modelagem. Hipótese: "Investigar se uma grade mais ampla de regularização permite à Ridge obter ganho preditivo estável em relação ao retorno zero e à média histórica, mantendo os demais elementos do piloto." Sem afirmar que a grade truncou a regularização antes do melhor ponto, nem que a v1 demonstrou excesso de variância. Fatores de encolhimento só como ilustração. Registrar `alpha`, média e desvio das previsões, média do alvo no treino, afastamento em relação à referência histórica e norma dos coeficientes. "Praticamente a média" deve ser verificado nos resultados |
+| V2-2 | Aprovado o limite fixo: 10⁶ selecionado é registrado como escolha no limite. Não se acrescentam valores, não se repete a seleção com outra grade e não se escolhe configuração depois de consultar o período final |
+| V2-3 | Aprovado o critério 6 obrigatório e cumulativo: `R²_média = 1 − Σ(y − ŷ_Ridge)² / Σ(y − ŷ_média)²` > 0 no período final e em pelo menos 5 de 8 dobras. A média é a histórica expansiva causal da v1 (só alvos realizados em cada data), distinta da média do alvo no treino. Mesmas datas; denominador nulo, valor não finito ou previsão ausente tratados explicitamente, sem virar aprovação. Superar a média é condição operacional de ganho incremental, não demonstração causal. A alternativa de diagnóstico não foi adotada |
+| V2-4 | Diebold-Mariano contra a média só como diagnóstico: não substitui o critério 2, não é segunda chance, não pode ser escolhido por ser mais favorável e é sempre reportado |
+| V2-5 | Critérios 3 e 6 mantidos como filtros de desenvolvimento, com a declaração obrigatória de não independência no relatório. Período reservado descrito como "ainda não utilizado para avaliação preditiva ou seleção de modelos" |
+| V2-6 | Período reservado preservado para a v2. A abertura depende de: protocolo confirmado, hashes, implementação e testes, desenvolvimento oficial, critérios 3 e 6 atendidos, relatório e nova decisão escrita. A lista de datas vem depois dessa decisão e antes de qualquer métrica final. Resultados finais conhecidos não permitem mudar grade, critérios ou estratégia e reutilizá-los como nova confirmação |
+| V2-7 | Encerramento sem avaliação final se os critérios 3 ou 6 falharem, com a redação "A v2 não atendeu aos critérios de desenvolvimento necessários para abertura da avaliação final. Não houve evidência suficiente, segundo o protocolo, para habilitar o sinal." Não há obrigação de abrir o período nem de criar uma v3 |
+
+Separação técnica: configurações, registros e travas próprios da v2, com funções compartilhadas. Ficam preservados os artefatos, hashes e o encerramento da v1, a identificação dos resultados por versão e a impossibilidade de sobrescrever resultados oficiais. A equivalência nos valores comuns das grades é verificada com tolerância documentada (protocolo v2, seção 11). A estimativa de custo é previsão de esforço.
+
+Sequência autorizada: consolidar o protocolo v2 → obter a confirmação real → implementar a separação por versão → testes sintéticos e de desenvolvimento → congelar configuração e código → desenvolvimento oficial → relatório → decisão sobre encerramento ou abertura. Não inclui publicação de previsões, habilitação de sinais no aplicativo nem alteração do prompt histórico v0.6.
+
+**Cumprimento (08/11/2026):** protocolo v2 consolidado; proposta corrigida conforme as observações de redação. Implementação ainda não iniciada: aguarda a confirmação real.
+
+**Evidência:** texto recebido pelo desenvolvedor em 08/11/2026. O texto recebido terminou interrompido na última frase da conclusão ("O resultado será aceito e docu…"); as decisões V2-1 a V2-7 e a sequência chegaram completas. **Pendente:** arquivar fora do repositório a mensagem original completa (data e remetente).
+
+Status: recebida em 08/11/2026. Confirmação original: a arquivar.

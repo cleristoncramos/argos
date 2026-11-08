@@ -6,3 +6,4 @@ experiments/preditivo/*.json -text
 experiments/preditivo/dados/**/manifest.json -text
 docs/preditivo/protocolo_piloto_v1.md -text
 docs/preditivo/nota_teste_estatistico.md -text
+docs/preditivo/protocolo_piloto_v2.md -text
