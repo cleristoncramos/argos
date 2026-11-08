@@ -119,3 +119,11 @@ Não há v3 imediata. Uma proposta futura poderá investigar se as variáveis ac
 - as mesmas restrições de disponibilidade de alvos.
 
 É só uma hipótese de pesquisa. Ela não autoriza novos experimentos nem mudança dos critérios atuais.
+
+### Distinção em relação ao critério 6
+
+Uma comparação futura com uma referência sem variáveis não repetiria o critério 6; ela mede outra coisa. O critério 6 compara a Ridge com a média histórica atualizada a cada data. Como a Ridge em `alpha` alto se aproxima da média do treino, mantida constante durante o ano, a vantagem observada mistura dois efeitos: a contribuição dos indicadores e a diferença entre as duas formas de calcular a média.
+
+Uma referência sem variáveis construída sobre a mesma amostra de treino, com o mesmo calendário de reestimação, as mesmas datas e as mesmas restrições de disponibilidade de alvos, separa esses dois efeitos. Esse ponto permaneceu em aberto na v2.
+
+Este esclarecimento é conceitual, posterior ao encerramento. Não há proposta, protocolo, código nem execução associados, e ele não tem efeito sobre resultados ou critérios.

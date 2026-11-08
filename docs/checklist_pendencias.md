@@ -487,7 +487,7 @@ Etapa 0 — revisão de escopo:
 - [x] v2: congelamento (`378b0b9`, correção `cdf7eef`), desenvolvimento oficial e relatório (`docs/preditivo/desenvolvimento_oficial_v2.md`)
 - [x] Decisão DV2 (08/11/2026): v2 encerrada sem abertura final; PETR4 com filtros atendidos e não progressão, VALE3 pela V2-7 (`docs/preditivo/encerramento_v2.md`)
 - [ ] Arquivar as mensagens originais do orientador (R6–R8, N1–N5, snapshot, P1, D1, V2, confirmação da v2, DV2)
-- [ ] (Sem prazo, só se o orientador pedir) Proposta documental de investigação com referência sem variáveis nas mesmas condições de treino, calendário e datas
+- [ ] (Opcional, só se o orientador pedir) Proposta de referência sem variáveis com a mesma amostra de treino, calendário, datas e restrições de alvos. Não é repetição do critério 6: isola o efeito dos indicadores do efeito do procedimento de atualização da média. Sem proposta, sem código e sem execução enquanto não solicitado.
 - [ ] Arquivar a mensagem original da manifestação do orientador sobre o snapshot
 - [ ] Condições da seção 12 do protocolo antes de abrir a avaliação final: hash da versão consolidada, dados e configuração congelados, testes de alinhamento e expurgo, conferência de custos, caixa e referências
 - [ ] Revisar as minutas do CEP e do TCLE, conforme a decisão R9
