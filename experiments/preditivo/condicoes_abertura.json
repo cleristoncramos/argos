@@ -1,0 +1,20 @@
+{
+  "condicoes": {
+    "1_decisoes_incorporadas_ao_protocolo": false,
+    "2_versao_consolidada_e_hash_registrados": false,
+    "3_dados_e_configuracao_congelados": false,
+    "4_teste_de_alinhamento_das_datas": false,
+    "5_teste_de_expurgo_externo_e_interno": false,
+    "6_custos_caixa_e_referencias_conferidos": false,
+    "7_nota_metodologica_fechada": false,
+    "8_confirmacao_original_arquivada": false
+  },
+  "hashes": {
+    "protocolo": null,
+    "nota": null,
+    "configuracao": null,
+    "manifesto_dados": null,
+    "datas_elegiveis": null
+  },
+  "observacoes": "Preencher só quando cada condição estiver cumprida e documentada."
+}

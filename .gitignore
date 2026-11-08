@@ -101,3 +101,8 @@ data/demo/llm_respostas.json
 # Experimento 7A: respostas dos modelos e avaliações humanas ficam locais
 experiments/llm_7a/results/
 docs/pibiti/avaliadores_7a.md
+
+# Piloto preditivo: dados do Yahoo Finance e do BCB e resultados ficam fora do Git
+# (o manifesto com os hashes é versionado)
+experiments/preditivo/dados/*.csv
+experiments/preditivo/resultados/

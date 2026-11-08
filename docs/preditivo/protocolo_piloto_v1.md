@@ -264,9 +264,9 @@ A implementação local pode avançar enquanto estes itens são preparados. O pe
 | 1 | Incorporar as decisões de 08/11/2026 ao protocolo | **Feito** (esta versão) |
 | 2 | Registrar a versão consolidada e seu hash SHA-256 | Pendente: no congelamento, em `experiments/preditivo/` e no registro de decisões |
 | 3 | Congelar os dados (manifesto com hashes) e a configuração | Pendente |
-| 4 | Testar o alinhamento entre `decision_date`, `entry_date` e `label_end_date` | Pendente |
-| 5 | Testar o expurgo nas divisões externas e internas | Pendente |
-| 6 | Conferir custos, caixa e referências | Pendente |
+| 4 | Testar o alinhamento entre `decision_date`, `entry_date` e `label_end_date` | Testes implementados e aprovados em 08/11/2026 (`experiments/preditivo/tests`); confirmar com os dados congelados |
+| 5 | Testar o expurgo nas divisões externas e internas | Testes implementados e aprovados em 08/11/2026; o teste de fronteira também roda em cada ajuste |
+| 6 | Conferir custos, caixa e referências | Testes do backtest implementados e aprovados em 08/11/2026; conferência com os dados congelados pendente |
 | 7 | Fechar a nota metodológica do teste estatístico (seção 9.2) | Decisões N1 a N5 aprovadas e ajustes incorporados (08/11/2026); cumprida quando a confirmação original for arquivada |
 | 8 | Registrar a confirmação original da decisão (mensagem do orientador com data e remetente) | Pendente |
 
@@ -280,3 +280,4 @@ A implementação local pode avançar enquanto estes itens são preparados. O pe
 | 08/11/2026 | v1, minuta, revisão 1 | Alvo alinhado à entrada e datas por amostra; reestimação sequencial; embargo e expurgo separados, inclusive nas divisões internas; preços na mesma base de ajuste; caixa estimado na regra; custos por lado; teste estatístico condicionado a nota; condição econômica explícita; regra de versões |
 | 08/11/2026 | v1, consolidada | Decisão do orientador sobre R6, R7, R8 e critérios. Regra de entrada volta a `ŷ > c` com `c = 0,002`, sem estimativa do caixa; sensibilidade em 0%, 0,10%, 0,20% e 0,30% por lado; teste de Diebold-Mariano com revisão de adequação antes da execução; ramo C sem limite adicional de drawdown, com destaque obrigatório; descrição obrigatória do resultado; condições para abrir a avaliação final (seção 12) |
 | 08/11/2026 | v1, consolidada (nota) | Seção 9.2 alinhada à nota metodológica aprovada (N1 a N5): amostra em lista fixada antes, limiar estrito em precisão completa, filtro exploratório com limitação inferencial, Clark-West só diagnóstico; R² com denominador nulo "não calculável" no critério 1 |
+| 08/11/2026 | v1, consolidada (implementação) | Seção 12 atualizada com os testes implementados em `experiments/preditivo/` (sem mudança no experimento) |

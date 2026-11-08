@@ -1,0 +1,4 @@
+# Dependências só do piloto preditivo (fora do aplicativo).
+# Instalar por cima das dependências do Argos (requirements.txt da raiz).
+# Versão validada em 08/11/2026.
+scikit-learn==1.9.1
