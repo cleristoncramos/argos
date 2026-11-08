@@ -1,0 +1,16 @@
+{
+  "vigente": "snap-20261108-01",
+  "snapshots": [
+    {
+      "id": "snap-20261108-01",
+      "coletado_em": "2026-11-08T11:49:21-03:00",
+      "manifesto_sha256": "6985328407ba456ada6c92872382e00f0109a772a904bbf477e3b5a006dd272c",
+      "situacao": {
+        "snapshot": "coletado e congelado",
+        "verificacao_integridade": "com pendência",
+        "elegibilidade_para_modelagem": "aguarda tratamento documentado"
+      },
+      "motivo_nova_tentativa": null
+    }
+  ]
+}

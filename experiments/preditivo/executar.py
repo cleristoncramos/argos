@@ -23,7 +23,7 @@ from experiments.preditivo import config
 from experiments.preditivo.abertura import DATAS_ELEGIVEIS, verificar_abertura
 from experiments.preditivo.amostras import construir_amostras, realizadas_ate, validar_precos
 from experiments.preditivo.avaliacao import prever_anos
-from experiments.preditivo.dados import carregar, coletar_e_congelar
+from experiments.preditivo.dados import carregar, carregar_brutos, coletar_e_congelar
 from experiments.preditivo.divisoes import primeira_data_avaliada
 from experiments.preditivo.elegibilidade import avaliar
 from experiments.preditivo.estatistica import (
@@ -35,6 +35,7 @@ from experiments.preditivo.estatistica import (
     r2_fora_da_amostra,
 )
 from experiments.preditivo.estrategia import backtest, datas_de_decisao
+from experiments.preditivo.qualidade import carregar_politica, entradas_do_ativo, exigir_decidida
 from experiments.preditivo.registro import registrar
 from experiments.preditivo.util import sha256
 
@@ -59,12 +60,13 @@ def resumo_previsoes(previsoes: pd.DataFrame) -> dict:
     }
 
 
-def desenvolver_ativo(ativo: str, precos: pd.DataFrame) -> tuple[pd.DataFrame, list[dict], list[dict]]:
+def desenvolver_ativo(ativo: str, precos: pd.DataFrame, politica: list | None = None,
+                      bruto: pd.DataFrame | None = None) -> tuple[pd.DataFrame, list[dict], list[dict]]:
     """Oito dobras anuais (2014 a 2021) só com preços anteriores à primeira data do período final."""
     precos = validar_precos(precos)
     limite = primeira_data_final(precos)
     passado = precos[precos["Date"] < limite].reset_index(drop=True)
-    amostras = construir_amostras(passado)
+    amostras = construir_amostras(passado, politica=politica, bruto=bruto)
     embargos = {ano: config.EMBARGO for ano in config.ANOS_DESENVOLVIMENTO}
     previsoes, ajustes = prever_anos(amostras, passado["Date"], config.ANOS_DESENVOLVIMENTO, embargos, ativo)
     dobras = []
@@ -104,13 +106,17 @@ def comando_listar_datas(_args) -> int:
         print(f"A lista já existe em {DATAS_ELEGIVEIS}; não é refeita.")
         return 1
     _manifesto, precos, _cdi = carregar()
+    politica = carregar_politica()
+    exigir_decidida(politica)
+    brutos = carregar_brutos()
     corte = pd.Timestamp(config.DATA_CORTE)
     lista = {}
     for ativo, serie in precos.items():
         serie = validar_precos(serie)
-        amostras = construir_amostras(serie)
+        amostras = construir_amostras(serie, politica=entradas_do_ativo(politica, ativo), bruto=brutos[ativo])
         primeira = primeira_data_final(serie)
-        elegiveis = amostras[(amostras["decision_date"] >= primeira) & realizadas_ate(amostras, corte)]
+        elegiveis = amostras[(amostras["decision_date"] >= primeira) & realizadas_ate(amostras, corte)
+                             & amostras["y"].notna()]
         lista[ativo] = [d.date().isoformat() for d in elegiveis["decision_date"]]
     DATAS_ELEGIVEIS.write_text(json.dumps(lista, ensure_ascii=False, indent=2), encoding="utf-8")
     registrar("lista_datas_elegiveis", {"sha256": sha256(DATAS_ELEGIVEIS),
@@ -119,24 +125,82 @@ def comando_listar_datas(_args) -> int:
     return 0
 
 
-def comando_desenvolver(_args) -> int:
+def comando_desenvolver(args) -> int:
+    """Rodada oficial: exige a política de qualidade decidida. `--ensaio` roda sem essa exigência e é registrado como ensaio."""
     _manifesto, precos, _cdi = carregar()
+    politica = carregar_politica()
+    if not args.ensaio:
+        exigir_decidida(politica)
+    brutos = carregar_brutos()
+    evento = "desenvolvimento_ensaio" if args.ensaio else "desenvolvimento"
     RESULTADOS.mkdir(exist_ok=True)
     resumo = {}
     for ativo, serie in precos.items():
-        previsoes, ajustes, dobras = desenvolver_ativo(ativo, serie)
-        previsoes.to_csv(RESULTADOS / f"desenvolvimento_{ativo.replace('.', '_')}.csv", index=False)
+        entradas = [e for e in entradas_do_ativo(politica, ativo) if e.get("tratamento")]
+        previsoes, ajustes, dobras = desenvolver_ativo(ativo, serie, entradas, brutos[ativo])
+        previsoes.to_csv(RESULTADOS / f"{evento}_{ativo.replace('.', '_')}.csv", index=False)
         frequencia = {str(a): sum(1 for x in ajustes if x["alpha"] == a) for a in config.ALPHAS}
         resumo[ativo] = {"ajustes": ajustes, "dobras": dobras, "frequencia_alpha": frequencia,
                          "dobras_com_r2_positivo": sum(1 for d in dobras if (d["r2_fora_da_amostra"] or 0) > 0)}
-        registrar("desenvolvimento", {"ativo": ativo, **resumo[ativo]})
-    (RESULTADOS / "desenvolvimento_resumo.json").write_text(
+        registrar(evento, {"ativo": ativo, "politica": entradas, **resumo[ativo]})
+    (RESULTADOS / f"{evento}_resumo.json").write_text(
         json.dumps(resumo, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     for ativo, dados in resumo.items():
         linhas = ", ".join(f"{d['ano']}: {d['r2_fora_da_amostra']:+.4f}" for d in dados["dobras"]
                            if d["r2_fora_da_amostra"] is not None)
         print(f"{ativo} — R² fora da amostra por dobra: {linhas}")
         print(f"  frequência de seleção do alpha: {dados['frequencia_alpha']}")
+    return 0
+
+
+def impacto_politica(precos: pd.DataFrame, entradas: list, bruto: pd.DataFrame) -> dict:
+    """
+    Impacto de um tratamento no desenvolvimento, sem ajustar nenhum modelo: amostras com
+    variáveis completas, amostras com alvo, células de variáveis invalidadas e datas afetadas.
+    """
+    precos = validar_precos(precos)
+    passado = precos[precos["Date"] < primeira_data_final(precos)].reset_index(drop=True)
+    base = construir_amostras(passado).set_index("decision_date")
+    tratada = construir_amostras(passado, politica=entradas, bruto=bruto).set_index("decision_date")
+    sem_variaveis = base.index.difference(tratada.index)
+    comuns = base.index.intersection(tratada.index)
+    alvo_perdido = comuns[base.loc[comuns, "y"].notna().to_numpy() & tratada.loc[comuns, "y"].isna().to_numpy()]
+    nomes = [c for c in base.columns if c not in ("entry_date", "label_end_date", "y")]
+    celulas = int(base.loc[sem_variaveis, nomes].notna().to_numpy().sum())
+    afetadas = sem_variaveis.union(alvo_perdido)
+    dev = lambda idx: int(((idx.year >= config.ANOS_DESENVOLVIMENTO[0]) & (idx.year <= config.ANOS_DESENVOLVIMENTO[-1])).sum())
+    return {
+        "amostras_sem_politica": int(len(base)),
+        "amostras_com_politica": int(len(tratada)),
+        "amostras_invalidadas_por_variaveis": int(len(sem_variaveis)),
+        "amostras_com_alvo_invalidado": int(len(alvo_perdido)),
+        "celulas_de_variaveis_invalidadas": celulas,
+        "datas_afetadas": {"primeira": afetadas.min().date().isoformat() if len(afetadas) else None,
+                           "ultima": afetadas.max().date().isoformat() if len(afetadas) else None,
+                           "quantidade": int(len(afetadas))},
+        "amostras_afetadas_nas_validacoes_2014_2021": dev(afetadas),
+        # As amostras que sobram têm as mesmas datas de entrada e de fim do alvo: nada foi deslocado.
+        "calendario_preservado": bool(
+            base.loc[comuns, ["entry_date", "label_end_date"]].equals(tratada.loc[comuns, ["entry_date", "label_end_date"]])),
+    }
+
+
+def comando_qualidade(_args) -> int:
+    """Compara os tratamentos possíveis sem rodar modelos (para a decisão da política)."""
+    _manifesto, precos, _cdi = carregar()
+    politica = carregar_politica()
+    brutos = carregar_brutos()
+    relatorio = {}
+    for ativo, serie in precos.items():
+        entradas = entradas_do_ativo(politica, ativo)
+        relatorio[ativo] = {tratamento: impacto_politica(serie, [{**e, "tratamento": tratamento} for e in entradas],
+                                                          brutos[ativo])
+                            for tratamento in ("invalidar", "substituir_por_fonte_verificada")}
+    RESULTADOS.mkdir(exist_ok=True)
+    (RESULTADOS / "qualidade_impacto.json").write_text(json.dumps(relatorio, ensure_ascii=False, indent=2),
+                                                        encoding="utf-8")
+    registrar("impacto_politica_qualidade", relatorio)
+    print(json.dumps(relatorio, ensure_ascii=False, indent=2))
     return 0
 
 
@@ -150,9 +214,10 @@ def embargos_periodo_final(anos=config.ANOS_FINAIS) -> dict:
             for ano in anos}
 
 
-def avaliar_final_ativo(ativo: str, precos: pd.DataFrame, cdi: pd.DataFrame, elegiveis: list[str]) -> dict:
+def avaliar_final_ativo(ativo: str, precos: pd.DataFrame, cdi: pd.DataFrame, elegiveis: list[str],
+                        politica: list, bruto: pd.DataFrame) -> dict:
     precos = validar_precos(precos)
-    amostras = construir_amostras(precos)
+    amostras = construir_amostras(precos, politica=politica, bruto=bruto)
     embargos = embargos_periodo_final()
     previsoes, ajustes = prever_anos(amostras, precos["Date"], config.ANOS_FINAIS, embargos, ativo)
     previsoes.to_csv(RESULTADOS / f"final_{ativo.replace('.', '_')}.csv", index=False)
@@ -168,7 +233,7 @@ def avaliar_final_ativo(ativo: str, precos: pd.DataFrame, cdi: pd.DataFrame, ele
     decisoes = datas_de_decisao(previsoes)
     custos = sorted(set(config.CUSTOS_SENSIBILIDADE) | {config.CUSTO_LADO_BASE, config.CUSTO_LADO_DOBRO})
     backtests = {c: backtest(precos, cdi, decisoes, c, config.DATA_CORTE) for c in custos}
-    _p, _a, dobras = desenvolver_ativo(ativo, precos)
+    _p, _a, dobras = desenvolver_ativo(ativo, precos, politica, bruto)
     decisao = avaliar(r2, teste_dm, [d["r2_fora_da_amostra"] for d in dobras],
                       backtests[config.CUSTO_LADO_BASE], backtests[config.CUSTO_LADO_DOBRO])
     realizadas_decisao = decisoes.dropna(subset=["y"])
@@ -191,12 +256,17 @@ def avaliar_final_ativo(ativo: str, precos: pd.DataFrame, cdi: pd.DataFrame, ele
 
 def comando_final(args) -> int:
     verificar_abertura(args.confirmo_abertura)
+    politica = carregar_politica()
+    exigir_decidida(politica)
+    brutos = carregar_brutos()
     _manifesto, precos, cdi = carregar()
     elegiveis = json.loads(DATAS_ELEGIVEIS.read_text(encoding="utf-8"))
     RESULTADOS.mkdir(exist_ok=True)
     config.MARCA_FINAL_USADO.write_text(json.dumps({"aberta_em": now_brasilia().isoformat(timespec="seconds")}),
                                         encoding="utf-8")
-    resultados = {ativo: avaliar_final_ativo(ativo, serie, cdi, elegiveis[ativo]) for ativo, serie in precos.items()}
+    resultados = {ativo: avaliar_final_ativo(ativo, serie, cdi, elegiveis[ativo],
+                                             entradas_do_ativo(politica, ativo), brutos[ativo])
+                  for ativo, serie in precos.items()}
     (RESULTADOS / "final_resultados.json").write_text(
         json.dumps(resultados, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     registrar("avaliacao_final", resultados, avaliacao_final=True)
@@ -213,7 +283,11 @@ def main(argv=None) -> int:
                          help="motivo de uma nova coleta (a anterior é preservada)")
     coletar.set_defaults(funcao=comando_coletar)
     sub.add_parser("listar-datas").set_defaults(funcao=comando_listar_datas)
-    sub.add_parser("desenvolver").set_defaults(funcao=comando_desenvolver)
+    sub.add_parser("qualidade").set_defaults(funcao=comando_qualidade)
+    desenvolver = sub.add_parser("desenvolver")
+    desenvolver.add_argument("--ensaio", action="store_true",
+                             help="roda sem exigir a política decidida; registrado como ensaio, não oficial")
+    desenvolver.set_defaults(funcao=comando_desenvolver)
     final = sub.add_parser("final")
     final.add_argument("--confirmo-abertura", action="store_true")
     final.set_defaults(funcao=comando_final)

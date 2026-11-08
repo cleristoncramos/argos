@@ -262,7 +262,7 @@ No desenvolvimento preliminar, os dois ativos tiveram R² positivo em três das 
 
 O `alpha` selecionado atingiu com frequência o limite superior da grade (1000). Isso indica regularização forte, não necessariamente previsões próximas de zero: com intercepto, a redução dos coeficientes aproxima as previsões de uma constante ligada à média do alvo no treino. O registro de cada ajuste passou a incluir a frequência de seleção de cada `alpha`, a média e o desvio das previsões, a média do alvo no treino e a configuração do intercepto. A grade não é ampliada nesta versão.
 
-A ocorrência de PETR4 em 02/04/2014 permanece **em investigação**. A conferência na mesma base de ajuste mostrou que a faixa também é violada na base bruta da fonte (fechamento 15,56 abaixo da mínima 15,70) e que a série ajustada usada no piloto coincide com a reconstrução pelo fator `a_t = Adj Close / Close`. Também foi observada variação do fator entre 02/04 e 03/04/2014 sem provento ou desdobramento registrado. Antes de classificar a ocorrência, investigar a integridade desses registros.
+A ocorrência de PETR4 em 02/04/2014 permanece **em investigação**. A conferência na mesma base de ajuste mostrou que a faixa também é violada na base bruta da fonte (fechamento 15,56 abaixo da mínima 15,70) e que a série ajustada usada no piloto coincide com a reconstrução pelo fator `a_t = Adj Close / Close`. Também foi citada uma variação do fator entre 02/04 e 03/04/2014 sem provento registrado; **essa afirmação foi corrigida** no relatório do snapshot oficial: há provento de 0,99757 em 03/04/2014 na fonte, que explica a variação exatamente. Antes de classificar a ocorrência da faixa, investigar a integridade desse registro.
 
 Permanecem pendentes: a confirmação da formalização do embargo nas reestimações, a coleta oficial, a investigação das ocorrências e a decisão sobre a finalidade do período final (seção 12 do protocolo).
 
@@ -279,3 +279,7 @@ A ocorrência de PETR4 em 02/04/2014 e as demais verificações são registradas
 Sequência a partir daqui: snapshot congelado → investigação e decisão sobre integridade → confirmação do embargo → configuração consolidada → desenvolvimento oficial → decisão sobre encerrar a v1 ou abrir o período final.
 
 A avaliação final permanece bloqueada.
+
+**Resultado (08/11/2026):** snapshot `snap-20261108-01` coletado e congelado, com verificação de integridade com pendência. Identificação, hashes, cobertura, contagens e pendências em [`preditivo/snapshot_snap-20261108-01.md`](preditivo/snapshot_snap-20261108-01.md).
+
+**Atualização (08/11/2026, tarde):** cópia de segurança feita e conferida; árvore alterada aceita como desvio documental, com evidência arquivada; embargo nas reestimações confirmado pelo orientador. A conferência externa pela B3 encontrou fonte verificável para as três ocorrências e identificou os campos divergentes (fechamento na PETR4; máxima e mínima na VALE3). A política foi implementada com os dois tratamentos possíveis, e a escolha entre eles (decisão P1) precede o desenvolvimento oficial. Detalhes no [relatório do snapshot](preditivo/snapshot_snap-20261108-01.md), seção 6.

@@ -1,0 +1,61 @@
+{
+  "snapshot": "snap-20261108-01",
+  "criada_em": "2026-11-08",
+  "regra": "Tratamento por campo e por dependência de cálculo, na memória, sem alterar o snapshot e sem remover datas do calendário. Escolhido antes de qualquer resultado oficial e não pelo desempenho do modelo.",
+  "conferencia_externa": {
+    "fonte": "B3, série histórica oficial de cotações (COTAHIST), mercado à vista (TPMERC 010), valores nominais",
+    "consultada_em": "2026-11-08T12:02:20-03:00",
+    "arquivos": {
+      "COTAHIST_D02042014.ZIP": {"url": "https://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_D02042014.ZIP", "bytes": 61255, "sha256": "c351731fe26875761e881e6ea630d15c419c6749e65169933857bc723bde4b21"},
+      "COTAHIST_A2012.ZIP": {"url": "https://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A2012.ZIP", "bytes": 11883689, "sha256": "98771b1248a3f19b547609ed4fd6c8da0eb396140afb6de91946db457c855465"}
+    },
+    "guarda": "Junto à cópia de segurança do snapshot, fora do Git"
+  },
+  "entradas": [
+    {
+      "ativo": "PETR4.SA",
+      "data": "2014-04-02",
+      "ocorrencia": "Violação de consistência OHLC: fechamento abaixo da mínima; campo responsável não determinado pela relação entre os campos.",
+      "campos": ["Close"],
+      "fonte": {
+        "arquivo": "COTAHIST_D02042014.ZIP",
+        "valores": {"Open": 15.71, "High": 16.60, "Low": 15.70, "Close": 16.56},
+        "snapshot_base_bruta": {"Open": 15.71, "High": 16.60, "Low": 15.70, "Close": 15.56},
+        "conclusao": "A B3 registra fechamento de 16,56, dentro da faixa 15,70 a 16,60; o fechamento do snapshot (15,56) difere em 1,00. Abertura, máxima e mínima conferem."
+      },
+      "tratamento": null,
+      "decisao": "pendente",
+      "opcoes": ["invalidar", "substituir_por_fonte_verificada"]
+    },
+    {
+      "ativo": "VALE3.SA",
+      "data": "2012-08-14",
+      "ocorrencia": "Violação de consistência OHLC: abertura acima da máxima.",
+      "campos": ["Open", "High"],
+      "fonte": {
+        "arquivo": "COTAHIST_A2012.ZIP",
+        "valores": {"Open": 38.36, "High": 38.64, "Low": 36.84, "Close": 37.05},
+        "snapshot_base_bruta": {"Open": 38.36, "High": 37.75, "Low": 36.84, "Close": 37.05},
+        "conclusao": "A B3 registra máxima de 38,64; a máxima do snapshot (37,75) diverge. Abertura, mínima e fechamento conferem. A abertura, questionada pela relação entre os campos, é mantida como questionada por cautela, sem efeito nos cálculos."
+      },
+      "tratamento": null,
+      "decisao": "pendente",
+      "opcoes": ["invalidar", "substituir_por_fonte_verificada"]
+    },
+    {
+      "ativo": "VALE3.SA",
+      "data": "2012-09-05",
+      "ocorrencia": "Violação de consistência OHLC: abertura abaixo da mínima.",
+      "campos": ["Open", "High", "Low"],
+      "fonte": {
+        "arquivo": "COTAHIST_A2012.ZIP",
+        "valores": {"Open": 32.70, "High": 33.19, "Low": 32.47, "Close": 33.00},
+        "snapshot_base_bruta": {"Open": 32.70, "High": 33.89, "Low": 32.77, "Close": 33.00},
+        "conclusao": "A B3 registra mínima de 32,47 e máxima de 33,19; a mínima (32,77) e a máxima (33,89) do snapshot divergem. Abertura e fechamento conferem. A máxima também diverge, embora não viole a faixa, e por isso também é tratada como questionada. A abertura, questionada pela relação entre os campos, é mantida como questionada por cautela, sem efeito nos cálculos."
+      },
+      "tratamento": null,
+      "decisao": "pendente",
+      "opcoes": ["invalidar", "substituir_por_fonte_verificada"]
+    }
+  ]
+}

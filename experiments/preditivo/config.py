@@ -12,6 +12,7 @@ RAIZ = Path(__file__).resolve().parent
 PROJETO = RAIZ.parents[1]
 DADOS = RAIZ / "dados"                # um subdiretório por snapshot (snap-AAAAMMDD-NN), fora do Git
 SNAPSHOT = RAIZ / "snapshot.json"     # ponteiro versionado: snapshot vigente e tentativas anteriores
+POLITICA_QUALIDADE = RAIZ / "politica_qualidade.json"   # tratamento documentado das ocorrências de integridade
 REGISTRO = RAIZ / "registro.jsonl"
 CONDICOES = RAIZ / "condicoes_abertura.json"
 MARCA_FINAL_USADO = RAIZ / "avaliacao_final_usada.json"
@@ -27,9 +28,9 @@ DATA_CORTE = "2026-10-30"
 EMBARGO = 20              # pregões excluídos no início de cada validação
 ANOS_DESENVOLVIMENTO = tuple(range(2014, 2022))   # validações das 8 dobras
 ANOS_FINAIS = tuple(range(2022, 2027))            # ajuste inicial em 2022 e reestimações anuais
-# Interpretação registrada para confirmar com o orientador: no período final
-# contínuo ("a partir do 21º pregão de 2022"), o embargo vale só no início de
-# 2022; nas reestimações de 2023 em diante aplica-se apenas o expurgo.
+# Confirmado pelo orientador em 08/11/2026: o embargo vale nas fronteiras dos
+# blocos de avaliação (cada dobra e o início do período final, em 2022); nas
+# reestimações de 2023 a 2026, dentro do bloco já iniciado, aplica-se só o expurgo.
 EMBARGO_NAS_REESTIMACOES_FINAIS = False
 
 # Modelo candidato

@@ -21,6 +21,7 @@ from core.indicators import (
 )
 from core.indicators_extra import add_atr, add_rolling_volatility
 from experiments.preditivo.config import HORIZONTE
+from experiments.preditivo.qualidade import aplicar_aos_precos, invalidar_recursivas
 
 COLUNAS_PRECO = ("Date", "Open", "High", "Low", "Close")
 EXTRAS = ("ret_20", "ret_60", "dist_pico_252")
@@ -62,16 +63,26 @@ def construir_variaveis(serie: pd.DataFrame) -> pd.DataFrame:
     return variaveis
 
 
-def construir_amostras(precos: pd.DataFrame, horizonte: int = HORIZONTE) -> pd.DataFrame:
+def construir_amostras(precos: pd.DataFrame, horizonte: int = HORIZONTE, politica: list | None = None,
+                       bruto: pd.DataFrame | None = None) -> pd.DataFrame:
     """
     Uma linha por data com todas as variáveis disponíveis (o aquecimento sai).
 
     Linhas sem alvo realizado na série (fim da série) ficam com y, entry_date
     e label_end_date vazios; quem decide se uma linha entra em treino ou
     avaliação são as funções de divisao.py, pelas datas.
+
+    `politica`: entradas da política de qualidade do ativo (qualidade.py). Os campos
+    tratados mudam só na memória, e o calendário original é preservado: datas, entradas
+    e fins de alvo são contados na série completa. Alvos que dependem de um fechamento
+    invalidado ficam ausentes (y = NaN).
     """
     serie = validar_precos(precos)
+    if politica:
+        serie = aplicar_aos_precos(serie, politica, bruto)
     variaveis = construir_variaveis(serie)
+    if politica:
+        variaveis = invalidar_recursivas(variaveis, serie["Date"], politica)
     nomes = [c for c in variaveis.columns if c != "Date"]
 
     datas = serie["Date"]

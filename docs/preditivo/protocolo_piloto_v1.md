@@ -130,7 +130,7 @@ O treinamento pode incorporar observações do período final já transcorrido, 
 
 **"Teste final usado uma única vez"** significa executar uma única avaliação final do procedimento congelado, sem alterar escolhas com base nos resultados agregados encontrados.
 
-**Embargo nas reestimações (formalização proposta, a confirmar pelo orientador).** O embargo de 20 pregões é aplicado nas fronteiras dos blocos de avaliação definidos neste protocolo (cada ano das dobras de desenvolvimento e o início do período final, em 2022). Nas reestimações anuais dentro de um bloco sequencial já iniciado (2023 a 2026), não há nova interrupção das previsões; o treino usa somente amostras com alvos integralmente realizados na data do ajuste (expurgo). Implementação: `EMBARGO_NAS_REESTIMACOES_FINAIS = False` em `experiments/preditivo/config.py`, coberta por teste.
+**Embargo nas reestimações (confirmado pelo orientador em 08/11/2026).** O embargo de 20 pregões é aplicado nas fronteiras dos blocos de avaliação definidos neste protocolo (cada ano das dobras de desenvolvimento e o início do período final, em 2022). Nas reestimações anuais dentro de um bloco sequencial já iniciado (2023 a 2026), não há nova interrupção das previsões; o treino usa somente amostras com alvos integralmente realizados na data do ajuste (expurgo). Implementação: `EMBARGO_NAS_REESTIMACOES_FINAIS = False` em `experiments/preditivo/config.py`, coberta por teste.
 
 ## 7. Referências e modelo candidato
 
@@ -286,3 +286,4 @@ A implementação local pode avançar enquanto estes itens são preparados. O pe
 | 08/11/2026 | v1, consolidada (nota) | Seção 9.2 alinhada à nota metodológica aprovada (N1 a N5): amostra em lista fixada antes, limiar estrito em precisão completa, filtro exploratório com limitação inferencial, Clark-West só diagnóstico; R² com denominador nulo "não calculável" no critério 1 |
 | 08/11/2026 | v1, consolidada (implementação) | Seção 12 atualizada com os testes implementados em `experiments/preditivo/` (sem mudança no experimento) |
 | 08/11/2026 | v1, consolidada (verificações) | Triagem renomeada para retorno de preço × ajustado por proventos, com desdobramentos à parte; conferência OHLC em bases comparáveis e variações do fator sem evento; formalização proposta do embargo nas reestimações do período final (a confirmar) |
+| 08/11/2026 | v1, consolidada (embargo) | Formalização do embargo nas reestimações confirmada pelo orientador; política de qualidade por campo e por dependência em `experiments/preditivo/qualidade.py` e `politica_qualidade.json` (tratamento das ocorrências pendente de decisão) |

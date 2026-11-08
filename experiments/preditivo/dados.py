@@ -314,3 +314,11 @@ def carregar(ponteiro: Path = config.SNAPSHOT, pasta: Path = config.DADOS):
               for ativo in manifesto["parametros"]["ativos"]}
     cdi = pd.read_csv(manifesto_path.parent / "cdi_sgs12.csv", parse_dates=["data"])
     return manifesto, precos, cdi
+
+
+def carregar_brutos(ponteiro: Path = config.SNAPSHOT, pasta: Path = config.DADOS) -> dict[str, pd.DataFrame]:
+    """Séries brutas do snapshot vigente (hashes conferidos por `carregar`), para o fator de ajuste."""
+    manifesto, _precos, _cdi = carregar(ponteiro, pasta)
+    base = caminho_manifesto(ponteiro, pasta).parent
+    return {ativo: pd.read_csv(base / _nome(ativo, "bruto"), parse_dates=["Date"])
+            for ativo in manifesto["parametros"]["ativos"]}

@@ -181,3 +181,27 @@ Documento avaliado: [`docs/preditivo/nota_teste_estatistico.md`](../preditivo/no
 **Evidência:** texto recebido pelo desenvolvedor em 08/11/2026 ("Data proposta: 08/11/2026") e incorporado à nota e ao protocolo no mesmo dia. **Pendente:** arquivar fora do repositório a mensagem original do orientador (data e remetente), conforme a auditoria de 07/11/2026.
 
 Status: recebida em 08/11/2026. Confirmação original: a arquivar.
+
+## Manifestação sobre o snapshot `snap-20261108-01` (08/11/2026)
+
+| Assunto | Decisão |
+|---|---|
+| Situação | Coleta concluída; snapshot coletado e congelado; integridade com pendências; uso na modelagem condicionado ao tratamento documentado; avaliação final bloqueada. O congelamento preserva e identifica os arquivos, sem considerar todas as observações adequadas para qualquer cálculo |
+| PETR4 em 02/04/2014 | "Violação de consistência OHLC: fechamento abaixo da mínima; campo responsável não determinado." Vedado substituir pela mínima, ampliar a faixa, interpolar, atribuir causa não confirmada ou corrigir o arquivo original. O tratamento deve considerar retornos, alvos, preços de execução e indicadores |
+| VALE3 em 14/08/2012 e 05/09/2012 | Inconsistências da abertura; tratamento por campo, sem excluir a linha inteira; confirmar pelo código quais indicadores consomem cada campo |
+| Conferência externa | Pontual, com prazo, arquivada mesmo sem conclusão. **Se não houver fonte verificável**, política conservadora: preservar os originais; invalidar na visão derivada o campo questionado e só os cálculos que dependem dele; sem estimativas; calendário preservado (sem remover datas nem recalcular deslocamentos) |
+| Registro obrigatório | Data e campo questionados; regra aplicada; fonte da conferência; variáveis e amostras invalidadas; datas afetadas; impacto na cobertura do desenvolvimento; preservação do calendário e dos originais. Tratamento não escolhido pelo R² ou pelo backtest |
+| Fator de ajuste em 03/04/2014 | Retratação considerada correta; a sequência (hipótese no ensaio, provento identificado, explicação, correção) deve ser mantida. As 62 datas com provento e o desdobramento ficam como resultados da conferência, não como anomalias |
+| Árvore alterada na coleta | O registro permanece. Aceito como desvio documental justificado, sem repetir a coleta, com a evidência arquivada ([`../preditivo/evidencias/arvore_coleta_snap-20261108-01.md`](../preditivo/evidencias/arvore_coleta_snap-20261108-01.md)) |
+| Embargo nas reestimações | **Confirmado**: embargo nas fronteiras dos blocos; nas reestimações de 2023 a 2026, sem nova interrupção; ajustes só com alvos realizados; expurgo obrigatório, inclusive na seleção interna |
+| Autorizações | Cópia de segurança com hashes; versionamento dos metadados e do relatório; implementar e testar a política; documentar as amostras afetadas; consolidar a configuração; executar o desenvolvimento oficial. Avaliação final bloqueada |
+
+**Andamento em 08/11/2026.** A conferência externa encontrou fonte verificável (B3, série histórica oficial) para as três datas. Ela identificou os campos divergentes: no PETR4, o fechamento (16,56 na B3, contra 15,56); na VALE3, a máxima em 14/08/2012 e a mínima e a máxima em 05/09/2012. As aberturas da VALE3 conferem com a B3. Como a política conservadora foi aprovada para o caso **sem** fonte verificável, a escolha entre invalidar e usar o valor da B3 na visão derivada é uma decisão nova (P1, abaixo), e o desenvolvimento oficial aguarda essa decisão. O impacto de cada opção, medido sem nenhum modelo, está no relatório do snapshot.
+
+| # | Decisão pendente | Opções |
+|---|---|---|
+| P1 | Tratamento das três ocorrências, diante da fonte verificável | (a) invalidar os campos divergentes (política conservadora); (b) usar na visão derivada o valor da B3, convertido para a base ajustada pelo fator da própria data, sem alterar o snapshot |
+
+**Evidência:** texto recebido pelo desenvolvedor em 08/11/2026. **Pendente:** arquivar fora do repositório a mensagem original (data e remetente).
+
+Status: recebida em 08/11/2026. Confirmação original: a arquivar.

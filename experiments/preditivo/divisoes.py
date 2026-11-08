@@ -55,7 +55,8 @@ def treino_ate(amostras: pd.DataFrame, primeira: pd.Timestamp, inicio_treino=Non
     """Expurgo: amostras decididas e com alvo realizado antes da primeira data avaliada."""
     decisao = amostras["decision_date"]
     fim = amostras["label_end_date"]
-    mascara = (decisao < primeira) & fim.notna() & (fim < primeira)
+    # Alvo ausente por política de qualidade (y = NaN) não entra no treino.
+    mascara = (decisao < primeira) & fim.notna() & (fim < primeira) & amostras["y"].notna()
     if inicio_treino is not None:
         mascara &= decisao >= pd.Timestamp(inicio_treino)
     return np.flatnonzero(mascara.to_numpy())

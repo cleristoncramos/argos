@@ -15,6 +15,7 @@ Implementa o [protocolo do piloto](../../docs/preditivo/protocolo_piloto_v1.md) 
 | `estatistica.py` | R² fora da amostra, Diebold-Mariano, Clark-West (diagnóstico) e casos não calculáveis | 9.1, 9.2; nota |
 | `elegibilidade.py` | Os cinco critérios, com a condição econômica (A ∧ B) ∨ C | 9.3, 9.4 |
 | `dados.py` | Coleta; triagem de retorno de preço × ajustado por proventos; desdobramentos da fonte; conferência OHLC em bases comparáveis; variações do fator sem evento; manifesto com hashes e leitura conferida | 3, 5, 8.3 |
+| `qualidade.py` | Política de qualidade por campo e por dependência (invalidar ou substituir pela fonte verificada), na memória, com o calendário preservado; trava enquanto houver decisão pendente | 3, 10 |
 | `registro.py` | Uma linha por execução em `registro.jsonl`, com commit e hashes | 10 |
 | `abertura.py` | Trava da avaliação final | 6.3, 11, 12 |
 | `executar.py` | Comandos | — |
@@ -51,10 +52,16 @@ python -m experiments.preditivo.executar listar-datas
 Gera `datas_elegiveis.json` (N1): datas do período final com alvo realizado, pelo calendário e pelo horizonte, sem consultar erros.
 
 ```bash
+python -m experiments.preditivo.executar qualidade
+```
+
+Compara os tratamentos possíveis das ocorrências de integridade sem ajustar nenhum modelo: amostras e variáveis invalidadas, datas afetadas e preservação do calendário.
+
+```bash
 python -m experiments.preditivo.executar desenvolver
 ```
 
-Roda as 8 dobras de 2014 a 2021. Usa só preços anteriores à primeira data do período final (o 21º pregão de 2022), então o período final não é lido. Um teste garante isso.
+Roda as 8 dobras de 2014 a 2021, com a política de qualidade de `politica_qualidade.json`. Recusa rodar enquanto a política tiver decisão pendente; `--ensaio` roda sem essa exigência e é registrado como ensaio, não como rodada oficial. Usa só preços anteriores à primeira data do período final (o 21º pregão de 2022), então o período final não é lido. Um teste garante isso.
 
 ```bash
 python -m experiments.preditivo.executar final --confirmo-abertura
