@@ -30,8 +30,13 @@ def hashes_atuais() -> dict:
 
 
 def arquivos_alterados() -> list[str]:
-    """Caminhos com alteração local não commitada (git status --porcelain)."""
-    return [linha[3:].strip().strip('"') for linha in git("status", "--porcelain").splitlines() if linha.strip()]
+    """
+    Caminhos com alteração local não commitada: modificados em relação ao commit (no índice
+    ou na cópia de trabalho) e novos não ignorados. Um caminho por linha, sem códigos de status.
+    """
+    modificados = git("diff", "--name-only", "HEAD").splitlines()
+    novos = git("ls-files", "--others", "--exclude-standard").splitlines()
+    return sorted({c.strip() for c in modificados + novos if c.strip()})
 
 
 def registrar(evento: str, dados: dict, avaliacao_final: bool = False, destino: Path | None = None,

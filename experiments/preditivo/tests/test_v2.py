@@ -173,6 +173,15 @@ def v2_isolada(tmp_path, monkeypatch):
     return tmp_path
 
 
+def test_arquivos_alterados_le_caminhos_completos(monkeypatch):
+    from experiments.preditivo import registro
+    saidas = {("diff", "--name-only", "HEAD"): "docs/versao_congelada.md\nexperiments/preditivo/config_v2.py",
+              ("ls-files", "--others", "--exclude-standard"): "experiments/preditivo/novo.py"}
+    monkeypatch.setattr(registro, "git", lambda *a: saidas[a])
+    assert registro.arquivos_alterados() == ["docs/versao_congelada.md", "experiments/preditivo/config_v2.py",
+                                             "experiments/preditivo/novo.py"]
+
+
 def test_codigo_nao_congelado_recusa_o_desenvolvimento_oficial():
     executar_v2.exigir_codigo_congelado(["docs/versao_congelada.md", "experiments/preditivo/registro_v2.jsonl"])
     with pytest.raises(executar_v2.ExecucaoRecusada, match="não congelados"):
