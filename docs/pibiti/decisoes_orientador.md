@@ -162,3 +162,22 @@ Documento avaliado: [`docs/preditivo/protocolo_piloto_v1.md`](../preditivo/proto
 **Evidência:** texto recebido pelo desenvolvedor em 08/11/2026 e incorporado ao protocolo no mesmo dia. O texto indica "Data proposta: 08/11/2026" e pede, entre as condições, o registro da confirmação real. **Pendente:** arquivar fora do repositório a mensagem original do orientador (data e remetente), conforme a auditoria de 07/11/2026. Sem essa confirmação, a avaliação final não é aberta (protocolo, seção 12).
 
 Status: recebida em 08/11/2026. Confirmação original: a arquivar.
+
+## Nota metodológica do teste estatístico (08/11/2026)
+
+Documento avaliado: [`docs/preditivo/nota_teste_estatistico.md`](../preditivo/nota_teste_estatistico.md). Objeto: decisões N1 a N5, anteriores à abertura da avaliação final. O procedimento é critério exploratório de elegibilidade do piloto local, sem equivaler a certificação estatística de recomendação de investimento.
+
+| ID | Decisão |
+|---|---|
+| N1 | Amostra: todas as datas previstas no período final com alvo integralmente realizado, uma previsão por pregão, cada ativo separado; igual à do R² do critério 1. Lista das datas elegíveis gerada pelo calendário, horizonte e disponibilidade do alvo e fixada antes, sem consultar erros. Sem selecionar datas favoráveis, excluir erros elevados ou agregar ativos; modelo vigente identificado; data sem alvo distinta de falha de previsão; sem descarte silencioso |
+| N2 | `p = 1 − Φ(DM)`, `DM = d̄ / √(V̂/T)`, `d_t = y_t² − (y_t − ŷ_t)²`; `p < 0,10` estrito, em precisão completa; variância centrada, dividida por `T`, 19 defasagens, pesos de Bartlett; sem correção de Harvey-Leybourne-Newbold no p-valor decisório. Justificativas como escolhas operacionais, sem afirmar que a amostra elimina problemas de aproximação nem que 19 defasagens capturam toda a dependência |
+| N3 | Mínimo operacional de 200 datas, sem valor de prova de suficiência ou poder. Não calculáveis: `T < 200`, variância nula ou não finita, entradas não finitas, previsões ausentes, desalinhamento; distinguir erro numérico de variância nula; proibido ajustar a variância ou remover datas |
+| N4 | Diebold-Mariano mantido como filtro exploratório; sem troca de teste após os resultados. Substituir a afirmação de que o teste não aumenta o risco de falso positivo pela ressalva aprovada (nível nominal de 10% não assumido como taxa efetiva). Sem estudo de simulação exigido agora |
+| N5 | Clark-West (`f_t = y_t² − (y_t − ŷ_t)² + ŷ_t²`) só como diagnóstico: não substitui, não altera a elegibilidade, não é segunda chance, é sempre apresentado; divergência registrada sem concluir ganho encoberto |
+| Ajustes finais | Incorporar as decisões; substituir a garantia pela ressalva; registrar a amostra elegível antes da avaliação; R² com denominador nulo "não calculável"; testes de não finitos e desalinhamento; testes matemáticos pequenos separados do mínimo de 200; registrar commit e hash da configuração final. Implementação e testes unitários autorizados, sem abrir os resultados finais |
+
+**Encaminhamento:** com a confirmação do orientador e a incorporação dos ajustes, a condição 7 do protocolo pode ser registrada como cumprida. A abertura da avaliação final segue dependendo das demais condições do protocolo.
+
+**Evidência:** texto recebido pelo desenvolvedor em 08/11/2026 ("Data proposta: 08/11/2026") e incorporado à nota e ao protocolo no mesmo dia. **Pendente:** arquivar fora do repositório a mensagem original do orientador (data e remetente), conforme a auditoria de 07/11/2026.
+
+Status: recebida em 08/11/2026. Confirmação original: a arquivar.

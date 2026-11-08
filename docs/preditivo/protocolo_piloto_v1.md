@@ -197,26 +197,23 @@ Os experimentos de aporte único e aportes periódicos ficam para uma rodada pos
 | Estratégia | Retorno líquido acumulado e anualizado, volatilidade, **magnitude** do drawdown máximo (valor positivo), número de trocas e percentual do tempo exposto |
 | Estabilidade | R² fora da amostra em cada dobra do desenvolvimento, todas reportadas, inclusive as negativas |
 
-### 9.2 Teste estatístico (aprovado, com nota metodológica prévia)
+### 9.2 Teste estatístico (aprovado; especificação na nota metodológica)
 
-**Teste:** Diebold-Mariano, com `p < 0,10` a favor do candidato.
+**Teste:** Diebold-Mariano unilateral, com `p < 0,10` **estrito** a favor do candidato, calculado em precisão completa. A especificação completa está na [nota metodológica](nota_teste_estatistico.md) (decisões N1 a N5 de 08/11/2026):
+- amostra: todas as datas elegíveis do período final com alvo realizado, por ativo, fixadas em lista antes da avaliação (a mesma do R² do critério 1);
+- perda quadrática e diferencial `d_t = y_t² − (y_t − ŷ_t)²`;
+- p-valor pela normal padrão, sem correção de amostra pequena;
+- variância de Newey-West (Bartlett) com 19 defasagens, centrada e dividida por `T`;
+- mínimo operacional de 200 datas e casos "não calculáveis" (que não atendem ao critério).
 
-Antes do período final, a nota metodológica `docs/preditivo/nota_teste_estatistico.md` registra:
-- função de perda quadrática;
-- hipótese unilateral de menor perda do candidato;
-- convenção de sinal do diferencial de perdas;
-- variância robusta de Newey-West com 19 defasagens (sobreposição dos alvos).
-
-**Revisão de adequação.** A comparação com o retorno zero é entre modelos aninhados, caso em que a literatura discute alternativas como o procedimento de Clark-West. A nota avalia essa adequação antes da execução. Se indicar outro teste, a mudança é confirmada pelo orientador e registrada **antes** de abrir os resultados finais, nunca depois.
-
-O limiar `p < 0,10` é exploratório, escolhido para este piloto, e não garante que a estratégia funcionará no futuro. Resultado não calculável não é tratado como aprovação.
+O teste é um **filtro exploratório previamente especificado**. Em comparação aninhada, com Ridge, seleção temporal da regularização e reestimação sequencial, não se assume que o nível nominal de 10% corresponda exatamente à taxa efetiva de falso positivo. Não há troca de teste depois da abertura dos resultados finais. O Clark-West é apresentado só como diagnóstico complementar, sem efeito sobre a elegibilidade.
 
 ### 9.3 Critérios de elegibilidade (aprovados)
 
 Avaliados **por ativo**, no período final. O sinal só é elegível se **todos** forem atendidos:
 
-1. **Ganho preditivo:** R² fora da amostra **estritamente maior que zero** em relação ao retorno zero. Zero não satisfaz, e não se aplica arredondamento para converter resultado nulo ou negativo em aprovação.
-2. **Comparação estatística:** teste da seção 9.2 com `p < 0,10` a favor do candidato.
+1. **Ganho preditivo:** R² fora da amostra **estritamente maior que zero** em relação ao retorno zero. Zero não satisfaz, e não se aplica arredondamento para converter resultado nulo ou negativo em aprovação. Se a perda total da referência for zero, o R² é "não calculável" e o critério não é atendido.
+2. **Comparação estatística:** teste da seção 9.2 com `p < 0,10` (estrito, em precisão completa) a favor do candidato; "não calculável" não atende.
 3. **Estabilidade:** R² fora da amostra maior que zero em pelo menos 5 das 8 dobras do desenvolvimento.
 4. **Resultado econômico,** com o custo-base: **(A ∧ B) ∨ C**, onde
    - **A:** retorno líquido da estratégia superior ao do caixa;
@@ -270,7 +267,7 @@ A implementação local pode avançar enquanto estes itens são preparados. O pe
 | 4 | Testar o alinhamento entre `decision_date`, `entry_date` e `label_end_date` | Pendente |
 | 5 | Testar o expurgo nas divisões externas e internas | Pendente |
 | 6 | Conferir custos, caixa e referências | Pendente |
-| 7 | Fechar a nota metodológica do teste estatístico (seção 9.2) | Pendente |
+| 7 | Fechar a nota metodológica do teste estatístico (seção 9.2) | Decisões N1 a N5 aprovadas e ajustes incorporados (08/11/2026); cumprida quando a confirmação original for arquivada |
 | 8 | Registrar a confirmação original da decisão (mensagem do orientador com data e remetente) | Pendente |
 
 ---
@@ -282,3 +279,4 @@ A implementação local pode avançar enquanto estes itens são preparados. O pe
 | 07/11/2026 | v1, minuta | Primeira redação |
 | 08/11/2026 | v1, minuta, revisão 1 | Alvo alinhado à entrada e datas por amostra; reestimação sequencial; embargo e expurgo separados, inclusive nas divisões internas; preços na mesma base de ajuste; caixa estimado na regra; custos por lado; teste estatístico condicionado a nota; condição econômica explícita; regra de versões |
 | 08/11/2026 | v1, consolidada | Decisão do orientador sobre R6, R7, R8 e critérios. Regra de entrada volta a `ŷ > c` com `c = 0,002`, sem estimativa do caixa; sensibilidade em 0%, 0,10%, 0,20% e 0,30% por lado; teste de Diebold-Mariano com revisão de adequação antes da execução; ramo C sem limite adicional de drawdown, com destaque obrigatório; descrição obrigatória do resultado; condições para abrir a avaliação final (seção 12) |
+| 08/11/2026 | v1, consolidada (nota) | Seção 9.2 alinhada à nota metodológica aprovada (N1 a N5): amostra em lista fixada antes, limiar estrito em precisão completa, filtro exploratório com limitação inferencial, Clark-West só diagnóstico; R² com denominador nulo "não calculável" no critério 1 |
