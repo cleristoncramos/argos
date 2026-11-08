@@ -492,3 +492,4 @@ Etapa 0 — revisão de escopo:
 - [ ] Condições da seção 12 do protocolo antes de abrir a avaliação final: hash da versão consolidada, dados e configuração congelados, testes de alinhamento e expurgo, conferência de custos, caixa e referências
 - [ ] Revisar as minutas do CEP e do TCLE, conforme a decisão R9
 - [ ] Atualizar a seção Pesquisa da página "Sobre o Projeto" depois de R5
+- [ ] Remover a conta `claude` do quadro "Contributors" do GitHub: chamado de suporte #4973378 aberto em 08/11/2026 (pedido de recálculo do cache de contribuidores e limpeza dos commits órfãos da reescrita do histórico). Concluir quando a lateral do repositório mostrar 1 contribuidor
