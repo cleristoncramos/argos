@@ -16,6 +16,7 @@ import argparse
 import json
 import sys
 
+import numpy as np
 import pandas as pd
 
 from core.clock import now_brasilia
@@ -35,7 +36,7 @@ from experiments.preditivo.estatistica import (
     r2_fora_da_amostra,
 )
 from experiments.preditivo.estrategia import backtest, datas_de_decisao
-from experiments.preditivo.qualidade import carregar_politica, entradas_do_ativo, exigir_decidida
+from experiments.preditivo.qualidade import carregar_politica, entradas_do_ativo, exigir_decidida, serie_derivada
 from experiments.preditivo.registro import registrar
 from experiments.preditivo.util import sha256
 
@@ -182,26 +183,72 @@ def impacto_politica(precos: pd.DataFrame, entradas: list, bruto: pd.DataFrame) 
         # As amostras que sobram têm as mesmas datas de entrada e de fim do alvo: nada foi deslocado.
         "calendario_preservado": bool(
             base.loc[comuns, ["entry_date", "label_end_date"]].equals(tratada.loc[comuns, ["entry_date", "label_end_date"]])),
+        **_alteracoes(base, tratada, comuns, nomes),
+    }
+
+
+# Mudança material: diferença absoluta acima de 1e-9. Abaixo disso, ficam o ruído de ponto
+# flutuante (até cerca de 1e-12 quando a série é reescalada por uma constante) e o resíduo
+# que as médias recursivas carregam depois da janela afetada.
+LIMIAR_ALTERACAO = 1e-9
+
+
+def _alteracoes(base: pd.DataFrame, tratada: pd.DataFrame, comuns, nomes, limiar=LIMIAR_ALTERACAO) -> dict:
+    """Amostras preservadas cujas variáveis ou cujo alvo mudaram de valor com a política."""
+    a = base.loc[comuns, nomes + ["y"]].to_numpy(dtype=float)
+    b = tratada.loc[comuns, nomes + ["y"]].to_numpy(dtype=float)
+    diferenca = np.where(np.isnan(a) & np.isnan(b), 0.0, np.abs(a - b))
+    resumo = {}
+    for nome, limite in (("acima_de_1e-9", limiar), ("acima_de_1e-6", 1e-6)):
+        diferente = diferenca > limite
+        linhas = comuns[diferente.any(axis=1)]
+        colunas = [c for c, mudou in zip(nomes + ["y"], diferente.any(axis=0)) if mudou]
+        resumo[nome] = {
+            "amostras": int(len(linhas)),
+            "colunas": sorted({c.split("_lag")[0] for c in colunas}),
+            "primeira": linhas.min().date().isoformat() if len(linhas) else None,
+            "ultima": linhas.max().date().isoformat() if len(linhas) else None,
+            "amostras_com_alvo_alterado": int(diferente[:, -1].sum()),
+        }
+    alvo = diferenca[:, -1]
+    return {
+        "amostras_preservadas_com_valores_alterados": resumo,
+        "maior_variacao_absoluta_do_alvo": float(alvo.max()) if len(alvo) and alvo.max() > 0 else None,
     }
 
 
 def comando_qualidade(_args) -> int:
-    """Compara os tratamentos possíveis sem rodar modelos (para a decisão da política)."""
+    """
+    Impacto da política sem rodar modelos. Com a política decidida, mede a política vigente
+    (versão e hash) e confere a faixa OHLC das datas tratadas na visão derivada.
+    """
     _manifesto, precos, _cdi = carregar()
     politica = carregar_politica()
     brutos = carregar_brutos()
-    relatorio = {}
+    relatorio = {"politica": {"versao": politica.get("versao"), "sha256": sha256(config.POLITICA_QUALIDADE)}}
     for ativo, serie in precos.items():
         entradas = entradas_do_ativo(politica, ativo)
-        relatorio[ativo] = {tratamento: impacto_politica(serie, [{**e, "tratamento": tratamento} for e in entradas],
-                                                          brutos[ativo])
-                            for tratamento in ("invalidar", "substituir_por_fonte_verificada")}
+        if all(e.get("decisao") == "decidida" for e in entradas):
+            derivada = serie_derivada(serie, entradas, brutos[ativo]).set_index("Date")
+            faixa = {e["data"]: _faixa(derivada.loc[pd.Timestamp(e["data"])]) for e in entradas}
+            relatorio[ativo] = {"politica_vigente": impacto_politica(serie, entradas, brutos[ativo]),
+                                "faixa_ohlc_na_visao_derivada": faixa}
+        else:
+            relatorio[ativo] = {tratamento: impacto_politica(serie, [{**e, "tratamento": tratamento} for e in entradas],
+                                                              brutos[ativo])
+                                for tratamento in ("invalidar", "substituir_por_fonte_verificada")}
     RESULTADOS.mkdir(exist_ok=True)
     (RESULTADOS / "qualidade_impacto.json").write_text(json.dumps(relatorio, ensure_ascii=False, indent=2),
                                                         encoding="utf-8")
     registrar("impacto_politica_qualidade", relatorio)
     print(json.dumps(relatorio, ensure_ascii=False, indent=2))
     return 0
+
+
+def _faixa(linha) -> dict:
+    return {"abertura": float(linha["Open"]), "maxima": float(linha["High"]), "minima": float(linha["Low"]),
+            "fechamento": float(linha["Close"]),
+            "consistente": bool(linha["Low"] <= linha["Open"] <= linha["High"] and linha["Low"] <= linha["Close"] <= linha["High"])}
 
 
 def embargos_periodo_final(anos=config.ANOS_FINAIS) -> dict:
@@ -232,7 +279,9 @@ def avaliar_final_ativo(ativo: str, precos: pd.DataFrame, cdi: pd.DataFrame, ele
 
     decisoes = datas_de_decisao(previsoes)
     custos = sorted(set(config.CUSTOS_SENSIBILIDADE) | {config.CUSTO_LADO_BASE, config.CUSTO_LADO_DOBRO})
-    backtests = {c: backtest(precos, cdi, decisoes, c, config.DATA_CORTE) for c in custos}
+    # A execução simulada usa a mesma visão derivada das variáveis e dos alvos.
+    derivada = serie_derivada(precos, politica, bruto)
+    backtests = {c: backtest(derivada, cdi, decisoes, c, config.DATA_CORTE) for c in custos}
     _p, _a, dobras = desenvolver_ativo(ativo, precos, politica, bruto)
     decisao = avaliar(r2, teste_dm, [d["r2_fora_da_amostra"] for d in dobras],
                       backtests[config.CUSTO_LADO_BASE], backtests[config.CUSTO_LADO_DOBRO])

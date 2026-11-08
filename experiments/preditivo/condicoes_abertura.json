@@ -14,6 +14,7 @@
     "nota": null,
     "configuracao": null,
     "manifesto_dados": null,
+    "politica_qualidade": null,
     "datas_elegiveis": null
   },
   "observacoes": "Preencher só quando cada condição estiver cumprida e documentada."

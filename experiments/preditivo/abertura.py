@@ -39,7 +39,7 @@ def modelo_condicoes() -> dict:
     return {
         "condicoes": {nome: False for nome in CONDICOES_SECAO_12},
         "hashes": {"protocolo": None, "nota": None, "configuracao": None,
-                   "manifesto_dados": None, "datas_elegiveis": None},
+                   "manifesto_dados": None, "politica_qualidade": None, "datas_elegiveis": None},
         "observacoes": "Preencher só quando cada condição estiver cumprida e documentada.",
     }
 

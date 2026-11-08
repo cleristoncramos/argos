@@ -474,7 +474,8 @@ Etapa 0 — revisão de escopo:
 - [x] Evidência da árvore alterada na coleta arquivada (desvio documental aceito pelo orientador)
 - [x] Embargo nas reestimações confirmado pelo orientador e registrado na configuração e no protocolo
 - [x] Conferência externa pela B3 das três datas, arquivada; política de qualidade implementada e testada, com os dois tratamentos
-- [ ] Decisão P1: invalidar os campos divergentes ou usar os valores da B3 na visão derivada
+- [x] Decisão P1 (08/11/2026): substituição pontual pela B3 na visão derivada; condições cumpridas e política 1.0 com hash registrado
+- [ ] Arquivar a mensagem original da decisão P1
 - [ ] Desenvolvimento oficial com a política decidida
 - [ ] Arquivar a mensagem original da manifestação do orientador sobre o snapshot
 - [ ] Condições da seção 12 do protocolo antes de abrir a avaliação final: hash da versão consolidada, dados e configuração congelados, testes de alinhamento e expurgo, conferência de custos, caixa e referências

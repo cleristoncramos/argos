@@ -25,6 +25,7 @@ def hashes_atuais() -> dict:
         "nota": _hash_opcional(config.NOTA),
         "configuracao": _hash_opcional(config.RAIZ / "config.py"),
         "manifesto_dados": _hash_opcional(caminho_manifesto()),
+        "politica_qualidade": _hash_opcional(config.POLITICA_QUALIDADE),
     }
 
 

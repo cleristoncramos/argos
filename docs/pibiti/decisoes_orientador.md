@@ -205,3 +205,22 @@ Status: recebida em 08/11/2026. Confirmação original: a arquivar.
 **Evidência:** texto recebido pelo desenvolvedor em 08/11/2026. **Pendente:** arquivar fora do repositório a mensagem original (data e remetente).
 
 Status: recebida em 08/11/2026. Confirmação original: a arquivar.
+
+## P1 — Tratamento das ocorrências de integridade (08/11/2026)
+
+Decisão: aprovar substituições pontuais pelos valores da B3 na visão derivada, preservando integralmente o snapshot original. Escolha feita antes do desenvolvimento oficial e sem consultar desempenho de modelos; o fundamento é a existência de fonte identificada, verificável e pertinente ao registro da negociação (a menor perda de amostras é consequência, não justificativa).
+
+| Ativo e data | Campo | Original (Yahoo) | Aprovado (B3) |
+|---|---|---:|---:|
+| PETR4, 02/04/2014 | Fechamento | 15,56 | 16,56 |
+| VALE3, 14/08/2012 | Máxima | 37,75 | 38,64 |
+| VALE3, 05/09/2012 | Máxima | 33,89 | 33,19 |
+| VALE3, 05/09/2012 | Mínima | 32,77 | 32,47 |
+
+Condições: arquivar o registro exato da B3 e sua identificação; verificar moeda, mercado e base de cotação; justificar a transformação para preços ajustados, conferindo especialmente o fator associado ao fechamento corrigido da PETR4 (se não for justificável de forma reproduzível, a PETR4 volta à invalidação); recalcular variáveis, alvos e execução; preservar datas e arquivos originais; registrar versão e hash da política. Não se escolhem campos de fontes diferentes conforme o resultado no modelo; a exceção fica limitada a estas ocorrências. Permanecem inalterados ativos, horizonte, variáveis, grade de `alpha`, critérios, embargo, expurgo e o bloqueio da avaliação final. Concluídas as verificações, o desenvolvimento oficial da v1 está autorizado.
+
+**Cumprimento das condições (08/11/2026):** registros exatos da B3 identificados (arquivo, linha, código, mercado à vista, R$, fator de cotação 1, ISIN e hash da linha); o método multiplicativo de ajuste reproduz o fator da fonte nas datas afetadas (PETR4 de 2008 a 2014 e VALE3 em 2012, diferença relativa máxima de 5,6e-07); o fator da PETR4 foi recalculado com o fechamento corrigido, porque a data ex de 03/04/2014 usa o fechamento de 02/04/2014; faixa OHLC consistente nas três datas da visão derivada; impacto final sem perda de amostras. Política `experiments/preditivo/politica_qualidade.json`, versão 1.0, SHA-256 `f75598b06fa9a1100fecc5783b78c1874642686223ecb5b60e05096cf8e88975`. Detalhes no [relatório do snapshot](../preditivo/snapshot_snap-20261108-01.md), seção 7.
+
+**Evidência:** texto recebido pelo desenvolvedor em 08/11/2026. **Pendente:** arquivar fora do repositório a mensagem original (data e remetente).
+
+Status: recebida em 08/11/2026. Confirmação original: a arquivar.
