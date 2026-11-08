@@ -457,6 +457,7 @@ Etapa 0 — revisão de escopo:
 - [ ] Encaminhar a consulta institucional ou jurídica sobre recomendação (R2)
 - [ ] Criar a tag de referência da versão histórica atual (novembro de 2026; o congelamento formal segue em fevereiro de 2027)
 - [x] Incorporar ao plano os ajustes da revisão de 07/11/2026 (N07, piloto reduzido, habilitação operacional, preços, múltiplos testes, calendário e blocos de decisão)
-- [ ] Redigir `docs/preditivo/protocolo_piloto_v1.md` (plano, seção 7.1)
+- [x] Redigir a minuta `docs/preditivo/protocolo_piloto_v1.md` (plano, seção 7.1), 07/11/2026
+- [ ] Revisão do protocolo pelo orientador e definição de R6, R7, R8 e dos limiares de elegibilidade
 - [ ] Revisar as minutas do CEP e do TCLE, conforme a decisão R9
 - [ ] Atualizar a seção Pesquisa da página "Sobre o Projeto" depois de R5

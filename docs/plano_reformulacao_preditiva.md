@@ -234,7 +234,7 @@ Se o modelo não atender aos critérios, o sistema exibirá a comparação exper
 
 ### 7.1 Próximo artefato
 
-Antes de mudar o prompt v0.6 ou os testes que impedem recomendação na aplicação histórica, redigir uma especificação curta do piloto em `docs/preditivo/protocolo_piloto_v1.md`, com:
+Antes de mudar o prompt v0.6 ou os testes que impedem recomendação na aplicação histórica, redigir uma especificação curta do piloto. **Minuta redigida em 07/11/2026:** [`preditivo/protocolo_piloto_v1.md`](preditivo/protocolo_piloto_v1.md), com:
 
 1. ativos e justificativa;
 2. alvo e horizonte;
