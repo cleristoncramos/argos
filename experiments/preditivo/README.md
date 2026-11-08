@@ -99,3 +99,18 @@ Os testes ficam fora da suíte do `core/` (`tests/`), porque o scikit-learn não
 ## Registro de cada ajuste
 
 Além do `alpha` e dos erros das validações internas, cada ajuste registra a média do alvo no treino, a média e o desvio das previsões, o uso de intercepto e se o `alpha` ficou no limite da grade. O resumo do desenvolvimento traz a frequência de seleção de cada `alpha`. Um `alpha` alto encolhe os coeficientes; com intercepto, as previsões tendem a uma constante ligada à média do alvo no treino, não necessariamente a zero.
+
+## Piloto v2
+
+Protocolo: `docs/preditivo/protocolo_piloto_v2.md`. A configuração própria está em `config_v2.py`: grade de `alpha` até 10⁶ com limite fixo e tolerâncias da reprodução. Todo o resto vem de `config.py`, que não muda. Registro em `registro_v2.jsonl`, resultados em `resultados/v2/` e travas próprias (`condicoes_abertura_v2.json`, `avaliacao_final_usada_v2.json`, `datas_elegiveis_v2.json`, `encerramento_v2.json`).
+
+```bash
+python -m experiments.preditivo.executar_v2 reproduzir-v1
+python -m experiments.preditivo.executar_v2 desenvolver
+python -m experiments.preditivo.executar_v2 listar-datas
+python -m experiments.preditivo.executar_v2 final --confirmo-abertura
+```
+
+- `reproduzir-v1`: roda a v2 restrita à grade da v1 e compara com os resultados oficiais da v1, conferidos pelos hashes do encerramento (tolerância de 10⁻¹⁰ relativa e 10⁻¹² absoluta).
+- `desenvolver`: rodada oficial única. Recusa código não commitado, repete a reprodução da v1, confere os `alpha` comuns e não sobrescreve resultados. Registra, por ajuste, a norma dos coeficientes, o afastamento em relação à média histórica e a escolha no limite superior. Calcula os filtros dos critérios 3 e 6.
+- `listar-datas` e `final`: travados até o desenvolvimento atender aos critérios 3 e 6 e até as sete condições de `condicoes_abertura_v2.json`, inclusive a nova decisão escrita de abertura.

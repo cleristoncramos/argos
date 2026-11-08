@@ -274,8 +274,22 @@ Separação técnica: configurações, registros e travas próprios da v2, com f
 
 Sequência autorizada: consolidar o protocolo v2 → obter a confirmação real → implementar a separação por versão → testes sintéticos e de desenvolvimento → congelar configuração e código → desenvolvimento oficial → relatório → decisão sobre encerramento ou abertura. Não inclui publicação de previsões, habilitação de sinais no aplicativo nem alteração do prompt histórico v0.6.
 
-**Cumprimento (08/11/2026):** protocolo v2 consolidado; proposta corrigida conforme as observações de redação. Implementação ainda não iniciada: aguarda a confirmação real.
+**Cumprimento (08/11/2026):** protocolo v2 consolidado; proposta corrigida conforme as observações de redação.
 
-**Evidência:** texto recebido pelo desenvolvedor em 08/11/2026. O texto recebido terminou interrompido na última frase da conclusão ("O resultado será aceito e docu…"); as decisões V2-1 a V2-7 e a sequência chegaram completas. **Pendente:** arquivar fora do repositório a mensagem original completa (data e remetente).
+**Confirmação (08/11/2026):** o orientador confirmou as decisões V2-1 a V2-7, conforme a proposta e o protocolo consolidados, com oito condições:
+1. a grade até 10⁶ é a única mudança de modelagem;
+2. o critério 6 é obrigatório e cumulativo, e não calculável conta como não atendido;
+3. a média do alvo no treino e a média histórica expansiva causal ficam identificadas separadamente;
+4. Diebold-Mariano contra a média é só diagnóstico;
+5. o relatório declara a não independência;
+6. a v2 tem configurações, registros, resultados e travas próprios, com a v1 preservada;
+7. a reprodução da v1 respeita as tolerâncias de 10⁻¹⁰ relativa e 10⁻¹² absoluta, e divergências são investigadas sem ampliar as tolerâncias;
+8. a falha dos critérios 3 ou 6 encerra a v2 sem abertura.
 
-Status: recebida em 08/11/2026. Confirmação original: a arquivar.
+Autorizados: o commit dos documentos, a implementação, os testes de separação e de reprodução, a preparação do congelamento e o desenvolvimento oficial depois dos testes e do congelamento. Não autorizados: a abertura do período final (exige as sete condições e nova decisão escrita), a publicação de previsões, a habilitação de sinais no aplicativo e a alteração das regras da versão histórica.
+
+Conclusão confirmada na íntegra, o que resolve a pendência da mensagem interrompida: "A ampliação da grade é uma investigação justificada, não uma promessa de melhora. O critério adicional contra a média histórica busca verificar se as variáveis acrescentam informação útil, e não apenas se uma previsão mais regularizada supera o retorno zero. O resultado será aceito e documentado independentemente de habilitar ou não o sinal."
+
+**Evidência:** textos recebidos pelo desenvolvedor em 08/11/2026 (decisão e confirmação). **Pendente:** arquivar fora do repositório as mensagens originais (data e remetente).
+
+Status: confirmada em 08/11/2026. Mensagens originais: a arquivar.

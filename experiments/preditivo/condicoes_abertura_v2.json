@@ -1,0 +1,21 @@
+{
+  "condicoes": {
+    "1_protocolo_v2_confirmado": false,
+    "2_configuracao_e_dados_identificados_por_hashes": false,
+    "3_implementacao_e_testes_concluidos": false,
+    "4_desenvolvimento_oficial_concluido": false,
+    "5_criterios_3_e_6_atendidos_no_desenvolvimento": false,
+    "6_relatorio_de_desenvolvimento_emitido": false,
+    "7_nova_decisao_escrita_de_abertura": false
+  },
+  "hashes": {
+    "protocolo": null,
+    "nota": null,
+    "configuracao": null,
+    "configuracao_v2": null,
+    "manifesto_dados": null,
+    "politica_qualidade": null,
+    "datas_elegiveis": null
+  },
+  "observacoes": "Preencher só quando cada condição estiver cumprida e documentada; a condição 7 exige nova decisão escrita do orientador."
+}

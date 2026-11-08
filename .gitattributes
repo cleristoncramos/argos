@@ -7,3 +7,4 @@ experiments/preditivo/dados/**/manifest.json -text
 docs/preditivo/protocolo_piloto_v1.md -text
 docs/preditivo/nota_teste_estatistico.md -text
 docs/preditivo/protocolo_piloto_v2.md -text
+experiments/preditivo/config_v2.py -text

@@ -91,7 +91,8 @@ def test_comandos_oficiais_recusados_na_versao_encerrada(tmp_path, monkeypatch):
         with pytest.raises(VersaoEncerrada):
             executar.main(argv)
     monkeypatch.setattr(abertura.verificar_abertura, "__defaults__",
-                        (*abertura.verificar_abertura.__defaults__[:3], encerramento))
+                        (*abertura.verificar_abertura.__defaults__[:3], encerramento,
+                         *abertura.verificar_abertura.__defaults__[4:]))
     with pytest.raises(AberturaNegada, match="encerrada"):
         executar.main(["final", "--confirmo-abertura"])
 

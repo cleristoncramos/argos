@@ -160,3 +160,55 @@ def acuracia_balanceada(y: np.ndarray, yhat: np.ndarray) -> float | None:
     if alta.all() or not alta.any():
         return None
     return float((np.mean(prevista[alta]) + np.mean(~prevista[~alta])) / 2.0)
+
+
+def r2_contra_referencia(y, yhat, yref) -> float | None:
+    """
+    Protocolo v2, seção 5: 1 − Σ(y − ŷ)² / Σ(y − ŷ_ref)², nas mesmas datas. Não calculável
+    (None) com amostra vazia ou de tamanhos diferentes, valor ausente ou não finito em
+    qualquer data, ou denominador nulo. None nunca atende a um critério.
+    """
+    y, yhat, yref = (np.asarray(v, dtype=float) for v in (y, yhat, yref))
+    if not (len(y) == len(yhat) == len(yref)) or len(y) == 0:
+        return None
+    if not (np.isfinite(y).all() and np.isfinite(yhat).all() and np.isfinite(yref).all()):
+        return None
+    denominador = float(np.sum((y - yref) ** 2))
+    if denominador == 0.0 or not np.isfinite(denominador):
+        return None
+    return 1.0 - float(np.sum((y - yhat) ** 2)) / denominador
+
+
+def alinhar_com_media(previsoes: pd.DataFrame, datas_elegiveis):
+    """Como `alinhar`, exigindo também a previsão da média histórica finita em toda data."""
+    alinhado, falha = alinhar(previsoes, datas_elegiveis)
+    if falha:
+        return None, falha
+    media = alinhado["yhat_media"].to_numpy(dtype=float)
+    if not np.isfinite(media).all():
+        return None, ResultadoTeste(NAO_CALCULAVEL, "referência de média histórica ausente ou não finita",
+                                    datas_problema=tuple(alinhado.index[~np.isfinite(media)]))
+    return alinhado, None
+
+
+def r2_contra_media_nas_datas(previsoes: pd.DataFrame, datas_elegiveis) -> float | None:
+    """Critério 6 no período final: a mesma lista de datas do critério 1."""
+    alinhado, falha = alinhar_com_media(previsoes, datas_elegiveis)
+    if falha:
+        return None
+    return r2_contra_referencia(alinhado["y"], alinhado["yhat"], alinhado["yhat_media"])
+
+
+def diebold_mariano_contra_media(previsoes, datas_elegiveis, defasagens=NW_DEFASAGENS, limiar=P_LIMIAR,
+                                 minimo=T_MINIMO):
+    """
+    Diagnóstico do protocolo v2 (V2-4): d_t = (y − ŷ_média)² − (y − ŷ_Ridge)². Não entra
+    na elegibilidade, não substitui o critério 2 e é reportado sempre.
+    """
+    alinhado, falha = alinhar_com_media(previsoes, datas_elegiveis)
+    if falha:
+        return falha
+    y = alinhado["y"].to_numpy(dtype=float)
+    yhat = alinhado["yhat"].to_numpy(dtype=float)
+    media = alinhado["yhat_media"].to_numpy(dtype=float)
+    return _teste_media((y - media) ** 2 - (y - yhat) ** 2, defasagens, limiar, minimo)

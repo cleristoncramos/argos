@@ -61,10 +61,12 @@ def modelo_condicoes() -> dict:
 
 def verificar_abertura(confirmo: bool, condicoes: Path = config.CONDICOES,
                        marca: Path = config.MARCA_FINAL_USADO, datas: Path = DATAS_ELEGIVEIS,
-                       encerramento: Path = ENCERRAMENTO) -> None:
+                       encerramento: Path = ENCERRAMENTO, hashes: dict | None = None,
+                       versao: str = "v1", condicoes_exigidas: tuple = CONDICOES_SECAO_12) -> None:
     motivos = []
     if Path(encerramento).exists():
-        motivos.append("a v1 foi encerrada por não elegibilidade sem avaliação final (decisão D1)")
+        motivos.append("a v1 foi encerrada por não elegibilidade sem avaliação final (decisão D1)"
+                       if versao == "v1" else f"a {versao} foi encerrada sem avaliação final")
     if Path(marca).exists():
         motivos.append("a avaliação final já foi usada (protocolo, seção 11)")
     if not confirmo:
@@ -73,10 +75,10 @@ def verificar_abertura(confirmo: bool, condicoes: Path = config.CONDICOES,
         motivos.append(f"arquivo de condições ausente: {Path(condicoes).name}")
     else:
         registro = json.loads(Path(condicoes).read_text(encoding="utf-8"))
-        pendentes = [n for n in CONDICOES_SECAO_12 if registro.get("condicoes", {}).get(n) is not True]
+        pendentes = [n for n in condicoes_exigidas if registro.get("condicoes", {}).get(n) is not True]
         if pendentes:
             motivos.append("condições pendentes: " + ", ".join(pendentes))
-        atuais = hashes_atuais()
+        atuais = dict(hashes) if hashes is not None else hashes_atuais()
         atuais["datas_elegiveis"] = sha256(datas) if Path(datas).exists() else None
         for nome, valor in atuais.items():
             registrado = registro.get("hashes", {}).get(nome)

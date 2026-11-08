@@ -55,3 +55,46 @@ def avaliar(r2_final, teste_dm, r2_dobras, resultados_base, resultados_dobro) ->
         "mensagem": "Elegível para integração experimental restrita, após conferência do relatório e dos testes."
         if elegivel else MENSAGEM_SEM_EVIDENCIA,
     }
+
+
+MENSAGEM_V2_SEM_ABERTURA = ("A v2 não atendeu aos critérios de desenvolvimento necessários para abertura da "
+                            "avaliação final. Não houve evidência suficiente, segundo o protocolo, para habilitar o sinal.")
+
+
+def positivas(valores) -> int:
+    """Dobras com valor estritamente positivo; None (não calculável) não conta."""
+    return sum(1 for r in valores if r is not None and r > 0)
+
+
+def filtros_desenvolvimento_v2(r2_dobras, r2_media_dobras) -> dict:
+    """Protocolo v2, seções 6 e 10: critérios 3 e 6 nas dobras, antes de qualquer abertura."""
+    p3, p6 = positivas(r2_dobras), positivas(r2_media_dobras)
+    filtros = {"3_estabilidade": p3 >= DOBRAS_MINIMAS, "6_ganho_sobre_media_nas_dobras": p6 >= DOBRAS_MINIMAS}
+    atende = all(filtros.values())
+    return {
+        "filtros": filtros,
+        "dobras_positivas_contra_zero": p3,
+        "dobras_positivas_contra_media": p6,
+        "dobras_minimas": DOBRAS_MINIMAS,
+        "atende": atende,
+        "mensagem": None if atende else MENSAGEM_V2_SEM_ABERTURA,
+    }
+
+
+def avaliar_v2(r2_final, teste_dm, r2_dobras, r2_media_final, r2_media_dobras,
+               resultados_base, resultados_dobro) -> dict:
+    """Critérios 1 a 5 da v1 e o critério 6 (V2-3), todos obrigatórios e cumulativos."""
+    base = avaliar(r2_final, teste_dm, r2_dobras, resultados_base, resultados_dobro)
+    p6 = positivas(r2_media_dobras)
+    criterio6 = r2_media_final is not None and r2_media_final > 0 and p6 >= DOBRAS_MINIMAS
+    criterios = {**base["criterios"], "6_ganho_sobre_media_historica": criterio6}
+    elegivel = all(criterios.values())
+    return {
+        **base,
+        "criterios": criterios,
+        "r2_media_final": r2_media_final,
+        "dobras_positivas_contra_media": p6,
+        "elegivel": elegivel,
+        "mensagem": "Elegível para integração experimental restrita, após conferência do relatório e dos testes."
+        if elegivel else MENSAGEM_SEM_EVIDENCIA,
+    }

@@ -481,8 +481,10 @@ Etapa 0 — revisão de escopo:
 - [ ] Arquivar as mensagens originais do orientador (R6–R8, N1–N5, snapshot, P1, D1)
 - [x] Proposta documental da v2 (`docs/preditivo/proposta_piloto_v2.md`): grade de `alpha` ampliada até 10⁶ e critério 6 de ganho sobre a média histórica
 - [x] Decisão V2-1 a V2-7 (08/11/2026): v2 autorizada, com grade até 10⁶ e critério 6 obrigatório; protocolo consolidado em `docs/preditivo/protocolo_piloto_v2.md`
-- [ ] Confirmação real da decisão da v2 e arquivamento da mensagem completa (o texto recebido terminou interrompido)
-- [ ] v2: separação por versão, testes, congelamento, desenvolvimento oficial e relatório (só depois da confirmação real)
+- [x] Confirmação real da decisão da v2 (08/11/2026), com a conclusão confirmada na íntegra
+- [ ] Arquivar as mensagens originais da decisão e da confirmação da v2
+- [x] v2: separação por versão, testes sintéticos e reprodução da v1 com dados reais (aprovada)
+- [ ] v2: commit de congelamento, desenvolvimento oficial e relatório
 - [ ] Arquivar a mensagem original da manifestação do orientador sobre o snapshot
 - [ ] Condições da seção 12 do protocolo antes de abrir a avaliação final: hash da versão consolidada, dados e configuração congelados, testes de alinhamento e expurgo, conferência de custos, caixa e referências
 - [ ] Revisar as minutas do CEP e do TCLE, conforme a decisão R9

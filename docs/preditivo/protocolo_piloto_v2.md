@@ -1,6 +1,6 @@
 # Protocolo do piloto preditivo — v2
 
-**Status:** consolidado a partir da decisão do orientador de 08/11/2026 (V2-1 a V2-7), sujeito à confirmação original · **Congelamento:** só depois da confirmação e das condições da seção 12 · **Criado em:** 08/11/2026
+**Status:** consolidado e **confirmado** pelo orientador em 08/11/2026 (V2-1 a V2-7, com as condições da confirmação) · **Congelamento:** no commit que antecede o desenvolvimento oficial (seção 12) · **Criado em:** 08/11/2026
 **Origem:** [`proposta_piloto_v2.md`](proposta_piloto_v2.md) e [`../pibiti/decisoes_orientador.md`](../pibiti/decisoes_orientador.md), entrada "Autorização do piloto v2". **Versão anterior:** [`protocolo_piloto_v1.md`](protocolo_piloto_v1.md), v1 encerrada por não elegibilidade ([encerramento](encerramento_v1.md)).
 
 > **Alcance da autorização.** A decisão autoriza consolidar este protocolo e, depois da confirmação real, implementar, testar e executar o desenvolvimento da v2. Ela não autoriza:
@@ -176,10 +176,12 @@ Se a Ridge se aproximar da média e superar o retorno zero, mas não atender ao 
 | # | Condição | Situação |
 | --- | --- | --- |
 | 1 | Protocolo v2 consolidado | **Feito** (esta versão) |
-| 2 | Confirmação real da decisão do orientador | Pendente |
-| 3 | Separação por versão implementada, com testes da v1 inalterada e da equivalência | Pendente |
-| 4 | Testes com dados sintéticos: grade, limite fixo, critério 6, registros da seção 4, casos não calculáveis | Pendente |
-| 5 | Configuração e código congelados, com hashes deste protocolo, da nota, da configuração v2, do manifesto e da política | Pendente |
+| 2 | Confirmação real da decisão do orientador | **Feito** (08/11/2026) |
+| 3 | Separação por versão implementada, com testes da v1 inalterada e da equivalência | **Feito**: `config_v2.py`, `executar_v2.py`, `registro_v2.jsonl`, `condicoes_abertura_v2.json`; a reprodução da v1 com dados reais passou (diferença máxima de cerca de 10⁻¹⁶) |
+| 4 | Testes com dados sintéticos: grade, limite fixo, critério 6, registros da seção 4, casos não calculáveis | **Feito**: `experiments/preditivo/tests/test_v2.py` |
+| 5 | Configuração e código congelados, com hashes deste protocolo, da nota, da configuração v2, do manifesto e da política | No commit de congelamento; os hashes entram em cada linha de `registro_v2.jsonl` |
+
+**Rodada única e sem ensaio.** O desenvolvimento oficial da v2 roda uma única vez: o comando recusa código não commitado (só são aceitos `docs/versao_congelada.md` e o próprio `registro_v2.jsonl`), repete a reprodução da v1 antes de começar, confere os erros internos dos `alpha` comuns com os da v1 e não sobrescreve resultados oficiais. Não há ensaio da v2 com dados reais antes da rodada oficial; o único teste com dados reais é a reprodução da v1, que não produz nenhum resultado da grade ampliada.
 
 **Sequência autorizada:**
 1. consolidar o protocolo v2;
@@ -204,4 +206,5 @@ Se a Ridge se aproximar da média e superar o retorno zero, mas não atender ao 
 
 | Data | Versão | Mudança |
 | --- | --- | --- |
+| 08/11/2026 | v2, confirmada | Confirmação do orientador; seção 12 atualizada com a implementação, os testes e a reprodução da v1 (sem mudança no experimento) |
 | 08/11/2026 | v2, consolidada | Criação a partir da proposta e da decisão V2-1 a V2-7: grade ampliada até 10⁶ com limite fixo; critério 6 contra a média histórica causal; Diebold-Mariano contra a média só como diagnóstico; não independência declarada; período reservado com abertura condicionada; encerramento sem abertura; separação por versão |
