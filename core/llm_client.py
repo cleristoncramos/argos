@@ -89,14 +89,18 @@ def call_model(
     transport: Callable = http_transport,
     sleep: Callable = time.sleep,
     clock: Callable = time.monotonic,
+    payload: Optional[dict] = None,
 ) -> dict:
     """
     Uma chamada com até MAX_RETRIES retentativas (429, 5xx, timeout e falha de rede).
     Erros do tipo 4xx (exceto 429) não são repetidos. Devolve
     {"raw", "finish_reason", "input_tokens", "output_tokens", "latency_s", "attempts"}
     ou levanta CallFailed.
+
+    `payload` permite à família v1.0-experimental enviar o próprio prompt e esquema
+    com as mesmas regras de rede; sem ele, o corpo é o da v0.6 congelada.
     """
-    payload = build_payload(context)
+    payload = build_payload(context) if payload is None else payload
     started = clock()
     attempts = 0
     last = "erro desconhecido"
