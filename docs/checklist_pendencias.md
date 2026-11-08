@@ -455,6 +455,8 @@ Etapa 0 — revisão de escopo:
 - [x] Registrar a proposta em `validacao_academica.md` (seção 10), `fora_do_escopo.md`, no checklist do CEP (seção 6) e em `pibiti/escopo_relatorios.md`
 - [ ] Obter a confirmação escrita do orientador sobre o que foi adotado (R1) e sobre as decisões R2 a R13
 - [ ] Encaminhar a consulta institucional ou jurídica sobre recomendação (R2)
-- [ ] Criar a tag da versão histórica, depois da decisão R4
+- [ ] Criar a tag de referência da versão histórica atual (novembro de 2026; o congelamento formal segue em fevereiro de 2027)
+- [x] Incorporar ao plano os ajustes da revisão de 07/11/2026 (N07, piloto reduzido, habilitação operacional, preços, múltiplos testes, calendário e blocos de decisão)
+- [ ] Redigir `docs/preditivo/protocolo_piloto_v1.md` (plano, seção 7.1)
 - [ ] Revisar as minutas do CEP e do TCLE, conforme a decisão R9
 - [ ] Atualizar a seção Pesquisa da página "Sobre o Projeto" depois de R5

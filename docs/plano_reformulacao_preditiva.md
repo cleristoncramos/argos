@@ -92,7 +92,7 @@ Não há protocolo de aprendizado de máquina (previsão está registrada como t
 | Previsão, modelos e validação temporal fora do escopo | Reabrir | A confirmar |
 | Dividendos, custos e impostos fora dos cálculos; A5 e A6 no Plano 3 | Reabrir para o backtest de estratégias | A confirmar |
 | Parecer de 24/10/2026: sem previsão, recomendação, pontuação ou oportunidade | Substituir, na camada experimental, por regras de autorização | A confirmar |
-| N07: sem regressão nem detecção de cruzamentos | Não se aplica à camada preditiva | A confirmar |
+| N07: sem regressão nem detecção de cruzamentos | Permanece vigente na camada histórica. Na camada experimental, propõe-se autorizar regressão como método preditivo, quando prevista no protocolo do piloto. Detecção de cruzamentos não fica automaticamente autorizada: só entra se houver uma estratégia específica, definida e avaliada antes | A confirmar |
 | N04: simulação só com janelas móveis | Ampliar com os dois experimentos de aporte | A confirmar |
 | Prompt v0.6 congelado; mudança exige nova versão e nova 7A | Mantida: a v0.6 segue nas telas descritivas; nova família v1.0-experimental com avaliação própria | Compatível |
 | N22: versão pública sem chamadas ao modelo | Decidir para o ambiente experimental | A decidir |
@@ -127,7 +127,7 @@ A família de protocolo da LLM para a camada experimental será nova (por exempl
 | R1 | Quais sugestões do documento de 07/11/2026 foram adotadas, confirmadas por escrito | Orientador |
 | R2 | Quem faz a consulta institucional ou jurídica sobre recomendação (UFPI, procuradoria, núcleo de inovação) | Orientador |
 | R3 | Como restringir o ambiente experimental (só local ou app separado com acesso por convite) | Orientador |
-| R4 | Congelar em fevereiro de 2027 apenas a versão histórica, e sobre qual versão aplicar o O6 | Orientador |
+| R4 | Congelar em fevereiro de 2027 apenas a versão histórica, e se o O6 avaliará a versão histórica, a experimental ou ambas (decidir em novembro de 2026) | Orientador |
 | R5 | Texto final da pergunta e dos objetivos, e como o Relatório Parcial registra a mudança de escopo | Orientador |
 | R6 | Piloto: ativos, horizonte (ex.: 20 pregões), alvo (retorno acumulado simples ou logarítmico) e modelos | Orientador |
 | R7 | Estratégia do piloto (ex.: exposto ou fora do mercado), custos e remuneração do caixa (ex.: CDI) | Orientador |
@@ -138,6 +138,16 @@ A família de protocolo da LLM para a camada experimental será nova (por exempl
 | R12 | Relação com o TCC "Previsão de Riscos Financeiros" (Lorrana Evelyn de Araújo Pereira), que prevê volatilidade; o piloto proposto prevê retorno | Orientador e autora |
 | R13 | Confirmar quais registros de [`pibiti/decisoes_orientador.md`](pibiti/decisoes_orientador.md) têm evidência original (seção "Auditoria de 07/11/2026" daquele arquivo) | Orientador |
 
+As decisões não precisam bloquear todas as atividades ao mesmo tempo:
+
+| Bloco | Decisões | O que libera |
+| --- | --- | --- |
+| A — Direção e governança | R1, R2, R3, R4, R5, R9 e R13 | Formalização do escopo, preservação da versão histórica e encaminhamento ético e regulatório |
+| B — Piloto quantitativo | R6, R7 e R8 | Conjunto de dados, alvos, modelos e backtest local |
+| C — Integração e colaboração | R10, R11 e R12 | LLM experimental, implantação e divisão entre trabalhos |
+
+As decisões do bloco C podem amadurecer enquanto o experimento local avança, desde que não haja publicação nem coleta antecipadas.
+
 ---
 
 ## 6. Plano de execução por etapas
@@ -147,9 +157,9 @@ A família de protocolo da LLM para a camada experimental será nova (por exempl
 | Etapa | Documento | Complemento | Condição de passagem |
 | --- | --- | --- | --- |
 | 0. Revisão de escopo | Nova pergunta, arquitetura confirmada, estratégia de publicação | Este plano; auditoria das decisões; tag da versão histórica; revisão das minutas do CEP; atualização de `validacao_academica.md` e `fora_do_escopo.md`; regras por camada (seção 4) | Confirmação escrita do orientador e encaminhamento da revisão regulatória |
-| 1. Experimento local | Poucos ativos, alvo e referência definidos | Em `experiments/`, fora do app; dados ajustados; manifesto com data de corte e hash; teste automático de que nenhum rótulo cruza a fronteira entre treino e teste | Conjunto de dados reproduzível e divisões temporais verificadas |
-| 2. Modelagem | Referência ingênua (retorno zero ou preço constante), ARIMA, regressão regularizada e gradient boosting ou Random Forest; LSTM só depois, se justificado | Validação com origem móvel e intervalo entre treino e teste de pelo menos o horizonte; teste final usado uma única vez; registro dos modelos que não funcionaram; intervalo preditivo avaliado por cobertura; probabilidade só com modelo calibrado (Brier) | Relatório fora da amostra, com limitações |
-| 3. Estratégia | Regra transparente, custos, comparação; backtest sem vazamento nem seleção retroativa | Os dois experimentos de aporte; caixa remunerado; custos e slippage configuráveis; correção pelo número de regras testadas | Backtest documentado, inclusive regras rejeitadas |
+| 1. Experimento local | Poucos ativos, alvo e referência definidos | Em `experiments/`, fora do app. Usar a série de preços definida em R8, documentando o tratamento de desdobramentos e proventos e sua compatibilidade com o cálculo de retorno e o backtest; distinguir a série usada para estimar retornos dos preços e fluxos usados para simular operações. Manifesto com data de corte e hash; teste automático de que nenhum rótulo cruza a fronteira entre treino e teste | Conjunto de dados reproduzível e divisões temporais verificadas |
+| 2. Modelagem | Referência ingênua (retorno zero ou preço constante), ARIMA, regressão regularizada e gradient boosting ou Random Forest; LSTM só depois, se justificado | Começar pelo escopo reduzido da seção 6.2: retorno zero e regressão regularizada. Um modelo de árvores entra após a primeira avaliação; ARIMA e outros modelos depois, sem bloquear o piloto. Validação com origem móvel e intervalo entre treino e teste de pelo menos o horizonte; teste final usado uma única vez; registro dos modelos que não funcionaram; intervalo preditivo avaliado por cobertura; probabilidade só com modelo calibrado (Brier) | Relatório fora da amostra, com limitações (ver seção 6.3) |
+| 3. Estratégia | Regra transparente, custos, comparação; backtest sem vazamento nem seleção retroativa | Os dois experimentos de aporte; caixa remunerado; custos e slippage configuráveis. Controle de múltiplos testes conforme a seção 6.4 | Backtest documentado, inclusive regras rejeitadas (ver seção 6.3) |
 | 4. LLM | Novo contexto, prompt e validação | Família `v1.0-experimental`; validador de autorização e fidelidade; rubrica com comunicação da incerteza; v0.6 intacta | Explicações fiéis, sem números ou sinais inventados |
 | 5. Integração | Inferência por API e interface experimental | Começar sem API: inferência no app a partir do modelo registrado, atrás de um interruptor; histórico e futuro visualmente distintos; medir memória | Testes de falha, custo, segurança e atualização |
 | 6. Avaliação | Compreensão e comunicação de risco | O6 com as condições definidas em R4; medir confiança excessiva | Procedimentos éticos aplicáveis e protocolo revisado |
@@ -157,15 +167,54 @@ A família de protocolo da LLM para a camada experimental será nova (por exempl
 
 ### 6.1 Calendário indicativo
 
-| Período | Etapas |
+A tag de referência de novembro não equivale ao congelamento final da entrega histórica.
+
+| Período | Marco ou etapa |
 | --- | --- |
-| nov–dez/2026 | Etapa 0; congelamento da versão histórica mantido como entrega segura |
+| nov/2026 | Etapa 0; tag de referência da versão histórica atual; decisão sobre qual versão o O6 avaliará (R4) |
+| nov–dez/2026 | Correções da versão histórica; documentos éticos preparados conforme a decisão do O6 |
+| jan/2027 | Snapshot final e testes sem internet da versão histórica |
+| fev/2027 | Congelamento formal da entrega histórica |
 | até 31/03/2027 | Etapas 1 a 3 (Relatório Parcial) |
-| abr–jun/2027 | Etapas 4 e 5 |
-| jul–ago/2027 | Etapa 6 (Relatório Final e Resumo Expandido até 28/08/2027) |
+| abr–jun/2027 | Etapas 4 e 5; coleta do O6, se aprovada, com meta de conclusão até junho ou início de julho |
+| jul/2027 | Análise dos resultados do O6 |
+| ago/2027 | Consolidação e redação (Relatório Final e Resumo Expandido até 28/08/2027) |
 | depois | Etapa 7, conforme o enquadramento regulatório |
 
-A recomendação pública provavelmente não cabe neste ciclo do PIBITI.
+Se a versão experimental não estiver pronta a tempo da coleta, o O6 pode avaliar a versão histórica, sem apresentar os resultados como validação da função preditiva.
+
+A recomendação pública não integra a entrega mínima deste ciclo. Sua eventual disponibilização dependerá dos resultados quantitativos, da avaliação de riscos e do enquadramento institucional e regulatório, sem compromisso de prazo neste plano.
+
+### 6.2 Escopo inicial proposto do piloto (sujeito a R6, R7 e R8)
+
+Um recorte pequeno permite verificar primeiro a integridade dos dados, dos alvos e da avaliação.
+
+| Elemento | Escopo inicial |
+| --- | --- |
+| Ativos | Dois ativos com histórico suficiente, de preferência da mesma classe |
+| Frequência | Diária |
+| Horizonte | 20 observações futuras (pregões) |
+| Alvo | Retorno simples acumulado no horizonte |
+| Referência | Retorno zero |
+| Modelo candidato | Regressão regularizada |
+| Expansão | Um modelo de árvores após a primeira avaliação |
+| Estratégia | Exposto ou em caixa, sem venda a descoberto e sem alavancagem |
+
+### 6.3 Conclusão científica e habilitação operacional
+
+**Conclusão científica.** O experimento é considerado concluído quando seu protocolo, resultados e limitações estão documentados, inclusive quando o modelo não supera a referência.
+
+**Habilitação operacional.** Previsões ou sinais só serão disponibilizados no ambiente experimental quando atenderem aos critérios de elegibilidade definidos **antes** da avaliação final. Os limiares ficam no protocolo do piloto e não podem ser escolhidos depois de conhecidos os resultados.
+
+Se o modelo não atender aos critérios, o sistema exibirá a comparação experimental e informará a ausência de evidência suficiente para habilitar o sinal.
+
+### 6.4 Controle de múltiplos testes no piloto
+
+- Registrar previamente a estratégia, os limiares e as variantes permitidas.
+- Manter um registro de todas as configurações testadas.
+- Selecionar configurações apenas no conjunto de desenvolvimento.
+- Não escolher a estratégia com base no teste final.
+- Métodos adicionais de ajuste para múltiplos testes serão especificados se houver exploração de muitas regras ou configurações.
 
 ---
 
@@ -178,6 +227,24 @@ A recomendação pública provavelmente não cabe neste ciclo do PIBITI.
 | Reformulação registrada em [`validacao_academica.md`](validacao_academica.md) e [`fora_do_escopo.md`](fora_do_escopo.md) | Registrada como proposta; textos vigentes preservados |
 | Impacto no CEP ([`pibiti/cep/checklist_submissao_cep.md`](pibiti/cep/checklist_submissao_cep.md), seção 6) | Registrado; a revisão das minutas depende de R9 |
 | Impacto nos relatórios ([`pibiti/escopo_relatorios.md`](pibiti/escopo_relatorios.md)) | Registrado como alteração em avaliação |
-| Tag da versão histórica | A fazer, após R4 |
+| Tag de referência da versão histórica atual | A fazer em novembro de 2026 (não equivale ao congelamento de fevereiro) |
 | Página "Sobre o Projeto" | Sem mudança até a confirmação (R5) |
 | Consulta regulatória | A encaminhar (R2) |
+| Ajustes da revisão de 07/11/2026 (N07, piloto reduzido, habilitação, preços, múltiplos testes, calendário, blocos de decisão) | Incorporados |
+
+### 7.1 Próximo artefato
+
+Antes de mudar o prompt v0.6 ou os testes que impedem recomendação na aplicação histórica, redigir uma especificação curta do piloto em `docs/preditivo/protocolo_piloto_v1.md`, com:
+
+1. ativos e justificativa;
+2. alvo e horizonte;
+3. série de preços e tratamento de eventos;
+4. variáveis disponíveis em cada data;
+5. datas de treino, validação e teste;
+6. tratamento da sobreposição dos alvos;
+7. referência e modelo candidato;
+8. estratégia e custos;
+9. métricas e condições de habilitação (seção 6.3);
+10. registro de experimentos e critérios de interrupção.
+
+A nova LLM entra depois, para explicar resultados efetivamente produzidos, inclusive a conclusão "não houve evidência suficiente". O projeto não depende de encontrar uma estratégia vencedora para ser bem-sucedido.
