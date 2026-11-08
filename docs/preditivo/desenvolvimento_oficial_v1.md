@@ -1,7 +1,7 @@
 # Desenvolvimento oficial do piloto — v1
 
-**Situação:** rodada oficial concluída em 08/11/2026 · **critério 3 não atendido nos dois ativos** · avaliação final bloqueada
-Este relatório cobre só o período de desenvolvimento (dobras de 2014 a 2021). Nenhum preço do período final foi lido: o desenvolvimento usa apenas datas anteriores ao 21º pregão de 2022 (teste automático em `experiments/preditivo/tests`).
+**Situação:** rodada oficial concluída em 08/11/2026 · **critério 3 não atendido nos dois ativos** · v1 encerrada por não elegibilidade (decisão D1), sem avaliação final ([encerramento](encerramento_v1.md))
+Este relatório cobre só o período de desenvolvimento (dobras de 2014 a 2021). O comando de desenvolvimento não utilizou preços, alvos, previsões ou métricas do bloco final para treinamento, seleção ou avaliação: ele trunca a série antes do 21º pregão de 2022 (teste automático em `experiments/preditivo/tests`). O arquivo completo foi acessado em outras etapas (coleta, verificações de integridade e reconstrução do fator), com finalidades descritas no [encerramento](encerramento_v1.md), seção 3.
 
 ---
 
@@ -54,7 +54,7 @@ R² em relação ao retorno zero, na amostra diária de cada ano de validação 
 | PETR4.SA | 3 de 8 (2015, 2020, 2021) | 5 | **Não atendido** |
 | VALE3.SA | 3 de 8 (2018, 2019, 2020) | 5 | **Não atendido** |
 
-Os critérios de elegibilidade são todos obrigatórios (protocolo, seção 9.3). Com o critério 3 não atendido, **nenhum dos dois ativos pode ser declarado elegível pela regra da v1**, qualquer que seja o resultado no período final. Os critérios 1, 2, 4 e 5 dependem do período final e não foram calculados. Pelo protocolo, o resultado da v1 é: **"Não houve evidência suficiente para habilitar o sinal."** Isso conclui o experimento cientificamente, desde que relatado integralmente.
+Os critérios de elegibilidade são todos obrigatórios (protocolo, seção 9.3). Com o critério 3 não atendido, **nenhum dos dois ativos pode ser declarado elegível pela regra da v1**, qualquer que seja o resultado no período final. Os critérios 1, 2, 4 e 5 dependem do período final e não foram calculados. Pelo protocolo, o resultado da v1 é: **"Não houve evidência suficiente para habilitar o sinal."** Isso conclui o experimento cientificamente, desde que relatado integralmente. A conclusão vale para esta configuração de dados, variáveis, modelo, horizonte e critérios, e não se generaliza a outros modelos ou ativos.
 
 Nenhum parâmetro, variável, grade ou limiar foi alterado depois de conhecidos estes resultados.
 
@@ -73,13 +73,6 @@ A acurácia balanceada de direção, nas datas de decisão (a cada 20 pregões),
 
 O ensaio local sem a política de qualidade (verificação de funcionamento sobre o mesmo snapshot, sem evento no `registro.jsonl` e sem valor de decisão) também teve 3 de 8 dobras positivas nos dois ativos, nos mesmos anos. As diferenças de R² entre o ensaio e a rodada oficial são pequenas (por exemplo, PETR4 em 2014: −0,6533 no ensaio e −0,6590 na oficial) e vêm da visão derivada da P1, que alterou valores na PETR4 em 2014 e 2015 e o ATR da VALE3 em 2012 e 2013.
 
-## 6. Decisão pendente
+## 6. Decisão D1
 
-Conforme o plano (seção 7.3), cabe agora ao orientador decidir, e registrar antes de qualquer abertura:
-
-| Caminho | Consequência |
-| --- | --- |
-| Encerrar a v1 por não elegibilidade | Preserva o período final sem uso nesta avaliação, disponível para uma versão futura |
-| Abrir o período final para completar o estudo da v1 | Produz o relatório completo (critérios 1, 2, 4 e 5 e o diagnóstico Clark-West), mas não pode habilitar o sinal, porque o critério 3 falhou |
-
-A avaliação final permanece bloqueada até essa decisão e até o cumprimento das demais condições da seção 12 do protocolo.
+O orientador escolheu encerrar a v1 por não elegibilidade, sem executar a avaliação final (08/11/2026). Resultado oficial, alcance da conclusão, estado do bloqueio e arquivamento em [`encerramento_v1.md`](encerramento_v1.md).

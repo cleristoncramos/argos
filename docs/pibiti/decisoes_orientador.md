@@ -225,8 +225,31 @@ Condições: arquivar o registro exato da B3 e sua identificação; verificar mo
 
 Status: recebida em 08/11/2026. Confirmação original: a arquivar.
 
-## Decisão pendente após o desenvolvimento oficial (08/11/2026)
+## D1 — Encerramento do piloto preditivo v1 (08/11/2026)
 
-| # | Decisão | Opções |
-|---|---|---|
-| D1 | Destino do período final da v1, com o critério 3 não atendido nos dois ativos ([relatório](../preditivo/desenvolvimento_oficial_v1.md)) | (a) encerrar a v1 por não elegibilidade, preservando o período final; (b) abrir o período final só para completar o estudo, sem possibilidade de habilitar sinal |
+Data: 08/11/2026, sujeita à confirmação do orientador.
+
+Decisão: encerrar a v1 por não elegibilidade, sem executar a avaliação final.
+
+Fundamento: PETR4.SA e VALE3.SA apresentaram R² positivo em três das oito dobras de desenvolvimento, abaixo do mínimo de cinco exigido pelo critério 3. Como os critérios são cumulativos, um resultado favorável no período final não compensaria esse requisito; não é necessário consumir a avaliação final para confirmar uma decisão de elegibilidade já determinada pelo protocolo.
+
+Consequências:
+- nenhum sinal da v1 será habilitado;
+- o teste final permanecerá bloqueado, e a v1 não será reaberta para buscar aprovação;
+- os resultados não serão generalizados para outros modelos ou ativos;
+- dados, políticas, resultados e evidências serão preservados;
+- mudanças futuras serão propostas em uma nova versão, sem reclassificar retrospectivamente a v1 como aprovada.
+
+Resultado: "Não houve evidência suficiente, segundo os critérios do protocolo v1, para habilitar o sinal." Redação oficial completa e afirmações não autorizadas no [encerramento](../preditivo/encerramento_v1.md), seção 1.
+
+Determinações adicionais: registrar o alcance efetivo do bloqueio, distinguindo os acessos ao arquivo completo por finalidade; manter registradas a divergência da reconstrução da VALE3 em 2008–2009 e a justificativa do fator da fonte nas correções de máxima e mínima de 2012; não confundir o ensaio sem a política com o desenvolvimento oficial; manter o snapshot original intacto; registrar `alpha` = 1000 em 7 de 8 dobras de cada ativo, sem ampliar a grade nem reinterpretar a escolha como previsão nula; manter o desvio da árvore alterada (só `docs/versao_congelada.md`) descrito como tal.
+
+Período final: reservado para uma eventual v2, desde que seus resultados preditivos não sejam consultados para escolher a nova configuração, o protocolo da v2 seja fechado antes da avaliação, as mudanças motivadas pela v1 sejam registradas e a v2 não seja apresentada como repetição independente de uma hipótese que não mudou.
+
+Próxima atividade: concluir o arquivamento da v1 e preparar uma proposta delimitada de v2 (hipótese, diferença em relação à v1, critérios e justificativas, custo, plano de avaliação e situação do período reservado), antes de executar novos experimentos.
+
+**Cumprimento (08/11/2026):** encerramento documentado em [`encerramento_v1.md`](../preditivo/encerramento_v1.md); estado do bloqueio em `experiments/preditivo/encerramento_v1.json`; o código passa a recusar nova coleta, lista do período final, desenvolvimento oficial e avaliação final nesta versão (`abertura.exigir_versao_aberta`). Protocolo, nota e configuração não foram alterados depois do desenvolvimento, e os hashes deles continuam iguais aos registrados.
+
+**Evidência:** texto recebido pelo desenvolvedor em 08/11/2026. **Pendente:** arquivar fora do repositório a mensagem original (data e remetente).
+
+Status: recebida em 08/11/2026. Confirmação original: a arquivar.

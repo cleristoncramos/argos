@@ -477,7 +477,9 @@ Etapa 0 — revisão de escopo:
 - [x] Decisão P1 (08/11/2026): substituição pontual pela B3 na visão derivada; condições cumpridas e política 1.0 com hash registrado
 - [ ] Arquivar a mensagem original da decisão P1
 - [x] Desenvolvimento oficial com a política 1.0 (08/11/2026): R² positivo em 3 de 8 dobras nos dois ativos; critério 3 não atendido (`docs/preditivo/desenvolvimento_oficial_v1.md`)
-- [ ] Decisão do orientador: encerrar a v1 por não elegibilidade ou abrir o período final para completar o estudo
+- [x] Decisão D1 (08/11/2026): v1 encerrada por não elegibilidade, sem avaliação final (`docs/preditivo/encerramento_v1.md`); trava permanente no código
+- [ ] Arquivar as mensagens originais do orientador (R6–R8, N1–N5, snapshot, P1, D1)
+- [ ] Proposta documental da v2: hipótese, diferença em relação à v1, critérios, custo, plano de avaliação e situação do período reservado (sem novos experimentos antes dela)
 - [ ] Arquivar a mensagem original da manifestação do orientador sobre o snapshot
 - [ ] Condições da seção 12 do protocolo antes de abrir a avaliação final: hash da versão consolidada, dados e configuração congelados, testes de alinhamento e expurgo, conferência de custos, caixa e referências
 - [ ] Revisar as minutas do CEP e do TCLE, conforme a decisão R9

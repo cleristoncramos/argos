@@ -6,7 +6,15 @@ import pandas as pd
 import pytest
 
 from experiments.preditivo import abertura
-from experiments.preditivo.abertura import AberturaNegada, CONDICOES_SECAO_12, modelo_condicoes, verificar_abertura
+from experiments.preditivo import executar
+from experiments.preditivo.abertura import (
+    AberturaNegada,
+    CONDICOES_SECAO_12,
+    VersaoEncerrada,
+    exigir_versao_aberta,
+    modelo_condicoes,
+    verificar_abertura,
+)
 from experiments.preditivo.executar import desenvolver_ativo, primeira_data_final
 from experiments.preditivo.tests.auxiliares import precos_sinteticos
 
@@ -58,7 +66,34 @@ def test_tudo_cumprido_libera(arquivos):
     pasta, hashes, datas = arquivos
     condicoes = pasta / "condicoes.json"
     _gravar(condicoes, {n: True for n in CONDICOES_SECAO_12}, hashes)
-    verificar_abertura(True, condicoes, pasta / "marca.json", datas)
+    verificar_abertura(True, condicoes, pasta / "marca.json", datas, pasta / "sem_encerramento.json")
+
+
+def test_versao_encerrada_nao_abre_mesmo_com_tudo_cumprido(arquivos):
+    pasta, hashes, datas = arquivos
+    condicoes = pasta / "condicoes.json"
+    _gravar(condicoes, {n: True for n in CONDICOES_SECAO_12}, hashes)
+    encerramento = pasta / "encerramento.json"
+    encerramento.write_text("{}", encoding="utf-8")
+    with pytest.raises(AberturaNegada, match="encerrada por não elegibilidade"):
+        verificar_abertura(True, condicoes, pasta / "marca.json", datas, encerramento)
+    with pytest.raises(VersaoEncerrada, match="desenvolver --ensaio"):
+        exigir_versao_aberta(encerramento)
+    exigir_versao_aberta(pasta / "sem_encerramento.json")
+
+
+def test_comandos_oficiais_recusados_na_versao_encerrada(tmp_path, monkeypatch):
+    encerramento = tmp_path / "encerramento.json"
+    encerramento.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(abertura, "ENCERRAMENTO", encerramento)
+    monkeypatch.setattr(abertura.exigir_versao_aberta, "__defaults__", (encerramento,))
+    for argv in (["coletar"], ["listar-datas"], ["desenvolver"]):
+        with pytest.raises(VersaoEncerrada):
+            executar.main(argv)
+    monkeypatch.setattr(abertura.verificar_abertura, "__defaults__",
+                        (*abertura.verificar_abertura.__defaults__[:3], encerramento))
+    with pytest.raises(AberturaNegada, match="encerrada"):
+        executar.main(["final", "--confirmo-abertura"])
 
 
 def test_desenvolvimento_nao_le_o_periodo_final():

@@ -1,5 +1,7 @@
 # Piloto preditivo — implementação local
 
+**v1 encerrada por não elegibilidade (decisão D1, 08/11/2026), sem avaliação final.** Com `encerramento_v1.json` presente, o código recusa nova coleta, `listar-datas`, desenvolvimento oficial e `final`; `qualidade` e `desenvolver --ensaio` continuam disponíveis para reprodução. Ver `docs/preditivo/encerramento_v1.md`.
+
 Implementa o [protocolo do piloto](../../docs/preditivo/protocolo_piloto_v1.md) e a [nota metodológica](../../docs/preditivo/nota_teste_estatistico.md). É um experimento **local**: nada daqui é importado pelo aplicativo, e nenhum resultado aparece na versão pública do Argos.
 
 ## Módulos
@@ -61,7 +63,7 @@ Compara os tratamentos possíveis das ocorrências de integridade sem ajustar ne
 python -m experiments.preditivo.executar desenvolver
 ```
 
-Roda as 8 dobras de 2014 a 2021, com a política de qualidade de `politica_qualidade.json`. Recusa rodar enquanto a política tiver decisão pendente; `--ensaio` roda sem essa exigência e é registrado como ensaio, não como rodada oficial. Usa só preços anteriores à primeira data do período final (o 21º pregão de 2022), então o período final não é lido. Um teste garante isso.
+Roda as 8 dobras de 2014 a 2021, com a política de qualidade de `politica_qualidade.json`. Recusa rodar enquanto a política tiver decisão pendente; `--ensaio` roda sem essa exigência e é registrado como ensaio, não como rodada oficial. Treina, seleciona e avalia só com dados anteriores à primeira data do período final (o 21º pregão de 2022): o arquivo é carregado inteiro e truncado antes dessa data. Um teste garante isso.
 
 ```bash
 python -m experiments.preditivo.executar final --confirmo-abertura

@@ -1,0 +1,59 @@
+{
+  "versao": "v1",
+  "estado": "encerrada_por_nao_elegibilidade",
+  "decisao": "D1",
+  "data": "2026-11-08",
+  "confirmacao_original_do_orientador": "pendente de arquivamento",
+  "resultado_oficial": "O piloto v1 foi encerrado após o desenvolvimento oficial. PETR4.SA e VALE3.SA não atenderam ao critério de estabilidade entre dobras: cada ativo apresentou R² positivo em três das oito dobras, abaixo do mínimo de cinco. Não houve evidência suficiente, segundo os critérios deste protocolo, para habilitar o sinal. A avaliação final não foi executada.",
+  "criterio_3": {
+    "PETR4.SA": {
+      "dobras_positivas": 3,
+      "minimo": 5,
+      "atendido": false
+    },
+    "VALE3.SA": {
+      "dobras_positivas": 3,
+      "minimo": 5,
+      "atendido": false
+    }
+  },
+  "desenvolvimento_oficial": {
+    "quando": [
+      "2026-11-08T12:18:50-03:00",
+      "2026-11-08T12:18:51-03:00"
+    ],
+    "commit": "1f2e167a801e89da0922f65745eced34aaefc6ed",
+    "arvore_alterada": true,
+    "motivo_arvore_alterada": "somente docs/versao_congelada.md, sem relação com o piloto (desvio documentado; não é árvore limpa)",
+    "hashes": {
+      "protocolo": "e7f2d5e4456b6c77a6c1f23efe1828ab5680c91f0cfcd11afc8ffae102153a30",
+      "nota": "be0747afd0671f2ef09ec602730be9568802d6d85540aec9b0d1a72d0f4c6e94",
+      "configuracao": "90986a8cfeeca052560a645cce98f16e58e3f76e2b5207b39a80a602babfd610",
+      "manifesto_dados": "6985328407ba456ada6c92872382e00f0109a772a904bbf477e3b5a006dd272c",
+      "politica_qualidade": "f75598b06fa9a1100fecc5783b78c1874642686223ecb5b60e05096cf8e88975"
+    }
+  },
+  "artefatos_de_resultado": {
+    "desenvolvimento_PETR4_SA.csv": "ebbaed1064fcb13740ec9ebaca88084bb3b99e80f19e997e3c4d46d07c7af23a",
+    "desenvolvimento_resumo.json": "84fa66b6583a81e5edbe5ad7fa56df76e937f575d61218a708b2a50199df4891",
+    "desenvolvimento_VALE3_SA.csv": "0c520d201c434d76e2c89fe0dffdd546e12bd0d15a1f7dc3bb630194ebe54c39",
+    "qualidade_impacto.json": "1414dc87f0a9cbf167034be22807c74fe0dba5ccb033b12c05de86449cb3f3ed"
+  },
+  "estado_do_bloqueio": {
+    "avaliacao_final_executada": false,
+    "marca_de_uso_do_final_presente": false,
+    "lista_de_datas_do_periodo_final_gerada": false,
+    "condicoes_secao_12_cumpridas": 0,
+    "eventos_no_registro": [
+      "coleta",
+      "impacto_politica_qualidade",
+      "impacto_politica_qualidade",
+      "impacto_politica_qualidade",
+      "desenvolvimento",
+      "desenvolvimento"
+    ],
+    "eventos_com_avaliacao_final": 0,
+    "recusa_da_trava_antes_do_encerramento": "Avaliação final não autorizada: condições pendentes: 1_decisoes_incorporadas_ao_protocolo, 2_versao_consolidada_e_hash_registrados, 3_dados_e_configuracao_congelados, 4_teste_de_alinhamento_das_datas, 5_teste_de_expurgo_externo_e_interno, 6_custos_caixa_e_referencias_conferidos, 7_nota_metodologica_fechada, 8_confirmacao_original_arquivada; hash de protocolo ausente ou diferente do registrado; hash de nota ausente ou diferente do registrado; hash de configuracao ausente ou diferente do registrado; hash de manifesto_dados ausente ou diferente do registrado; hash de politica_qualidade ausente ou diferente do registrado; hash de datas_elegiveis ausente ou diferente do registrado."
+  },
+  "periodo_final": "reservado; resultados preditivos não produzidos nem consultados; uso futuro só sob protocolo de uma v2 fechado antes da avaliação"
+}

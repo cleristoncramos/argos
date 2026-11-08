@@ -3,11 +3,14 @@ Ponto de entrada do piloto. Uso, a partir da raiz do repositório:
 
     python -m experiments.preditivo.executar coletar        # coleta e congela um snapshot (uma vez)
     python -m experiments.preditivo.executar listar-datas   # lista de datas elegíveis do período final
-    python -m experiments.preditivo.executar desenvolver    # 8 dobras de 2014 a 2021, sem ler o período final
+    python -m experiments.preditivo.executar desenvolver    # 8 dobras de 2014 a 2021, sem usar o período final
     python -m experiments.preditivo.executar final --confirmo-abertura   # travado até a seção 12 do protocolo
 
-O desenvolvimento usa apenas preços anteriores à primeira data do período final
-(o 21º pregão de 2022): o período final não é lido.
+O desenvolvimento treina, seleciona e avalia só com dados anteriores à primeira data do
+período final (o 21º pregão de 2022): o arquivo é carregado inteiro e truncado antes dela.
+
+v1 encerrada (decisão D1): com encerramento_v1.json presente, coletar, listar-datas,
+desenvolver (oficial) e final são recusados; qualidade e desenvolver --ensaio seguem disponíveis.
 """
 
 from __future__ import annotations
@@ -21,7 +24,7 @@ import pandas as pd
 
 from core.clock import now_brasilia
 from experiments.preditivo import config
-from experiments.preditivo.abertura import DATAS_ELEGIVEIS, verificar_abertura
+from experiments.preditivo.abertura import DATAS_ELEGIVEIS, exigir_versao_aberta, verificar_abertura
 from experiments.preditivo.amostras import construir_amostras, realizadas_ate, validar_precos
 from experiments.preditivo.avaliacao import prever_anos
 from experiments.preditivo.dados import carregar, carregar_brutos, coletar_e_congelar
@@ -78,6 +81,7 @@ def desenvolver_ativo(ativo: str, precos: pd.DataFrame, politica: list | None = 
 
 
 def comando_coletar(args) -> int:
+    exigir_versao_aberta()
     manifesto = coletar_e_congelar(motivo_nova_tentativa=args.nova_tentativa)
     verificacoes = {chave: manifesto[chave] for chave in (
         "triagem_retorno_preco_vs_ajustado_por_proventos", "desdobramentos_na_fonte",
@@ -103,6 +107,7 @@ def comando_coletar(args) -> int:
 
 def comando_listar_datas(_args) -> int:
     """N1: lista fixada pelo calendário, horizonte e disponibilidade do alvo, sem consultar erros."""
+    exigir_versao_aberta()
     if DATAS_ELEGIVEIS.exists():
         print(f"A lista já existe em {DATAS_ELEGIVEIS}; não é refeita.")
         return 1
@@ -131,6 +136,7 @@ def comando_desenvolver(args) -> int:
     _manifesto, precos, _cdi = carregar()
     politica = carregar_politica()
     if not args.ensaio:
+        exigir_versao_aberta()
         exigir_decidida(politica)
     brutos = carregar_brutos()
     evento = "desenvolvimento_ensaio" if args.ensaio else "desenvolvimento"

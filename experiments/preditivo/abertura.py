@@ -29,10 +29,25 @@ CONDICOES_SECAO_12 = (
     "8_confirmacao_original_arquivada",
 )
 DATAS_ELEGIVEIS = config.RAIZ / "datas_elegiveis.json"
+# Decisão D1 (08/11/2026): a v1 foi encerrada por não elegibilidade, sem avaliação final.
+ENCERRAMENTO = config.RAIZ / "encerramento_v1.json"
 
 
 class AberturaNegada(RuntimeError):
     pass
+
+
+class VersaoEncerrada(RuntimeError):
+    pass
+
+
+def exigir_versao_aberta(encerramento: Path = ENCERRAMENTO) -> None:
+    """Recusa comandos que coletam, listam o período final ou registram resultados oficiais da v1 encerrada."""
+    if Path(encerramento).exists():
+        raise VersaoEncerrada(
+            "A v1 foi encerrada por não elegibilidade (decisão D1, " + Path(encerramento).name + "): "
+            "não há nova coleta, lista do período final, desenvolvimento oficial nem avaliação final nesta versão. "
+            "Para reproduzir o desenvolvimento, use `desenvolver --ensaio`.")
 
 
 def modelo_condicoes() -> dict:
@@ -45,8 +60,11 @@ def modelo_condicoes() -> dict:
 
 
 def verificar_abertura(confirmo: bool, condicoes: Path = config.CONDICOES,
-                       marca: Path = config.MARCA_FINAL_USADO, datas: Path = DATAS_ELEGIVEIS) -> None:
+                       marca: Path = config.MARCA_FINAL_USADO, datas: Path = DATAS_ELEGIVEIS,
+                       encerramento: Path = ENCERRAMENTO) -> None:
     motivos = []
+    if Path(encerramento).exists():
+        motivos.append("a v1 foi encerrada por não elegibilidade sem avaliação final (decisão D1)")
     if Path(marca).exists():
         motivos.append("a avaliação final já foi usada (protocolo, seção 11)")
     if not confirmo:
