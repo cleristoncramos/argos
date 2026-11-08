@@ -293,3 +293,18 @@ Conclusão confirmada na íntegra, o que resolve a pendência da mensagem interr
 **Evidência:** textos recebidos pelo desenvolvedor em 08/11/2026 (decisão e confirmação). **Pendente:** arquivar fora do repositório as mensagens originais (data e remetente).
 
 Status: confirmada em 08/11/2026. Mensagens originais: a arquivar.
+
+## Pendente — Desenvolvimento oficial da v2 (08/11/2026)
+
+Relatório em [`desenvolvimento_oficial_v2.md`](../preditivo/desenvolvimento_oficial_v2.md).
+
+| Ativo | Critério 3 | Critério 6 nas dobras | Situação |
+| --- | --- | --- | --- |
+| PETR4.SA | 6 de 8 | 5 de 8 | Filtros atendidos. Diagnóstico posterior: uma constante igual à média do treino, sem variáveis, supera a média histórica em 7 de 8 dobras |
+| VALE3.SA | 4 de 8 | 3 de 8 | Encerramento sem avaliação final (V2-7) |
+
+| # | Decisão | Opções |
+|---|---|---|
+| DV2 | Destino do período final na v2 | (a) não abrir e encerrar a v2, registrando a limitação da referência do critério 6 (recomendação do desenvolvedor); (b) abrir só para a PETR4, o que exige alteração registrada do código, que hoje só abre quando todos os ativos atendem aos filtros |
+
+Status: aguardando decisão.

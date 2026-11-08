@@ -484,7 +484,8 @@ Etapa 0 — revisão de escopo:
 - [x] Confirmação real da decisão da v2 (08/11/2026), com a conclusão confirmada na íntegra
 - [ ] Arquivar as mensagens originais da decisão e da confirmação da v2
 - [x] v2: separação por versão, testes sintéticos e reprodução da v1 com dados reais (aprovada)
-- [ ] v2: commit de congelamento, desenvolvimento oficial e relatório
+- [x] v2: congelamento (`378b0b9`, correção `cdf7eef`), desenvolvimento oficial e relatório (`docs/preditivo/desenvolvimento_oficial_v2.md`)
+- [ ] Decisão do orientador DV2: encerrar a v2 sem abertura ou abrir o período final só para a PETR4
 - [ ] Arquivar a mensagem original da manifestação do orientador sobre o snapshot
 - [ ] Condições da seção 12 do protocolo antes de abrir a avaliação final: hash da versão consolidada, dados e configuração congelados, testes de alinhamento e expurgo, conferência de custos, caixa e referências
 - [ ] Revisar as minutas do CEP e do TCLE, conforme a decisão R9
