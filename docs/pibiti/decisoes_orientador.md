@@ -136,3 +136,29 @@ Status: recebido em 25/10/2026. Original da mensagem: a arquivar fora do reposit
 | Decisões pendentes | R1 a R13 | Aguardando o orientador | [`plano_reformulacao_preditiva.md`](../plano_reformulacao_preditiva.md), seção 5 |
 
 Status: proposta recebida em 07/11/2026. Nenhuma regra vigente foi alterada.
+
+## Aprovação de R6, R7, R8 e dos critérios de elegibilidade do piloto preditivo (08/11/2026)
+
+Documento avaliado: [`docs/preditivo/protocolo_piloto_v1.md`](../preditivo/protocolo_piloto_v1.md) (revisão 1). Abrangência: experimento local, sem disponibilização pública de previsões ou recomendações. Autoriza preparação, implementação e execução do piloto quantitativo; não autoriza integração ao aplicativo público nem significa que modelos ou sinais estão validados.
+
+| Assunto | Decisão |
+|---|---|
+| R6 — Ativos | `PETR4.SA` e `VALE3.SA`, cada um com treinamento, previsões, métricas, backtest e elegibilidade próprios; a aprovação de um não autoriza o outro; sem generalização para o catálogo. `BOVA11.SA` e `SMAL11.SA` reservados para rodada futura; troca após os resultados exige outro experimento, sem apagar o original |
+| R6 — Horizonte e alvo | Diário; 20 intervalos entre observações; decisão após o fechamento de `t`, entrada no fechamento de `t + 1`, saída em `t + 21`; alvo `P_(t+21) / P_(t+1) − 1`, substituindo `P_(t+20) / P_t − 1`; registrar `decision_date`, `entry_date` e `label_end_date` e usar essas datas na exclusão e no expurgo |
+| R6 — Datas | Desenvolvimento de 02/01/2008 a 30/12/2021; separação de 20 pregões; período final a partir do 21º pregão de 2022; corte em 30/10/2026; datas efetivas no manifesto e no relatório |
+| R6 — Reestimação | Avaliação sequencial com reestimação no início de cada ano; o treino pode usar o período final já transcorrido só com alvos realizados; escolha do `alpha` fixa, com validação interna protegida; "teste usado uma única vez" = uma única avaliação final do procedimento congelado |
+| R7 — Estratégia | Exposto quando `ŷ > c`, senão caixa; sem venda a descoberto nem alavancagem; decisões a cada 20 pregões, execução no fechamento seguinte, sem sobreposição de posições. Regra de retorno absoluto acima do custo, não de excesso sobre o CDI |
+| R7 — Custos | 0,05% de negociação + 0,05% de slippage = 0,10% por lado; ida e volta 0,20%; `c = 0,002`; sem venda e recompra artificiais; comprar e manter com a mesma convenção; sensibilidade em 0%, 0,10%, 0,20% e 0,30% por lado, sem escolha retrospectiva |
+| R7 — Caixa | CDI diário (SGS 12) coletado e congelado, com unidade, conversão e acumulação registradas; usado só na contabilização retrospectiva; resultados antes de impostos. Experimentos de aportes ficam para rodada posterior |
+| R8 — Preços | Fechamento ajustado para alvo, variáveis e desempenho da estratégia, com consistência de ajuste entre abertura, máxima, mínima e fechamento; descrição "Retorno aproximado com ajustes da fonte para proventos e desdobramentos, antes de impostos e de custos não modelados"; triagem ajustado × não ajustado com investigação documentada; coleta congelada com manifesto e hashes |
+| Critério 1 | R² fora da amostra estritamente maior que zero, sem arredondamento |
+| Critério 2 | Diebold-Mariano com `p < 0,10` a favor do candidato; nota metodológica prévia (perda quadrática, hipótese unilateral, sinal, Newey-West com 19 defasagens); revisão da adequação antes da execução; mudança de teste só antes de abrir os resultados; não calculável não é aprovação |
+| Critério 3 | R² > 0 em pelo menos 5 de 8 dobras; todas as dobras no relatório |
+| Critério 4 | (A ∧ B) ∨ C: A = retorno líquido acima do caixa; B = drawdown máximo menor que o de comprar e manter; C = retorno líquido acima de comprar e manter. Ramo C sem limite adicional de drawdown, com destaque obrigatório se o drawdown for maior |
+| Critério 5 | Critério 4 mantido com o dobro do custo-base, com os mesmos sinais e calendário |
+| Resultado | Se algum critério falhar: "Não houve evidência suficiente para habilitar o sinal", com o experimento cientificamente concluído. Se todos forem atendidos: elegível só para integração experimental restrita, após conferência; sem liberação pública nem transferência para outros ativos, modelos ou horizontes |
+| Condições para abrir a avaliação final | Incorporar as decisões ao protocolo; registrar a versão consolidada e seu hash; congelar dados e configuração; testar alinhamento e expurgo (divisões externas e internas); conferir custos, caixa e referências; fechar a nota metodológica; registrar a confirmação real desta decisão. Implementação local autorizada enquanto isso |
+
+**Evidência:** texto recebido pelo desenvolvedor em 08/11/2026 e incorporado ao protocolo no mesmo dia. O texto indica "Data proposta: 08/11/2026" e pede, entre as condições, o registro da confirmação real. **Pendente:** arquivar fora do repositório a mensagem original do orientador (data e remetente), conforme a auditoria de 07/11/2026. Sem essa confirmação, a avaliação final não é aberta (protocolo, seção 12).
+
+Status: recebida em 08/11/2026. Confirmação original: a arquivar.

@@ -1,59 +1,70 @@
-# Protocolo do piloto preditivo — v1 (minuta)
+# Protocolo do piloto preditivo — v1 (consolidado)
 
-**Status:** minuta para revisão do orientador · **Criado em:** 07/11/2026 · **Revisão 1:** 08/11/2026 (ajustes de alinhamento, reestimação, expurgo, preços, caixa, custos, teste estatístico, condição econômica e regra de versões; ver o histórico no fim)
-**Plano de origem:** [`../plano_reformulacao_preditiva.md`](../plano_reformulacao_preditiva.md), seções 6.2 a 6.4 e 7.1.
+**Status:** consolidado com a decisão do orientador de 08/11/2026 sobre R6, R7, R8 e os critérios de elegibilidade · **Congelamento:** só depois das condições da seção 12 · **Criado em:** 07/11/2026 · **Revisões:** 08/11/2026 (ver o histórico no fim)
+**Plano de origem:** [`../plano_reformulacao_preditiva.md`](../plano_reformulacao_preditiva.md), seções 6.2 a 6.4 e 7.1. **Decisão:** [`../pibiti/decisoes_orientador.md`](../pibiti/decisoes_orientador.md), entrada de 08/11/2026.
 
-> **Nada aqui está aprovado.** As escolhas marcadas com **[R6]**, **[R7]** ou **[R8]** dependem das decisões pendentes do bloco B do plano, e os limiares da seção 9 dependem do orientador. Os valores propostos servem para tornar o protocolo verificável e podem ser trocados antes do congelamento. As regras de mudança depois do congelamento estão na seção 11.
+> **Alcance da aprovação.** A decisão de 08/11/2026 autoriza a preparação, a implementação e a execução do piloto quantitativo **local**. Ela não autoriza a integração ao aplicativo público e não significa que modelos ou sinais estão validados. A avaliação final só pode ser aberta depois das condições da seção 12, entre elas registrar a confirmação original da decisão.
 
-**Escopo.** Experimento local, fora do aplicativo, em `experiments/preditivo/`. Nenhuma previsão, sinal ou resultado deste piloto aparece na versão pública do Argos, e nenhum resultado libera recomendação pública automaticamente. As regras da camada descritiva (prompt v0.6, validador e testes de linguagem) não mudam.
+**Escopo.** Experimento local, fora do aplicativo, em `experiments/preditivo/`. Nenhuma previsão, sinal ou resultado deste piloto aparece na versão pública do Argos, e nenhum resultado libera recomendação pública. As regras da camada descritiva (prompt v0.6, validador e testes de linguagem) não mudam.
 
 ---
 
-## 1. Ativos e justificativa [R6]
+## 1. Ativos (R6, aprovado)
 
-| Proposta | Alternativa |
+| Ativo | Avaliação |
 | --- | --- |
-| `PETR4.SA` e `VALE3.SA`, **avaliados separadamente** | `BOVA11.SA` e `SMAL11.SA` |
+| `PETR4.SA` | Treinamento, previsões, métricas, backtest e elegibilidade próprios |
+| `VALE3.SA` | Treinamento, previsões, métricas, backtest e elegibilidade próprios |
 
-**Motivos da proposta:** mesma classe (ações brasileiras), alta liquidez, histórico diário longo na fonte e presença no catálogo do Argos. A alternativa troca ações por ETFs de índice, o que reduz o risco específico de uma empresa, mas tem histórico mais curto.
+- A elegibilidade de um ativo não autoriza o sinal do outro.
+- Os resultados não serão generalizados para o catálogo do Argos nem para o mercado. Os dois ativos foram escolhidos hoje e existem até hoje (viés de sobrevivência).
+- A alternativa `BOVA11.SA` e `SMAL11.SA` fica reservada para uma rodada futura. Trocar os ativos depois de conhecidos os resultados finais exige outro experimento, sem apagar o resultado deste piloto.
 
-**Limitação registrada desde já:** os dois ativos foram escolhidos hoje e existem até hoje (viés de sobrevivência). Os resultados valem para esses ativos e esse período; **não serão generalizados** para o mercado nem para o catálogo.
+## 2. Alvo, horizonte e datas de cada amostra (R6, aprovado)
 
-## 2. Alvo, horizonte e datas de cada amostra
+O alvo é alinhado à entrada simulada: o modelo é avaliado sobre o retorno que a posição de fato obteria.
 
-O alvo é alinhado à entrada efetiva da estratégia: o modelo prevê o retorno que a posição de fato obteria.
-
-| Evento | Data | Campo registrado |
+| Evento | Definição | Campo registrado |
 | --- | --- | --- |
-| Informação disponível e decisão | Após o fechamento de `t` | `decision_date` |
-| Entrada | Fechamento de `t + 1` | `entry_date` |
-| Saída ou rebalanceamento seguinte | Fechamento de `t + 21` | `label_end_date` |
+| Informação disponível | Dados conhecidos até o fechamento de `t` | — |
+| Decisão | Após o fechamento de `t` | `decision_date` |
+| Entrada simulada | Fechamento de `t + 1` | `entry_date` |
+| Saída ou próximo rebalanceamento | Fechamento de `t + 21` | `label_end_date` |
 
 | Item | Definição |
 | --- | --- |
-| Frequência | Diária (pregões da B3 presentes na série) |
-| Horizonte | **20 intervalos entre observações** (pregões), não dias corridos |
-| Alvo | `y_t = P(entry_date + 20 pregões) / P(entry_date) − 1 = P_(t+21) / P_(t+1) − 1`, com `P` a série da seção 3 |
+| Frequência | Diária, com as observações válidas da série e o calendário registrado no conjunto de dados |
+| Horizonte | **20 intervalos entre observações**, não 20 dias corridos |
+| Alvo | `y_t = P_(t+21) / P_(t+1) − 1` (retorno entre a entrada e a saída), com `P` o fechamento ajustado da seção 3 |
 | Unidade | Decimal (0,05 = 5%) |
 
-**Regra de implementação.** Cada amostra guarda `decision_date`, `entry_date` e `label_end_date`, calculadas pelo calendário da própria série. Disponibilidade dos alvos, expurgo, referência de média histórica e testes usam essas datas, nunca constantes como 20 ou 21 espalhadas pelo código.
+Esta definição substitui a fórmula original `P_(t+20) / P_t − 1`.
+
+**Regra de implementação.** Cada amostra guarda `decision_date`, `entry_date` e `label_end_date`, calculadas pelo calendário da própria série. Disponibilidade dos alvos, exclusão das últimas amostras, expurgo, referência de média histórica e testes usam essas datas, não uma quantidade fixa de linhas.
 
 Um alvo só está **realizado** em uma data `d` se `label_end_date ≤ d`. Datas sem fechamento são descartadas antes de montar a série, como já faz `core/data_processor.py`.
 
-## 3. Série de preços e tratamento de eventos [R8]
+## 3. Série de preços e tratamento de eventos (R8, aprovado)
 
-| Uso | Série proposta |
-| --- | --- |
-| Alvo, variáveis e simulação | Série com **abertura, máxima, mínima e fechamento ajustados pelo mesmo fator** (coleta com ajuste por desdobramentos e proventos aplicado a todas as colunas de preço) |
-| Volume | Não usado nas variáveis deste piloto |
+**Fechamento ajustado** (desdobramentos e proventos, conforme a fonte) para:
+- construção do alvo;
+- variáveis de retorno;
+- variáveis de nível;
+- aproximação do desempenho da estratégia.
 
-**Consistência obrigatória.** Todas as variáveis que combinam preços de abertura, máxima, mínima e fechamento usam a mesma base de ajuste. É vedado combinar máxima e mínima não ajustadas com fechamento ajustado sem tratamento explícito e teste correspondente. Isso afeta em especial o ATR (`core/indicators_extra.py`), que usa máxima, mínima e fechamento anterior.
+**Consistência de ajuste.** Variáveis que usam abertura, máxima ou mínima precisam de todos os preços na mesma base de ajuste do fechamento. É vedado combinar, mesmo por descuido, máxima e mínima não ajustadas com fechamento ajustado. Isso afeta em especial o ATR (`core/indicators_extra.py`), que usa máxima, mínima e fechamento anterior. O volume não é usado nas variáveis deste piloto.
 
-**Rótulo obrigatório nos resultados:** "retorno aproximado com proventos reinvestidos, antes de impostos e de custos não modelados". Não chamar de retorno total exato: o ajuste da fonte não reproduz datas de pagamento, impostos sobre proventos nem frações de ações.
+**Descrição obrigatória dos resultados:**
 
-**Natureza do snapshot.** A série baixada é uma reconstrução feita pela fonte na data da coleta, com os ajustes conhecidos naquele momento. Não é uma base histórica ponto a ponto com as versões que estiveram disponíveis no passado.
+> "Retorno aproximado com ajustes da fonte para proventos e desdobramentos, antes de impostos e de custos não modelados."
 
-**Triagem de eventos.** Na coleta, comparar o retorno diário ajustado com o não ajustado e listar as datas com diferença acima de 1 ponto percentual. A lista é só triagem: cada data é conferida manualmente contra um evento conhecido (desdobramento, grupamento ou provento). Diferença sem evento identificado interrompe o experimento (seção 10).
+O resultado não é apresentado como reprodução exata dos fluxos financeiros de uma carteira real.
+
+**Natureza do snapshot.** A série baixada é uma reconstrução feita pela fonte na data da coleta, com os ajustes conhecidos naquele momento, não uma base histórica ponto a ponto. Essa limitação e qualquer revisão posterior da fonte constam no relatório.
+
+**Triagem de eventos.** Na coleta, comparar o retorno diário ajustado com o não ajustado e listar as datas com diferença acima de 1 ponto percentual. Cada diferença relevante é investigada e documentada (desdobramento, grupamento, provento ou causa não identificada), sem atribuir causa apenas pelo tamanho da variação.
+
+**Congelamento.** A coleta é congelada com manifesto (data, fonte, série usada e hash SHA-256 de cada arquivo), no formato do modo demo. Todas as rodadas usam o mesmo manifesto.
 
 ## 4. Variáveis disponíveis em cada data
 
@@ -62,7 +73,7 @@ Reaproveitar `core/features.py` (`build_feature_table`), que usa apenas dados at
 - `ret_1`, `close_over_sma_short` (20), `close_over_sma_long` (50), `ema_spread` (12/26), `rsi` (14), `macd_hist_over_close`, `bb_percent_b`, `atr_over_close` (14), `vol_rolling` (20);
 - defasagens 1, 2 e 3 de cada uma.
 
-Acréscimos propostos, calculados só com o passado: retorno acumulado dos últimos 20 e 60 pregões e distância ao pico dos últimos 252 pregões.
+Acréscimos, calculados só com o passado: retorno acumulado dos últimos 20 e 60 pregões e distância ao pico dos últimos 252 pregões.
 
 **Regras:**
 - antes do uso, conferir e registrar quais colunas de preço cada variável usa e se todas estão na mesma base de ajuste;
@@ -70,17 +81,16 @@ Acréscimos propostos, calculados só com o passado: retorno acumulado dos últi
 - nenhuma janela centrada e nenhum preenchimento com valor posterior a `t`;
 - padronização (média e desvio) ajustada **só no treino de cada ajuste**.
 
-## 5. Períodos [R6]
+## 5. Períodos (R6, aprovado)
 
-| Período | Datas propostas | Uso |
-| --- | --- | --- |
-| Desenvolvimento | 02/01/2008 a 30/12/2021 | Treino e validação com origem móvel (seção 6) |
-| Teste final | Pregões de 2022 até a data de corte, com o embargo da seção 6 | Avaliação final do procedimento congelado |
-| Data de corte | 30/10/2026 (último pregão coletado, registrado no manifesto) | Fixa para todo o piloto |
+| Período | Datas |
+| --- | --- |
+| Desenvolvimento | 02/01/2008 a 30/12/2021 |
+| Separação conservadora | 20 pregões após o desenvolvimento |
+| Período final | A partir do 21º pregão de 2022 |
+| Data de corte | 30/10/2026 |
 
-As amostras cujo `label_end_date` passa da data de corte não têm alvo realizado e ficam fora da avaliação. As datas efetivas de início de cada período, depois do aquecimento das variáveis e do embargo, são registradas no manifesto antes da execução.
-
-O conjunto de dados é coletado uma vez e congelado, com manifesto no formato do modo demo: data da coleta, fonte, série usada e hash SHA-256 de cada arquivo. Todas as rodadas usam o mesmo manifesto.
+As amostras cujo `label_end_date` passa da data de corte não têm alvo realizado e ficam fora da avaliação. As datas efetivamente usadas, depois de aquecimento, limpeza, embargo e disponibilidade do alvo, constam no manifesto e no relatório.
 
 ## 6. Validação, expurgo e embargo
 
@@ -108,15 +118,15 @@ O embargo **complementa** o expurgo; não o substitui.
 
 **Teste automático obrigatório:** em todo ajuste, para toda amostra de treino, `label_end_date < primeira data avaliada`. Se falhar, o experimento para (seção 10).
 
-### 6.3 Teste final com avaliação sequencial
+### 6.3 Período final com avaliação sequencial (aprovado)
 
-O teste final segue o mesmo procedimento: ajuste inicial no começo de 2022, com todo o desenvolvimento como treino, e reestimação no início de 2023, 2024, 2025 e 2026, com o procedimento de escolha de hiperparâmetros já fixado.
+Ajuste inicial no começo de 2022, com todo o desenvolvimento como treino, e reestimação no início de 2023, 2024, 2025 e 2026, com o procedimento de escolha do `alpha` já fixado.
 
-Durante o teste final, a reestimação pode usar observações anteriores à data do ajuste, inclusive do período de teste já transcorrido, **desde que seus alvos estejam integralmente realizados** (`label_end_date` antes da data do ajuste, com a regra de fronteira da seção 6.2).
+O treinamento pode incorporar observações do período final já transcorrido, **desde que seus alvos estejam completamente realizados na data do ajuste** (com a regra de fronteira da seção 6.2). Isso não autoriza consultar o futuro.
 
-É proibido usar dados futuros, alvos ainda não realizados ou resultados agregados do teste final para modificar o procedimento, selecionar variáveis, escolher estratégias ou alterar hiperparâmetros fora do procedimento fixado.
+É proibido usar dados futuros, alvos não realizados ou resultados agregados do período final para modificar o procedimento, selecionar variáveis, escolher estratégias ou alterar hiperparâmetros fora do procedimento fixado.
 
-**"O teste final é usado uma única vez"** significa uma execução final do procedimento congelado, não um único ajuste de modelo.
+**"Teste final usado uma única vez"** significa executar uma única avaliação final do procedimento congelado, sem alterar escolhas com base nos resultados agregados encontrados.
 
 ## 7. Referências e modelo candidato
 
@@ -126,51 +136,57 @@ Durante o teste final, a reestimação pode usar observações anteriores à dat
 | Referência auxiliar | Média histórica expansível | Média dos alvos com `label_end_date ≤ decision_date` |
 | Candidato | Regressão regularizada (Ridge) | Variáveis padronizadas no treino; `alpha` na grade fixa 0,1; 1; 10; 100; 1000 |
 
-**Escolha do `alpha` em cada ajuste:** três divisões internas sequenciais, com os três últimos anos completos do treino como validações internas anuais. Aplica-se a regra de fronteira da seção 6.2 (embargo e expurgo pelas datas). O critério de escolha é o menor erro quadrático médio nas três validações internas. Empate: o maior `alpha`.
+**Escolha do `alpha` em cada ajuste:** três divisões internas sequenciais, com os três últimos anos completos do treino como validações internas anuais, sob a regra de fronteira da seção 6.2 (embargo e expurgo pelas datas). Critério: menor erro quadrático médio nas três validações internas. Empate: o maior `alpha`.
 
-**Expansão:** um modelo de árvores (gradient boosting) só entra numa rodada nova, registrada como tal, e não reabre o teste final (seção 11).
+**Expansão:** um modelo de árvores (gradient boosting) só entra numa rodada nova, registrada como tal, e não reabre o período final (seção 11).
 
 **Bibliotecas:** scikit-learn só no ambiente de `experiments/preditivo/` (arquivo de dependências próprio). O `requirements.txt` do aplicativo não muda neste piloto.
 
-## 8. Estratégia, caixa e custos [R7]
+## 8. Estratégia, custos e caixa (R7, aprovado)
 
 ### 8.1 Regra
 
-| Item | Proposta |
-| --- | --- |
-| Regra de entrada | Ficar **exposto** se `ŷ > r̂_caixa + c`; senão, ficar **em caixa** |
-| `r̂_caixa` | Estimativa do retorno do caixa no horizonte, só com informação disponível na decisão: o CDI diário da `decision_date`, mantido constante por 20 pregões, `(1 + CDI_d)^20 − 1` |
-| `c` | Custo de ida e volta da premissa-base (seção 8.3) |
-| Frequência de decisão | A cada 20 pregões, em datas fixas, com execução no fechamento seguinte (`entry_date`) |
-| Restrições | Sem venda a descoberto, sem alavancagem, um ativo por vez |
-
-### 8.2 Caixa
-
-- O **CDI efetivamente realizado** remunera o caixa no cálculo retrospectivo do patrimônio. O CDI futuro nunca entra na decisão.
-- Fonte: Banco Central, série SGS 12 (CDI diário, em **% ao dia**). Converter para decimal (dividir por 100) antes de compor.
-- O CDI é uma referência hipotética de remuneração do caixa, não a promessa de um produto sem custos que entregaria exatamente essa taxa.
-- A série é coletada e congelada com o mesmo manifesto dos preços.
-
-### 8.3 Custos
-
 | Item | Definição |
 | --- | --- |
-| Custo por lado executado (base) | 0,05% de negociação + 0,05% de slippage = **0,10%** |
-| Custo aproximado de ida e volta | **0,20%**, antes dos efeitos de composição |
-| Permanecer exposto entre decisões | Não gera venda e recompra fictícias |
-| Entrar | Custo de compra |
-| Sair | Custo de venda |
-| Comprar e manter | Custo de compra na entrada e de venda no encerramento |
-| Encerramento final | Todas as estratégias encerram na data de corte com custo de venda, se expostas |
-| Sensibilidade (por lado) | 0%; 0,05%; **0,10% (base)**; **0,20% (dobro da base)**; 0,30% |
+| Regra | Ficar **exposto** ao ativo se `ŷ_t > c`; senão, ficar **em caixa** |
+| Limiar | `c = 0,002` (custo aproximado de ida e volta, em decimal) |
+| Frequência de decisão | A cada 20 pregões, com execução no fechamento seguinte (`entry_date`) |
+| Restrições | Sem venda a descoberto, sem alavancagem, cada ativo avaliado separadamente, sem sobreposição de posições dentro de cada simulação |
+
+É uma regra de **retorno absoluto acima do custo**. Ela não afirma antecipadamente superar o CDI e não deve ser descrita como otimização do retorno excedente ao CDI. A comparação com o caixa é feita no backtest e nos critérios de elegibilidade. Uma regra que compare a previsão com uma estimativa do caixa pode ser pesquisada em versão posterior.
+
+### 8.2 Custos
+
+| Componente | Valor por lado executado |
+| --- | --- |
+| Negociação | 0,05% |
+| Slippage | 0,05% |
+| **Total** | **0,10%** |
+| Ida e volta aproximada | 0,20% |
+
+- Os custos incidem sobre o valor negociado.
+- Permanecer exposto entre duas decisões não gera venda e recompra artificiais.
+- Entrar gera custo de compra; sair gera custo de venda.
+- Comprar e manter tem custo de entrada e de encerramento pela mesma convenção.
+- Encerramento final: todas as estratégias encerram na data de corte com custo de venda, se expostas.
+
+**Sensibilidade** (custo total por lado): 0%; **0,10% (cenário-base)**; **0,20% (dobro do custo-base)**; 0,30%. Os cenários são todos apresentados e não podem ser usados para escolher retrospectivamente qual resultado divulgar.
+
+### 8.3 Caixa
+
+- Série SGS 12 do Banco Central (CDI diário), coletada e congelada com o mesmo manifesto dos preços.
+- **Unidade:** % ao dia. **Conversão:** dividir por 100. **Acumulação:** produto de `(1 + CDI_d)` nos dias em caixa.
+- O CDI realizado é usado só na contabilização retrospectiva do caixa, nunca como informação futura para decidir a exposição.
+- O CDI é uma referência hipotética de remuneração do caixa, não a promessa de um produto sem custos com exatamente essa taxa.
+- Resultados antes de impostos, com essa limitação visível.
 
 ### 8.4 Comparações
 
-Comprar e manter o ativo; ficar só em caixa; a mesma regra usando a referência de retorno zero (que fica em caixa sempre que o CDI estimado mais o custo for positivo). Impostos não são modelados; os resultados são rotulados "antes de impostos".
+Comprar e manter o ativo; ficar só em caixa; a mesma regra usando a referência de retorno zero (como `0 > 0,002` é falso, ela fica sempre em caixa).
 
-Os dois experimentos de aporte do plano (capital disponível desde o início e dinheiro recebido ao longo do tempo) ficam para a rodada seguinte, com especificação própria.
+Os experimentos de aporte único e aportes periódicos ficam para uma rodada posterior, com especificação própria.
 
-## 9. Métricas e condições de habilitação
+## 9. Métricas e critérios de elegibilidade
 
 ### 9.1 Métricas registradas (todas, sempre)
 
@@ -179,82 +195,90 @@ Os dois experimentos de aporte do plano (capital disponível desde o início e d
 | Previsão | MAE e RMSE do candidato e das referências; razão RMSE candidato / RMSE retorno zero; R² fora da amostra em relação ao retorno zero (`1 − SSE_candidato / SSE_zero`) |
 | Direção | Acurácia balanceada do sinal de `ŷ`, calculada só nas datas de decisão (sem sobreposição) |
 | Estratégia | Retorno líquido acumulado e anualizado, volatilidade, **magnitude** do drawdown máximo (valor positivo), número de trocas e percentual do tempo exposto |
-| Estabilidade | R² fora da amostra em cada dobra do desenvolvimento |
+| Estabilidade | R² fora da amostra em cada dobra do desenvolvimento, todas reportadas, inclusive as negativas |
 
-### 9.2 Teste estatístico (pendente de nota metodológica)
+### 9.2 Teste estatístico (aprovado, com nota metodológica prévia)
 
-A comparação entre o candidato e o retorno zero é de **modelos aninhados**: o retorno zero corresponde ao candidato com todos os coeficientes nulos. Para esse caso, a literatura distingue o teste de Diebold-Mariano do procedimento de Clark-West, que corrige o viés do erro quadrático do modelo maior sob a hipótese nula.
+**Teste:** Diebold-Mariano, com `p < 0,10` a favor do candidato.
 
-Antes de congelar o protocolo, uma nota metodológica curta (`docs/preditivo/nota_teste_estatistico.md`) fixará:
+Antes do período final, a nota metodológica `docs/preditivo/nota_teste_estatistico.md` registra:
+- função de perda quadrática;
+- hipótese unilateral de menor perda do candidato;
+- convenção de sinal do diferencial de perdas;
+- variância robusta de Newey-West com 19 defasagens (sobreposição dos alvos).
 
-| Item | Proposta inicial a justificar na nota |
-| --- | --- |
-| Teste | Clark-West, por se tratar de comparação aninhada |
-| Perda | Erro quadrático |
-| Diferencial | Perda do retorno zero menos perda ajustada do candidato |
-| Hipótese | Unilateral: o candidato tem menor erro quadrático esperado |
-| Variância | HAC de Newey-West com 19 defasagens, por causa da sobreposição dos alvos |
-| Casos não calculáveis | Variância nula ou amostra insuficiente: critério registrado como "não calculável" e tratado como não atendido |
+**Revisão de adequação.** A comparação com o retorno zero é entre modelos aninhados, caso em que a literatura discute alternativas como o procedimento de Clark-West. A nota avalia essa adequação antes da execução. Se indicar outro teste, a mudança é confirmada pelo orientador e registrada **antes** de abrir os resultados finais, nunca depois.
 
-O limiar **p < 0,10** é exploratório, escolhido para este piloto, e não é garantia de que a estratégia funcionará no futuro. Enquanto a nota não for aprovada, o critério 2 da seção 9.3 não pode ser usado.
+O limiar `p < 0,10` é exploratório, escolhido para este piloto, e não garante que a estratégia funcionará no futuro. Resultado não calculável não é tratado como aprovação.
 
-### 9.3 Critérios de elegibilidade, definidos antes da avaliação final (proposta)
+### 9.3 Critérios de elegibilidade (aprovados)
 
-Avaliados **por ativo**, no teste final. O sinal só pode ser habilitado no ambiente experimental se **todos** forem atendidos:
+Avaliados **por ativo**, no período final. O sinal só é elegível se **todos** forem atendidos:
 
-1. R² fora da amostra maior que zero (o candidato erra menos que o retorno zero);
-2. teste da seção 9.2 com p < 0,10 a favor do candidato;
-3. R² fora da amostra maior que zero em pelo menos 5 das 8 dobras do desenvolvimento;
-4. **condição econômica**, com o custo-base:
-   - **(A)** retorno líquido da estratégia > retorno do caixa **E** magnitude do drawdown máximo da estratégia < magnitude do drawdown máximo de comprar e manter;
-   - **OU (B)** retorno líquido da estratégia > retorno de comprar e manter **E** magnitude do drawdown máximo da estratégia ≤ magnitude do drawdown máximo de comprar e manter + 5 pontos percentuais (limite de risco proposto para este ramo);
-5. a condição 4 continua atendida com o custo por lado de 0,20% (dobro da base).
+1. **Ganho preditivo:** R² fora da amostra **estritamente maior que zero** em relação ao retorno zero. Zero não satisfaz, e não se aplica arredondamento para converter resultado nulo ou negativo em aprovação.
+2. **Comparação estatística:** teste da seção 9.2 com `p < 0,10` a favor do candidato.
+3. **Estabilidade:** R² fora da amostra maior que zero em pelo menos 5 das 8 dobras do desenvolvimento.
+4. **Resultado econômico,** com o custo-base: **(A ∧ B) ∨ C**, onde
+   - **A:** retorno líquido da estratégia superior ao do caixa;
+   - **B:** magnitude do drawdown máximo da estratégia inferior à de comprar e manter;
+   - **C:** retorno líquido da estratégia superior ao de comprar e manter.
 
-São critérios de pesquisa propostos para este piloto, não padrões universais de investimento.
+   O ramo C não comprova menor risco. Se a estratégia for elegível por esse ramo com drawdown maior, essa condição é destacada no relatório, e ela não pode ser descrita como superior em todas as dimensões. Não há limite adicional de drawdown neste piloto; a elegibilidade permite apenas investigação no ambiente experimental.
+5. **Robustez ao custo:** o critério 4 continua atendido com o dobro do custo-base (0,20% por lado), executando a mesma estratégia com os mesmos sinais e calendário e alterando só o custo contabilizado. Sem novo ajuste do modelo nem seleção de limiar.
 
-Se algum critério falhar, o sistema registra e, numa eventual tela experimental, informa: **"não houve evidência suficiente para habilitar o sinal"**, mostrando a comparação. Esse resultado conclui o experimento cientificamente (plano, seção 6.3).
+São regras internas deste piloto, não padrões universais de investimento.
+
+### 9.4 Resultado e alcance
+
+- Se qualquer critério falhar: **"Não houve evidência suficiente para habilitar o sinal."** Isso não é fracasso do projeto: o experimento está cientificamente concluído se executado conforme o protocolo e relatado integralmente.
+- Se todos os critérios forem atendidos: o sinal pode ser considerado elegível para **integração experimental restrita**, depois da conferência do relatório e dos testes. Não há liberação automática ao público nem transferência da elegibilidade para outros ativos, modelos ou horizontes.
 
 ## 10. Registro de experimentos e critérios de interrupção
 
 **Registro.** Cada execução grava uma linha em `experiments/preditivo/registro.jsonl` com:
 - data e hora (Brasília) e commit do código;
-- hash do manifesto de dados e da configuração;
+- hash do manifesto de dados, do protocolo e da configuração;
 - ativo, modelo, hiperparâmetros e ajuste;
 - métricas e se a execução foi a avaliação final.
 
-Configurações rejeitadas ficam registradas e entram no relatório. A primeira execução da avaliação final marca o teste final como **usado**.
+Configurações rejeitadas ficam registradas e entram no relatório. A primeira execução da avaliação final marca o período final como **usado**.
 
 **Interromper e corrigir antes de seguir quando:**
 - o teste de fronteira da seção 6.2 falhar;
-- a coleta tiver lacunas não explicadas, ou a triagem da seção 3 mostrar diferença sem evento identificado;
+- a coleta tiver lacunas não explicadas, ou a triagem da seção 3 tiver diferença relevante ainda não investigada;
 - alguma variável combinar preços de bases de ajuste diferentes;
 - algum ajuste usar amostra com alvo não realizado na data do ajuste, ou dados posteriores a ela.
 
-**Se um vazamento for descoberto depois da avaliação final:** registrar o ocorrido, corrigir e reportar os resultados como comprometidos. O teste final não é refeito com novos dados escolhidos depois.
+**Se um vazamento for descoberto depois da avaliação final:** registrar o ocorrido, corrigir e reportar os resultados como comprometidos. O período final não é refeito com novos dados escolhidos depois.
 
 ## 11. Versões e mudanças
 
 - **Mudanças substantivas** em dados, alvos, variáveis, divisões temporais, modelos, estratégia, métricas ou critérios de elegibilidade exigem nova versão do protocolo.
-- Depois de consultados os resultados finais, uma mudança substantiva **não permite reutilizar o mesmo teste** como evidência confirmatória independente. Os resultados anteriores permanecem registrados.
-- Pesquisas feitas depois do primeiro teste são identificadas como **exploratórias** ou avaliadas prospectivamente em dados novos, posteriores à data de corte.
+- Depois de consultados os resultados finais, uma mudança substantiva **não permite reutilizar o mesmo período** como evidência confirmatória independente. Os resultados anteriores permanecem registrados.
+- Pesquisas feitas depois da avaliação final são identificadas como **exploratórias** ou avaliadas prospectivamente em dados novos, posteriores à data de corte.
 - **Correções editoriais ou documentais** que não alterem o experimento entram no histórico abaixo, sem invalidar a execução.
 
+## 12. Condições para abrir a avaliação final
+
+A implementação local pode avançar enquanto estes itens são preparados. O período final só é aberto com todos atendidos:
+
+| # | Condição | Situação |
+| --- | --- | --- |
+| 1 | Incorporar as decisões de 08/11/2026 ao protocolo | **Feito** (esta versão) |
+| 2 | Registrar a versão consolidada e seu hash SHA-256 | Pendente: no congelamento, em `experiments/preditivo/` e no registro de decisões |
+| 3 | Congelar os dados (manifesto com hashes) e a configuração | Pendente |
+| 4 | Testar o alinhamento entre `decision_date`, `entry_date` e `label_end_date` | Pendente |
+| 5 | Testar o expurgo nas divisões externas e internas | Pendente |
+| 6 | Conferir custos, caixa e referências | Pendente |
+| 7 | Fechar a nota metodológica do teste estatístico (seção 9.2) | Pendente |
+| 8 | Registrar a confirmação original da decisão (mensagem do orientador com data e remetente) | Pendente |
+
 ---
-
-## Pendências antes de congelar
-
-| Item | Depende de |
-| --- | --- |
-| Ativos, horizonte e datas (seções 1, 2 e 5) | R6 |
-| Estratégia, caixa e custos (seção 8) | R7 |
-| Série de preços e consistência das colunas (seções 3 e 4) | R8 |
-| Nota metodológica do teste estatístico (seção 9.2) | Desenvolvedor, com aprovação do orientador |
-| Limiares de elegibilidade, inclusive o limite de risco do ramo B (seção 9.3) | Orientador |
-| Coleta do CDI e conferência dos termos de uso das fontes | Desenvolvedor |
 
 ## Histórico
 
 | Data | Versão | Mudança |
 | --- | --- | --- |
 | 07/11/2026 | v1, minuta | Primeira redação |
-| 08/11/2026 | v1, minuta, revisão 1 | Alvo alinhado à entrada em `t + 1` e datas por amostra; reestimação sequencial no teste final com alvos realizados; embargo e expurgo separados e aplicados também às divisões internas; reestimação no início de cada ano; preços de abertura, máxima, mínima e fechamento na mesma base de ajuste e natureza do snapshot; regra de entrada contra o caixa estimado sem usar o CDI futuro; custos por lado; teste estatístico condicionado a nota metodológica (comparação aninhada); condição econômica com parênteses, magnitude do drawdown e limite de risco no ramo B; regra de versões substantivas e editoriais |
+| 08/11/2026 | v1, minuta, revisão 1 | Alvo alinhado à entrada e datas por amostra; reestimação sequencial; embargo e expurgo separados, inclusive nas divisões internas; preços na mesma base de ajuste; caixa estimado na regra; custos por lado; teste estatístico condicionado a nota; condição econômica explícita; regra de versões |
+| 08/11/2026 | v1, consolidada | Decisão do orientador sobre R6, R7, R8 e critérios. Regra de entrada volta a `ŷ > c` com `c = 0,002`, sem estimativa do caixa; sensibilidade em 0%, 0,10%, 0,20% e 0,30% por lado; teste de Diebold-Mariano com revisão de adequação antes da execução; ramo C sem limite adicional de drawdown, com destaque obrigatório; descrição obrigatória do resultado; condições para abrir a avaliação final (seção 12) |

@@ -138,6 +138,8 @@ A família de protocolo da LLM para a camada experimental será nova (por exempl
 | R12 | Relação com o TCC "Previsão de Riscos Financeiros" (Lorrana Evelyn de Araújo Pereira), que prevê volatilidade; o piloto proposto prevê retorno | Orientador e autora |
 | R13 | Confirmar quais registros de [`pibiti/decisoes_orientador.md`](pibiti/decisoes_orientador.md) têm evidência original (seção "Auditoria de 07/11/2026" daquele arquivo) | Orientador |
 
+**Atualização de 08/11/2026:** R6, R7 e R8 foram decididos pelo orientador, junto com os critérios de elegibilidade do piloto. Detalhes em [`pibiti/decisoes_orientador.md`](pibiti/decisoes_orientador.md) (entrada de 08/11/2026) e no protocolo consolidado. A confirmação original ainda precisa ser arquivada.
+
 As decisões não precisam bloquear todas as atividades ao mesmo tempo:
 
 | Bloco | Decisões | O que libera |
@@ -185,20 +187,20 @@ Se a versão experimental não estiver pronta a tempo da coleta, o O6 pode avali
 
 A recomendação pública não integra a entrega mínima deste ciclo. Sua eventual disponibilização dependerá dos resultados quantitativos, da avaliação de riscos e do enquadramento institucional e regulatório, sem compromisso de prazo neste plano.
 
-### 6.2 Escopo inicial proposto do piloto (sujeito a R6, R7 e R8)
+### 6.2 Escopo inicial do piloto (R6, R7 e R8 decididos em 08/11/2026)
 
 Um recorte pequeno permite verificar primeiro a integridade dos dados, dos alvos e da avaliação.
 
 | Elemento | Escopo inicial |
 | --- | --- |
-| Ativos | Dois ativos com histórico suficiente, de preferência da mesma classe |
+| Ativos | `PETR4.SA` e `VALE3.SA`, avaliados separadamente |
 | Frequência | Diária |
 | Horizonte | 20 observações futuras (pregões) |
-| Alvo | Retorno simples acumulado no horizonte |
+| Alvo | Retorno simples entre a entrada (fechamento de `t + 1`) e o fechamento de `t + 21` |
 | Referência | Retorno zero |
 | Modelo candidato | Regressão regularizada |
 | Expansão | Um modelo de árvores após a primeira avaliação |
-| Estratégia | Exposto ou em caixa, sem venda a descoberto e sem alavancagem |
+| Estratégia | Exposto se a previsão superar o custo de ida e volta (0,20%), senão em caixa (CDI); sem venda a descoberto e sem alavancagem |
 
 ### 6.3 Conclusão científica e habilitação operacional
 
@@ -231,6 +233,7 @@ Se o modelo não atender aos critérios, o sistema exibirá a comparação exper
 | Página "Sobre o Projeto" | Sem mudança até a confirmação (R5) |
 | Consulta regulatória | A encaminhar (R2) |
 | Ajustes da revisão de 07/11/2026 (N07, piloto reduzido, habilitação, preços, múltiplos testes, calendário, blocos de decisão) | Incorporados |
+| Protocolo do piloto | Consolidado em 08/11/2026 com a decisão sobre R6, R7, R8 e critérios; a avaliação final depende das condições da seção 12 do protocolo |
 
 ### 7.1 Próximo artefato
 

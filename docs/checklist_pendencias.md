@@ -459,7 +459,9 @@ Etapa 0 — revisão de escopo:
 - [x] Incorporar ao plano os ajustes da revisão de 07/11/2026 (N07, piloto reduzido, habilitação operacional, preços, múltiplos testes, calendário e blocos de decisão)
 - [x] Redigir a minuta `docs/preditivo/protocolo_piloto_v1.md` (plano, seção 7.1), 07/11/2026
 - [x] Revisão 1 do protocolo (08/11/2026): alvo alinhado à entrada, reestimação sequencial, expurgo e embargo por datas, preços na mesma base de ajuste, caixa estimado, custos por lado, condição econômica e regra de versões
-- [ ] Nota metodológica do teste estatístico (`docs/preditivo/nota_teste_estatistico.md`, comparação aninhada)
-- [ ] Revisão do protocolo pelo orientador e definição de R6, R7, R8 e dos limiares de elegibilidade
+- [ ] Nota metodológica do teste estatístico (`docs/preditivo/nota_teste_estatistico.md`): Diebold-Mariano aprovado, com revisão de adequação para a comparação aninhada antes da execução
+- [x] Decisão do orientador sobre R6, R7, R8 e os critérios de elegibilidade (08/11/2026), incorporada ao protocolo consolidado
+- [ ] Arquivar a confirmação original da decisão de 08/11/2026 (mensagem com data e remetente)
+- [ ] Condições da seção 12 do protocolo antes de abrir a avaliação final: hash da versão consolidada, dados e configuração congelados, testes de alinhamento e expurgo, conferência de custos, caixa e referências
 - [ ] Revisar as minutas do CEP e do TCLE, conforme a decisão R9
 - [ ] Atualizar a seção Pesquisa da página "Sobre o Projeto" depois de R5
