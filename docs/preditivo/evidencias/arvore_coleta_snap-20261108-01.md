@@ -35,3 +35,11 @@ index 71537a2..b47ae4e 100644
  | Explicação assistida | _[incluída / não incluída]_; versão pública: sem chamadas ao modelo (respostas salvas ou texto fixo) |
  | Modo de demonstração | _[validado com a internet desativada em dd/mm/aaaa]_ |
 ```
+
+## Encerramento do desvio (08/11/2026)
+
+Decisão do autor do projeto: **descartar** as alterações locais de `docs/versao_congelada.md`, que nunca entraram em commit.
+
+- **Conferência antes do descarte:** o diff era exatamente o reproduzido acima. Nenhuma informação existia só ali. As versões e o sistema (Windows, Python 3.13.15, Streamlit 1.63.0, pandas 3.0.5, yfinance 1.7.0) constam em `TESTES.md`, `app/requirements.txt` e `docs/checkpoint_qualidade.md`. A data de 25/10/2026 consta em `TESTES.md` como a última execução registrada.
+- **Como foi feito:** o arquivo voltou ao estado versionado (`git checkout`), sem commit de conteúdo novo.
+- **Efeito:** a partir de agora, as execuções não registram mais a árvore como alterada por causa desse arquivo. Os registros anteriores, com `arvore_alterada: true`, continuam como estão e devem ser lidos com esta evidência.
