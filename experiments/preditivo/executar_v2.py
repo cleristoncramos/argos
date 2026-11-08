@@ -204,6 +204,7 @@ def reproduzir_v1(precos, politica, brutos) -> dict:
 
 
 def comando_reproduzir(_args) -> int:
+    exigir_v2_aberta()   # depois do encerramento, o arquivo de reprodução arquivado não é sobrescrito
     _manifesto, precos, _cdi = carregar()
     politica = carregar_politica()
     exigir_decidida(politica)

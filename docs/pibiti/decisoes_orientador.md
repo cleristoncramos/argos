@@ -303,8 +303,40 @@ Relatório em [`desenvolvimento_oficial_v2.md`](../preditivo/desenvolvimento_ofi
 | PETR4.SA | 6 de 8 | 5 de 8 | Filtros atendidos. Diagnóstico posterior: uma constante igual à média do treino, sem variáveis, supera a média histórica em 7 de 8 dobras |
 | VALE3.SA | 4 de 8 | 3 de 8 | Encerramento sem avaliação final (V2-7) |
 
-| # | Decisão | Opções |
-|---|---|---|
-| DV2 | Destino do período final na v2 | (a) não abrir e encerrar a v2, registrando a limitação da referência do critério 6 (recomendação do desenvolvedor); (b) abrir só para a PETR4, o que exige alteração registrada do código, que hoje só abre quando todos os ativos atendem aos filtros |
+Status: decidida (DV2, abaixo).
 
-Status: aguardando decisão.
+## DV2 — Encerramento da v2 sem abertura final (08/11/2026)
+
+Data: 08/11/2026, sujeita à confirmação do orientador.
+
+Decisão: encerrar a v2 sem abrir a avaliação final de nenhum ativo (caminho a).
+
+VALE3.SA: critérios 3 (4 de 8) e 6 (3 de 8) de desenvolvimento não atendidos. Encerramento conforme V2-7: "A v2 não atendeu aos critérios de desenvolvimento necessários para abertura da avaliação final da VALE3.SA. Não houve evidência suficiente, segundo o protocolo, para habilitar o sinal." Sem alteração de limiar, grade ou variáveis para reclassificar o resultado.
+
+PETR4.SA: critérios 3 (6 de 8) e 6 (5 de 8) de desenvolvimento formalmente atendidos, e assim registrados, sem reclassificação retrospectiva. A abertura final não foi autorizada porque o diagnóstico exploratório mostrou que o ganho sobre a média histórica expansiva não isolou a contribuição das variáveis: uma constante igual à média do treino também superou essa referência em sete das oito dobras. A comparação mistura o uso dos indicadores na Ridge e a diferença entre a média do treino, mantida durante o ano, e a média histórica, atualizada a cada data. Isso não demonstra que as variáveis sejam inúteis. A PETR4 é encerrada por decisão de não progressão, não por descumprimento dos filtros.
+
+Natureza: a decisão não cria um critério 7 nem altera os critérios 1 a 6.
+
+| Elemento | Situação |
+|---|---|
+| Filtros de desenvolvimento da PETR4 | Atendidos |
+| Filtros de desenvolvimento da VALE3 | Não atendidos |
+| Critérios dependentes do período final | Não avaliados |
+| Abertura final da PETR4 | Não autorizada por decisão de orientação |
+| Habilitação de sinais | Não autorizada para nenhum ativo |
+
+Diagnóstico posterior: preservado como análise exploratória, não prevista no protocolo, calculada só sobre o desenvolvimento, sem efeito retroativo nos critérios. Não se afirma nada sobre o período final, que não foi avaliado.
+
+Resultado científico: "O piloto v2 investigou a ampliação da regularização da Ridge, mantendo os demais elementos da v1. A VALE3 não atingiu os filtros de desenvolvimento. A PETR4 atingiu os filtros contra retorno zero e média histórica expansiva, mas uma análise exploratória posterior identificou que uma previsão constante igual à média do treino também superava a referência expansiva, sem utilizar indicadores. Portanto, o atendimento desses filtros não isolou a contribuição das variáveis. Por decisão de orientação, a avaliação final não foi aberta e nenhum sinal foi habilitado."
+
+Preservação: o período final permanece sem avaliação preditiva nesta versão. Não autorizados: previsões finais, métricas finais, alteração do código para abertura parcial e reutilização da v2 com referências ou critérios modificados. A incompatibilidade entre o bloqueio global do código e a avaliação por ativo fica registrada como achado de implementação; uma versão futura deve definir quais condições são globais e quais são por ativo.
+
+Arquivamento: commit do relatório, do registro DV2 e das atualizações documentais, após conferência do diff; encerramento técnico preservando protocolo e configuração, hashes e commits, previsões e métricas de desenvolvimento, reprodução da v1, diagnóstico exploratório, evidência da não execução da avaliação final e cópia fora do Git. A correção de `cdf7eef` fica descrita como correção de infraestrutura anterior aos resultados, distinta do congelamento em `378b0b9`.
+
+Continuidade: sem v3 imediata. Uma proposta futura poderá investigar se as variáveis acrescentam informação em comparação com uma referência sem variáveis que tenha a mesma amostra de treino, o mesmo calendário de reestimação, as mesmas datas de previsão e as mesmas restrições de disponibilidade de alvos. É só uma hipótese de pesquisa: nenhum experimento novo está autorizado.
+
+**Cumprimento (08/11/2026):** relatório corrigido; encerramento técnico em [`encerramento_v2.md`](../preditivo/encerramento_v2.md) e `experiments/preditivo/encerramento_v2.json`; diagnóstico salvo como arquivo exploratório com hash; cópia fora do Git.
+
+**Evidência:** texto recebido pelo desenvolvedor em 08/11/2026. **Pendente:** arquivar fora do repositório a mensagem original (data e remetente).
+
+Status: recebida em 08/11/2026. Confirmação original: a arquivar.

@@ -1,6 +1,6 @@
 # Desenvolvimento oficial do piloto — v2
 
-**Situação:** rodada oficial concluída em 08/11/2026 · **PETR4.SA: filtros dos critérios 3 e 6 atendidos** · **VALE3.SA: critérios 3 e 6 não atendidos** · avaliação final bloqueada; a abertura depende de nova decisão escrita do orientador
+**Situação:** rodada oficial concluída em 08/11/2026 · **PETR4.SA: filtros dos critérios 3 e 6 atendidos** · **VALE3.SA: filtros não atendidos** · v2 encerrada sem abertura da avaliação final (decisão DV2, [encerramento](encerramento_v2.md)) · nenhum sinal habilitado
 
 > A configuração da v2 foi proposta a partir dos resultados de desenvolvimento da v1. As mesmas dobras foram reutilizadas para seleção e avaliação de desenvolvimento. Seus resultados não constituem evidência independente de generalização.
 
@@ -13,13 +13,13 @@ O período final segue como "período ainda não utilizado para avaliação pred
 | Item | Valor |
 | --- | --- |
 | Data | 08/11/2026 (eventos `desenvolvimento` em `experiments/preditivo/registro_v2.jsonl`) |
-| Commit | `cdf7eef`: congelamento em `378b0b9` mais a correção abaixo |
+| Commits | Dois marcos distintos: congelamento do experimento em `378b0b9`; correção da infraestrutura em `cdf7eef`, anterior à produção dos resultados (ver abaixo). A rodada registrada roda sobre `cdf7eef` |
 | Alterações locais na rodada | Só `docs/versao_congelada.md` (desvio já registrado) e `registro_v2.jsonl`, as duas aceitas pelo protocolo v2 (seção 12) |
 | Protocolo v2 | SHA-256 `767566481140bd748ec798a0d774b5ff17cc742d8cbd0d157c8d9b6f22d408a0` |
 | Configuração v1 / v2 | `90986a8c…` (inalterada) / `79a89c807f33962a78e801c79e0072ed883003a9e19388259aa4f56098a3f328` |
 | Nota, manifesto e política | Iguais aos da v1 (`be0747af…`, `6985328407ba…`, `f75598b06fa9…`) |
 
-**Tentativa recusada antes da rodada.** A primeira execução depois do congelamento foi recusada pela trava de código congelado antes de carregar qualquer dado. A causa foi um defeito na leitura dos caminhos alterados: o primeiro caractere de `docs/versao_congelada.md` era cortado. O defeito foi corrigido com teste no commit `cdf7eef`, sem mudança no experimento. Nenhum resultado da v2 existia antes da rodada registrada.
+**Tentativa recusada antes da rodada.** A primeira execução depois do congelamento foi recusada pela trava de código congelado antes de carregar qualquer dado. A causa foi um defeito na leitura dos caminhos alterados: o primeiro caractere de `docs/versao_congelada.md` era cortado. O defeito foi corrigido no commit `cdf7eef`, com o teste `test_arquivos_alterados_le_caminhos_completos`. A correção mexe só em `registro.arquivos_alterados` (infraestrutura de registro) e não altera grade, variáveis, critérios nem configuração: os hashes da configuração v2 e do protocolo são os do congelamento. Nenhum resultado da v2 existia antes da rodada registrada.
 
 **Verificações antes dos resultados.**
 - **Reprodução da v1:** a v2 restrita à grade antiga reproduziu as previsões e as métricas oficiais da v1. A diferença máxima foi de 9,99 × 10⁻¹⁷ (tolerância de 10⁻¹⁰ relativa e 10⁻¹² absoluta).
@@ -91,18 +91,13 @@ Este diagnóstico **não é critério** e não estava no protocolo. Foi calculad
 
 **Consequência para a estratégia** (só datas de decisão do desenvolvimento): nas dobras com `alpha` = 10⁶, a regra `ŷ > 0,002` ficou 100% exposta ou 100% em caixa durante o ano inteiro. Na PETR4, isso aconteceu de 2015 a 2020, conforme a média do treino estivesse acima ou abaixo de `c`. É uma regra praticamente constante, não um sinal que mude com as variáveis.
 
-## 6. Decisão necessária
+## 6. Decisão DV2
 
-Pelas regras do protocolo v2, os critérios foram fixados antes e não mudam. A PETR4 atendeu aos filtros dos critérios 3 e 6. O período final só pode ser aberto com nova decisão escrita e com as sete condições da seção 9 cumpridas. Cabe ao orientador decidir:
+O orientador escolheu não abrir o período final e encerrar a v2 (08/11/2026). Detalhes, situação de cada elemento e arquivamento em [`encerramento_v2.md`](encerramento_v2.md).
 
-| Caminho | Consequência |
-| --- | --- |
-| (a) Não abrir o período final e encerrar a v2 | Preserva o período reservado. O relatório registra que a PETR4 atendeu formalmente aos filtros, mas por um mecanismo atribuível à média do treino, conforme o diagnóstico da seção 5. Essa limitação da referência do critério 6 fica como pergunta para uma versão futura |
-| (b) Abrir o período final só para a PETR4 | Aplica os critérios 1 a 6 como fixados. Mesmo uma aprovação formal teria de ser lida à luz da seção 5: o ganho provavelmente viria da média do treino, não das variáveis. O período reservado seria consumido |
-
-**Observação de implementação.** O código congelado só libera a lista de datas e a avaliação final quando **todos** os ativos atendem aos filtros (`executar_v2._desenvolvimento_v2_atende`). O protocolo avalia os critérios por ativo, mas não definiu a abertura parcial. O caminho (b) exigiria uma alteração registrada do código, com novo commit e teste, antes de qualquer abertura.
-
-**Recomendação do desenvolvedor:** caminho (a). A finalidade do critério 6, confirmada na decisão do orientador, era verificar se as variáveis acrescentam informação útil, e o diagnóstico mostra que, na PETR4, o ganho nas dobras também aparece sem as variáveis. Abrir o período agora consumiria a reserva para testar um mecanismo que a própria hipótese da v2 não pretendia validar. A decisão é do orientador.
+- **VALE3.SA:** encerrada conforme a V2-7.
+- **PETR4.SA:** os filtros continuam registrados como **atendidos**. A abertura final não foi autorizada, por decisão de orientação, porque o ganho sobre a média histórica expansiva não isolou a contribuição das variáveis (seção 5). A conclusão se restringe ao mecanismo observado no desenvolvimento; o período final não foi avaliado.
+- **Achado de implementação:** o código só libera a abertura quando todos os ativos atendem aos filtros, enquanto o protocolo avalia os critérios por ativo. Isso fica registrado e não é corrigido, porque não haverá abertura.
 
 ## 7. Arquivos
 

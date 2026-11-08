@@ -102,6 +102,8 @@ Além do `alpha` e dos erros das validações internas, cada ajuste registra a m
 
 ## Piloto v2
 
+**v2 encerrada sem abertura da avaliação final (decisão DV2, 08/11/2026).** Com `encerramento_v2.json` presente, todos os comandos de `executar_v2` são recusados. Ver `docs/preditivo/encerramento_v2.md`.
+
 Protocolo: `docs/preditivo/protocolo_piloto_v2.md`. A configuração própria está em `config_v2.py`: grade de `alpha` até 10⁶ com limite fixo e tolerâncias da reprodução. Todo o resto vem de `config.py`, que não muda. Registro em `registro_v2.jsonl`, resultados em `resultados/v2/` e travas próprias (`condicoes_abertura_v2.json`, `avaliacao_final_usada_v2.json`, `datas_elegiveis_v2.json`, `encerramento_v2.json`).
 
 ```bash

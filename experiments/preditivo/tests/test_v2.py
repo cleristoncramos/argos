@@ -203,7 +203,7 @@ def test_registro_anterior_tambem_impede_nova_rodada_oficial(v2_isolada):
 
 def test_v2_encerrada_recusa_execucoes(v2_isolada):
     config_v2.ENCERRAMENTO.write_text("{}", encoding="utf-8")
-    for argv in (["desenvolver"], ["listar-datas"], ["final", "--confirmo-abertura"]):
+    for argv in (["reproduzir-v1"], ["desenvolver"], ["listar-datas"], ["final", "--confirmo-abertura"]):
         with pytest.raises(executar_v2.ExecucaoRecusada, match="encerrada"):
             executar_v2.main(argv)
 
