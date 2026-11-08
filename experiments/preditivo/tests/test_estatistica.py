@@ -47,9 +47,30 @@ def test_convencao_de_sinal():
     assert resultado.status == NAO_CALCULAVEL and resultado.motivo == "variância de longo prazo nula"
 
 
-def test_diferencial_constante_e_variancia_nula_e_nao_erro_numerico():
+def test_serie_exatamente_constante_tem_variancia_nula():
     resultado = _teste_media(np.full(30, 0.2), 19, 0.10, minimo=None)
     assert resultado.status == NAO_CALCULAVEL and resultado.motivo == "variância de longo prazo nula"
+
+
+def test_serie_constante_com_residuo_de_arredondamento_tem_variancia_nula():
+    # 0,1 + 0,2 e 0,3 diferem por arredondamento binário (cerca de 5e-17).
+    serie = np.array([0.1 + 0.2, 0.3] * 15)
+    assert np.ptp(serie) > 0
+    resultado = _teste_media(serie, 19, 0.10, minimo=None)
+    assert resultado.motivo == "variância de longo prazo nula"
+
+
+def test_serie_de_baixa_amplitude_com_variacao_real_e_calculada():
+    rng = np.random.default_rng(9)
+    serie = 1e-6 + rng.normal(0.0, 1e-9, 60)              # diferenciais pequenos, mas com variação real
+    resultado = _teste_media(serie, 19, 0.10, minimo=None)
+    assert resultado.status == OK and resultado.variancia > 0
+
+
+def test_entradas_nao_finitas_no_diferencial():
+    for serie in (np.array([0.1, np.inf, 0.2, 0.3]), np.array([0.1, np.nan, 0.2, 0.3])):
+        resultado = _teste_media(serie, 1, 0.10, minimo=None)
+        assert resultado.status == NAO_CALCULAVEL and resultado.motivo == "entrada não finita"
 
 
 def test_variancia_de_bartlett_nunca_negativa():

@@ -44,6 +44,18 @@ def phi(x: float) -> float:
     return 0.5 * (1.0 + math.erf(x / math.sqrt(2.0)))
 
 
+# Tolerância relativa para reconhecer série constante: a amplitude (máximo − mínimo)
+# precisa ser no máximo 1e-12 vezes o maior valor absoluto da série, cerca de 4.500
+# vezes o épsilon da máquina. Absorve resíduos de arredondamento sem apagar variações
+# pequenas, mas reais, dos diferenciais de perda. Fixada antes de qualquer resultado.
+TOLERANCIA_CONSTANTE = 1e-12
+
+
+def serie_constante(serie: np.ndarray, tolerancia: float = TOLERANCIA_CONSTANTE) -> bool:
+    escala = float(np.max(np.abs(serie)))
+    return escala == 0.0 or float(np.ptp(serie)) <= tolerancia * escala
+
+
 def variancia_newey_west(d: np.ndarray, defasagens: int) -> float:
     """V̂ = γ̂0 + 2 Σ w_j γ̂j, centrada em d̄, autocovariâncias divididas por T, pesos de Bartlett."""
     T = len(d)
@@ -86,9 +98,10 @@ def _teste_media(serie: np.ndarray, defasagens: int, limiar: float, minimo: int 
         return ResultadoTeste(NAO_CALCULAVEL, "amostra inferior ao mínimo previsto", T=T)
     if T < 2:
         return ResultadoTeste(NAO_CALCULAVEL, "amostra com menos de duas datas", T=T)
+    if not np.isfinite(serie).all():
+        return ResultadoTeste(NAO_CALCULAVEL, "entrada não finita", T=T)
     media = float(serie.mean())
-    if np.all(serie == serie[0]):
-        # Série constante: a variância é exatamente nula (o resíduo de ponto flutuante não conta).
+    if serie_constante(serie):
         return ResultadoTeste(NAO_CALCULAVEL, "variância de longo prazo nula", T=T, media=media, variancia=0.0)
     try:
         with np.errstate(over="raise", invalid="raise", divide="raise"):

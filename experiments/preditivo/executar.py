@@ -74,10 +74,18 @@ def desenvolver_ativo(ativo: str, precos: pd.DataFrame) -> tuple[pd.DataFrame, l
 
 def comando_coletar(_args) -> int:
     manifesto = coletar_e_congelar()
-    registrar("coleta", {"arquivos": manifesto["arquivos"], "triagem_eventos": manifesto["triagem_eventos"]})
+    verificacoes = {chave: manifesto[chave] for chave in (
+        "triagem_retorno_preco_vs_ajustado_por_proventos", "desdobramentos_na_fonte",
+        "verificacao_ohlc", "variacoes_do_fator_sem_evento")}
+    registrar("coleta", {"arquivos": manifesto["arquivos"], **verificacoes})
     print(f"Dados congelados em {config.DADOS} ({len(manifesto['arquivos'])} arquivos).")
-    for ativo, eventos in manifesto["triagem_eventos"].items():
-        print(f"  {ativo}: {len(eventos)} datas na triagem de eventos (investigar e documentar)")
+    for ativo in manifesto["parametros"]["ativos"]:
+        print(f"  {ativo}: "
+              f"{len(verificacoes['triagem_retorno_preco_vs_ajustado_por_proventos'][ativo])} datas na triagem de proventos; "
+              f"{len(verificacoes['desdobramentos_na_fonte'][ativo])} desdobramentos; "
+              f"{len(verificacoes['verificacao_ohlc'][ativo]['ocorrencias'])} ocorrências OHLC; "
+              f"{len(verificacoes['variacoes_do_fator_sem_evento'][ativo])} variações do fator sem evento "
+              "(investigar e documentar)")
     return 0
 
 
@@ -108,7 +116,8 @@ def comando_desenvolver(_args) -> int:
     for ativo, serie in precos.items():
         previsoes, ajustes, dobras = desenvolver_ativo(ativo, serie)
         previsoes.to_csv(RESULTADOS / f"desenvolvimento_{ativo.replace('.', '_')}.csv", index=False)
-        resumo[ativo] = {"ajustes": ajustes, "dobras": dobras,
+        frequencia = {str(a): sum(1 for x in ajustes if x["alpha"] == a) for a in config.ALPHAS}
+        resumo[ativo] = {"ajustes": ajustes, "dobras": dobras, "frequencia_alpha": frequencia,
                          "dobras_com_r2_positivo": sum(1 for d in dobras if (d["r2_fora_da_amostra"] or 0) > 0)}
         registrar("desenvolvimento", {"ativo": ativo, **resumo[ativo]})
     (RESULTADOS / "desenvolvimento_resumo.json").write_text(
@@ -117,13 +126,23 @@ def comando_desenvolver(_args) -> int:
         linhas = ", ".join(f"{d['ano']}: {d['r2_fora_da_amostra']:+.4f}" for d in dados["dobras"]
                            if d["r2_fora_da_amostra"] is not None)
         print(f"{ativo} — R² fora da amostra por dobra: {linhas}")
+        print(f"  frequência de seleção do alpha: {dados['frequencia_alpha']}")
     return 0
+
+
+def embargos_periodo_final(anos=config.ANOS_FINAIS) -> dict:
+    """
+    Embargo na fronteira do bloco de avaliação (início de 2022). Nas reestimações
+    anuais dentro do bloco já iniciado não há nova interrupção das previsões; o
+    treino usa só alvos realizados na data do ajuste (expurgo).
+    """
+    return {ano: (config.EMBARGO if ano == anos[0] or config.EMBARGO_NAS_REESTIMACOES_FINAIS else 0)
+            for ano in anos}
 
 
 def avaliar_final_ativo(ativo: str, precos: pd.DataFrame, cdi: pd.DataFrame, elegiveis: list[str]) -> dict:
     amostras = construir_amostras(precos)
-    embargos = {ano: (config.EMBARGO if ano == config.ANOS_FINAIS[0] or config.EMBARGO_NAS_REESTIMACOES_FINAIS else 0)
-                for ano in config.ANOS_FINAIS}
+    embargos = embargos_periodo_final()
     previsoes, ajustes = prever_anos(amostras, precos["Date"], config.ANOS_FINAIS, embargos, ativo)
     previsoes.to_csv(RESULTADOS / f"final_{ativo.replace('.', '_')}.csv", index=False)
 

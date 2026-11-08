@@ -69,7 +69,7 @@ O critério 2 é registrado como **"não calculável"** e tratado como **não at
 | Caso | Registro |
 | --- | --- |
 | `T < 200` | `Status: não calculável. Motivo: amostra inferior ao mínimo previsto. Critério 2: não atendido.` |
-| Variância de longo prazo nula | Motivo: variância nula (por exemplo, `d_t` constante) |
+| Variância de longo prazo nula | Motivo: variância nula. Série constante quando a amplitude (máximo − mínimo) é no máximo 10⁻¹² vezes o maior valor absoluto (tolerância relativa à escala, fixada antes de qualquer resultado); absorve resíduos de arredondamento sem apagar variações pequenas e reais |
 | Variância não finita, ou erro numérico no cálculo | Motivo: erro numérico, registrado separadamente da variância nula |
 | Entradas não finitas (`y_t` ou `ŷ_t`) | Motivo: entrada não finita |
 | Previsão ausente em data da lista | Motivo: previsão ausente, com as datas |
@@ -164,3 +164,4 @@ As referências bibliográficas devem ser conferidas nas fontes originais antes 
 | --- | --- |
 | 08/11/2026 | Primeira redação, com as propostas N1 a N5 |
 | 08/11/2026 | Decisões N1 a N5 aprovadas e incorporadas: lista de datas elegíveis fixada antes da avaliação; limiar estrito em precisão completa; justificativas como escolhas operacionais; casos não calculáveis ampliados (entradas não finitas, desalinhamento, erro numérico distinto de variância nula); denominador nulo do R²; ressalva aprovada no lugar da afirmação sobre falso positivo; Clark-West sem conclusão automática de ganho encoberto; testes matemáticos separados do mínimo operacional |
+| 08/11/2026 | Implementação: tolerância relativa de 10⁻¹² para série constante, com testes de série exatamente constante, constante com resíduo de arredondamento, baixa amplitude com variação real e entradas não finitas (verificadas antes da tolerância) |

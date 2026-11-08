@@ -129,10 +129,44 @@ def test_todos_os_criterios_sao_obrigatorios():
     assert not avaliar(0.01, dm_ok, dobras, bom, ruim)["criterios"]["5_robustez_ao_custo"]
 
 
-def test_inconsistencias_ohlc_sao_listadas_sem_correcao():
-    from experiments.preditivo.dados import inconsistencias_ohlc
-    df = pd.DataFrame({"Date": pd.to_datetime(["2014-04-01", "2014-04-02"]),
-                       "Open": [3.7, 3.68], "High": [3.9, 3.89], "Low": [3.6, 3.68], "Close": [3.8, 3.648]})
-    achados = inconsistencias_ohlc(df)
-    assert [a["data"] for a in achados] == ["2014-04-02"] and achados[0]["investigacao"] == "pendente"
-    assert df.loc[1, "Close"] == 3.648
+def _bruto_2014():
+    # Valores da fonte para PETR4 (base bruta, corrigida só por desdobramentos), com fator constante.
+    bruto = pd.DataFrame({"Date": pd.to_datetime(["2014-04-01", "2014-04-02", "2014-04-03"]),
+                          "Open": [15.72, 15.71, 15.53], "High": [15.85, 16.60, 15.65],
+                          "Low": [15.48, 15.70, 15.12], "Close": [15.81, 15.56, 15.40],
+                          "Dividends": [0.0, 0.0, 0.0], "Stock Splits": [0.0, 0.0, 0.0]})
+    bruto["Adj Close"] = bruto["Close"] * 0.2344
+    ajustado = bruto[["Date"]].assign(**{c: bruto[c] * 0.2344 for c in ("Open", "High", "Low", "Close")})
+    return bruto, ajustado
+
+
+def test_ohlc_conferido_na_mesma_base_sem_correcao():
+    from experiments.preditivo.dados import verificar_ohlc
+    bruto, ajustado = _bruto_2014()
+    resultado = verificar_ohlc(bruto, ajustado)
+    assert [o["data"] for o in resultado["ocorrencias"]] == ["2014-04-02"]
+    ocorrencia = resultado["ocorrencias"][0]
+    assert ocorrencia["falha_na_base_bruta"] and ocorrencia["falha_na_base_ajustada"]
+    assert ocorrencia["situacao"] == "em investigação"
+    assert resultado["maior_diferenca_relativa_usada_vs_reconstruida"] == pytest.approx(0.0, abs=1e-12)
+    assert bruto.loc[1, "Close"] == 15.56                  # nada é corrigido
+
+
+def test_adj_close_fora_da_faixa_bruta_nao_e_erro_se_a_base_bate():
+    from experiments.preditivo.dados import verificar_ohlc
+    bruto, ajustado = _bruto_2014()
+    bruto.loc[1, "Close"] = 15.80                          # dentro da faixa bruta
+    bruto["Adj Close"] = bruto["Close"] * 0.2344            # Adj Close está fora de [Low, High] brutos, mas é outra escala
+    ajustado = bruto[["Date"]].assign(**{c: bruto[c] * 0.2344 for c in ("Open", "High", "Low", "Close")})
+    assert verificar_ohlc(bruto, ajustado)["ocorrencias"] == []
+
+
+def test_variacao_do_fator_sem_evento_e_desdobramentos():
+    from experiments.preditivo.dados import desdobramentos_na_fonte, variacoes_do_fator
+    bruto, _ = _bruto_2014()
+    bruto.loc[2, "Adj Close"] = 15.40 * 0.2505              # fator muda sem provento registrado
+    assert [v["data"] for v in variacoes_do_fator(bruto)] == ["2014-04-03"]
+    bruto.loc[2, "Dividends"] = 0.5                         # com provento na data, não é marcada
+    assert variacoes_do_fator(bruto) == []
+    bruto.loc[1, "Stock Splits"] = 2.0
+    assert desdobramentos_na_fonte(bruto) == [{"data": "2014-04-02", "fator": 2.0}]

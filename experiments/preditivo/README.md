@@ -14,7 +14,7 @@ Implementa o [protocolo do piloto](../../docs/preditivo/protocolo_piloto_v1.md) 
 | `estrategia.py` | Exposto ou caixa, custos por lado, CDI realizado, comprar e manter | 8 |
 | `estatistica.py` | R² fora da amostra, Diebold-Mariano, Clark-West (diagnóstico) e casos não calculáveis | 9.1, 9.2; nota |
 | `elegibilidade.py` | Os cinco critérios, com a condição econômica (A ∧ B) ∨ C | 9.3, 9.4 |
-| `dados.py` | Coleta, triagem de eventos, inconsistências OHLC, manifesto com hashes e leitura conferida | 3, 5, 8.3 |
+| `dados.py` | Coleta; triagem de retorno de preço × ajustado por proventos; desdobramentos da fonte; conferência OHLC em bases comparáveis; variações do fator sem evento; manifesto com hashes e leitura conferida | 3, 5, 8.3 |
 | `registro.py` | Uma linha por execução em `registro.jsonl`, com commit e hashes | 10 |
 | `abertura.py` | Trava da avaliação final | 6.3, 11, 12 |
 | `executar.py` | Comandos | — |
@@ -32,7 +32,15 @@ pip install -r experiments/preditivo/requirements.txt
 python -m experiments.preditivo.executar coletar
 ```
 
-Coleta e congela os dados uma única vez (preços ajustados, série de triagem e CDI da SGS 12) em `experiments/preditivo/dados/`, com `manifest.json`. Não sobrescreve um manifesto existente. Os CSVs ficam fora do Git; o manifesto é versionado.
+Coleta e congela os dados uma única vez (preços ajustados, série bruta e CDI da SGS 12) em `experiments/preditivo/dados/`, com `manifest.json`. Não sobrescreve um manifesto existente. Os CSVs ficam fora do Git; o manifesto é versionado.
+
+**Guarda dos dados brutos:** os hashes do manifesto permitem conferir os arquivos, mas não reconstruí-los. Depois da coleta, guardar uma cópia dos CSVs em armazenamento controlado, fora do Git.
+
+O manifesto registra, para investigação e documentação (nada é corrigido automaticamente):
+- triagem de diferenças entre retorno de preço e retorno ajustado por proventos (não detecta desdobramentos);
+- desdobramentos e grupamentos informados pela fonte;
+- conferência da faixa mínima ≤ abertura, fechamento ≤ máxima na base bruta e na base ajustada reconstruída com `a_t = Adj Close / Close`, e a diferença entre essa reconstrução e a série usada;
+- datas em que o fator de ajuste muda sem provento nem desdobramento registrado.
 
 ```bash
 python -m experiments.preditivo.executar listar-datas
@@ -59,6 +67,7 @@ python -m pytest experiments/preditivo/tests --no-cov
 ```
 
 Os testes ficam fora da suíte do `core/` (`tests/`), porque o scikit-learn não é dependência do aplicativo. Cobrem:
+- as verificações da coleta (OHLC em bases comparáveis, fator sem evento, desdobramentos);
 - alinhamento das datas e fórmula do alvo (condição 4);
 - ausência de informação futura nas variáveis;
 - embargo e expurgo nas divisões externas e internas (condição 5);
@@ -72,6 +81,10 @@ Os testes ficam fora da suíte do `core/` (`tests/`), porque o scikit-learn não
 
 | Ponto | Implementação | Onde |
 | --- | --- | --- |
-| Embargo nas reestimações do período final | Só no início de 2022 (o período final aprovado é contínuo "a partir do 21º pregão de 2022"); em 2023 a 2026, só expurgo | `config.EMBARGO_NAS_REESTIMACOES_FINAIS` |
-| Triagem de eventos | No yfinance, o fechamento "sem ajuste" já vem corrigido por desdobramentos; a triagem aponta sobretudo proventos | `dados.triagem_eventos` |
+| Embargo nas reestimações do período final | Embargo nas fronteiras dos blocos (dobras e início de 2022); nas reestimações de 2023 a 2026, sem nova interrupção, só expurgo. Formalização proposta no protocolo, seção 6.3 | `config.EMBARGO_NAS_REESTIMACOES_FINAIS`, `executar.embargos_periodo_final` |
+| Tolerância da variância nula | Série constante se a amplitude for no máximo 10⁻¹² vezes o maior valor absoluto; entradas não finitas são verificadas antes | `estatistica.serie_constante` |
 | Início do treino | A coleta começa em 02/01/2008; o aquecimento das variáveis (até 252 pregões) consome o começo da série, e as datas efetivas saem no manifesto e no relatório | `amostras.construir_amostras` |
+
+## Registro de cada ajuste
+
+Além do `alpha` e dos erros das validações internas, cada ajuste registra a média do alvo no treino, a média e o desvio das previsões, o uso de intercepto e se o `alpha` ficou no limite da grade. O resumo do desenvolvimento traz a frequência de seleção de cada `alpha`. Um `alpha` alto encolhe os coeficientes; com intercepto, as previsões tendem a uma constante ligada à média do alvo no treino, não necessariamente a zero.

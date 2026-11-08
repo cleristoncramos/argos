@@ -36,6 +36,7 @@ def prever_anos(
         modelo_id = f"ridge-{ativo}-{ano}-alpha{ridge.alpha:g}"
         bloco = avaliar[["decision_date", "entry_date", "label_end_date", "y"]].copy()
         bloco["yhat"] = ridge.prever(amostras, divisao.avaliacao)
+        alvo_treino = amostras.iloc[divisao.treino]["y"]
         bloco["yhat_zero"] = prever_zero(len(bloco))
         bloco["yhat_media"] = prever_media_historica(amostras, bloco["decision_date"])
         bloco["modelo_id"] = modelo_id
@@ -51,6 +52,13 @@ def prever_anos(
             "n_treino": ridge.n_treino,
             "n_avaliacao": len(divisao.avaliacao),
             "embargo": embargo_por_ano[ano],
+            # Alpha alto encolhe os coeficientes; com intercepto, as previsões se aproximam
+            # de uma constante ligada à média do alvo no treino, não necessariamente de zero.
+            "fit_intercept": bool(ridge.modelo[-1].fit_intercept),
+            "media_alvo_treino": float(alvo_treino.mean()),
+            "previsoes_media": float(bloco["yhat"].mean()),
+            "previsoes_desvio": float(bloco["yhat"].std(ddof=1)) if len(bloco) > 1 else 0.0,
+            "alpha_no_limite_da_grade": ridge.alpha in (min(ridge.erros_internos), max(ridge.erros_internos)),
         })
     previsoes = pd.concat(linhas, ignore_index=True) if linhas else pd.DataFrame()
     return previsoes, ajustes

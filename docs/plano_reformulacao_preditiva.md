@@ -251,3 +251,19 @@ Antes de mudar o prompt v0.6 ou os testes que impedem recomendação na aplicaç
 10. registro de experimentos e critérios de interrupção.
 
 A nova LLM entra depois, para explicar resultados efetivamente produzidos, inclusive a conclusão "não houve evidência suficiente". O projeto não depende de encontrar uma estratégia vencedora para ser bem-sucedido.
+
+### 7.2 Atualização — 08/11/2026
+
+O piloto foi implementado em `experiments/preditivo/`, com dependências próprias e a avaliação final bloqueada. Os testes do piloto e os 929 testes do aplicativo foram aprovados; os resultados ficam vinculados ao commit correspondente.
+
+O ensaio preliminar usou dados reais, sem constituir coleta oficial nem abertura da avaliação final.
+
+No desenvolvimento preliminar, os dois ativos tiveram R² positivo em três das oito dobras. Se confirmado na rodada oficial, o resultado não atende ao critério 3 de elegibilidade. Nesse caso, nenhum dos ativos pode ser declarado elegível pela regra atual, e um bom resultado no período final não compensa essa falha. A orientação é manter a v1, concluir a rodada oficial do desenvolvimento e registrar o resultado, sem alterar grade, variáveis ou limiares para buscar elegibilidade.
+
+O `alpha` selecionado atingiu com frequência o limite superior da grade (1000). Isso indica regularização forte, não necessariamente previsões próximas de zero: com intercepto, a redução dos coeficientes aproxima as previsões de uma constante ligada à média do alvo no treino. O registro de cada ajuste passou a incluir a frequência de seleção de cada `alpha`, a média e o desvio das previsões, a média do alvo no treino e a configuração do intercepto. A grade não é ampliada nesta versão.
+
+A ocorrência de PETR4 em 02/04/2014 permanece **em investigação**. A conferência na mesma base de ajuste mostrou que a faixa também é violada na base bruta da fonte (fechamento 15,56 abaixo da mínima 15,70) e que a série ajustada usada no piloto coincide com a reconstrução pelo fator `a_t = Adj Close / Close`. Também foi observada variação do fator entre 02/04 e 03/04/2014 sem provento ou desdobramento registrado. Antes de classificar a ocorrência, investigar a integridade desses registros.
+
+Permanecem pendentes: a confirmação da formalização do embargo nas reestimações, a coleta oficial, a investigação das ocorrências e a decisão sobre a finalidade do período final (seção 12 do protocolo).
+
+Nenhum resultado preliminar autoriza habilitação de sinais ou abertura automática da avaliação final.

@@ -62,7 +62,9 @@ O resultado não é apresentado como reprodução exata dos fluxos financeiros d
 
 **Natureza do snapshot.** A série baixada é uma reconstrução feita pela fonte na data da coleta, com os ajustes conhecidos naquele momento, não uma base histórica ponto a ponto. Essa limitação e qualquer revisão posterior da fonte constam no relatório.
 
-**Triagem de eventos.** Na coleta, comparar o retorno diário ajustado com o não ajustado e listar as datas com diferença acima de 1 ponto percentual. Cada diferença relevante é investigada e documentada (desdobramento, grupamento, provento ou causa não identificada), sem atribuir causa apenas pelo tamanho da variação.
+**Triagem de diferenças entre retorno de preço e retorno ajustado por proventos.** Na coleta, comparar o retorno diário ajustado com o de preço e listar as datas com diferença acima de 1 ponto percentual. Na fonte, os preços "sem ajuste" já vêm corrigidos por desdobramentos, então essa triagem aponta proventos e **não** é detector de desdobramentos; os desdobramentos e grupamentos informados pela fonte são registrados separadamente. Cada diferença relevante é investigada e documentada, sem atribuir causa apenas pelo tamanho da variação.
+
+**Conferência de abertura, máxima, mínima e fechamento.** A faixa mínima ≤ abertura, fechamento ≤ máxima é conferida em bases comparáveis: na base bruta da fonte e na base ajustada reconstruída com o fator `a_t = Adj Close / Close` aplicado às quatro colunas, que também é comparada com a série usada no piloto. Também são listadas as datas em que o fator muda sem provento nem desdobramento registrado. Ocorrências ficam "em investigação" e não são corrigidas automaticamente.
 
 **Congelamento.** A coleta é congelada com manifesto (data, fonte, série usada e hash SHA-256 de cada arquivo), no formato do modo demo. Todas as rodadas usam o mesmo manifesto.
 
@@ -127,6 +129,8 @@ O treinamento pode incorporar observações do período final já transcorrido, 
 É proibido usar dados futuros, alvos não realizados ou resultados agregados do período final para modificar o procedimento, selecionar variáveis, escolher estratégias ou alterar hiperparâmetros fora do procedimento fixado.
 
 **"Teste final usado uma única vez"** significa executar uma única avaliação final do procedimento congelado, sem alterar escolhas com base nos resultados agregados encontrados.
+
+**Embargo nas reestimações (formalização proposta, a confirmar pelo orientador).** O embargo de 20 pregões é aplicado nas fronteiras dos blocos de avaliação definidos neste protocolo (cada ano das dobras de desenvolvimento e o início do período final, em 2022). Nas reestimações anuais dentro de um bloco sequencial já iniciado (2023 a 2026), não há nova interrupção das previsões; o treino usa somente amostras com alvos integralmente realizados na data do ajuste (expurgo). Implementação: `EMBARGO_NAS_REESTIMACOES_FINAIS = False` em `experiments/preditivo/config.py`, coberta por teste.
 
 ## 7. Referências e modelo candidato
 
@@ -281,3 +285,4 @@ A implementação local pode avançar enquanto estes itens são preparados. O pe
 | 08/11/2026 | v1, consolidada | Decisão do orientador sobre R6, R7, R8 e critérios. Regra de entrada volta a `ŷ > c` com `c = 0,002`, sem estimativa do caixa; sensibilidade em 0%, 0,10%, 0,20% e 0,30% por lado; teste de Diebold-Mariano com revisão de adequação antes da execução; ramo C sem limite adicional de drawdown, com destaque obrigatório; descrição obrigatória do resultado; condições para abrir a avaliação final (seção 12) |
 | 08/11/2026 | v1, consolidada (nota) | Seção 9.2 alinhada à nota metodológica aprovada (N1 a N5): amostra em lista fixada antes, limiar estrito em precisão completa, filtro exploratório com limitação inferencial, Clark-West só diagnóstico; R² com denominador nulo "não calculável" no critério 1 |
 | 08/11/2026 | v1, consolidada (implementação) | Seção 12 atualizada com os testes implementados em `experiments/preditivo/` (sem mudança no experimento) |
+| 08/11/2026 | v1, consolidada (verificações) | Triagem renomeada para retorno de preço × ajustado por proventos, com desdobramentos à parte; conferência OHLC em bases comparáveis e variações do fator sem evento; formalização proposta do embargo nas reestimações do período final (a confirmar) |

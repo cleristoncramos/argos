@@ -465,7 +465,10 @@ Etapa 0 — revisão de escopo:
 - [x] Decisão do orientador sobre R6, R7, R8 e os critérios de elegibilidade (08/11/2026), incorporada ao protocolo consolidado
 - [ ] Arquivar a confirmação original da decisão de 08/11/2026 (mensagem com data e remetente)
 - [x] Implementação local do piloto em `experiments/preditivo/` (08/11/2026), com 40 testes próprios e trava da avaliação final
-- [ ] Confirmar com o orientador as interpretações listadas no README do piloto (embargo nas reestimações finais, triagem de eventos)
+- [x] Verificações da coleta revistas (08/11/2026): OHLC em bases comparáveis, variações do fator sem evento, triagem de proventos com desdobramentos à parte, tolerância relativa da variância nula, registro do `alpha` e das previsões
+- [ ] Confirmar com o orientador a formalização do embargo nas reestimações do período final (protocolo, seção 6.3)
+- [ ] Decidir, depois do desenvolvimento oficial, se a v1 é encerrada (por falha no critério 3) ou se o período final é aberto para completar o estudo, registrando a decisão antes de qualquer abertura
+- [ ] Arquivar os dados brutos coletados em armazenamento controlado, fora do Git (o manifesto só guarda hashes)
 - [ ] Coleta oficial e congelamento dos dados (`executar coletar`) e investigação das datas da triagem e das inconsistências OHLC
 - [ ] Condições da seção 12 do protocolo antes de abrir a avaliação final: hash da versão consolidada, dados e configuração congelados, testes de alinhamento e expurgo, conferência de custos, caixa e referências
 - [ ] Revisar as minutas do CEP e do TCLE, conforme a decisão R9

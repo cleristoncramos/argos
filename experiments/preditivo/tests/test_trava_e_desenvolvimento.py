@@ -75,3 +75,26 @@ def test_desenvolvimento_nao_le_o_periodo_final():
     alterada.loc[alterada["Date"] >= limite, ["Open", "High", "Low", "Close"]] *= 3.0
     previsoes_b, _a, _d = desenvolver_ativo("TESTE", alterada)
     pd.testing.assert_frame_equal(previsoes, previsoes_b)
+
+
+def test_embargo_so_na_fronteira_do_bloco_final_e_expurgo_em_cada_reestimacao():
+    # Série sintética: nenhum dado real do período final é usado.
+    from experiments.preditivo.amostras import construir_amostras
+    from experiments.preditivo.avaliacao import prever_anos
+    from experiments.preditivo.executar import embargos_periodo_final
+
+    serie = precos_sinteticos("2008-01-02", "2023-12-29")
+    embargos = embargos_periodo_final((2022, 2023))
+    assert embargos == {2022: 20, 2023: 0}
+    amostras = construir_amostras(serie)
+    previsoes, ajustes = prever_anos(amostras, serie["Date"], (2022, 2023), embargos, "TESTE")
+    pregoes = serie["Date"].reset_index(drop=True)
+    p2022 = pregoes[pregoes.dt.year == 2022].reset_index(drop=True)
+    p2023 = pregoes[pregoes.dt.year == 2023].reset_index(drop=True)
+    assert previsoes["decision_date"].min() == p2022[20]           # 21º pregão de 2022
+    assert ajustes[1]["data_ajuste"] == p2023[0].date().isoformat()  # sem nova interrupção em 2023
+    datas = pd.DatetimeIndex(previsoes["decision_date"])
+    esperadas = pregoes[(pregoes >= p2022[20]) & (pregoes <= amostras["decision_date"].max())]
+    assert list(datas) == list(esperadas)                          # previsões contínuas no bloco
+    for ajuste in ajustes:
+        assert ajuste["fit_intercept"] is True and "previsoes_desvio" in ajuste
