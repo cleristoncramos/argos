@@ -1,6 +1,6 @@
 # Protocolo da camada de linguagem — v1.0-experimental
 
-**Situação:** proposta do desenvolvedor, **não aprovada** · impressão digital do prompt `4268ef4e27ec` · política de liberação 1.0 (`477ef9b1d362`) · não ligada a nenhuma tela
+**Situação:** protocolo **aprovado com condições** pela DL1 (09/11/2026, sujeita à confirmação original) · textos fixos **pendentes de correção** (seção 13) · impressão digital ainda não aprovada (atual `4268ef4e27ec`) · política de liberação 1.0 (`477ef9b1d362`) · não ligada a nenhuma tela
 **Código:** `core/llm_exp_policy.py` (política), `core/llm_exp_context.py` (contexto), `core/llm_exp_prompts.py` (prompt e esquema), `core/llm_exp_validation.py` (validação), `core/llm_exp_service.py` (fluxo). Testes em `tests/test_llm_exp.py`.
 **Origem:** [plano de reformulação](plano_reformulacao_preditiva.md), seções 2.3, 4 e 6 (etapa 4), e instrução de trabalho de 08/11/2026.
 
@@ -262,3 +262,43 @@ Uma estimativa só aparece depois de um modelo entrar em `AUTHORIZED_MODELS`, o 
 | Implantação | "Implantar o LLM no sistema o quanto antes" | Plano, seções 4 e 6: família nova com avaliação própria; ambiente experimental restrito (R3) e LLM experimental (R10) ainda sem decisão | Segui os documentos: código pronto e testado, **não ligado** a nenhuma tela e com o protocolo bloqueado por padrão |
 | Recomendação | "Recomendação experimental" como camada | Plano, seção 1.2: nenhuma recomendação ao público até a consulta regulatória | A camada se chama "conclusão experimental", só existe no ambiente restrito e só copia o texto do motor |
 | Previsão | "Explicar a previsão disponível" | D1 e DV2: nenhum modelo elegível | Toda estimativa, hoje, é abstenção |
+
+## 13. Decisão DL1 e estado atual (09/11/2026)
+
+A DL1 aprovou o protocolo com condições e definiu acesso (R3), orçamento e fases de chamada (R10), avaliação humana cega e um portão de ativação de seis condições. O registro completo está em [`pibiti/decisoes_orientador.md`](pibiti/decisoes_orientador.md), entrada DL1.
+
+### 13.1 Correções dos cinco textos fixos (DL1-B)
+
+| # | Correção | Situação nos cinco textos | Encaminhamento |
+| --- | --- | --- | --- |
+| 1 | Toda menção à média histórica com a ressalva de amostra limitada e dispersão entre anos | **Não se aplica**: nenhum dos cinco textos menciona média histórica. A correção parece valer para o texto gerado pelo modelo, como regra do prompt e do validador | **Volta ao orientador**: confirmar se é regra para o texto gerado, com que redação mínima da ressalva e se o validador deve exigi-la por palavras-chave |
+| 2 | Nenhum "tende", "deve subir" ou equivalente fora do bloco de estimativa | Já atendida: nenhum texto fixo tem esses termos. No texto gerado, a verificação 9 já bloqueia "tende a", "deve subir", "vai subir", "próximo mês" e equivalentes fora da estimativa autorizada | Sem mudança |
+| 3 | Sem modelo autorizado, declarar a ausência de estimativa | Já atendida: o texto de abstenção declara a ausência, e a verificação 7 exige esse texto em todas as telas | Sem mudança |
+| 4 | Estratégia, indicador e modelo sempre marcados como experimentais | **Aplica-se** a três textos, que falam de "modelo" ou "estratégia" sem a marca | Redação proposta abaixo, **não aplicada no código** até o orientador confirmar |
+| 5 | Abstenção e encerramento idênticos em todas as telas, sem variação por ativo | Já atendida: os textos são constantes, sem nome de ativo nem horizonte interpolado | Sem mudança |
+
+**Redação proposta para a correção 4** (o trecho novo é "experimental"):
+
+| Texto | Redação atual | Redação proposta |
+| --- | --- | --- |
+| Recusa de garantia | "[...] e, quando houver modelo autorizado, estimativas com incerteza e limitações." | "[...] e, quando houver modelo experimental autorizado, estimativas com incerteza e limitações." |
+| Abstenção da estimativa | "Não há modelo preditivo validado e autorizado para este ativo e horizonte; [...]" | "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; [...]" |
+| Conclusão indisponível | "Nenhuma conclusão sobre estratégia está disponível: não há motor de decisão autorizado para este ativo." | "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo." |
+
+Os textos do motor de decisão (`CONCLUSION_TEXTS`), que não estão entre os cinco, já dizem "regra experimental", mas também dizem "o modelo produziu" sem a marca. Para seguir a correção 4, eles passariam a "o modelo experimental produziu". Quanto a **indicador**: nenhum dos cinco textos menciona indicador. Se a correção valer também para o texto gerado (por exemplo, "o RSI" na observação histórica), ela é uma regra nova do prompt e do validador e precisa de confirmação, assim como a correção 1.
+
+### 13.2 O que a DL1 exige implementar
+
+| Exigência | Estado | Ponto a confirmar ou risco técnico |
+| --- | --- | --- |
+| Hashes separados: prompt, esquema de saída e conjunto de casos | Hoje há uma impressão única (prompt, instruções e esquema) e nenhum conjunto de casos | Nenhum: separar em três hashes |
+| Interruptor de abstenção total sem deploy | Inexistente | Uma configuração lida em tempo de execução (segredo ou variável do ambiente) atende "sem deploy"; confirmar se reiniciar o app conta como deploy |
+| Fase 1: respostas em lote, versionadas | Há um mecanismo de respostas salvas da v0.6 (`data/llm_demo.json`) a reaproveitar com arquivo próprio | Nenhum |
+| Provedor Gemini (Flash, versão fixada) | O cliente atual só fala com a API da OpenAI | Exige um cliente novo, usado só no job offline. O esquema estrito do Gemini tem regras próprias; o validador continua sendo a garantia |
+| Secundário GPT-5 mini com "temperatura baixa e fixa" | — | A conferir na documentação na implementação: os modelos de raciocínio da OpenAI podem não aceitar temperatura diferente da padrão. Nesse caso, registrar como restrição do provedor |
+| Bloqueio em 100% do teto | O limitador por sessão existe; não há teto mensal | A conferir na implementação: os alertas de orçamento do faturamento do Google costumam só avisar, sem bloquear. Por isso, o bloqueio em 100% e o limite de 200 chamadas devem ficar também no job, com contador próprio |
+| Template determinístico de referência | Inexistente | Precisa ser construído, com as mesmas três camadas e os mesmos textos fixos, para a comparação cega |
+| Rota própria, noindex, até cinco contas, sessão curta, registro de acessos | Inexistente | O Streamlit não controla facilmente a meta tag `noindex` nem a expiração da sessão. Uma alternativa é publicar a tela experimental como app privado separado, com acesso por convite nominal. Decisão técnica a confirmar |
+| Lista versionada sem e-mails no repositório público | — | Há tensão entre "versionada" e "sem e-mails no repositório". Proposta: versionar só identificadores derivados (hash) e a versão da lista, com os e-mails em segredo fora do Git. Nos registros de acesso, gravar o identificador derivado, nunca o e-mail |
+
+**Nada disso foi implementado ainda.** A política de liberação continua com zero modelos e zero motores; o serviço continua bloqueando por padrão (`protocolo_nao_aprovado`); nenhuma tela usa a camada.

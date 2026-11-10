@@ -340,3 +340,84 @@ Continuidade: sem v3 imediata. Uma proposta futura poderá investigar se as vari
 **Evidência:** texto recebido pelo desenvolvedor em 08/11/2026. **Pendente:** arquivar fora do repositório a mensagem original (data e remetente).
 
 Status: recebida em 08/11/2026. Confirmação original: a arquivar.
+
+## DL1 — Entrada da camada de linguagem v1.0-experimental (09/11/2026)
+
+Data: 09/11/2026, sujeita à confirmação do orientador. Referência: [`protocolo_llm_v1.0-experimental.md`](../protocolo_llm_v1.0-experimental.md). Alcance: ambiente experimental isolado, com acesso nominal; nada é liberado ao público.
+
+Aprovado:
+- **DL1-A, protocolo:** aprovado na forma submetida, com condições vinculantes:
+  - a política de liberação continua com zero modelos e zero motores até o fim da avaliação;
+  - as 16 verificações são condição de exibição, e uma reprovação resulta em abstenção, nunca em exibição com ressalva;
+  - o registro segue sem texto gerado, contexto ou chave;
+  - o protocolo fixa o hash do prompt, o do esquema de saída e o do conjunto de casos;
+  - existe um interruptor que leva a camada à abstenção total sem exigir deploy.
+- **DL1-B, cinco textos fixos:** redação aprovada, condicionada a cinco correções antes de registrar o hash de aprovação:
+  1. toda menção à média histórica vem com a ressalva de amostra limitada e dispersão entre anos;
+  2. nenhum "tende", "deve subir" ou equivalente fora do bloco de estimativa autorizada;
+  3. sem modelo autorizado, o texto declara a ausência de estimativa, em vez de omitir o tema;
+  4. estratégia, indicador e modelo sempre marcados como experimentais;
+  5. textos de abstenção e de encerramento idênticos em todas as telas, sem variação por ativo.
+
+  Correção não aplicável volta ao orientador; o desenvolvedor não ajusta por conta própria.
+- **DL1-C, R3 (acesso):** nominal, autenticado e reversível:
+  - rota própria fora do menu público, com noindex;
+  - lista versionada de no máximo cinco contas: aluno, orientador e até três avaliadores;
+  - sem acesso anônimo nem link compartilhável, com sessão de expiração curta;
+  - registro de conta, data, ativo e caso consultado;
+  - flag que desliga com recusa explícita, não só escondendo o elemento;
+  - revisão da lista a cada 30 dias e no encerramento;
+  - e-mails fora dos logs da aplicação e do repositório público.
+- **DL1-D, R10 (chamadas e orçamento):**
+  - fase 1, obrigatória: respostas geradas em lote e versionadas, sem chamada durante a navegação;
+  - fase 2: só em job offline, depois de fechada a fase 1, com a chave só no servidor do job;
+  - provedor Gemini, Tier 1 pago; modelo primário Flash, com versão fixada por hash; GPT-5 mini como secundário opcional;
+  - teto de US$ 20 por mês, com alertas em 50% e 80% e bloqueio em 100%;
+  - 200 chamadas por rodada; acima disso, nova autorização;
+  - auto-reload com gatilho em US$ 5 e limite igual ao teto;
+  - temperatura baixa, fixa e registrada;
+  - tokens e custo registrados por chamada.
+- **DL1-E, avaliação humana cega:**
+  - conjunto de casos congelado com hash, o mesmo para o template determinístico, o primário e o secundário;
+  - no mínimo dois avaliadores, sem saber qual saída é do template;
+  - rubrica de cinco itens: fidelidade aos números, aderência às três camadas, calibração da incerteza, ausência de promessa e utilidade;
+  - desacordo resolvido por um terceiro designado e registrado;
+  - aceitação: zero violação das 16 verificações; nenhuma promessa, urgência ou persuasão; LLM igual ou superior ao template em pelo menos 70% dos casos, com o desempenho do template publicado junto;
+  - empate ou vitória do template é resultado legítimo.
+
+**Portão de ativação.** São seis condições cumulativas:
+1. protocolo congelado com hash;
+2. cinco textos corrigidos e aprovados com hash;
+3. lista de acesso versionada;
+4. fase 1 concluída;
+5. relatório de avaliação com os critérios atendidos;
+6. hash aprovado registrado.
+
+Se alguma condição falhar, o estado final é abstenção.
+
+**Não aprovado:** exibição pública, recomendação de qualquer tipo, uso do período reservado da linha preditiva, chamadas ao vivo fora do job offline, ampliação do teto de orçamento e alteração de artefatos com hash da v0.6 ou do piloto preditivo.
+
+**Divisão dos três commits (08/11/2026), conferida em 09/11/2026:**
+
+| Commit | Conteúdo |
+|---|---|
+| `e9cc8ad` | Camada v1.0-experimental: `core/llm_exp_policy.py`, `llm_exp_context.py`, `llm_exp_prompts.py`, `llm_exp_validation.py`, `llm_exp_service.py`; `tests/test_llm_exp.py`; `docs/protocolo_llm_v1.0-experimental.md`; e, em `core/llm_client.py`, o parâmetro opcional `payload` em `call_model` (sem ele, a chamada é idêntica à da v0.6, com teste) |
+| `ce1d787` | `docs/pibiti/indice_mensagens_orientador.md` e a nota de encerramento do desvio de `versao_congelada.md` em `docs/preditivo/evidencias/arvore_coleta_snap-20261108-01.md` |
+| `90c31a2` | `docs/pibiti/capitulo_linha_preditiva.md` |
+
+**Nenhum arquivo com hash registrado foi tocado.** Os hashes conferem com os registrados:
+- protocolo v1 `e7f2d5e4…`;
+- protocolo v2 `76756648…`;
+- nota `be0747af…`;
+- `config.py` `90986a8c…`;
+- `config_v2.py` `79a89c80…`;
+- política de qualidade `f75598b0…`;
+- impressão da v0.6 `e3b3574b7430`.
+
+`llm_client.py` não tem hash registrado: a impressão da v0.6 cobre só o prompt, as instruções e o esquema.
+
+**Análise das correções do DL1-B (09/11/2026):** ver o [protocolo](../protocolo_llm_v1.0-experimental.md), seção 13. As correções 2, 3 e 5 já valem para os cinco textos, sem mudança. A correção 4 se aplica a três textos, com redação proposta. A correção 1 não se aplica a nenhum dos cinco textos e **volta ao orientador**. Nenhum texto foi alterado no código.
+
+**Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar fora do repositório a mensagem original (data e remetente).
+
+Status: recebida em 09/11/2026. Confirmação original: a arquivar. Correção 1 e redação da correção 4: aguardando o orientador.
