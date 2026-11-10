@@ -496,7 +496,8 @@ Etapa 0 — revisão de escopo:
 - [x] DL1 (09/11/2026): protocolo v1.0-experimental aprovado com condições; R3 e R10 decididos; avaliação cega definida; portão de ativação com seis condições (`docs/pibiti/decisoes_orientador.md`, entrada DL1)
 - [x] DL1-B: correções 1 e 4 decididas pelo orientador em 09/11/2026 (`docs/protocolo_llm_v1.0-experimental.md`, seção 13.1)
 - [x] DL1-B: correções 1 e 4 aplicadas no código e hashes dos cinco textos registrados (protocolo, seção 13.3)
-- [ ] Aprovação do orientador dos hashes corrigidos (impressão `6f50a1cadd7c`, textos `95845577dba9`)
+- [x] Hashes ratificados pela DL1-H (09/11/2026) e registrados em `APPROVED_HASHES`; 16 → 17 verificações propagado no registro
+- [ ] Fase 1 (`docs/llm_v1_exp_fase1.md`): conjunto de casos congelado com hash, template com ressalva estrutural, respostas salvas com hash e primeiro relatório de avaliação cega
 - [ ] DL1: hashes separados de prompt, esquema e casos; interruptor de abstenção sem deploy; conjunto de casos congelado; template determinístico
 - [ ] DL1-C: acesso nominal (rota isolada ou app privado, até cinco contas, registro de acessos sem e-mail)
 - [ ] DL1-D fase 1: respostas em lote versionadas (Gemini Flash no job offline, teto de US$ 20, 200 chamadas por rodada)

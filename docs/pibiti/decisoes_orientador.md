@@ -348,7 +348,7 @@ Data: 09/11/2026, sujeita à confirmação do orientador. Referência: [`protoco
 Aprovado:
 - **DL1-A, protocolo:** aprovado na forma submetida, com condições vinculantes:
   - a política de liberação continua com zero modelos e zero motores até o fim da avaliação;
-  - as 16 verificações são condição de exibição, e uma reprovação resulta em abstenção, nunca em exibição com ressalva;
+  - as 17 verificações são condição de exibição, e uma reprovação resulta em abstenção, nunca em exibição com ressalva (a 17ª, verificação 13a, foi criada em 09/11/2026 pela correção 1; ver a correção de referência abaixo);
   - o registro segue sem texto gerado, contexto ou chave;
   - o protocolo fixa o hash do prompt, o do esquema de saída e o do conjunto de casos;
   - existe um interruptor que leva a camada à abstenção total sem exigir deploy.
@@ -382,7 +382,7 @@ Aprovado:
   - no mínimo dois avaliadores, sem saber qual saída é do template;
   - rubrica de cinco itens: fidelidade aos números, aderência às três camadas, calibração da incerteza, ausência de promessa e utilidade;
   - desacordo resolvido por um terceiro designado e registrado;
-  - aceitação: zero violação das 16 verificações; nenhuma promessa, urgência ou persuasão; LLM igual ou superior ao template em pelo menos 70% dos casos, com o desempenho do template publicado junto;
+  - aceitação: zero violação das 17 verificações; nenhuma promessa, urgência ou persuasão; LLM igual ou superior ao template em pelo menos 70% dos casos, com o desempenho do template publicado junto;
   - empate ou vitória do template é resultado legítimo.
 
 **Portão de ativação.** São seis condições cumulativas:
@@ -390,7 +390,7 @@ Aprovado:
 2. cinco textos corrigidos e aprovados com hash;
 3. lista de acesso versionada;
 4. fase 1 concluída;
-5. relatório de avaliação com os critérios atendidos;
+5. relatório de avaliação com os critérios atendidos, inclusive zero violação das 17 verificações;
 6. hash aprovado registrado.
 
 Se alguma condição falhar, o estado final é abstenção.
@@ -438,5 +438,44 @@ Status: recebida em 09/11/2026. Confirmação original: a arquivar.
   - app privado separado com convite nominal, sem afirmar noindex;
   - lista com identificadores derivados e rótulo de papel, com o mapeamento para e-mails fora do Git e uma cópia com o orientador.
 - **Autorização:** aplicar as correções aos textos e fazer o commit da DL1 com a seção 13 atualizada. Os hashes dos cinco textos só são atualizados depois das correções, em commit separado. Próxima entrega: fase 1 (conjunto de casos congelado, template e respostas salvas); a avaliação humana só começa com os três sob hash.
+
+**Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.
+
+### DL1-H — Aprovação do commit das correções e ratificação dos hashes (09/11/2026)
+
+Data: 09/11/2026, sujeita à confirmação do orientador. Identificador: **DL1-H**. Referências: registro da DL1 no commit `177908d` (só documentação, sem emenda) e correções no commit `c106f6d` (separado), cujo resumo confirma que nenhum arquivo com hash da v0.6 (`e3b3574b7430`) nem do piloto preditivo foi tocado. A seção 13.3 do protocolo traz o hash de cada um dos cinco textos.
+
+| Item | Hash | Situação |
+|---|---|---|
+| Prompt | `b5ef179c9376` | Aprovado |
+| Esquema de saída | `9a4cb5cb5a0c` | Aprovado |
+| Impressão combinada | `6f50a1cadd7c` | Aprovado |
+| Conjunto dos cinco textos | `95845577dba9` | Aprovado |
+
+A aprovação vale só para esses valores exatos. Qualquer alteração em prompt, esquema, texto fixo ou conjunto de textos anula a aprovação automaticamente e exige nova ratificação, sem reaproveitar o mesmo `APPROVED_FINGERPRINT`.
+
+- **Implementação:** `APPROVED_HASHES` e `APPROVED_FINGERPRINT` em `core/llm_exp_service.py`, preenchidos depois que `c106f6d` entrou no repositório. O serviço confere os quatro hashes a cada execução; se qualquer um divergir, bloqueia com `protocolo_nao_aprovado`. Há teste para a mudança de cada componente.
+- **Alcance:** a aprovação dos hashes é uma das seis condições do portão de ativação. As outras continuam pendentes, e nenhuma tela usa a camada.
+- **Bloqueio por hash divergente**, confirmado com teste antes do commit, como pedido:
+  - o resultado é abstenção, sem dados; se o conjunto de textos divergir, o texto exibido é o fallback da v0.6, nunca o texto anterior;
+  - não há degradação graciosa: sem chamada, sem regeneração, sem troca de provedor e sem respostas salvas.
+
+**Verificação 13a ratificada.** Ela restringe, não relaxa.
+
+**Correção de referência (não é nova decisão):** de 16 para 17 verificações, em três lugares do registro DL1:
+- a DL1-A exige 17, com a nota de que a 17ª foi criada em 09/11/2026 pela correção 1;
+- o critério de aceitação da avaliação humana passa a "zero violação das 17 verificações";
+- o portão de ativação passa a mencionar as 17.
+
+O mérito da decisão não muda.
+
+**Nota sobre o caso de teste:** A verificação 13a não foi afrouxada. Durante a implementação, um caso de teste que esperava reprovação passou, e **o que se corrigiu foi o caso de teste, não o validador**. O caso tirava a ressalva de amostra limitada do texto da observação, mas o bloco ainda trazia essa ressalva em `limite_da_evidencia` ("A amostra é limitada [...]"), e o bloco inteiro conta como um parágrafo. O validador acertou ao aprovar. O caso passou a trocar também `limite_da_evidencia` por um texto sem ressalva e, assim, reprova como deve.
+
+**Pontos de atenção registrados no protocolo, seção 7.1:**
+- negação, com desempate a favor da reprovação, lista de padrões aceitos e um teste por padrão;
+- médias móveis fora só da 13a, sujeitas às checagens de futuro e de atribuição;
+- regeneração registrada por chamada (primeira ou regeneração), com tokens e custo.
+
+**Próxima entrega:** fase 1 completa: conjunto congelado, template com ressalva estrutural, respostas salvas com hash e o primeiro relatório de avaliação cega. A regra do template está escrita na especificação da fase 1 ([`llm_v1_exp_fase1.md`](../llm_v1_exp_fase1.md)).
 
 **Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.

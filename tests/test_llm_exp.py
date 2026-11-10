@@ -508,7 +508,7 @@ def test_servico_bloqueia_resposta_invalida_com_fallback():
     context = ctx()
     data = resposta(context, resumo="Compre agora.")
     result = explain(context, transport=_transport(json.dumps(data, ensure_ascii=False)))
-    assert result.status == es.STATUS_BLOCKED and result.fallback_text == llm_service.FALLBACK_TEXT
+    assert result.status == es.STATUS_BLOCKED and result.fallback_text == ep.FALLBACK_TEXT
     assert "sem_termos_proibidos" in result.log["failed_checks"]
 
 
@@ -540,9 +540,38 @@ def test_bloqueios_antes_da_chamada(context, kw, motivo):
     assert result.status == es.STATUS_BLOCKED and result.reason == motivo
 
 
-def test_protocolo_ainda_nao_aprovado_por_padrao():
-    assert es.APPROVED_FINGERPRINT is None
+def test_aprovacao_vinculada_aos_quatro_hashes_ratificados():
+    assert es.APPROVED_HASHES == {"prompt": "b5ef179c9376", "esquema": "9a4cb5cb5a0c",
+                                  "impressao": "6f50a1cadd7c", "textos_fixos": "95845577dba9"}
+    assert es.current_hashes() == es.APPROVED_HASHES and es.APPROVED_FINGERPRINT == "6f50a1cadd7c"
+    context = ctx()
+    result = es.explain_experimental(context, mode=es.MODE_LIVE, api_key="k", sleep=lambda s: None,
+                                     transport=_transport(json.dumps(resposta(context), ensure_ascii=False)))
+    assert result.status == es.STATUS_OK
+
+
+@pytest.mark.parametrize("nome,valor", [
+    ("REFUSAL_GUARANTEE", "Outro texto de garantia."),
+    ("FALLBACK_TEXT", "Outro fallback."),
+    ("SYSTEM_PROMPT", "Outro prompt."),
+])
+def test_qualquer_alteracao_anula_a_aprovacao(monkeypatch, nome, valor):
+    monkeypatch.setattr(ep, nome, valor)
+    assert es.current_hashes() != es.APPROVED_HASHES
     result = es.explain_experimental(ctx(), mode=es.MODE_LIVE, api_key="k")
+    assert result.status == es.STATUS_BLOCKED and result.reason == "protocolo_nao_aprovado"
+
+
+def test_esquema_alterado_anula_a_aprovacao(monkeypatch):
+    schema = copy.deepcopy(ep.OUTPUT_SCHEMA)
+    schema["properties"]["resumo"]["description"] = "x"
+    monkeypatch.setattr(ep, "OUTPUT_SCHEMA", schema)
+    assert es.explain_experimental(ctx(), mode=es.MODE_LIVE, api_key="k").reason == "protocolo_nao_aprovado"
+
+
+def test_hashes_divergentes_da_impressao_aprovada_bloqueiam():
+    hashes = {**es.APPROVED_HASHES, "textos_fixos": "000000000000"}
+    result = es.explain_experimental(ctx(), mode=es.MODE_LIVE, api_key="k", approved_hashes=hashes)
     assert result.reason == "protocolo_nao_aprovado"
 
 
@@ -692,3 +721,96 @@ def test_registro_traz_hashes_separados():
     explain(ctx(), mode=es.MODE_OFF, log_sink=logs.append)
     assert logs[0]["prompt_hash"] == ep.prompt_hash() and logs[0]["schema_hash"] == ep.schema_hash()
     assert logs[0]["fixed_texts_hash"] == ep.fixed_text_hashes()["conjunto"]
+
+
+def test_auditoria_separa_primeira_chamada_e_regeneracao():
+    context = ctx()
+    sem = resposta(context, resumo="A média de outubro foi positiva no período.")
+    com = resposta(context, resumo="A média de outubro foi positiva, com amostra limitada; isso pode não se repetir.")
+    result = explain(context, transport=_sequencia(json.dumps(sem, ensure_ascii=False),
+                                                   json.dumps(com, ensure_ascii=False)))
+    tipos = [c["tipo"] for c in result.log["calls"]]
+    assert tipos == ["primeira", "regeneracao"]
+    assert result.log["calls"][0]["failed_checks"] == ["ressalva_media_historica"]
+    assert result.log["calls"][1]["failed_checks"] == []
+    assert result.log["cost_usd"] == pytest.approx(sum(c["cost_usd"] for c in result.log["calls"]))
+    assert "amostra" not in json.dumps(result.log["calls"], ensure_ascii=False)     # sem texto gerado
+
+
+def test_auditoria_registra_falha_do_provedor_por_chamada():
+    def falha(payload, key, timeout):
+        raise llm_client.ApiError(503, "fora")
+    result = explain(ctx(), transport=falha)
+    assert result.log["calls"] == [{"tipo": "primeira", "status": "falha_do_provedor",
+                                    "attempts": llm_client.MAX_RETRIES + 1, "input_tokens": 0,
+                                    "output_tokens": 0, "cost_usd": 0.0, "latency_s": result.log["latency_s"]}]
+
+
+# Padrões de negação aceitos (protocolo, seção 7.1): cada um tem um caso de teste.
+@pytest.mark.parametrize("frase", [
+    "O indicador não garante reversão.",
+    "Nem o indicador nem a estratégia têm aprovação garantida.",
+    "O modelo segue sem validação garantida.",
+    "O sinal nunca foi aprovado.",
+    "Nenhum modelo foi validado.",
+    "Nenhuma estratégia foi aprovada.",
+    "A regra jamais foi comprovada.",
+    "O indicador tampouco é confiável.",
+    "O sinal do indicador não garante reversão do preço.",
+])
+def test_cada_padrao_de_negacao_aceito(frase):
+    context = ctx()
+    data = resposta(context)
+    data["limitacoes"] = [frase]
+    assert "sem_recomendacao_propria" not in check(data, context).failed, frase
+
+
+@pytest.mark.parametrize("frase", [
+    "Sem dúvida, a estratégia é recomendada.",                      # "sem dúvida" não é negação
+    "Não é só um indicador: o modelo foi aprovado.",               # negação em outra oração
+    "O modelo não é perfeito, mas foi validado.",                  # adversativa entre negação e termo
+])
+def test_caso_ambiguo_reprova(frase):
+    context = ctx()
+    data = resposta(context)
+    data["limitacoes"] = [frase]
+    assert "sem_recomendacao_propria" in check(data, context).failed, frase
+
+
+def test_media_movel_fica_fora_so_da_13a():
+    context = ctx()
+    data = resposta(context)
+    data["observacao_historica"]["texto"] = "As médias móveis vão subir no próximo mês."
+    failed = check(data, context).failed
+    assert "ressalva_media_historica" not in failed and "sem_futuro_fora_da_estimativa" in failed
+    data["observacao_historica"]["texto"] = "A média móvel é um indicador aprovado."
+    failed = check(data, context).failed
+    assert "ressalva_media_historica" not in failed and "sem_recomendacao_propria" in failed
+
+
+# ------------------------------------------------------------------ DL1-I: bloqueio por hash divergente
+
+class _DemoQueNaoPodeSerLida(dict):
+    def get(self, *a, **k):
+        raise AssertionError("o bloqueio por hash não pode consultar respostas salvas")
+
+
+@pytest.mark.parametrize("nome,valor", [("REFUSAL_GUARANTEE", "Garantia antiga."), ("FALLBACK_TEXT", "Fallback antigo.")])
+def test_bloqueio_por_hash_mostra_abstencao_e_nao_texto_anterior(monkeypatch, nome, valor):
+    monkeypatch.setattr(ep, nome, valor)
+    result = es.explain_experimental(ctx(), mode=es.MODE_LIVE, api_key="k")
+    assert result.reason == "protocolo_nao_aprovado" and result.data is None and not result.shown
+    # Com o conjunto de textos divergente, nem o fallback experimental é exibido: vale o da v0.6.
+    assert result.fallback_text == llm_service.FALLBACK_TEXT and result.fallback_text != valor
+
+
+def test_bloqueio_por_hash_sem_degradacao(monkeypatch):
+    monkeypatch.setattr(ep, "SYSTEM_PROMPT", "Prompt alterado.")
+
+    def nunca(*a):
+        raise AssertionError("o bloqueio por hash não pode chamar o provedor")
+    for mode, kw in ((es.MODE_LIVE, {"transport": nunca}), (es.MODE_DEMO, {"demo_store": _DemoQueNaoPodeSerLida()})):
+        result = es.explain_experimental(ctx(), mode=mode, api_key="k", **kw)
+        assert result.status == es.STATUS_BLOCKED and result.reason == "protocolo_nao_aprovado"
+        assert result.log["calls"] == [] and result.log["regenerations"] == 0 and result.log["attempts"] == 0
+        assert "context_key" not in result.log

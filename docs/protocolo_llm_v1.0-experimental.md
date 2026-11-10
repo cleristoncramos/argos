@@ -1,6 +1,6 @@
 # Protocolo da camada de linguagem — v1.0-experimental
 
-**Situação:** protocolo **aprovado com condições** pela DL1 (09/11/2026, sujeita à confirmação original) · correções 1 e 4 aplicadas (seção 13.3) · impressão combinada `6f50a1cadd7c` (prompt `b5ef179c9376`, esquema `9a4cb5cb5a0c`, cinco textos `95845577dba9`), **ainda não registrada como aprovada** · política de liberação 1.0 (`477ef9b1d362`) · não ligada a nenhuma tela
+**Situação:** protocolo **aprovado com condições** pela DL1 (09/11/2026, sujeita à confirmação original) · correções 1 e 4 aplicadas (commit `c106f6d`) · hashes **ratificados** pela DL1-H: impressão `6f50a1cadd7c`, prompt `b5ef179c9376`, esquema `9a4cb5cb5a0c`, cinco textos `95845577dba9` · política de liberação 1.0 (`477ef9b1d362`) · não ligada a nenhuma tela (portão de ativação com cinco condições pendentes)
 **Código:** `core/llm_exp_policy.py` (política), `core/llm_exp_context.py` (contexto), `core/llm_exp_prompts.py` (prompt e esquema), `core/llm_exp_validation.py` (validação), `core/llm_exp_service.py` (fluxo). Testes em `tests/test_llm_exp.py`.
 **Origem:** [plano de reformulação](plano_reformulacao_preditiva.md), seções 2.3, 4 e 6 (etapa 4), e instrução de trabalho de 08/11/2026.
 
@@ -25,7 +25,7 @@
 | --- | --- |
 | Contexto em JSON | Mantido, com três camadas (seção 5) |
 | O modelo não calcula nada | Mantido. Cada camada só pode citar os próprios números (verificação 6) |
-| Saída estruturada validada antes da exibição | Mantido. Esquema JSON estrito e 16 verificações; qualquer falha bloqueia |
+| Saída estruturada validada antes da exibição | Mantido. Esquema JSON estrito e 17 verificações (a 13a foi criada pela correção 1); qualquer falha bloqueia |
 | Auditoria de chamadas e respostas | Mantida e ampliada (seção 9) |
 | Limites de custo e de tokens | Mantidos: 1.400 tokens de saída, 20 chamadas e US$ 0,50 por sessão, timeout de 20 s, até 2 retentativas (os mesmos objetos da 7B) |
 | Fallback | Mantido, com texto próprio da camada experimental |
@@ -187,6 +187,22 @@ Todas as 17 precisam passar (as 16 aprovadas na DL1-A e a 13a, acrescentada pela
 | 15 | `pedido_tratado` | Sem pedido: `sem_pedido`. Recomendação ou garantia: recusa com os textos fixos em todas as camadas. Previsão sem modelo: resumo começa pela abstenção. Previsão com modelo autorizado: estimativa apresentada |
 | 16 | `politica_de_liberacao` | Integridade do contexto: família correta, recomendação desligada e estimativa ou conclusão "disponível" só se a política, consultada de novo pelo validador, as autorizar. Detecta contexto adulterado |
 
+### 7.1 Negação, médias móveis e regeneração (DL1-H)
+
+**Negação.** O reconhecimento de negação é frágil por natureza. **Desempate: em caso ambíguo, o validador reprova.** Abstenção por falso positivo é aceitável; exibição por falso negativo, não. Padrões aceitos como negação:
+
+| Padrão | Regra | Teste |
+| --- | --- | --- |
+| Palavras negativas: não, nem, sem, nunca, nenhum, nenhuma, jamais, tampouco | No máximo 16 palavras antes do termo, na mesma frase | `test_cada_padrao_de_negacao_aceito` (um caso por palavra) |
+| Negação entre o sujeito e o atributo ("o sinal do indicador **não** garante reversão") | Só na verificação de atribuição (verificação 10) | `test_cada_padrao_de_negacao_aceito`, último caso |
+| Não contam como negação | "sem dúvida", "não há dúvida", "não tenha dúvida", "não resta dúvida"; negação separada do termo por "mas", "porém", "contudo", "entretanto" ou "todavia"; negação em outra frase (separada por ponto, ponto e vírgula ou dois-pontos) | `test_caso_ambiguo_reprova` |
+
+Todo padrão novo de negação que aparecer entra nesta tabela e ganha um caso de teste.
+
+**Médias móveis.** Só a verificação 13a deixa de fora as médias móveis, porque média móvel é indicador, não afirmação sobre um período histórico. As frases com média móvel continuam sujeitas à checagem de futuro (verificação 9) e à de atribuição (verificação 10); ver `test_media_movel_fica_fora_so_da_13a`.
+
+**Regeneração.** A segunda tentativa conta no limite de chamadas. O registro de uso tem a lista `calls`, com uma entrada por chamada: tipo (`primeira` ou `regeneracao`), status, tentativas, tokens, custo, latência e verificações reprovadas, sem texto gerado. Assim, o custo por caso é rastreável e o teto de US$ 16 da rodada pode ser conferido.
+
 **Limitações conhecidas** (como na v0.6): o validador é conservador e pode reprovar respostas boas; a negação é verificada por frase; e ele não detecta conflito oculto sutil nem ironia. Por isso, a avaliação humana continua obrigatória (seção 11).
 
 ## 8. Fallback e bloqueios do serviço
@@ -206,6 +222,10 @@ Todas as 17 precisam passar (as 16 aprovadas na DL1-A e a 13a, acrescentada pela
 | Rodada de avaliação | `avaliacao` | `rodada_de_avaliacao`: validada e registrada, **nunca exibida** |
 
 Em todo bloqueio ou indisponibilidade, a tela mostraria o fallback, e nunca a resposta.
+
+**Bloqueio por hash divergente (DL1-H):**
+- **Abstenção:** não há dados para exibir. O texto de abstenção é o fallback experimental só se o conjunto dos cinco textos tiver o hash aprovado; senão é o fallback da v0.6, aprovado na 7B e independente desta camada. Nunca se exibe uma versão anterior de resposta ou de texto como se fosse aprovada (`test_bloqueio_por_hash_mostra_abstencao_e_nao_texto_anterior`).
+- **Sem degradação graciosa:** o bloqueio acontece antes de qualquer chamada. Não há regeneração, troca de provedor nem consulta a respostas salvas (`test_bloqueio_por_hash_sem_degradacao`).
 
 ## 9. Auditoria
 
@@ -331,3 +351,7 @@ Commit separado do registro da DL1, conforme a autorização.
 | Conjunto de casos | Pendente (fase 1) |
 
 Os valores vêm de `prompt_hash()`, `schema_hash()`, `prompt_fingerprint()` e `fixed_text_hashes()` em `core/llm_exp_prompts.py`. Cada execução os grava no registro de uso. `APPROVED_FINGERPRINT` continua vazio: o portão de ativação exige a aprovação do orientador com hash.
+
+**Nota de auditoria sobre um caso de teste (DL1-H):** A verificação 13a não foi afrouxada. Durante a implementação, um caso de teste que esperava reprovação passou, e **o que se corrigiu foi o caso de teste, não o validador**. O caso tirava a ressalva de amostra limitada do texto da observação, mas o bloco ainda trazia essa ressalva em `limite_da_evidencia` ("A amostra é limitada [...]"), e o bloco inteiro conta como um parágrafo. O validador acertou ao aprovar. O caso passou a trocar também `limite_da_evidencia` por um texto sem ressalva e, assim, reprova como deve.
+
+**Aprovação (DL1-H, 09/11/2026):** os quatro hashes acima foram ratificados e estão em `APPROVED_HASHES`. Qualquer alteração anula a aprovação automaticamente e exige nova ratificação.
