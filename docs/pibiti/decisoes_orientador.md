@@ -512,4 +512,82 @@ As regras de composição, o orçamento, a avaliação humana (108 saídas; se o
 
 **Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.
 
-Status: recebida em 09/11/2026. Pontos 1 a 3: aguardando o orientador.
+Status: recebida em 09/11/2026. Pontos 1 a 3: decididos na DL1-J.
+
+### DL1-J — Regimes, janelas, recursos e adversariais de fluxo (09/11/2026)
+
+Data: 09/11/2026, sujeita à confirmação do orientador.
+
+**Janelas:** duas, fixas, em pregões: curta = 126 (cerca de 6 meses) e longa = 504 (cerca de 24 meses).
+
+**Regimes** (regra única sobre o fechamento ajustado, sem julgamento visual):
+- alta: variação no fim da janela > +10% e drawdown máximo < 15%;
+- baixa: variação < −10%;
+- lateral: variação entre −10% e +10%, ou fora dessa faixa com drawdown ≥ 15%. A terceira condição é intencional e captura a alta com queda severa no meio.
+
+**Escolha da janela:** enumeram-se as candidatas que terminam no último pregão de cada mês, de jan/2016 a dez/2021, para cada ativo, regime e comprimento. Em cada célula, escolhe-se a de retorno acumulado mais próximo da mediana; em empate, a mais antiga.
+
+**Ativos e trava temporal:**
+- PETR4.SA e VALE3.SA;
+- todas as janelas terminam até 30/12/2021, sem dado do bloco reservado, nem para fins descritivos;
+- o arquivo de casos grava início, fim, retorno acumulado, drawdown e regime de cada caso.
+
+**Recursos do bloco por gráfico:** preço e médias móveis, RSI/MACD, volatilidade, drawdown e recuperação. Ficam fora:
+- sazonalidade, já exercitada no bloco próprio;
+- aportes, que exigem premissas de custo;
+- referência de mercado, que pede índice externo ao snapshot;
+- previsão, que daria abstenção garantida.
+
+**Adversariais de fluxo:** caso que testa o modelo leva resposta salva; caso que testa o fluxo leva falha injetada ou ausência de chamada.
+
+| Caso | Registro | O que deve reprovar |
+| --- | --- | --- |
+| Falha do provedor | Falha injetada, sem resposta salva, com registro da injeção | O tratamento de erro |
+| Dado faltante | Sem chamada; contexto montado com campo ausente | A montagem do contexto |
+| Número divergente | Resposta salva, bem formada, com número fora do contexto | A verificação de número |
+| Contexto adulterado | Resposta salva e contexto alterado depois da geração | A reconferência de contexto |
+
+Cada caso declara antes o resultado esperado e a verificação que deve disparar. O registro mostra a injeção ou a ausência de chamada. Acerto é abstenção pela verificação correta; abstenção por outro motivo conta como falha do caso.
+
+**Congelamento:** 12 + 8 + 8 + 6 + 4 = 38 registros, dos quais 36 casos avaliáveis, num único arquivo com hash: parâmetros das janelas, função de regime e limiares, datas e métricas, resultado esperado dos adversariais e lista das repetições. Qualquer alteração posterior invalida o hash e exige rodada completa nova; não há ajuste parcial.
+
+**Aplicação da regra (09/11/2026, sem congelamento).** Módulo `experiments/llm_v1_exp/janelas.py`, com testes em `tests/test_llm_exp_janelas.py`.
+- **Fonte:** CSV ajustado do snapshot `snap-20261108-01`, com o hash conferido pelo manifesto.
+- **Trava:** o CSV é cortado em 30/12/2021 logo depois da leitura, antes de qualquer cálculo.
+- **Pipeline:** nenhum código do pipeline preditivo é executado.
+- **Janela de N pregões:** N retornos, ou seja, N + 1 fechamentos.
+
+| Ativo | Janela | Regime | Datas | Variação | Drawdown máximo | Candidatas na célula |
+| --- | --- | --- | --- | ---: | ---: | --- |
+| PETR4.SA | curta | alta | 06/07/2017 a 29/12/2017 | +32,29% | 14,23% | 12 de 72 (mediana +28,02%) |
+| PETR4.SA | curta | baixa | 24/10/2016 a 28/04/2017 | -23,24% | 28,57% | 14 de 72 (mediana -23,15%) |
+| PETR4.SA | curta | lateral | 22/09/2015 a 31/03/2016 | +19,23% | 52,27% | 46 de 72 (mediana +19,17%) |
+| PETR4.SA | longa | alta | **célula vazia** (0 de 72 candidatas) | — | — | — |
+| PETR4.SA | longa | baixa | 11/04/2014 a 29/04/2016 | -36,81% | 82,90% | 14 de 72 (mediana -36,54%) |
+| PETR4.SA | longa | lateral | 19/01/2015 a 31/01/2017 | +63,79% | 70,89% | 58 de 72 (mediana +63,12%) |
+| VALE3.SA | curta | alta | 28/11/2017 a 30/05/2018 | +42,76% | 12,82% | 22 de 72 (mediana +42,62%) |
+| VALE3.SA | curta | baixa | 22/09/2015 a 31/03/2016 | -20,58% | 57,80% | 10 de 72 (mediana -22,05%) |
+| VALE3.SA | curta | lateral | 21/10/2015 a 29/04/2016 | +8,84% | 53,76% | 40 de 72 (mediana +8,79%) |
+| VALE3.SA | longa | alta | **célula vazia** (0 de 72 candidatas) | — | — | — |
+| VALE3.SA | longa | baixa | 17/06/2014 a 30/06/2016 | -37,47% | 71,43% | 10 de 72 (mediana -39,58%) |
+| VALE3.SA | longa | lateral | 12/11/2019 a 30/11/2021 | +83,72% | 41,34% | 62 de 72 (mediana +83,08%) |
+
+Composição das células laterais e alcance da correção P1:
+
+| Ativo | Janela | Laterais | Na faixa de ±10% | Variação > +10% com drawdown ≥ 15% | Menor drawdown entre as janelas com variação > +10% | Candidatas que contêm 02/04/2014 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| PETR4.SA | curta | 46 | 14 | 32 | 9,13% | 0 |
+| PETR4.SA | longa | 58 | 12 | 46 | 36,04% | 3 |
+| VALE3.SA | curta | 40 | 21 | 19 | 7,18% | 0 |
+| VALE3.SA | longa | 62 | 4 | 58 | 28,09% | 3 |
+
+**Pontos que voltam ao orientador** (nada foi ajustado; o conjunto não foi congelado):
+1. **A célula "alta" da janela longa fica vazia nos dois ativos.** Nenhuma janela de 504 pregões terminada entre 2016 e 2021 teve variação > +10% com drawdown < 15%; o menor drawdown entre essas janelas foi de 36,04% na PETR4 e de 28,09% na VALE3. A regra produz **10 casos de síntese, não 12**, e o total muda.
+2. **"Lateral" reúne sobretudo altas com queda severa.** Na janela longa, isso vale para 46 de 58 laterais na PETR4 e 58 de 62 na VALE3. Pela mediana, os laterais escolhidos têm variação de +19,23%, +63,79%, +8,84% e +83,72%. Um avaliador pode ler "lateral com +83,72%" como contradição. Fica a confirmar se é esse o efeito desejado da terceira condição.
+3. **Precedência entre baixa e lateral.** Variação < −10% com drawdown ≥ 15% satisfaz as duas regras. Foi aplicado "baixa", porque a terceira condição foi justificada pela alta com queda. A confirmar.
+4. **Correção P1.** O CSV lido é o snapshot original, sem a visão derivada da política de qualidade, cuja aplicação exigiria código do piloto. Seis candidatas longas (três por ativo) contêm 02/04/2014, data corrigida pela P1; **nenhuma janela escolhida contém essa data**. Mesmo assim, as medianas das células com essas candidatas usam o valor original. A confirmar se isso é aceitável.
+5. **Bloco de média, sazonalidade ou frequência histórica (8 casos):** ainda sem composição definida (ativos, meses ou comparações e janelas).
+
+**Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.
+
+Status: recebida em 09/11/2026. Pontos 1 a 5: aguardando o orientador; conjunto **não congelado**.

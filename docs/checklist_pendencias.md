@@ -503,4 +503,5 @@ Etapa 0 — revisão de escopo:
 - [ ] DL1-D fase 1: respostas em lote versionadas (Gemini Flash no job offline, teto de US$ 20, 200 chamadas por rodada)
 - [ ] DL1-E: avaliação cega com ao menos dois avaliadores e relatório; portão de ativação
 - [ ] Arquivar a mensagem original da DL1
-- [ ] DL1-I: o orientador define regimes, janelas e ativos da síntese, os quatro recursos do bloco por gráfico e a natureza dos quatro adversariais de fluxo (`docs/llm_v1_exp_fase1.md`, seção 3)
+- [x] DL1-J: regimes, janelas, ativos, recursos e adversariais de fluxo decididos (`docs/llm_v1_exp_fase1.md`, seção 3.1)
+- [ ] DL1-J: o orientador decide os cinco pontos abertos pela aplicação da regra (alta longa vazia, composição do lateral, precedência baixa × lateral, correção P1 e bloco de média histórica) antes do congelamento
