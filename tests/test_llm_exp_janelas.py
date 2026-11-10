@@ -141,19 +141,46 @@ def _mensal_sintetica():
 def test_retornos_mensais_e_anuais_nos_periodos_declarados():
     serie = _mensal_sintetica()
     mensais, anuais = m.retornos_mensais(serie), m.retornos_anuais(serie)
-    assert mensais.index.min() == pd.Timestamp("2008-02-29") and len(mensais) == 167
+    assert mensais.index.min() == pd.Timestamp("2008-02-29") and len(mensais) == 166   # sem o primeiro e o último mês
+    assert mensais.index.max() == pd.Timestamp("2021-11-30")
+    assert len(m.retornos_mensais(serie, excluir_ultimo_mes=False)) == 167
     assert list(anuais.index) == list(range(2009, 2022))
     fim_jan, fim_fev = serie.loc["2008-01"].iloc[-1], serie.loc["2008-02"].iloc[-1]
     assert mensais.iloc[0] == pytest.approx(fim_fev / fim_jan - 1)
 
 
-def test_sazonalidade_escolhe_maior_e_menor_media_com_empate_no_mes_mais_antigo():
-    datas = pd.DatetimeIndex([f"{a}-{mes:02d}-28" for a in (2019, 2020) for mes in range(1, 13)])
+def test_sazonalidade_escolhe_maior_e_menor_media_com_empate_total_no_mes_mais_cedo():
+    anos = range(2012, 2020)
+    datas = pd.DatetimeIndex([f"{a}-{mes:02d}-28" for a in anos for mes in range(1, 13)])
     mensais = pd.Series([0.05 if mes in (3, 7) else (-0.04 if mes in (5, 9) else 0.0)
-                         for _a in (2019, 2020) for mes in range(1, 13)], index=datas)
-    maior, menor = m.sazonalidade("X", mensais)
+                         for _a in anos for mes in range(1, 13)], index=datas)
+    maior, menor = m.sazonalidade("X", mensais)                        # empate de média e de desvio: o mais cedo
     assert (maior["mes"], menor["mes"]) == (3, 5)
-    assert maior["anos"] == 2 and maior["anos_positivos"] == 2 and maior["desvio_entre_anos"] == pytest.approx(0.0)
+    assert maior["anos"] == 8 and maior["anos_positivos"] == 8 and maior["desvio_entre_anos"] == pytest.approx(0.0)
+
+
+def test_desempate_pelo_menor_desvio_e_depois_pelo_mes_mais_cedo():
+    anos = range(2010, 2018)                                            # 8 observações por mês
+    datas = pd.DatetimeIndex([f"{a}-{mes:02d}-28" for a in anos for mes in range(1, 13)])
+    valores = []
+    for i, _a in enumerate(anos):
+        for mes in range(1, 13):
+            if mes == 3:
+                valores.append(0.05 + (0.04 if i % 2 else -0.04))       # média 0,05, desvio maior
+            elif mes in (6, 8):
+                valores.append(0.05)                                    # média 0,05, desvio zero: empate entre 6 e 8
+            else:
+                valores.append(0.0)
+    maior, _menor = m.sazonalidade("X", pd.Series(valores, index=datas))
+    assert maior["mes"] == 6                                            # menor desvio; persistindo, o mais cedo
+
+
+def test_mes_com_menos_de_8_observacoes_nao_entra():
+    datas = pd.DatetimeIndex([f"{a}-{mes:02d}-28" for a in range(2010, 2018) for mes in range(1, 13)
+                              if not (mes == 2 and a > 2012)])          # fevereiro com 3 observações
+    valores = pd.Series([0.30 if d.month == 2 else (0.01 if d.month == 4 else 0.0) for d in datas], index=datas)
+    maior, _menor = m.sazonalidade("X", valores)
+    assert maior["mes"] == 4
 
 
 def test_oito_casos_na_ordem_declarada_com_metadados():
@@ -162,10 +189,11 @@ def test_oito_casos_na_ordem_declarada_com_metadados():
     assert [c["tipo"] for c in lista] == ["sazonalidade", "sazonalidade", "frequencia_historica",
                                           "comparacao_entre_periodos"] * 2
     comp = lista[3]
-    assert comp["meses_ultimo_ano"] == 12 and comp["meses_anos_anteriores"] == 60 and comp["anos"] == 6
+    assert comp["meses_ultimo_ano"] == 11 and comp["meses_anos_anteriores"] == 60 and comp["anos"] == 6
+    assert m.casos({a: serie for a in j.ATIVOS}, excluir_ultimo_mes=False)[3]["meses_ultimo_ano"] == 12
     assert set(comp["retornos_anuais_anteriores"]) == set(m.ANOS_ANTERIORES)
     freq = lista[2]
-    assert freq["meses"] == 167 and freq["anos"] == 13 and 0 <= freq["proporcao_anos_positivos"] <= 1
+    assert freq["meses"] == 166 and freq["anos"] == 13 and 0 <= freq["proporcao_anos_positivos"] <= 1
 
 
 def test_p1_escopo_restrito_ao_fechamento_da_petr4(tmp_path):
@@ -184,3 +212,11 @@ def test_p1_escopo_restrito_ao_fechamento_da_petr4(tmp_path):
     mudou = serie[serie != original].index
     assert set(mudou) <= {pd.Timestamp(d) for d in ("2014-03-31", "2014-04-01", "2014-04-02")}
     assert (serie.loc["2014-04-03":] == original.loc["2014-04-03":]).all()
+
+
+def test_janela_de_grafico_definida_pelo_ativo():
+    serie = _serie(100 * np.exp(np.linspace(0, 0.3, 700)), inicio="2019-03-01")
+    janela = j.janela_grafico(serie)
+    assert janela["fim"] == serie.index[-1].date().isoformat() and janela["pregoes"] == 504
+    assert janela["inicio"] == serie.index[-505].date().isoformat()
+    assert j.CONTROLES == ("S01", "S05", "S07", "S11")

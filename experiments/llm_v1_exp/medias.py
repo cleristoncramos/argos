@@ -1,14 +1,18 @@
 """
-Casos de média, sazonalidade e frequência histórica da fase 1 (decisão DL1-K, 09/11/2026).
+Casos de média, sazonalidade e frequência histórica da fase 1 (decisões DL1-K e DL1-L, 09/11/2026).
 
 Escolhidos por regra e calculados por código, sobre o fechamento ajustado com a correção P1
-e a trava temporal de `janelas.py` (nada depois de 30/12/2021):
-- retorno mensal: do último fechamento de um mês ao último do mês seguinte, de fev/2008 a
-  dez/2021 (jan/2008 fica de fora porque a série começa em 02/01/2008, sem fechamento do mês
-  anterior);
-- retorno anual: do último fechamento de um ano ao último do ano seguinte, de 2009 a 2021;
+local e a trava temporal de `janelas.py` (nada depois de 30/12/2021):
+- retorno mensal: fechamento do último pregão do mês sobre o do último pregão do mês
+  anterior, menos 1;
+- meses incompletos: excluídos o primeiro e o último mês do histórico (DL1-L). O primeiro
+  (jan/2008) não tem retorno, porque não há fechamento do mês anterior; o último (dez/2021) é
+  retirado pela regra, embora 30/12/2021 seja o último pregão de 2021 (ver o registro);
+- retorno anual: último pregão do ano sobre o último pregão do ano anterior, menos 1, de 2009
+  a 2021;
+- elegibilidade: só entra na média mensal o mês de calendário com pelo menos 8 observações;
 - sazonalidade (4 casos): para cada ativo, o mês de maior e o de menor média de retorno
-  mensal; em empate, o mês mais antigo do calendário;
+  mensal; em empate, o de menor desvio-padrão; persistindo, o mês mais cedo do calendário;
 - frequência histórica (2 casos): para cada ativo, a proporção de meses positivos e a de
   anos positivos;
 - comparação entre períodos (2 casos): para cada ativo, a média do retorno mensal de 2021
@@ -28,13 +32,15 @@ from experiments.llm_v1_exp import janelas as j
 
 ULTIMO_ANO = 2021
 ANOS_ANTERIORES = (2016, 2017, 2018, 2019, 2020)
+MINIMO_OBSERVACOES_MES = 8
 
 
-def retornos_mensais(fechamento: pd.Series) -> pd.Series:
+def retornos_mensais(fechamento: pd.Series, excluir_ultimo_mes: bool = True) -> pd.Series:
     fim_de_mes = fechamento.groupby([fechamento.index.year, fechamento.index.month]).last()
     datas = fechamento.groupby([fechamento.index.year, fechamento.index.month]).apply(lambda s: s.index.max())
     serie = pd.Series(fim_de_mes.to_numpy(), index=pd.DatetimeIndex(datas.to_numpy()))
-    return serie.pct_change().dropna()
+    retornos = serie.pct_change().dropna()            # o primeiro mês do histórico não tem retorno
+    return retornos.iloc[:-1] if excluir_ultimo_mes else retornos
 
 
 def retornos_anuais(fechamento: pd.Series) -> pd.Series:
@@ -50,9 +56,11 @@ def _resumo(valores: pd.Series) -> dict:
 
 def sazonalidade(ativo: str, mensais: pd.Series) -> list:
     por_mes = {m: mensais[mensais.index.month == m] for m in range(1, 13)}
+    por_mes = {m: v for m, v in por_mes.items() if len(v) >= MINIMO_OBSERVACOES_MES}
     medias = {m: float(v.mean()) for m, v in por_mes.items()}
-    maior = min(medias, key=lambda m: (-medias[m], m))
-    menor = min(medias, key=lambda m: (medias[m], m))
+    desvios = {m: float(v.std(ddof=1)) for m, v in por_mes.items()}
+    maior = min(medias, key=lambda m: (-medias[m], desvios[m], m))
+    menor = min(medias, key=lambda m: (medias[m], desvios[m], m))
     return [{"ativo": ativo, "tipo": "sazonalidade", "escolha": escolha, "mes": mes,
              "periodo": f"{por_mes[mes].index.min().year}-{por_mes[mes].index.max().year}",
              **_resumo(por_mes[mes])}
@@ -83,10 +91,11 @@ def comparacao(ativo: str, mensais: pd.Series, anuais: pd.Series) -> dict:
             "retorno_anual_ultimo_ano": float(anuais.loc[ULTIMO_ANO])}
 
 
-def casos(fechamentos: dict) -> list:
+def casos(fechamentos: dict, excluir_ultimo_mes: bool = True) -> list:
     """Os 8 casos, na ordem: por ativo, maior e menor mês, frequência e comparação."""
     lista = []
     for ativo in j.ATIVOS:
-        mensais, anuais = retornos_mensais(fechamentos[ativo]), retornos_anuais(fechamentos[ativo])
+        mensais = retornos_mensais(fechamentos[ativo], excluir_ultimo_mes)
+        anuais = retornos_anuais(fechamentos[ativo])
         lista += sazonalidade(ativo, mensais) + [frequencia(ativo, mensais, anuais), comparacao(ativo, mensais, anuais)]
     return lista

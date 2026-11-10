@@ -174,3 +174,16 @@ def selecionar(fechamentos: dict, excluir_datas=()) -> list:
                 casos.append({"ativo": ativo, "janela": nome, "regime_alvo": regime,
                               "candidatas_no_comprimento": len(todas), "escolhida": escolhida})
     return casos
+
+
+JANELA_GRAFICO = 504
+CONTROLES = ("S01", "S05", "S07", "S11")      # DL1-L: dois por ativo, um de cada janela
+
+
+def janela_grafico(fechamento: pd.Series) -> dict:
+    """
+    Recorte dos casos por gráfico (DL1-L): definido pelo ativo, não pelo recurso. São os 504
+    pregões que terminam no último pregão antes da trava, e os quatro recursos do ativo usam
+    esse mesmo recorte.
+    """
+    return metricas_janela(fechamento, fechamento.index[-1], JANELA_GRAFICO)

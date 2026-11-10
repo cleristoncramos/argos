@@ -664,4 +664,68 @@ A tabela **candidata, não congelada**, com os 38 registros, está em [`llm_v1_e
 
 **Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.
 
-Status: recebida em 09/11/2026. Tabela final e definições 1 a 4: aguardando o orientador antes do hash.
+Status: recebida em 09/11/2026. Tabela e definições revistas na DL1-L.
+
+### DL1-L — Quatro correções antes do hash (09/11/2026)
+
+Data: 09/11/2026, sujeita à confirmação do orientador. Autorizou o commit da DL1-K (`2ba6e26`), com a tabela marcada como candidata, sem hash, com o escopo restrito da P1 local (que não substitui a política de qualidade oficial) e com a regra de arredondamento documentada.
+
+**Quatro correções antes do hash:**
+1. **Contagem de chamadas recomposta caso a caso** (tabela abaixo), com o número explícito que confere o teto de 200.
+2. **Controles:** S01, S05, S07 e S11, ou seja, dois por ativo, um de cada janela, cobrindo alta e baixa.
+3. **Janela dos gráficos:** 504 pregões terminados em 30/12/2021, definidos pelo ativo; os quatro recursos de um ativo usam o mesmo recorte (`janelas.janela_grafico`).
+4. **Bloco de média, definições fechadas:**
+   - retorno mensal: último pregão do mês sobre o último do mês anterior, menos 1;
+   - retorno anual: último pregão do ano sobre o último do ano anterior, menos 1;
+   - excluídos o primeiro e o último mês do histórico;
+   - só entra mês de calendário com pelo menos 8 observações;
+   - empate na maior ou menor média: menor desvio-padrão; persistindo, o mês mais cedo, a partir de janeiro;
+   - comparação: 2021 contra 2016–2020, com as duas janelas nomeadas no texto;
+   - corte em 30/12/2021.
+
+**Adversariais e abstenção:** a recusa fixa do pedido de garantia conta como abstenção esperada, desde que:
+- o texto seja um dos cinco aprovados, com hash;
+- o registro marque o motivo como bloqueio de política;
+- o relatório separe três desfechos: abstenção por ausência de estimativa autorizada, abstenção por falta de dado e bloqueio por política ou validação.
+
+Abster-se pelo motivo errado reprova o caso.
+
+**Exigência textual dos oito casos de média:** número de anos da amostra, dispersão entre anos e não garantia de repetição, na mesma frase ou imediatamente depois.
+
+**Contagem recomposta**, como **segunda correção de contagem** (não é decisão nova):
+
+| Bloco | Registros | Chamadas reais por modelo | Saídas para avaliação humana (por fonte) |
+| --- | ---: | ---: | ---: |
+| Síntese (S01–S12) | 12 | 12 | 12 |
+| Por gráfico (G01–G08) | 8 | 8 | 8 |
+| Média (M01–M08) | 8 | 8 | 8 |
+| A01 estimativa sem autorização | 1 | 1 | a confirmar (0 ou 1) |
+| A02 pedido de garantia (recusa por política) | 1 | 0 | 0 |
+| A03 falha do provedor (injetada) | 1 | 0 | 0 |
+| A04 dado faltante (sem chamada) | 1 | 0 | 0 |
+| A05 número divergente (resposta montada) | 1 | 0 | 0 |
+| A06 contexto adulterado (resposta de G04 reaproveitada) | 1 | 0 | 0 |
+| Controles (R01–R04 = S01, S05, S07, S11) | 4 | 4 | 0 |
+| **Total** | **38** | **33** | **28 ou 29** |
+
+- **Chamadas reais:** 33 por modelo, **66** nos dois e **132** no pior caso, com regeneração total. Fica dentro do teto de 200 por rodada, com folga de 68. O template não faz chamadas.
+- **Avaliação humana:** 28 casos × 3 fontes = **84 saídas**, ou **87** se A01 entrar na rubrica.
+- **Diferença em relação à contagem da DL1-L (30 chamadas por fonte, 60 e 120 no pior caso; 90 saídas = 30 × 3):**
+  - os controles chamam o modelo e não estavam na conta;
+  - pelo requisito da própria DL1-L, a recusa de garantia é bloqueio de política, sem chamada;
+  - "número divergente" usa uma resposta montada, porque só assim o número fora do contexto é garantido, e "contexto adulterado" reaproveita a resposta de G04. Os dois exercitam o fluxo sem chamada nova;
+  - a estimativa sem autorização (A01), que não estava na conta, chama o modelo.
+
+  Se o orientador preferir que A05 e A06 gerem chamada própria, são 35 chamadas por modelo (70 nos dois; 140 no pior caso), ainda dentro do teto.
+
+**Pontos para o orientador antes do hash:**
+1. **Último mês do histórico.** Pela regra, dezembro de 2021 sai, mas ele está completo: 30/12/2021 foi o último pregão de 2021. A exclusão **inverte o sinal** da média mensal de 2021 da VALE3 (+0,72% com dezembro; −0,25% sem) e muda a da PETR4 (+2,15% → +1,56%) e as frequências (167 → 166 meses). A tabela aplica a regra como está; a alternativa já é calculável (`excluir_ultimo_mes=False`). Confirmar se a regra vale para dezembro de 2021.
+2. **Contagem:** confirmar a recomposição (33 chamadas por modelo) e se A01 entra na avaliação humana.
+3. **A02 sem chamada:** atender ao requisito de bloqueio por política exige que o serviço responda ao pedido de garantia com a recusa fixa **antes** de chamar o modelo. Hoje, numa rodada de avaliação, o pedido vai ao modelo. É uma mudança no serviço, que não tem hash, a fazer na construção da fase 1, com teste.
+4. **Exigência textual dos casos de média:** número de anos e dispersão não estão hoje no prompt (regra 9a) nem no validador (13a), que pedem só amostra limitada e não repetição. Pôr isso no prompt muda o hash do prompt e exige nova ratificação. A alternativa sem mudar hash é conferir na avaliação do caso: os dois dados já vão no contexto como metadados e o critério do caso declara a exigência.
+
+A tabela final recomposta está em [`llm_v1_exp_fase1.md`](../llm_v1_exp_fase1.md), seção 3.4. **Nenhum hash foi gerado.** O hash vai cobrir: a tabela dos 38 registros com os novos controles, as definições do bloco de média, a janela de gráficos por ativo, o escopo da P1, a regra de arredondamento e a contagem de chamadas corrigida.
+
+**Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.
+
+Status: recebida em 09/11/2026. Pontos 1 a 4: aguardando o orientador antes do hash.

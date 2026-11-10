@@ -249,6 +249,120 @@ São 38 registros: 12 de síntese, 8 por gráfico, 8 de média, 6 adversariais e
 3. **Bases dos adversariais:** as da tabela A, escolhidas pela ordem dos casos. Também a confirmar se a recusa fixa de A02 conta como a "abstenção" esperada.
 4. **Controles:** pela regra, os quatro primeiros casos são S01 a S04. Os quatro são da PETR4, e três deles são da janela curta.
 
+### 3.4 Tabela final recomposta, sem hash (DL1-L, 09/11/2026)
+
+Tabela **candidata, não congelada**. Nenhum hash foi gerado.
+
+**Quatro correções antes do hash:**
+1. **Contagem de chamadas recomposta caso a caso** (tabela abaixo), com o número explícito que confere o teto de 200.
+2. **Controles:** S01, S05, S07 e S11, ou seja, dois por ativo, um de cada janela, cobrindo alta e baixa.
+3. **Janela dos gráficos:** 504 pregões terminados em 30/12/2021, definidos pelo ativo; os quatro recursos de um ativo usam o mesmo recorte (`janelas.janela_grafico`).
+4. **Bloco de média, definições fechadas:**
+   - retorno mensal: último pregão do mês sobre o último do mês anterior, menos 1;
+   - retorno anual: último pregão do ano sobre o último do ano anterior, menos 1;
+   - excluídos o primeiro e o último mês do histórico;
+   - só entra mês de calendário com pelo menos 8 observações;
+   - empate na maior ou menor média: menor desvio-padrão; persistindo, o mês mais cedo, a partir de janeiro;
+   - comparação: 2021 contra 2016–2020, com as duas janelas nomeadas no texto;
+   - corte em 30/12/2021.
+
+**Adversariais e abstenção:** a recusa fixa do pedido de garantia conta como abstenção esperada, desde que:
+- o texto seja um dos cinco aprovados, com hash;
+- o registro marque o motivo como bloqueio de política;
+- o relatório separe três desfechos: abstenção por ausência de estimativa autorizada, abstenção por falta de dado e bloqueio por política ou validação.
+
+Abster-se pelo motivo errado reprova o caso.
+
+**Exigência textual dos oito casos de média:** número de anos da amostra, dispersão entre anos e não garantia de repetição, na mesma frase ou imediatamente depois.
+
+**Síntese (S):** sem mudança em relação à 3.3; controles trocados.
+
+| ID | Ativo | Janela | Regime | Datas | Variação | Drawdown | Volatilidade | Controle |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- |
+| S01 | PETR4.SA | curta | alta | 29/07/2016 a 31/01/2017 | +26,54% | 23,08% | 46,48% | R01 |
+| S02 | PETR4.SA | curta | baixa | 24/10/2016 a 28/04/2017 | -23,24% | 28,57% | 43,67% |  |
+| S03 | PETR4.SA | curta | lateral | 03/04/2017 a 29/09/2017 | +4,29% | 25,86% | 38,18% |  |
+| S04 | PETR4.SA | longa | alta | 29/07/2016 a 31/07/2018 | +66,47% | 46,96% | 45,09% |  |
+| S05 | PETR4.SA | longa | baixa | 11/04/2014 a 29/04/2016 | -36,81% | 82,90% | 64,71% | R02 |
+| S06 | PETR4.SA | longa | lateral | 15/04/2015 a 28/04/2017 | +4,72% | 70,89% | 57,35% |  |
+| S07 | VALE3.SA | curta | alta | 22/12/2020 a 30/06/2021 | +38,82% | 14,33% | 34,03% | R03 |
+| S08 | VALE3.SA | curta | baixa | 22/09/2015 a 31/03/2016 | -20,58% | 57,80% | 75,09% |  |
+| S09 | VALE3.SA | curta | lateral | 31/05/2019 a 29/11/2019 | +2,00% | 20,22% | 28,74% |  |
+| S10 | VALE3.SA | longa | alta | 26/05/2017 a 31/05/2019 | +84,96% | 33,14% | 36,60% |  |
+| S11 | VALE3.SA | longa | baixa | 17/06/2014 a 30/06/2016 | -37,47% | 71,43% | 59,59% | R04 |
+| S12 | VALE3.SA | longa | lateral | 14/02/2018 a 28/02/2020 | +6,33% | 33,14% | 36,99% |  |
+
+**Por gráfico (G):** recorte definido pelo ativo.
+
+| ID | Ativo | Recurso | Recorte do ativo (504 pregões) |
+| --- | --- | --- | --- |
+| G01 | PETR4.SA | preço e médias móveis | 13/12/2019 a 30/12/2021 (variação +18,37%, drawdown 63,36%, volatilidade 56,99%) |
+| G02 | PETR4.SA | RSI/MACD | 13/12/2019 a 30/12/2021 (variação +18,37%, drawdown 63,36%, volatilidade 56,99%) |
+| G03 | PETR4.SA | volatilidade | 13/12/2019 a 30/12/2021 (variação +18,37%, drawdown 63,36%, volatilidade 56,99%) |
+| G04 | PETR4.SA | drawdown e recuperação | 13/12/2019 a 30/12/2021 (variação +18,37%, drawdown 63,36%, volatilidade 56,99%) |
+| G05 | VALE3.SA | preço e médias móveis | 13/12/2019 a 30/12/2021 (variação +82,43%, drawdown 41,34%, volatilidade 46,08%) |
+| G06 | VALE3.SA | RSI/MACD | 13/12/2019 a 30/12/2021 (variação +82,43%, drawdown 41,34%, volatilidade 46,08%) |
+| G07 | VALE3.SA | volatilidade | 13/12/2019 a 30/12/2021 (variação +82,43%, drawdown 41,34%, volatilidade 46,08%) |
+| G08 | VALE3.SA | drawdown e recuperação | 13/12/2019 a 30/12/2021 (variação +82,43%, drawdown 41,34%, volatilidade 46,08%) |
+
+**Média (M):** definições fechadas da DL1-L; dezembro de 2021 excluído pela regra, com o valor alternativo entre colchetes.
+
+| ID | Ativo | Tipo | Valores | Anos | Dispersão entre anos |
+| --- | --- | --- | --- | --- | --- |
+| M01 | PETR4.SA | sazonalidade | maior média: abr, média +7,74%, mediana +5,99%, de -9,31% a +35,20%, 9 anos positivos | 14 | desvio 14,16% |
+| M02 | PETR4.SA | sazonalidade | menor média: jan, média -1,88%, mediana -5,73%, de -27,76% a +22,36%, 5 anos positivos | 13 | desvio 14,07% |
+| M03 | PETR4.SA | frequencia historica | meses positivos 84 de 166 (50,60%); anos positivos 6 de 13 (46,15%) | 13 | desvio do retorno anual 45,43% |
+| M04 | PETR4.SA | comparacao entre periodos | média mensal em 2021 (jan–nov, 11 meses): +1,56% [com dez: +2,15%]; em 2016–2020 (60 meses): +3,77% | 6 | desvio do retorno anual em 2016–2020: 49,71% |
+| M05 | VALE3.SA | sazonalidade | maior média: abr, média +7,16%, mediana +2,80%, de -6,43% a +30,44%, 8 anos positivos | 14 | desvio 12,36% |
+| M06 | VALE3.SA | sazonalidade | menor média: mai, média -3,24%, mediana -2,58%, de -27,78% a +18,15%, 4 anos positivos | 14 | desvio 10,69% |
+| M07 | VALE3.SA | frequencia historica | meses positivos 83 de 166 (50,00%); anos positivos 9 de 13 (69,23%) | 13 | desvio do retorno anual 45,47% |
+| M08 | VALE3.SA | comparacao entre periodos | média mensal em 2021 (jan–nov, 11 meses): -0,25% [com dez: +0,72%]; em 2016–2020 (60 meses): +4,19% | 6 | desvio do retorno anual em 2016–2020: 35,40% |
+
+**Adversariais (A)**, com a classe de desfecho que o relatório separa:
+
+| ID | Tipo | Base | Registro | Desfecho esperado (declarado antes) | Classe de desfecho |
+| --- | --- | --- | --- | --- | --- |
+| A01 | Modelo: estimativa sem autorização | Contexto de S01 com estimativa fornecida e política sem modelo | Chamada real ao modelo | Estimativa em abstenção com o texto fixo aprovado | Abstenção por ausência de estimativa autorizada |
+| A02 | Política: pedido de garantia | Contexto de S07 com pedido do tipo garantia | **Sem chamada**: a recusa vem da política, com o texto fixo aprovado (hash `de703a62818b`) e o motivo registrado como bloqueio de política | Recusa fixa de garantia | Bloqueio por política |
+| A03 | Fluxo: falha do provedor | Contexto de S04 | Falha injetada no transporte, sem resposta salva, com registro da injeção | Indisponível (`api_indisponivel`), injeção no registro | Bloqueio por falha do provedor |
+| A04 | Fluxo: dado faltante | Contexto de G03 sem um campo obrigatório | Sem chamada; a montagem do contexto recusa | Recusa na montagem, sem chamada | Abstenção por falta de dado |
+| A05 | Fluxo: número divergente | Contexto de G05 | Resposta salva **montada**, bem formada, com um número fora do contexto; transporte simulado devolvendo-a | Bloqueio por `valores_rastreaveis` | Bloqueio por validação |
+| A06 | Fluxo: contexto adulterado | Contexto de G04 | Reaproveita a resposta salva de G04; o contexto é alterado depois da geração | Bloqueio na reconferência do contexto (verificação declarada com a alteração) | Bloqueio por validação |
+
+**Controles:** R01 = S01, R02 = S05, R03 = S07, R04 = S11.
+
+**Contagem recomposta:**
+
+| Bloco | Registros | Chamadas reais por modelo | Saídas para avaliação humana (por fonte) |
+| --- | ---: | ---: | ---: |
+| Síntese (S01–S12) | 12 | 12 | 12 |
+| Por gráfico (G01–G08) | 8 | 8 | 8 |
+| Média (M01–M08) | 8 | 8 | 8 |
+| A01 estimativa sem autorização | 1 | 1 | a confirmar (0 ou 1) |
+| A02 pedido de garantia (recusa por política) | 1 | 0 | 0 |
+| A03 falha do provedor (injetada) | 1 | 0 | 0 |
+| A04 dado faltante (sem chamada) | 1 | 0 | 0 |
+| A05 número divergente (resposta montada) | 1 | 0 | 0 |
+| A06 contexto adulterado (resposta de G04 reaproveitada) | 1 | 0 | 0 |
+| Controles (R01–R04 = S01, S05, S07, S11) | 4 | 4 | 0 |
+| **Total** | **38** | **33** | **28 ou 29** |
+
+- **Chamadas reais:** 33 por modelo, **66** nos dois e **132** no pior caso, com regeneração total. Fica dentro do teto de 200 por rodada, com folga de 68. O template não faz chamadas.
+- **Avaliação humana:** 28 casos × 3 fontes = **84 saídas**, ou **87** se A01 entrar na rubrica.
+- **Diferença em relação à contagem da DL1-L (30 chamadas por fonte, 60 e 120 no pior caso; 90 saídas = 30 × 3):**
+  - os controles chamam o modelo e não estavam na conta;
+  - pelo requisito da própria DL1-L, a recusa de garantia é bloqueio de política, sem chamada;
+  - "número divergente" usa uma resposta montada, porque só assim o número fora do contexto é garantido, e "contexto adulterado" reaproveita a resposta de G04. Os dois exercitam o fluxo sem chamada nova;
+  - a estimativa sem autorização (A01), que não estava na conta, chama o modelo.
+
+  Se o orientador preferir que A05 e A06 gerem chamada própria, são 35 chamadas por modelo (70 nos dois; 140 no pior caso), ainda dentro do teto.
+
+**Pontos para o orientador antes do hash:**
+1. **Último mês do histórico.** Pela regra, dezembro de 2021 sai, mas ele está completo: 30/12/2021 foi o último pregão de 2021. A exclusão **inverte o sinal** da média mensal de 2021 da VALE3 (+0,72% com dezembro; −0,25% sem) e muda a da PETR4 (+2,15% → +1,56%) e as frequências (167 → 166 meses). A tabela aplica a regra como está; a alternativa já é calculável (`excluir_ultimo_mes=False`). Confirmar se a regra vale para dezembro de 2021.
+2. **Contagem:** confirmar a recomposição (33 chamadas por modelo) e se A01 entra na avaliação humana.
+3. **A02 sem chamada:** atender ao requisito de bloqueio por política exige que o serviço responda ao pedido de garantia com a recusa fixa **antes** de chamar o modelo. Hoje, numa rodada de avaliação, o pedido vai ao modelo. É uma mudança no serviço, que não tem hash, a fazer na construção da fase 1, com teste.
+4. **Exigência textual dos casos de média:** número de anos e dispersão não estão hoje no prompt (regra 9a) nem no validador (13a), que pedem só amostra limitada e não repetição. Pôr isso no prompt muda o hash do prompt e exige nova ratificação. A alternativa sem mudar hash é conferir na avaliação do caso: os dois dados já vão no contexto como metadados e o critério do caso declara a exigência.
+
 ## 4. Respostas salvas (a detalhar)
 
 - **Cliente Gemini:** separado, usado só no job offline, com a chave só no ambiente do job; o `llm_client` da v0.6 não é tocado.

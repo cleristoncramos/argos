@@ -505,4 +505,5 @@ Etapa 0 — revisão de escopo:
 - [ ] Arquivar a mensagem original da DL1
 - [x] DL1-J: regimes, janelas, ativos, recursos e adversariais de fluxo decididos (`docs/llm_v1_exp_fase1.md`, seção 3.1)
 - [x] DL1-K: definição de regime corrigida (só a variação), P1 imaterial após a reimplementação isolada e bloco de média definido
-- [ ] DL1-K: o orientador confere a tabela final dos 38 registros e as definições 1 a 4 (`docs/llm_v1_exp_fase1.md`, seção 3.3) antes do hash
+- [x] DL1-L: controles S01, S05, S07 e S11; janela de gráficos por ativo; definições do bloco de média; contagem recomposta
+- [ ] DL1-L: o orientador decide os quatro pontos (dezembro de 2021, contagem de 33 chamadas por modelo, A02 sem chamada, exigência textual dos casos de média) antes do hash (`docs/llm_v1_exp_fase1.md`, seção 3.4)
