@@ -1,6 +1,6 @@
 # Protocolo da camada de linguagem — v1.0-experimental
 
-**Situação:** protocolo **aprovado com condições** pela DL1 (09/11/2026, sujeita à confirmação original) · correções 1 e 4 aplicadas (commit `c106f6d`) · hashes **ratificados** pela DL1-H: impressão `6f50a1cadd7c`, prompt `b5ef179c9376`, esquema `9a4cb5cb5a0c`, cinco textos `95845577dba9` · política de liberação 1.0 (`477ef9b1d362`) · não ligada a nenhuma tela (portão de ativação com cinco condições pendentes)
+**Situação:** protocolo **aprovado com condições** pela DL1 (09/11/2026, sujeita à confirmação original) · correções 1 e 4 aplicadas (commit `c106f6d`) · hashes **ratificados pela DL1-M**: impressão `b1ee60720f24`, prompt `f41d1cf2a5fc`, esquema `9a4cb5cb5a0c`, cinco textos `95845577dba9` (a aprovação da DL1-H, de `b5ef179c9376`, foi substituída; ver a seção 13.4) · política de liberação 1.0 (`477ef9b1d362`) · não ligada a nenhuma tela (portão de ativação com cinco condições pendentes)
 **Código:** `core/llm_exp_policy.py` (política), `core/llm_exp_context.py` (contexto), `core/llm_exp_prompts.py` (prompt e esquema), `core/llm_exp_validation.py` (validação), `core/llm_exp_service.py` (fluxo). Testes em `tests/test_llm_exp.py`.
 **Origem:** [plano de reformulação](plano_reformulacao_preditiva.md), seções 2.3, 4 e 6 (etapa 4), e instrução de trabalho de 08/11/2026.
 
@@ -182,7 +182,7 @@ Todas as 17 precisam passar (as 16 aprovadas na DL1-A e a 13a, acrescentada pela
 | 11 | `sem_termos_proibidos` | Termos da v0.6 (compre, invista, aposte, "deve investir" em qualquer forma; barato, caro, "vale a pena"... só negados) |
 | 12 | `sem_promessa_nem_persuasao` | **Bloqueio de promessa de retorno.** Persuasão e urgência proibidas mesmo negadas: aproveite, não perca, imperdível, última chance, corra, urgente, agora mesmo, só hoje. Promessa e falsa certeza só em frase negada: garantia, lucro ou retorno certo/garantido, sem risco, com certeza, certamente, infalível, seguramente |
 | 13 | `limitacoes` | Cada sinalizador ativo aparece nas limitações, pelas palavras da v0.6 (dispensado nas recusas, que têm texto fixo) |
-| 13a | `ressalva_media_historica` | **Correção 1.** Todo parágrafo com média, mediana, comparação entre períodos ou frequência histórica (médias móveis não contam) tem as duas ressalvas: amostra limitada e não garantia de repetição. A checagem é por classe de expressão, com cinco variantes aceitas para cada ressalva. Parágrafo é o resumo, cada bloco ou cada item de lista. Falha só desta verificação dá direito a **uma regeneração**; se falhar de novo, abstenção |
+| 13a | `ressalva_media_historica` | **Correção 1, ampliada na DL1-M.** Todo parágrafo com média, mediana, comparação entre períodos ou frequência histórica (médias móveis não contam) tem as duas ressalvas: amostra limitada e não garantia de repetição. Se citar média ou mediana de período, também precisa trazer o número de anos da amostra e a dispersão entre anos. A checagem é por classe de expressão, com cinco variantes aceitas para cada ressalva. Parágrafo é o resumo, cada bloco ou cada item de lista. Falha só desta verificação dá direito a **uma regeneração**; se falhar de novo, abstenção |
 | 14 | `limite_da_evidencia` | Cada frase de `required_limits` aparece literalmente em `o_que_nao_pode_ser_concluido` (nas recusas, o limite fixo da recusa) |
 | 15 | `pedido_tratado` | Sem pedido: `sem_pedido`. Recomendação ou garantia: recusa com os textos fixos em todas as camadas. Previsão sem modelo: resumo começa pela abstenção. Previsão com modelo autorizado: estimativa apresentada |
 | 16 | `politica_de_liberacao` | Integridade do contexto: família correta, recomendação desligada e estimativa ou conclusão "disponível" só se a política, consultada de novo pelo validador, as autorizar. Detecta contexto adulterado |
@@ -355,3 +355,66 @@ Os valores vêm de `prompt_hash()`, `schema_hash()`, `prompt_fingerprint()` e `f
 **Nota de auditoria sobre um caso de teste (DL1-H):** A verificação 13a não foi afrouxada. Durante a implementação, um caso de teste que esperava reprovação passou, e **o que se corrigiu foi o caso de teste, não o validador**. O caso tirava a ressalva de amostra limitada do texto da observação, mas o bloco ainda trazia essa ressalva em `limite_da_evidencia` ("A amostra é limitada [...]"), e o bloco inteiro conta como um parágrafo. O validador acertou ao aprovar. O caso passou a trocar também `limite_da_evidencia` por um texto sem ressalva e, assim, reprova como deve.
 
 **Aprovação (DL1-H, 09/11/2026):** os quatro hashes acima foram ratificados e estão em `APPROVED_HASHES`. Qualquer alteração anula a aprovação automaticamente e exige nova ratificação.
+
+### 13.4 Mudança da regra 9a e da verificação 13a (DL1-M)
+
+Feita antes de qualquer geração, por decisão do orientador. Restringe, não relaxa.
+
+- **Regra 9a do prompt:** quando um trecho cita a média ou a mediana de um período, ele precisa trazer, na mesma frase ou logo depois:
+  - o número de anos da amostra;
+  - a dispersão entre os anos;
+  - a não garantia de repetição.
+
+  A ressalva de amostra limitada da correção 1 continua exigida, então os elementos passam a ser quatro. A regra também proíbe oferecer leituras alternativas de um mesmo número.
+- **Verificação 13a:** reprova o parágrafo de média ou mediana de período sem os quatro elementos. A checagem é por classe de expressão:
+  - **número de anos:** "N anos", "de AAAA a AAAA", "amostra de N anos";
+  - **dispersão:** "desvio", "dispersão", "variou de/entre", faixa "X% a Y%", "amplitude", "oscilou de/entre".
+
+  "Poucos anos" não conta como número de anos. Parágrafos de frequência e de comparação sem média continuam exigindo só amostra limitada e não repetição.
+- **Leitura dupla:** um texto como "−0,25%, ou +0,72% incluindo dezembro" reprova, porque o valor alternativo não está no contexto e a verificação 6 o bloqueia (`test_leitura_alternativa_do_mesmo_numero_reprova`). O valor alternativo de dezembro de 2021 nunca entra no contexto.
+- **Testes:** caso completo, sem anos, sem dispersão, só com "poucos anos", sem não repetição e de frequência (`test_ressalva_sobre_media_historica`).
+- **A02, recusa por política:**
+  - `policy_refusal(tipo_do_pedido)` decide antes de montar o contexto, e o serviço a consulta antes de qualquer chamada, resposta salva ou chave de contexto;
+  - devolve o texto fixo de garantia (`de703a62818b`), com o motivo `bloqueio_politica`;
+  - os testes conferem que o transporte e as respostas salvas não são acionados;
+  - se o conjunto de textos divergir do hash aprovado, o serviço bloqueia em vez de exibir o texto.
+- **Aprovação:** com o prompt mudado, a aprovação da DL1-H **caiu automaticamente**. `APPROVED_HASHES` continua com os valores antigos, e o serviço bloqueia por padrão (`protocolo_nao_aprovado`) até a ratificação.
+
+| Item | Ratificado na DL1-H | Atual (aguarda a DL1-M) |
+| --- | --- | --- |
+| Prompt | `b5ef179c9376` | **`f41d1cf2a5fc`** (regra 9a mudou) |
+| Esquema de saída | `9a4cb5cb5a0c` | `9a4cb5cb5a0c` (sem mudança) |
+| Impressão combinada | `6f50a1cadd7c` | **`b1ee60720f24`** |
+| Conjunto dos cinco textos | `95845577dba9` | `95845577dba9` (sem mudança; recusa de garantia `de703a62818b`) |
+
+**Contagem de verificações: continua 17.** A 13a só ganhou itens, sem virar uma verificação nova. As três referências corrigidas na DL1-H (DL1-A, critério de aceitação e portão) já dizem 17 e continuam certas.
+
+**Ratificação (DL1-M, 09/11/2026):**
+
+| Item | Hash anterior | Hash ratificado (DL1-M) |
+| --- | --- | --- |
+| Prompt | `b5ef179c9376` | **`f41d1cf2a5fc`** |
+| Impressão combinada | `6f50a1cadd7c` | **`b1ee60720f24`** |
+| Esquema de saída | `9a4cb5cb5a0c` | sem mudança, segue ratificado |
+| Conjunto dos cinco textos | `95845577dba9` | sem mudança, segue ratificado |
+
+A regra de anulação continua: qualquer alteração futura em prompt, esquema, textos ou impressão anula a ratificação e exige uma nova.
+
+**Histórico das aprovações do prompt:**
+
+| Prompt | Impressão | Aprovação | Situação |
+| --- | --- | --- | --- |
+| `b5ef179c9376` | `6f50a1cadd7c` | DL1-H, 09/11/2026 (commit `c106f6d`) | **Substituída** em 09/11/2026 pela DL1-M, que passou a exigir número de anos e dispersão entre anos no parágrafo de média ou mediana de período (regra 9a e verificação 13a) |
+| `f41d1cf2a5fc` | `b1ee60720f24` | DL1-M, 09/11/2026 (implementação no commit `3c8f5c2`) | **Vigente** |
+
+**Quatro elementos confirmados.** "Número de anos" não substitui "amostra limitada", porque cada elemento responde a uma pergunta diferente:
+- o número de anos é um fato verificável;
+- a suficiência da amostra é um juízo;
+- a dispersão mostra a variabilidade;
+- a não repetição limita a conclusão.
+
+Trocar o juízo pelo fato deixaria o texto tecnicamente correto e epistemicamente incompleto. A leitura mais restritiva fica.
+
+**Efeito colateral registrado:** exigir quatro elementos empurra o texto para frases padronizadas, e o validador vai aprovar frases repetitivas. É um problema de **qualidade**, não de verificação, e quem deve capturá-lo é a rubrica humana (item "utilidade para o leitor"). **A 13a não será afrouxada** para evitar texto repetitivo.
+
+**Contagem de verificações:** continuam **17**, com a 13a só ampliada. As três referências (DL1-A, critério de aceitação da avaliação humana e portão de ativação) continuam em 17, e **não há nenhum "18"** no protocolo, na especificação da fase 1, nas decisões nem no checklist. A conferência foi por busca de texto, em 09/11/2026.

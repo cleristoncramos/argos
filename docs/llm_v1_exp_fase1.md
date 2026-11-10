@@ -23,7 +23,9 @@ Nada é chamado durante a navegação. Os limites valem para o job: no máximo 2
 O template aplica a regra da média histórica **por composição fixa, sem depender do validador**:
 
 1. **Estrutura fixa, não geração.** O template compõe a ressalva por estrutura fixa: toda frase de média histórica, comparação entre períodos ou frequência histórica sai de um modelo de parágrafo que já contém as duas ressalvas. Exemplo de modelo:
-   > "No recorte selecionado, {afirmação histórica}. A amostra é limitada e houve variação entre os anos. Isso não indica que o próximo período repetirá o resultado."
+   > "No recorte selecionado, {afirmação histórica}. A amostra é limitada: são {N} anos, com resultados de {mínimo} a {máximo}. Isso não indica que o próximo período repetirá o resultado."
+
+   Desde a DL1-M, o parágrafo de média ou mediana de período leva também o número de anos e a dispersão entre anos, na mesma frase ou logo depois, sempre com valores do contexto.
 2. **Mesmo parágrafo.** A ressalva entra no mesmo parágrafo da afirmação histórica, no mesmo campo de texto do bloco, nunca em outro bloco ou em item de lista separado.
 3. **Defeito de composição.** Parágrafo do template que cite média, comparação entre períodos ou frequência histórica sem as duas ressalvas é defeito de composição, e o caso **falha no teste do template**. Esse teste é independente do validador: confere a estrutura do parágrafo montado. Além dele, as saídas do template também passam pelas 17 verificações.
 
@@ -391,3 +393,75 @@ A fase 1 termina quando existirem, com hash registrado:
 4. o relatório de avaliação, com rubrica, discordâncias e desempenho do template ao lado.
 
 A ativação da tela experimental só é discutida depois disso.
+
+### 3.5 Decisões da DL1-M e estado antes do hash (09/11/2026)
+
+- **Commit da DL1-L:** aprovado (`6bb1086`), sem congelar e sem hash.
+- **Dezembro de 2021, regra mantida:**
+  - a regra foi mal escrita ("último mês do histórico" queria dizer "mês incompleto"), e o defeito fica nomeado;
+  - mesmo assim, não é corrigida agora, porque corrigir depois de ver que a exclusão inverte o sinal da VALE3 é o movimento que o projeto recusa desde a D1;
+  - os números congelados usam a regra como está: M04 = +1,56% e M08 = −0,25%;
+  - o valor alternativo aparece só na nota metodológica e nas limitações, nunca no texto gerado, que fica proibido de oferecer as duas leituras;
+  - redação correta proposta para versão futura: "excluído o mês incompleto, isto é, o mês de calendário sem fechamento no seu último pregão ou sem fechamento do mês anterior".
+- **Contagem confirmada:** 33 chamadas por modelo, 66 no total e 132 no pior caso.
+  - A01 fica fora da rubrica humana: texto fixo se avalia por checagem de política. A avaliação humana fica em **84 saídas** (28 casos × 3 fontes).
+  - A05 e A06 ficam sem chamada própria, porque provam o bloqueio do validador de forma determinística.
+- **A02 implementado agora:** a política decide antes do contexto e de qualquer chamada, com o texto fixo (`de703a62818b`) e o motivo `bloqueio_politica`, e o teste confere que o transporte não é invocado.
+- **Exigência textual dos casos de média vai para o prompt:** número de anos, dispersão entre anos e não garantia de repetição na regra 9a e na 13a, com classes de expressão e testes. Novos hashes gerados depois dos testes. Não é ajuste posterior: nenhuma geração foi produzida, e a mudança restringe.
+
+**Nota metodológica, dezembro de 2021:** com a regra como está, M04 = +1,56% e M08 = −0,25%, com 11 meses em 2021. Incluindo dezembro, que está completo, seriam +2,15% e +0,72%. Esse valor alternativo é só desta nota e das limitações, nunca do contexto nem do texto gerado.
+
+**Contagem final:** 38 registros; 33 chamadas reais por modelo, 66 no total e 132 no pior caso; avaliação humana com 84 saídas (S, G e M × 3 fontes). A01 e A02 são avaliados por checagem de política.
+
+- **Regra 9a do prompt:** quando um trecho cita a média ou a mediana de um período, ele precisa trazer, na mesma frase ou logo depois:
+  - o número de anos da amostra;
+  - a dispersão entre os anos;
+  - a não garantia de repetição.
+
+  A ressalva de amostra limitada da correção 1 continua exigida, então os elementos passam a ser quatro. A regra também proíbe oferecer leituras alternativas de um mesmo número.
+- **Verificação 13a:** reprova o parágrafo de média ou mediana de período sem os quatro elementos. A checagem é por classe de expressão:
+  - **número de anos:** "N anos", "de AAAA a AAAA", "amostra de N anos";
+  - **dispersão:** "desvio", "dispersão", "variou de/entre", faixa "X% a Y%", "amplitude", "oscilou de/entre".
+
+  "Poucos anos" não conta como número de anos. Parágrafos de frequência e de comparação sem média continuam exigindo só amostra limitada e não repetição.
+- **Leitura dupla:** um texto como "−0,25%, ou +0,72% incluindo dezembro" reprova, porque o valor alternativo não está no contexto e a verificação 6 o bloqueia (`test_leitura_alternativa_do_mesmo_numero_reprova`). O valor alternativo de dezembro de 2021 nunca entra no contexto.
+- **Testes:** caso completo, sem anos, sem dispersão, só com "poucos anos", sem não repetição e de frequência (`test_ressalva_sobre_media_historica`).
+- **A02, recusa por política:**
+  - `policy_refusal(tipo_do_pedido)` decide antes de montar o contexto, e o serviço a consulta antes de qualquer chamada, resposta salva ou chave de contexto;
+  - devolve o texto fixo de garantia (`de703a62818b`), com o motivo `bloqueio_politica`;
+  - os testes conferem que o transporte e as respostas salvas não são acionados;
+  - se o conjunto de textos divergir do hash aprovado, o serviço bloqueia em vez de exibir o texto.
+- **Aprovação:** com o prompt mudado, a aprovação da DL1-H **caiu automaticamente**. `APPROVED_HASHES` continua com os valores antigos, e o serviço bloqueia por padrão (`protocolo_nao_aprovado`) até a ratificação.
+
+| Item | Ratificado na DL1-H | Atual (aguarda a DL1-M) |
+| --- | --- | --- |
+| Prompt | `b5ef179c9376` | **`f41d1cf2a5fc`** (regra 9a mudou) |
+| Esquema de saída | `9a4cb5cb5a0c` | `9a4cb5cb5a0c` (sem mudança) |
+| Impressão combinada | `6f50a1cadd7c` | **`b1ee60720f24`** |
+| Conjunto dos cinco textos | `95845577dba9` | `95845577dba9` (sem mudança; recusa de garantia `de703a62818b`) |
+
+**Contagem de verificações: continua 17.** A 13a só ganhou itens, sem virar uma verificação nova. As três referências corrigidas na DL1-H (DL1-A, critério de aceitação e portão) já dizem 17 e continuam certas.
+
+**Quatro elementos confirmados.** "Número de anos" não substitui "amostra limitada", porque cada elemento responde a uma pergunta diferente:
+- o número de anos é um fato verificável;
+- a suficiência da amostra é um juízo;
+- a dispersão mostra a variabilidade;
+- a não repetição limita a conclusão.
+
+Trocar o juízo pelo fato deixaria o texto tecnicamente correto e epistemicamente incompleto. A leitura mais restritiva fica.
+
+**Efeito colateral registrado:** exigir quatro elementos empurra o texto para frases padronizadas, e o validador vai aprovar frases repetitivas. É um problema de **qualidade**, não de verificação, e quem deve capturá-lo é a rubrica humana (item "utilidade para o leitor"). **A 13a não será afrouxada** para evitar texto repetitivo.
+
+**Condição para o congelamento (contexto de M04 e M08):** a rejeição de "−0,25%, ou +0,72% incluindo dezembro" hoje depende de o valor alternativo não estar no contexto, o que é frágil como garantia. Por isso, no congelamento:
+- o valor alternativo **não entra no contexto** de M04 e M08, em nenhum campo;
+- um teste confere a ausência desse valor no contexto montado;
+- a nota metodológica com as duas leituras fica no relatório, fora do contexto enviado ao modelo.
+
+**Ordem dos commits:**
+1. implementação, em `3c8f5c2`; o serviço ainda bloqueia por padrão;
+2. este registro, que referencia `3c8f5c2` e o `6bb1086` da DL1-L;
+3. o preenchimento de `APPROVED_HASHES`, com o resumo apontando para o commit deste registro.
+
+O hash do conjunto de casos só é gerado depois do terceiro commit. A partir daí não há ajuste parcial: qualquer mudança refaz a rodada inteira.
+
+**O conjunto continua candidato** até o hash, que só é gerado depois do terceiro commit.

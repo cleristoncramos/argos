@@ -506,4 +506,7 @@ Etapa 0 — revisão de escopo:
 - [x] DL1-J: regimes, janelas, ativos, recursos e adversariais de fluxo decididos (`docs/llm_v1_exp_fase1.md`, seção 3.1)
 - [x] DL1-K: definição de regime corrigida (só a variação), P1 imaterial após a reimplementação isolada e bloco de média definido
 - [x] DL1-L: controles S01, S05, S07 e S11; janela de gráficos por ativo; definições do bloco de média; contagem recomposta
-- [ ] DL1-L: o orientador decide os quatro pontos (dezembro de 2021, contagem de 33 chamadas por modelo, A02 sem chamada, exigência textual dos casos de média) antes do hash (`docs/llm_v1_exp_fase1.md`, seção 3.4)
+- [x] Pontos da DL1-L decididos: dezembro de 2021 mantido pela regra, 33 chamadas por modelo, A02 implementado (recusa por política), regra 9a e 13a ampliadas
+- [x] DL1-M: hashes ratificados (prompt `f41d1cf2a5fc`, impressão `b1ee60720f24`); quatro elementos confirmados na 13a
+- [ ] Preencher `APPROVED_HASHES` com os hashes da DL1-M (commit próprio, depois do registro)
+- [ ] Congelar o conjunto de casos com hash, sem o valor alternativo de dezembro no contexto de M04 e M08, com teste
