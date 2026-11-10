@@ -510,5 +510,7 @@ Etapa 0 — revisão de escopo:
 - [x] DL1-M: hashes ratificados (prompt `f41d1cf2a5fc`, impressão `b1ee60720f24`); quatro elementos confirmados na 13a
 - [x] `APPROVED_HASHES` com os hashes da DL1-M (commit `7ac2996`)
 - [x] Conjunto de casos congelado: `experiments/llm_v1_exp/casos_fase1.json`, SHA-256 `6080cc05b30c2bb2…`, sem o valor alternativo de dezembro em M04 e M08 (testado)
-- [ ] O orientador aceita as escolhas do desenvolvedor embutidas no conjunto (síntese, métricas por gráfico, casos de média, adversariais)
+- [x] DL1-N: conjunto aceito (`6080cc05…`, commit `cfd6bd2`), com as quatro escolhas e duas limitações conhecidas registradas
+- [ ] DL1-N: decidir se a nota de G08 passa ao formato datado e se os números de parâmetro (126, 504, 50, 200, 14, 20...) entram em `extra_numbers`; os dois exigem novo hash do conjunto
+- [ ] Congelar o template (hash próprio) e montar o A05, depois da decisão sobre o conjunto
 - [ ] Fase 1: template com ressalva estrutural, respostas salvas (Gemini Flash no job offline) e avaliação cega

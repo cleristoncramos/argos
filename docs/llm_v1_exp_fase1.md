@@ -508,3 +508,44 @@ Gerado depois dos três commits da DL1-M:
    - A01 recebe uma estimativa de um modelo não registrado;
    - A05 é montado a partir da resposta válida do template para G05, com o primeiro valor citado no resumo multiplicado por 1,1;
    - A06 reaproveita a resposta de G04 e altera o contexto para recomendação habilitada.
+
+### 3.7 Aceite do conjunto (DL1-N, 09/11/2026)
+
+Conjunto aceito, com hash `6080cc05b30c2bb26f0febdfbff2f5ed043fa1fec6cc65a2e669feb71d80a353` (commit `cfd6bd2`), sem ajuste parcial. As quatro escolhas embutidas foram aceitas.
+
+**Limitações conhecidas da v1.0** (correção prevista para a v1.1; não se mexe no prompt agora, porque isso invalidaria `f41d1cf2a5fc` e o conjunto congelado):
+1. **Indicador fora do contexto da síntese.** O contexto de síntese não traz RSI nem MACD, e a checagem de rastreabilidade cobre números, não nomes de indicador. Um texto de síntese que fale em "RSI sobrecomprado", por exemplo, pode passar no validador. **Na avaliação, o avaliador humano marca como defeito qualquer menção a recurso fora do contexto.**
+2. **Frases padronizadas.** Os quatro elementos obrigatórios da 13a empurram o texto para fórmulas repetidas. É um problema de rubrica (utilidade para o leitor), não de validador, e a 13a não é afrouxada.
+
+**Nota de G08 (pendente).** O orientador pediu que a nota da queda não recuperada fosse factual e datada ("queda de X% iniciada em DD/MM/AAAA, não recuperada até 30/12/2021"), sem "ainda não" nem sugestão de prazo, e disse que nada precisaria ser feito se ela já estivesse assim.
+- **Nota no arquivo congelado:** "A maior queda do recorte não foi recuperada até o fim do recorte." Não usa "ainda" nem sugere prazo, mas **não traz a porcentagem nem a data de início**.
+- **Redação no formato pedido:** "Queda de 41,34% iniciada em 28/07/2021, não recuperada até 30/12/2021." A queda vai do pico de 28/07/2021 ao fundo de 18/11/2021, e 41,34% é a métrica `drawdown_maximo` do próprio contexto, portanto rastreável.
+- **Efeito:** trocar a nota muda o arquivo e **gera um novo hash do conjunto**, com rodada completa nova. Como nenhuma resposta foi gerada, o custo é só o hash. **Não alterei nada**; a decisão fica com o orientador.
+
+**A05 e o template.** O arquivo congelado guarda só a **regra** de montagem do A05 (resposta do template para G05, com o primeiro valor do resumo multiplicado por 1,1), não a resposta montada. O A05 é montado depois de o template estar congelado, a partir dessa regra, sem mudar o hash do conjunto. Se o template mudar depois disso, o A05 é remontado e registrado de novo.
+
+### 3.8 Construção do template e defeito de contexto (09/11/2026)
+
+**Defeito encontrado ao construir o template: números de parâmetro fora do contexto (09/11/2026).** As notas e os rótulos de 20 dos 28 contextos citam números que **não estão entre os valores rastreáveis** da verificação 6:
+
+| Casos | Números citados nas notas ou nos rótulos | Por que não são rastreáveis |
+| --- | --- | --- |
+| S01–S03, S07–S09 | 126 ("Recorte de 126 pregões") | `n_observations` é 127 (fechamentos) |
+| S04–S06, S10–S12 | 504 | `n_observations` é 505 |
+| G01, G05 | 504; 50 e 200 (médias móveis) | idem; parâmetros da média não entram como número |
+| G02, G06 | 504; 14 (RSI) | idem |
+| G03, G07 | 504; 20 (volatilidade curta) | idem |
+| G04, G08 | 504 | idem |
+| M01–M08 | só anos e datas, que são permitidos | — |
+
+**Efeito:** um texto que repita "RSI de 14 pregões" ou "recorte de 504 pregões", o que é natural para o modelo, **é bloqueado pela verificação 6** por um defeito do contexto, não do texto. Isso contamina a comparação entre as fontes: o template evita esses números por construção (escreve "média móvel curta", "RSI", "fim do recorte"), e o modelo seria penalizado por repetir o que o próprio contexto diz.
+
+**Correção possível, que exige novo hash do conjunto:** acrescentar esses números em `extra_numbers` de cada contexto (126 ou 504 nas sínteses; 504, 50, 200, 14, 12, 26, 9 e 20 nos gráficos, conforme o recurso), sem mudar métricas, datas, seleção nem regras. Pode ir junto com a nota de G08 no formato datado, num único hash novo. Como nenhuma resposta foi gerada, o custo é só o hash. **Nada foi alterado**; a decisão fica com o orientador.
+
+**Template:**
+- implementado e testado: `experiments/llm_v1_exp/template.py`, com testes em `tests/test_llm_exp_template.py`;
+- as 28 saídas passam nas 17 verificações e na checagem de composição própria;
+- a ressalva entra por estrutura fixa no mesmo parágrafo, e uma redação aceita pelo validador mas fora da estrutura reprova o template;
+- nenhum recurso é citado fora do contexto, e a queda não recuperada sai sem prazo.
+
+**Template NÃO CONGELADO.** O conjunto será refeito (DL1-O), e a validação do template feita sobre os contextos atuais não vale para os corrigidos. O A05 só é montado depois do template congelado.

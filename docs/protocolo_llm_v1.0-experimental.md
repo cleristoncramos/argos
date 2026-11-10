@@ -418,3 +418,9 @@ Trocar o juízo pelo fato deixaria o texto tecnicamente correto e epistemicament
 **Efeito colateral registrado:** exigir quatro elementos empurra o texto para frases padronizadas, e o validador vai aprovar frases repetitivas. É um problema de **qualidade**, não de verificação, e quem deve capturá-lo é a rubrica humana (item "utilidade para o leitor"). **A 13a não será afrouxada** para evitar texto repetitivo.
 
 **Contagem de verificações:** continuam **17**, com a 13a só ampliada. As três referências (DL1-A, critério de aceitação da avaliação humana e portão de ativação) continuam em 17, e **não há nenhum "18"** no protocolo, na especificação da fase 1, nas decisões nem no checklist. A conferência foi por busca de texto, em 09/11/2026.
+
+### 13.5 Limitações conhecidas da v1.0 (DL1-N, 09/11/2026)
+
+**Limitações conhecidas da v1.0** (correção prevista para a v1.1; não se mexe no prompt agora, porque isso invalidaria `f41d1cf2a5fc` e o conjunto congelado):
+1. **Indicador fora do contexto da síntese.** O contexto de síntese não traz RSI nem MACD, e a checagem de rastreabilidade cobre números, não nomes de indicador. Um texto de síntese que fale em "RSI sobrecomprado", por exemplo, pode passar no validador. **Na avaliação, o avaliador humano marca como defeito qualquer menção a recurso fora do contexto.**
+2. **Frases padronizadas.** Os quatro elementos obrigatórios da 13a empurram o texto para fórmulas repetidas. É um problema de rubrica (utilidade para o leitor), não de validador, e a 13a não é afrouxada.
