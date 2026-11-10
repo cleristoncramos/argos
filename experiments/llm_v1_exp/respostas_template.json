@@ -1,0 +1,1599 @@
+{
+ "codigo_sha256": "e0142ffb48590083e4a683d7c1af9da7bcc0b50b677c2b8d9a20a36f556c5db3",
+ "conjunto_sha256": "18e5eeee22efae9459b3f99bffe932aa07b538ba4eb0bf7b8634641b5da5a5a2",
+ "data_verificacao": "2026-11-09",
+ "respostas": {
+  "G01": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2021-12-30",
+    "periodo_inicio": "2019-12-13"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "A direção passada e o afastamento das médias não indicam que a trajetória continuará."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": 18.37
+     },
+     {
+      "id": "fechamento_vs_mm50",
+      "leitura": "Distância do fechamento final à média móvel de 50 pregões.",
+      "unidade": "%",
+      "valor": 8.15
+     },
+     {
+      "id": "fechamento_vs_mm200",
+      "leitura": "Distância do fechamento final à média móvel de 200 pregões.",
+      "unidade": "%",
+      "valor": 21.08
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte, a variação foi de 18,37%. No último pregão, a diferença entre o fechamento e a média móvel de 50 pregões foi de 8,15%, e em relação à média móvel de 200 pregões, de 21,08%."
+   },
+   "resumo": "No recorte selecionado, PETR4.SA teve variação de 18,37%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "G02": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2021-12-30",
+    "periodo_inicio": "2019-12-13"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Um sinal de indicador não garante reversão do preço."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "rsi_14",
+      "leitura": "Medida das altas e baixas recentes, numa escala que vai de zero a cem.",
+      "unidade": "pontos",
+      "valor": 56.3
+     },
+     {
+      "id": "macd_histograma_sobre_fechamento",
+      "leitura": "Diferença entre duas médias móveis exponenciais, em relação ao fechamento.",
+      "unidade": "%",
+      "valor": -0.733
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No último pregão do recorte, o RSI de 14 pregões foi de 56,3 pontos, e o histograma do MACD correspondeu a -0,733% do fechamento."
+   },
+   "resumo": "No último pregão do recorte, PETR4.SA teve RSI de 14 pregões de 56,3 pontos.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "G03": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2021-12-30",
+    "periodo_inicio": "2019-12-13"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Volatilidade alta não implica retorno alto."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias no recorte, em base anual.",
+      "unidade": "%",
+      "valor": 56.99
+     },
+     {
+      "id": "volatilidade_20_pregoes",
+      "leitura": "Intensidade das oscilações nos últimos 20 pregões, em base anual.",
+      "unidade": "%",
+      "valor": 33.07
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "A volatilidade anualizada no recorte foi de 56,99%, e a dos últimos 20 pregões, também anualizada, foi de 33,07%."
+   },
+   "resumo": "No recorte selecionado, PETR4.SA teve volatilidade anualizada de 56,99%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "G04": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2021-12-30",
+    "periodo_inicio": "2019-12-13"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "A profundidade de uma queda passada não indica que o preço encontrou o fundo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 63.36
+     },
+     {
+      "id": "dias_ate_o_fundo",
+      "leitura": "Tempo do pico ao ponto mais baixo da maior queda.",
+      "unidade": "dias corridos",
+      "valor": 72.0
+     },
+     {
+      "id": "dias_do_fundo_a_recuperacao",
+      "leitura": "Tempo do ponto mais baixo até voltar ao pico anterior.",
+      "unidade": "dias corridos",
+      "valor": 295.0
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "A queda máxima no recorte foi de 63,36%, e a maior queda levou 72 dias corridos do pico ao fundo. Do fundo à recuperação, foram 295 dias corridos."
+   },
+   "resumo": "No recorte selecionado, PETR4.SA teve queda máxima de 63,36%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "G05": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2021-12-30",
+    "periodo_inicio": "2019-12-13"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "A direção passada e o afastamento das médias não indicam que a trajetória continuará."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": 82.43
+     },
+     {
+      "id": "fechamento_vs_mm50",
+      "leitura": "Distância do fechamento final à média móvel de 50 pregões.",
+      "unidade": "%",
+      "valor": 6.95
+     },
+     {
+      "id": "fechamento_vs_mm200",
+      "leitura": "Distância do fechamento final à média móvel de 200 pregões.",
+      "unidade": "%",
+      "valor": -11.71
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte, a variação foi de 82,43%. No último pregão, a diferença entre o fechamento e a média móvel de 50 pregões foi de 6,95%, e em relação à média móvel de 200 pregões, de -11,71%."
+   },
+   "resumo": "No recorte selecionado, VALE3.SA teve variação de 82,43%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "G06": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2021-12-30",
+    "periodo_inicio": "2019-12-13"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Um sinal de indicador não garante reversão do preço."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "rsi_14",
+      "leitura": "Medida das altas e baixas recentes, numa escala que vai de zero a cem.",
+      "unidade": "pontos",
+      "valor": 56.1
+     },
+     {
+      "id": "macd_histograma_sobre_fechamento",
+      "leitura": "Diferença entre duas médias móveis exponenciais, em relação ao fechamento.",
+      "unidade": "%",
+      "valor": -0.26
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No último pregão do recorte, o RSI de 14 pregões foi de 56,1 pontos, e o histograma do MACD correspondeu a -0,26% do fechamento."
+   },
+   "resumo": "No último pregão do recorte, VALE3.SA teve RSI de 14 pregões de 56,1 pontos.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "G07": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2021-12-30",
+    "periodo_inicio": "2019-12-13"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Volatilidade alta não implica retorno alto."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias no recorte, em base anual.",
+      "unidade": "%",
+      "valor": 46.08
+     },
+     {
+      "id": "volatilidade_20_pregoes",
+      "leitura": "Intensidade das oscilações nos últimos 20 pregões, em base anual.",
+      "unidade": "%",
+      "valor": 35.46
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "A volatilidade anualizada no recorte foi de 46,08%, e a dos últimos 20 pregões, também anualizada, foi de 35,46%."
+   },
+   "resumo": "No recorte selecionado, VALE3.SA teve volatilidade anualizada de 46,08%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "G08": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2021-12-30",
+    "periodo_inicio": "2019-12-13"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "A profundidade de uma queda passada não indica que o preço encontrou o fundo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 41.34
+     },
+     {
+      "id": "dias_ate_o_fundo",
+      "leitura": "Tempo do pico ao ponto mais baixo da maior queda.",
+      "unidade": "dias corridos",
+      "valor": 113.0
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "A queda máxima no recorte foi de 41,34%, e a maior queda levou 113 dias corridos do pico ao fundo. Essa queda não foi recuperada até 30/12/2021."
+   },
+   "resumo": "No recorte selecionado, VALE3.SA teve queda máxima de 41,34%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "M01": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Anual",
+    "periodo_fim": "2021-04-30",
+    "periodo_inicio": "2008-04-30"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "A média histórica de um mês não indica que o próximo mês repetirá esse resultado."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "media_do_mes",
+      "leitura": "Média do retorno de abril nos anos da amostra.",
+      "unidade": "%",
+      "valor": 7.74
+     },
+     {
+      "id": "mediana_do_mes",
+      "leitura": "Valor do meio do retorno de abril nos anos da amostra.",
+      "unidade": "%",
+      "valor": 5.99
+     },
+     {
+      "id": "desvio_entre_anos",
+      "leitura": "Quanto o resultado variou de um ano para outro.",
+      "unidade": "%",
+      "valor": 14.16
+     },
+     {
+      "id": "anos_na_amostra",
+      "leitura": "Tamanho da amostra.",
+      "unidade": "anos",
+      "valor": 14.0
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, o retorno de abril teve média de 7,74% e mediana de 5,99%. São 14 anos de amostra, e o resultado variou de -9,31% a 35,2% entre os anos, com desvio-padrão de 14,16%. A amostra é limitada, e isso não indica que o próximo período repetirá o resultado."
+   },
+   "resumo": "Os números descrevem o retorno de abril de PETR4.SA na amostra disponível.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "M02": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Anual",
+    "periodo_fim": "2021-01-29",
+    "periodo_inicio": "2009-01-30"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "A média histórica de um mês não indica que o próximo mês repetirá esse resultado."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "media_do_mes",
+      "leitura": "Média do retorno de janeiro nos anos da amostra.",
+      "unidade": "%",
+      "valor": -1.88
+     },
+     {
+      "id": "mediana_do_mes",
+      "leitura": "Valor do meio do retorno de janeiro nos anos da amostra.",
+      "unidade": "%",
+      "valor": -5.73
+     },
+     {
+      "id": "desvio_entre_anos",
+      "leitura": "Quanto o resultado variou de um ano para outro.",
+      "unidade": "%",
+      "valor": 14.07
+     },
+     {
+      "id": "anos_na_amostra",
+      "leitura": "Tamanho da amostra.",
+      "unidade": "anos",
+      "valor": 13.0
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, o retorno de janeiro teve média de -1,88% e mediana de -5,73%. São 13 anos de amostra, e o resultado variou de -27,76% a 22,36% entre os anos, com desvio-padrão de 14,07%. A amostra é limitada, e isso não indica que o próximo período repetirá o resultado."
+   },
+   "resumo": "Os números descrevem o retorno de janeiro de PETR4.SA na amostra disponível.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "M03": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Mensal",
+    "periodo_fim": "2021-11-30",
+    "periodo_inicio": "2008-02-29"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "A média histórica de um mês não indica que o próximo mês repetirá esse resultado."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "proporcao_meses_positivos",
+      "leitura": "Parte dos meses da amostra com retorno positivo.",
+      "unidade": "%",
+      "valor": 50.6
+     },
+     {
+      "id": "proporcao_anos_positivos",
+      "leitura": "Parte dos anos da amostra com retorno positivo.",
+      "unidade": "%",
+      "valor": 46.15
+     },
+     {
+      "id": "desvio_retorno_anual",
+      "leitura": "Quanto o retorno anual variou de um ano para outro.",
+      "unidade": "%",
+      "valor": 45.43
+     },
+     {
+      "id": "anos_na_amostra",
+      "leitura": "Tamanho da amostra.",
+      "unidade": "anos",
+      "valor": 13.0
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, a proporção de meses positivos foi de 50,6%, e a de anos positivos, de 46,15%. São 13 anos de amostra, e o retorno anual variou entre os anos, com desvio-padrão de 45,43%. A amostra é limitada, e isso não indica que o próximo período repetirá o resultado."
+   },
+   "resumo": "Os números descrevem os meses e os anos de PETR4.SA com retorno acima de zero.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "M04": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Mensal",
+    "periodo_fim": "2021-11-30",
+    "periodo_inicio": "2016-01-29"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "A média histórica de um mês não indica que o próximo mês repetirá esse resultado."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "media_mensal_2021",
+      "leitura": "Média do retorno mensal de janeiro a novembro de 2021.",
+      "unidade": "%",
+      "valor": 1.56
+     },
+     {
+      "id": "media_mensal_2016_2020",
+      "leitura": "Média do retorno mensal de 2016 a 2020.",
+      "unidade": "%",
+      "valor": 3.77
+     },
+     {
+      "id": "desvio_retorno_anual_2016_2020",
+      "leitura": "Quanto o retorno anual variou de 2016 a 2020.",
+      "unidade": "%",
+      "valor": 49.71
+     },
+     {
+      "id": "anos_na_amostra",
+      "leitura": "Anos considerados.",
+      "unidade": "anos",
+      "valor": 6.0
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, a média do retorno mensal em 2021, de janeiro a novembro, foi de 1,56%, e a de 2016 a 2020 foi de 3,77%. São 6 anos de amostra, e o retorno anual de 2016 a 2020 variou entre os anos, com desvio-padrão de 49,71%. A amostra é limitada, e isso não indica que o próximo período repetirá o resultado."
+   },
+   "resumo": "Os números descrevem o retorno mensal de PETR4.SA em dois períodos.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "M05": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Anual",
+    "periodo_fim": "2021-04-30",
+    "periodo_inicio": "2008-04-30"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "A média histórica de um mês não indica que o próximo mês repetirá esse resultado."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "media_do_mes",
+      "leitura": "Média do retorno de abril nos anos da amostra.",
+      "unidade": "%",
+      "valor": 7.16
+     },
+     {
+      "id": "mediana_do_mes",
+      "leitura": "Valor do meio do retorno de abril nos anos da amostra.",
+      "unidade": "%",
+      "valor": 2.8
+     },
+     {
+      "id": "desvio_entre_anos",
+      "leitura": "Quanto o resultado variou de um ano para outro.",
+      "unidade": "%",
+      "valor": 12.36
+     },
+     {
+      "id": "anos_na_amostra",
+      "leitura": "Tamanho da amostra.",
+      "unidade": "anos",
+      "valor": 14.0
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, o retorno de abril teve média de 7,16% e mediana de 2,8%. São 14 anos de amostra, e o resultado variou de -6,43% a 30,44% entre os anos, com desvio-padrão de 12,36%. A amostra é limitada, e isso não indica que o próximo período repetirá o resultado."
+   },
+   "resumo": "Os números descrevem o retorno de abril de VALE3.SA na amostra disponível.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "M06": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Anual",
+    "periodo_fim": "2021-05-31",
+    "periodo_inicio": "2008-05-30"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "A média histórica de um mês não indica que o próximo mês repetirá esse resultado."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "media_do_mes",
+      "leitura": "Média do retorno de maio nos anos da amostra.",
+      "unidade": "%",
+      "valor": -3.24
+     },
+     {
+      "id": "mediana_do_mes",
+      "leitura": "Valor do meio do retorno de maio nos anos da amostra.",
+      "unidade": "%",
+      "valor": -2.58
+     },
+     {
+      "id": "desvio_entre_anos",
+      "leitura": "Quanto o resultado variou de um ano para outro.",
+      "unidade": "%",
+      "valor": 10.69
+     },
+     {
+      "id": "anos_na_amostra",
+      "leitura": "Tamanho da amostra.",
+      "unidade": "anos",
+      "valor": 14.0
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, o retorno de maio teve média de -3,24% e mediana de -2,58%. São 14 anos de amostra, e o resultado variou de -27,78% a 18,15% entre os anos, com desvio-padrão de 10,69%. A amostra é limitada, e isso não indica que o próximo período repetirá o resultado."
+   },
+   "resumo": "Os números descrevem o retorno de maio de VALE3.SA na amostra disponível.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "M07": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Mensal",
+    "periodo_fim": "2021-11-30",
+    "periodo_inicio": "2008-02-29"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "A média histórica de um mês não indica que o próximo mês repetirá esse resultado."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "proporcao_meses_positivos",
+      "leitura": "Parte dos meses da amostra com retorno positivo.",
+      "unidade": "%",
+      "valor": 50.0
+     },
+     {
+      "id": "proporcao_anos_positivos",
+      "leitura": "Parte dos anos da amostra com retorno positivo.",
+      "unidade": "%",
+      "valor": 69.23
+     },
+     {
+      "id": "desvio_retorno_anual",
+      "leitura": "Quanto o retorno anual variou de um ano para outro.",
+      "unidade": "%",
+      "valor": 45.47
+     },
+     {
+      "id": "anos_na_amostra",
+      "leitura": "Tamanho da amostra.",
+      "unidade": "anos",
+      "valor": 13.0
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, a proporção de meses positivos foi de 50%, e a de anos positivos, de 69,23%. São 13 anos de amostra, e o retorno anual variou entre os anos, com desvio-padrão de 45,47%. A amostra é limitada, e isso não indica que o próximo período repetirá o resultado."
+   },
+   "resumo": "Os números descrevem os meses e os anos de VALE3.SA com retorno acima de zero.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "M08": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Mensal",
+    "periodo_fim": "2021-11-30",
+    "periodo_inicio": "2016-01-29"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "A média histórica de um mês não indica que o próximo mês repetirá esse resultado."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "media_mensal_2021",
+      "leitura": "Média do retorno mensal de janeiro a novembro de 2021.",
+      "unidade": "%",
+      "valor": -0.25
+     },
+     {
+      "id": "media_mensal_2016_2020",
+      "leitura": "Média do retorno mensal de 2016 a 2020.",
+      "unidade": "%",
+      "valor": 4.19
+     },
+     {
+      "id": "desvio_retorno_anual_2016_2020",
+      "leitura": "Quanto o retorno anual variou de 2016 a 2020.",
+      "unidade": "%",
+      "valor": 35.4
+     },
+     {
+      "id": "anos_na_amostra",
+      "leitura": "Anos considerados.",
+      "unidade": "anos",
+      "valor": 6.0
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, a média do retorno mensal em 2021, de janeiro a novembro, foi de -0,25%, e a de 2016 a 2020 foi de 4,19%. São 6 anos de amostra, e o retorno anual de 2016 a 2020 variou entre os anos, com desvio-padrão de 35,4%. A amostra é limitada, e isso não indica que o próximo período repetirá o resultado."
+   },
+   "resumo": "Os números descrevem o retorno mensal de VALE3.SA em dois períodos.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "S01": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2017-01-31",
+    "periodo_inicio": "2016-07-29"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Nenhuma evidência desta síntese, isolada ou combinada, permite concluir o que acontecerá com o ativo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": 26.54
+     },
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 23.08
+     },
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias, em base anual.",
+      "unidade": "%",
+      "valor": 46.48
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, de 29/07/2016 a 31/01/2017, a variação foi de 26,54%, a queda máxima foi de 23,08% e a volatilidade anualizada foi de 46,48%."
+   },
+   "resumo": "No recorte selecionado, PETR4.SA teve variação de 26,54% e queda máxima de 23,08%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "S02": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2017-04-28",
+    "periodo_inicio": "2016-10-24"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Nenhuma evidência desta síntese, isolada ou combinada, permite concluir o que acontecerá com o ativo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": -23.24
+     },
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 28.57
+     },
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias, em base anual.",
+      "unidade": "%",
+      "valor": 43.67
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, de 24/10/2016 a 28/04/2017, a variação foi de -23,24%, a queda máxima foi de 28,57% e a volatilidade anualizada foi de 43,67%."
+   },
+   "resumo": "No recorte selecionado, PETR4.SA teve variação de -23,24% e queda máxima de 28,57%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "S03": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2017-09-29",
+    "periodo_inicio": "2017-04-03"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Nenhuma evidência desta síntese, isolada ou combinada, permite concluir o que acontecerá com o ativo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": 4.29
+     },
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 25.86
+     },
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias, em base anual.",
+      "unidade": "%",
+      "valor": 38.18
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, de 03/04/2017 a 29/09/2017, a variação foi de 4,29%, a queda máxima foi de 25,86% e a volatilidade anualizada foi de 38,18%."
+   },
+   "resumo": "No recorte selecionado, PETR4.SA teve variação de 4,29% e queda máxima de 25,86%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "S04": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2018-07-31",
+    "periodo_inicio": "2016-07-29"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Nenhuma evidência desta síntese, isolada ou combinada, permite concluir o que acontecerá com o ativo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": 66.47
+     },
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 46.96
+     },
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias, em base anual.",
+      "unidade": "%",
+      "valor": 45.09
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, de 29/07/2016 a 31/07/2018, a variação foi de 66,47%, a queda máxima foi de 46,96% e a volatilidade anualizada foi de 45,09%."
+   },
+   "resumo": "No recorte selecionado, PETR4.SA teve variação de 66,47% e queda máxima de 46,96%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "S05": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2016-04-29",
+    "periodo_inicio": "2014-04-11"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Nenhuma evidência desta síntese, isolada ou combinada, permite concluir o que acontecerá com o ativo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": -36.81
+     },
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 82.9
+     },
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias, em base anual.",
+      "unidade": "%",
+      "valor": 64.71
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, de 11/04/2014 a 29/04/2016, a variação foi de -36,81%, a queda máxima foi de 82,9% e a volatilidade anualizada foi de 64,71%."
+   },
+   "resumo": "No recorte selecionado, PETR4.SA teve variação de -36,81% e queda máxima de 82,9%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "S06": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "PETR4.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2017-04-28",
+    "periodo_inicio": "2015-04-15"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Nenhuma evidência desta síntese, isolada ou combinada, permite concluir o que acontecerá com o ativo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": 4.72
+     },
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 70.89
+     },
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias, em base anual.",
+      "unidade": "%",
+      "valor": 57.35
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, de 15/04/2015 a 28/04/2017, a variação foi de 4,72%, a queda máxima foi de 70,89% e a volatilidade anualizada foi de 57,35%."
+   },
+   "resumo": "No recorte selecionado, PETR4.SA teve variação de 4,72% e queda máxima de 70,89%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "S07": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2021-06-30",
+    "periodo_inicio": "2020-12-22"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Nenhuma evidência desta síntese, isolada ou combinada, permite concluir o que acontecerá com o ativo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": 38.82
+     },
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 14.33
+     },
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias, em base anual.",
+      "unidade": "%",
+      "valor": 34.03
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, de 22/12/2020 a 30/06/2021, a variação foi de 38,82%, a queda máxima foi de 14,33% e a volatilidade anualizada foi de 34,03%."
+   },
+   "resumo": "No recorte selecionado, VALE3.SA teve variação de 38,82% e queda máxima de 14,33%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "S08": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2016-03-31",
+    "periodo_inicio": "2015-09-22"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Nenhuma evidência desta síntese, isolada ou combinada, permite concluir o que acontecerá com o ativo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": -20.58
+     },
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 57.8
+     },
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias, em base anual.",
+      "unidade": "%",
+      "valor": 75.09
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, de 22/09/2015 a 31/03/2016, a variação foi de -20,58%, a queda máxima foi de 57,8% e a volatilidade anualizada foi de 75,09%."
+   },
+   "resumo": "No recorte selecionado, VALE3.SA teve variação de -20,58% e queda máxima de 57,8%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "S09": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2019-11-29",
+    "periodo_inicio": "2019-05-31"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Nenhuma evidência desta síntese, isolada ou combinada, permite concluir o que acontecerá com o ativo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": 2.0
+     },
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 20.22
+     },
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias, em base anual.",
+      "unidade": "%",
+      "valor": 28.74
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, de 31/05/2019 a 29/11/2019, a variação foi de 2%, a queda máxima foi de 20,22% e a volatilidade anualizada foi de 28,74%."
+   },
+   "resumo": "No recorte selecionado, VALE3.SA teve variação de 2% e queda máxima de 20,22%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "S10": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2019-05-31",
+    "periodo_inicio": "2017-05-26"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Nenhuma evidência desta síntese, isolada ou combinada, permite concluir o que acontecerá com o ativo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": 84.96
+     },
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 33.14
+     },
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias, em base anual.",
+      "unidade": "%",
+      "valor": 36.6
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, de 26/05/2017 a 31/05/2019, a variação foi de 84,96%, a queda máxima foi de 33,14% e a volatilidade anualizada foi de 36,6%."
+   },
+   "resumo": "No recorte selecionado, VALE3.SA teve variação de 84,96% e queda máxima de 33,14%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "S11": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2016-06-30",
+    "periodo_inicio": "2014-06-17"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Nenhuma evidência desta síntese, isolada ou combinada, permite concluir o que acontecerá com o ativo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": -37.47
+     },
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 71.43
+     },
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias, em base anual.",
+      "unidade": "%",
+      "valor": 59.59
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, de 17/06/2014 a 30/06/2016, a variação foi de -37,47%, a queda máxima foi de 71,43% e a volatilidade anualizada foi de 59,59%."
+   },
+   "resumo": "No recorte selecionado, VALE3.SA teve variação de -37,47% e queda máxima de 71,43%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "S12": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2020-02-28",
+    "periodo_inicio": "2018-02-14"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "Nenhuma evidência desta síntese, isolada ou combinada, permite concluir o que acontecerá com o ativo."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": 6.33
+     },
+     {
+      "id": "drawdown_maximo",
+      "leitura": "Maior perda em relação a um pico anterior dentro do recorte.",
+      "unidade": "%",
+      "valor": 33.14
+     },
+     {
+      "id": "volatilidade_anualizada",
+      "leitura": "Intensidade das oscilações diárias, em base anual.",
+      "unidade": "%",
+      "valor": 36.99
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte selecionado, de 14/02/2018 a 28/02/2020, a variação foi de 6,33%, a queda máxima foi de 33,14% e a volatilidade anualizada foi de 36,99%."
+   },
+   "resumo": "No recorte selecionado, VALE3.SA teve variação de 6,33% e queda máxima de 33,14%.",
+   "tratamento_do_pedido": "sem_pedido"
+  }
+ },
+ "verificacao": {
+  "aprovadas": 28,
+  "casos": 28,
+  "falhas": {}
+ },
+ "versao": "template-v1"
+}

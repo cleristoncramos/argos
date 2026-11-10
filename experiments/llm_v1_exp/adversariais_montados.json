@@ -1,0 +1,68 @@
+{
+ "A05": {
+  "base": "G05",
+  "regra": "primeiro valor citado no resumo multiplicado por 1,1",
+  "resposta": {
+   "conclusao_experimental": {
+    "rotulo": "Conclusão experimental",
+    "situacao": "nao_disponivel",
+    "texto": "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo."
+   },
+   "estimativa": {
+    "incerteza": "",
+    "metricas_relevantes": [],
+    "rotulo": "Estimativa experimental",
+    "situacao": "abstencao",
+    "texto": "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, nenhuma estimativa é apresentada."
+   },
+   "filtros_aplicados": {
+    "ativos": [
+     "VALE3.SA"
+    ],
+    "frequencia": "Diário",
+    "periodo_fim": "2021-12-30",
+    "periodo_inicio": "2019-12-13"
+   },
+   "limitacoes": [
+    "Os dados são históricos e não indicam o futuro."
+   ],
+   "nota_educativa": "A análise tem finalidade educativa e de pesquisa, separa dados históricos de estimativas e não é recomendação de investimento.",
+   "o_que_nao_pode_ser_concluido": [
+    "A direção passada e o afastamento das médias não indicam que a trajetória continuará."
+   ],
+   "observacao_historica": {
+    "limite_da_evidencia": "O recorte é um trecho do passado e não permite concluir o que acontecerá depois.",
+    "metricas_relevantes": [
+     {
+      "id": "variacao_no_recorte",
+      "leitura": "Mudança do preço do início ao fim do recorte.",
+      "unidade": "%",
+      "valor": 82.43
+     },
+     {
+      "id": "fechamento_vs_mm50",
+      "leitura": "Distância do fechamento final à média móvel de 50 pregões.",
+      "unidade": "%",
+      "valor": 6.95
+     },
+     {
+      "id": "fechamento_vs_mm200",
+      "leitura": "Distância do fechamento final à média móvel de 200 pregões.",
+      "unidade": "%",
+      "valor": -11.71
+     }
+    ],
+    "rotulo": "Observação histórica (camada experimental)",
+    "texto": "No recorte, a variação foi de 82,43%. No último pregão, a diferença entre o fechamento e a média móvel de 50 pregões foi de 6,95%, e em relação à média móvel de 200 pregões, de -11,71%."
+   },
+   "resumo": "No recorte selecionado, VALE3.SA teve variação de 90,67%.",
+   "tratamento_do_pedido": "sem_pedido"
+  },
+  "valor_adulterado": "90,67",
+  "valor_original": "82,43"
+ },
+ "A05_texto_sha256": "028f89c0fdfb03fbddf992424b05949f25d2ef05a029be14311f72b212ece063",
+ "conjunto_sha256": "18e5eeee22efae9459b3f99bffe932aa07b538ba4eb0bf7b8634641b5da5a5a2",
+ "template_codigo_sha256": "e0142ffb48590083e4a683d7c1af9da7bcc0b50b677c2b8d9a20a36f556c5db3",
+ "template_respostas_sha256": "960c6aef3f9c7396a0cbedd6d7a17edd3d7368fa0cc4e2e38bcbe1210784deb6"
+}

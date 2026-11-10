@@ -68,9 +68,16 @@ def test_queda_nao_recuperada_sem_prazo(casos):
     assert any("ainda" in d for d in template.defeitos_de_composicao(resposta, caso))
 
 
-def test_template_nao_cita_parametros_ausentes_do_contexto(casos):
-    """O conjunto congelado não lista 50, 200, 14, 20, 126 e 504 como números citáveis."""
-    for caso in casos:
-        corpo = json.dumps(template.responder(caso), ensure_ascii=False)
-        for numero in (" 50 ", " 200 ", " 14 pregões", " 20 pregões", " 126 ", " 504 "):
-            assert numero not in corpo, (caso["id"], numero)
+def test_template_cita_os_parametros_do_proprio_contexto(casos):
+    """Desde a DL1-O os parâmetros são citáveis; o template os lê dos rótulos do contexto."""
+    por_id = {c["id"]: template.responder(c)["observacao_historica"]["texto"] for c in casos}
+    assert "média móvel de 50 pregões" in por_id["G01"] and "média móvel de 200 pregões" in por_id["G01"]
+    assert "RSI de 14 pregões" in por_id["G02"] and "últimos 20 pregões" in por_id["G03"]
+
+
+def test_reverificacao_registrada_no_arquivo_congelado(casos):
+    dados = json.loads(template.ARQUIVO.read_text(encoding="utf-8"))
+    assert dados["conjunto_sha256"] == conjunto.HASH_CONGELADO and dados["versao"] == "template-v1"
+    assert dados["verificacao"] == {"casos": 28, "aprovadas": 28, "falhas": {}}
+    assert dados["codigo_sha256"] == __import__("hashlib").sha256(template.Path(template.__file__).read_bytes()).hexdigest()
+    assert dados["respostas"] == {c["id"]: template.responder(c) for c in casos}

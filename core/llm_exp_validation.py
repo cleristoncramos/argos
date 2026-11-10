@@ -81,9 +81,10 @@ ATTRIBUTION_TERMS = (
 
 # Correção 1 (DL1-B): frase com média, comparação entre períodos ou frequência histórica
 # exige, no mesmo parágrafo, limitação da amostra e não garantia de repetição. A checagem é
-# por classe de expressão; médias móveis (indicador) não disparam a regra.
+# por classe de expressão; médias móveis e médias exponenciais (EMA), que são indicadores, não
+# disparam a regra (DL1-O). Continuam sujeitas às checagens de futuro e de atribuição.
 HISTORICAL_AVERAGE_TRIGGERS = (
-    r"\bmedias?\b(?!\s+mov)", r"\bmediana\b", r"\b(superior|inferior)(es)? (a|ao|aos|as|a de|a do|ao de|ao do)\b",
+    r"\bmedias?\b(?!\s+(mov|exponenc))", r"\bmediana\b", r"\b(superior|inferior)(es)? (a|ao|aos|as|a de|a do|ao de|ao do)\b",
     r"\b(acima|abaixo) da media\b", r"\banos positivos\b", r"\bproporcao de (anos|meses|periodos)\b",
     r"\bfrequencia historica\b", r"\bem \d+ de \d+ (anos|meses)\b", r"\bem comparacao (com|a)\b",
 )
@@ -94,7 +95,7 @@ SAMPLE_CAVEATS = (
 )
 # DL1-M: parágrafo que cite média ou mediana de período exige também o número de anos da
 # amostra e a dispersão entre anos (classes de expressão, com variantes).
-PERIOD_AVERAGE_TRIGGERS = (r"\bmedias?\b(?!\s+mov)", r"\bmediana\b")
+PERIOD_AVERAGE_TRIGGERS = (r"\bmedias?\b(?!\s+(mov|exponenc))", r"\bmediana\b")
 YEARS_STATEMENTS = (
     r"\b\d+ anos\b", r"\b(19|20)\d\d (a|e|ate) (19|20)\d\d\b", r"\bamostra de \d+ (anos|meses)\b",
 )

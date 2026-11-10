@@ -1,8 +1,9 @@
 """
 Template determinístico da fase 1: a terceira fonte da avaliação cega (DL1-E, DL1-N).
 
-SITUAÇÃO: NÃO CONGELADO. O conjunto de casos será refeito (DL1-O) e o template precisa ser
-reverificado sobre os contextos corrigidos antes de ganhar hash próprio.
+SITUAÇÃO: CONGELADO como template-v1 (DL1-O, 09/11/2026), verificado sobre o conjunto fase1-v2.
+Qualquer mudança neste arquivo muda o hash do código e exige nova verificação, novo congelamento
+e nova montagem do A05.
 
 Compõe, por regras fixas e sem modelo de linguagem, uma resposta no esquema v1.0-experimental
 para cada caso do conjunto congelado. Garantias por construção, sem depender do validador:
@@ -58,6 +59,12 @@ def _data(iso: str) -> str:
     return f"{dia}/{mes}/{ano}"
 
 
+def _parametro(metrica: dict) -> str:
+    """Parâmetro de cálculo escrito no rótulo da métrica ("... de 50 pregões"), citável desde a DL1-O."""
+    import re
+    return re.search(r"(\d+) pregões", metrica["label"]).group(1)
+
+
 def _item(metrica: dict, leitura: str) -> dict:
     return {"id": metrica["id"], "valor": metrica["value"], "unidade": metrica["unit"], "leitura": leitura}
 
@@ -84,25 +91,26 @@ def _grafico(ctx: dict) -> tuple[str, str, list]:
     if chart == "preco_medias":
         var, m50, m200 = m["variacao_no_recorte"], m["fechamento_vs_mm50"], m["fechamento_vs_mm200"]
         texto = (f"No recorte, a variação foi de {_v(var)}. No último pregão, a diferença entre o fechamento e a média "
-                 f"móvel curta foi de {_v(m50)}, e em relação à média móvel longa, de {_v(m200)}.")
+                 f"móvel de {_parametro(m50)} pregões foi de {_v(m50)}, e em relação à média móvel de "
+                 f"{_parametro(m200)} pregões, de {_v(m200)}.")
         resumo = f"No recorte selecionado, {ctx['asset']} teve variação de {_v(var)}."
         itens = [_item(var, "Mudança do preço do início ao fim do recorte."),
-                 _item(m50, "Distância do fechamento final à média móvel curta."),
-                 _item(m200, "Distância do fechamento final à média móvel longa.")]
+                 _item(m50, f"Distância do fechamento final à média móvel de {_parametro(m50)} pregões."),
+                 _item(m200, f"Distância do fechamento final à média móvel de {_parametro(m200)} pregões.")]
     elif chart == "rsi_macd":
         rsi, macd = m["rsi_14"], m["macd_histograma_sobre_fechamento"]
-        texto = (f"No último pregão do recorte, o RSI foi de {_v(rsi)}, e o histograma do MACD "
-                 f"correspondeu a {_v(macd)} do fechamento.")
-        resumo = f"No último pregão do recorte, {ctx['asset']} teve RSI de {_v(rsi)}."
+        texto = (f"No último pregão do recorte, o RSI de {_parametro(rsi)} pregões foi de {_v(rsi)}, e o histograma "
+                 f"do MACD correspondeu a {_v(macd)} do fechamento.")
+        resumo = f"No último pregão do recorte, {ctx['asset']} teve RSI de {_parametro(rsi)} pregões de {_v(rsi)}."
         itens = [_item(rsi, "Medida das altas e baixas recentes, numa escala que vai de zero a cem."),
                  _item(macd, "Diferença entre duas médias móveis exponenciais, em relação ao fechamento.")]
     elif chart == "volatilidade":
         vol, vol20 = m["volatilidade_anualizada"], m["volatilidade_20_pregoes"]
-        texto = (f"A volatilidade anualizada no recorte foi de {_v(vol)}, e a do fim do recorte, "
+        texto = (f"A volatilidade anualizada no recorte foi de {_v(vol)}, e a dos últimos {_parametro(vol20)} pregões, "
                  f"também anualizada, foi de {_v(vol20)}.")
         resumo = f"No recorte selecionado, {ctx['asset']} teve volatilidade anualizada de {_v(vol)}."
         itens = [_item(vol, "Intensidade das oscilações diárias no recorte, em base anual."),
-                 _item(vol20, "Intensidade das oscilações no fim do recorte, em base anual.")]
+                 _item(vol20, f"Intensidade das oscilações nos últimos {_parametro(vol20)} pregões, em base anual.")]
     else:
         dd, fundo = m["drawdown_maximo"], m["dias_ate_o_fundo"]
         texto = f"A queda máxima no recorte foi de {_v(dd)}, e a maior queda levou {_v(fundo)} do pico ao fundo."
@@ -211,10 +219,28 @@ def responder(caso: dict) -> dict:
     }
 
 
+DATA_VERIFICACAO = "2026-11-09"
+
+
+def verificar(casos: list) -> dict:
+    """Reverificação das respostas sobre o conjunto: 17 verificações e composição própria."""
+    from core import llm_exp_validation as ev
+    from core.assets import ASSETS
+    tickers = [a["ticker"] for a in ASSETS]
+    falhas = {}
+    for caso in casos:
+        resposta = responder(caso)
+        problemas = ev.validate_experimental(json.dumps(resposta, ensure_ascii=False), caso["contexto"], tickers).failed
+        problemas += defeitos_de_composicao(resposta, caso)
+        if problemas:
+            falhas[caso["id"]] = problemas
+    return {"casos": len(casos), "aprovadas": len(casos) - len(falhas), "falhas": falhas}
+
+
 def montar(casos: list) -> dict:
-    return {"versao": VERSAO, "conjunto_sha256": conjunto.HASH_CONGELADO,
+    return {"versao": VERSAO, "data_verificacao": DATA_VERIFICACAO, "conjunto_sha256": conjunto.HASH_CONGELADO,
             "codigo_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-            "respostas": {c["id"]: responder(c) for c in casos}}
+            "verificacao": verificar(casos), "respostas": {c["id"]: responder(c) for c in casos}}
 
 
 def main(argv=None) -> int:

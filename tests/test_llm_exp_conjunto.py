@@ -81,3 +81,26 @@ def test_regenerar_a_partir_dos_dados_reproduz_o_arquivo():
     if not (janelas.SNAPSHOT / "PETR4_SA_ajustado.csv").exists():
         pytest.skip("snapshot do piloto fora do Git; regeneração só no ambiente do pesquisador")
     assert conjunto.main([]) == 0
+
+
+def test_autoconsistencia_todo_numero_do_contexto_e_citavel(dados):
+    """DL1-O: nenhum rótulo ou nota pode citar número que a verificação 6 recusaria."""
+    for caso in dados["casos"]:
+        assert conjunto.numeros_nao_citaveis(caso["contexto"]) == [], caso["id"]
+
+
+def test_autoconsistencia_detecta_o_defeito_antigo(dados):
+    caso = json.loads(json.dumps(next(c for c in dados["casos"] if c["id"] == "G02")))
+    caso["contexto"]["extra_numbers"] = []                              # como no conjunto fase1-v1
+    caso["contexto"]["historical"]["notes"] = ["Recorte de 504 pregões."]
+    assert set(conjunto.numeros_nao_citaveis(caso["contexto"])) == {504.0, 14.0}
+
+
+def test_rotulos_de_janela_e_nota_de_g08(dados):
+    por_id = {c["id"]: c for c in dados["casos"]}
+    assert "126 pregões de variação (127 observações)" in por_id["S01"]["contexto"]["historical"]["notes"][0]
+    assert "504 pregões de variação (505 observações)" in por_id["G01"]["contexto"]["historical"]["notes"][0]
+    nota_g08 = "Queda de 41,34% iniciada em 28/07/2021, não recuperada até 30/12/2021."
+    assert nota_g08 in por_id["G08"]["contexto"]["historical"]["notes"]
+    assert por_id["G02"]["contexto"]["extra_numbers"] == [504.0, 14.0, 12.0, 26.0, 9.0]
+    assert dados["versao"] == "fase1-v2" and conjunto.HASH_ANTERIOR.startswith("6080cc05")

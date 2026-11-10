@@ -859,3 +859,27 @@ def test_leitura_alternativa_do_mesmo_numero_reprova():
     context = ctx()
     data = resposta(context, resumo="No período, o ativo teve retorno total de 12,34%, ou 13,10% incluindo dezembro.")
     assert "valores_rastreaveis" in check(data, context).failed
+
+
+@pytest.mark.parametrize("texto", [
+    "A média exponencial curta ficou acima da longa no fim do período.",
+    "As médias exponenciais de curto e longo prazo se cruzaram no período.",
+    "A EMA curta ficou acima da EMA longa no fim do período.",
+    "As médias móveis exponenciais se aproximaram no período.",
+])
+def test_media_exponencial_e_ema_ficam_fora_so_da_13a(texto):
+    context = ctx()
+    data = resposta(context)
+    data["observacao_historica"]["texto"] = texto
+    assert "ressalva_media_historica" not in check(data, context).failed
+    data["observacao_historica"]["texto"] = texto.replace("no fim do período", "e vai subir no próximo mês").replace(
+        "no período", "e vai subir no próximo mês")
+    assert "sem_futuro_fora_da_estimativa" in check(data, context).failed
+
+
+def test_media_de_periodo_continua_disparando_a_13a():
+    context = ctx()
+    data = resposta(context)
+    data["observacao_historica"]["texto"] = "A média de outubro foi positiva no período."
+    data["observacao_historica"]["limite_da_evidencia"] = "O resultado depende do recorte escolhido."
+    assert "ressalva_media_historica" in check(data, context).failed

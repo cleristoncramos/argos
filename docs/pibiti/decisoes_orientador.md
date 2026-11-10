@@ -915,7 +915,7 @@ Data: 09/11/2026, sujeita à confirmação do orientador.
 
 **Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.
 
-Status: recebida em 09/11/2026. Nota de G08 e defeito de números de parâmetro: aguardando decisão.
+Status: recebida em 09/11/2026. Nota de G08 e defeito de números de parâmetro: decididos na DL1-O.
 
 **Defeito encontrado ao construir o template: números de parâmetro fora do contexto (09/11/2026).** As notas e os rótulos de 20 dos 28 contextos citam números que **não estão entre os valores rastreáveis** da verificação 6:
 
@@ -940,3 +940,54 @@ Status: recebida em 09/11/2026. Nota de G08 e defeito de números de parâmetro:
 - nenhum recurso é citado fora do contexto, e a queda não recuperada sai sem prazo.
 
 **Não foi congelado**: as respostas dependem do conjunto, que pode mudar. O A05 só é montado depois do template congelado.
+
+### DL1-O — Conjunto corrigido, template congelado e A05 montado (09/11/2026)
+
+Data: 09/11/2026, sujeita à confirmação do orientador. Autorizou o commit do registro da DL1-N e do template ainda não congelado (`79824a2`).
+
+**Correção do defeito, sem contorno.** Os números citados nos contextos se dividem em dois tipos:
+- **Parâmetros de cálculo** (médias de 50 e 200, RSI de 14, MACD de 12/26/9, volatilidade de 20 pregões): são configuração, não medição. Vão para `extra_numbers` e são declarados numa nota "Parâmetros de cálculo".
+- **Contagens de janela:** o rótulo misturava pregões de variação com observações. Foi corrigido para "N pregões de variação (N + 1 observações)", e N vai para `extra_numbers`, tornando as duas leituras citáveis e verdadeiras.
+
+**Hash do conjunto:**
+
+| | Valor |
+| --- | --- |
+| Anterior (`fase1-v1`, commit `cfd6bd2`) | `6080cc05b30c2bb26f0febdfbff2f5ed043fa1fec6cc65a2e669feb71d80a353` |
+| **Novo (`fase1-v2`)** | **`18e5eeee22efae9459b3f99bffe932aa07b538ba4eb0bf7b8634641b5da5a5a2`** |
+
+**O que mudou**, conferido por programa campo a campo:
+1. `extra_numbers` em 20 contextos: 126 ou 504 nas 12 sínteses; 504 e os parâmetros do recurso nos 8 gráficos;
+2. notas: rótulo de janela corrigido em 20 contextos; nota "Parâmetros de cálculo" em 6 gráficos (G01–G03, G05–G07); nota de G08 no formato pedido, "Queda de 41,34% iniciada em 28/07/2021, não recuperada até 30/12/2021.";
+3. versão (`fase1-v2`) e dois parâmetros declarados no cabeçalho (`parametros_de_calculo`, `rotulo_de_janela`).
+
+**Fora disso, o arquivo é idêntico ao anterior:** métricas, datas, seleção, regimes, arredondamento, adversariais, controles e regras.
+
+**Teste de autoconsistência** (`test_autoconsistencia_todo_numero_do_contexto_e_citavel`):
+- percorre os 28 contextos e extrai todo número de rótulos e notas;
+- confere que cada um é citável pela mesma regra da verificação 6 (`conjunto.numeros_nao_citaveis`);
+- tem um teste de controle, que recria o defeito antigo e confere que ele é detectado.
+
+**13a: médias exponenciais.** "Média exponencial" e "médias exponenciais", inclusive "média móvel exponencial", entram na exclusão da 13a, junto das médias móveis. "EMA" não contém "média" e nunca disparou a regra; agora tem teste. As exclusões continuam sujeitas às checagens de futuro e de atribuição. O validador não entra nos hashes aprovados, então **a aprovação da DL1-M continua válida**: prompt `f41d1cf2a5fc`, impressão `b1ee60720f24`.
+
+**Template congelado (`template-v1`):**
+- reverificado sobre o conjunto `fase1-v2` em 09/11/2026: **28 de 28 aprovadas** nas 17 verificações e na checagem de composição própria;
+- cita os parâmetros a partir dos rótulos do próprio contexto ("média móvel de 50 pregões", "RSI de 14 pregões", "últimos 20 pregões");
+- hash do código (`template.py`): `e0142ffb48590083e4a683d7c1af9da7bcc0b50b677c2b8d9a20a36f556c5db3`;
+- hash das respostas (`respostas_template.json`): `960c6aef3f9c7396a0cbedd6d7a17edd3d7368fa0cc4e2e38bcbe1210784deb6`.
+
+Os dois arquivos ficam guardados byte a byte.
+
+**A05 montado a partir da saída congelada de G05:**
+- valor original: 82,43%; valor adulterado: 90,67%;
+- resumo adulterado: "No recorte selecionado, VALE3.SA teve variação de 90,67%.";
+- hash do texto do A05: `028f89c0fdfb03fbddf992424b05949f25d2ef05a029be14311f72b212ece063`;
+- arquivo: `experiments/llm_v1_exp/adversariais_montados.json`;
+- registro de execução: `experiments/llm_v1_exp/registro_fase1.jsonl`, com os hashes do template, do conjunto, do texto e do arquivo;
+- reprova só pela verificação `valores_rastreaveis`, como declarado (teste).
+
+**Montagem descartada, registrada:** a primeira montagem pegou o "3" do código "VALE3.SA" como primeiro valor (3 → 3). O teste detectou o erro antes do commit. A entrada errada continua no registro, seguida de uma entrada `descarte_montagem_A05` com o motivo e da montagem correta. A regra passou a ignorar o código do ativo.
+
+**Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.
+
+Status: recebida em 09/11/2026.

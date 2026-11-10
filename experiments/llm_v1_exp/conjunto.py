@@ -31,9 +31,23 @@ from experiments.llm_v1_exp import janelas as j
 from experiments.llm_v1_exp import medias as m
 
 ARQUIVO = Path(__file__).resolve().parent / "casos_fase1.json"
-VERSAO = "fase1-v1"
-# SHA-256 do arquivo congelado (DL1-M). Qualquer mudança no conjunto refaz a rodada inteira.
-HASH_CONGELADO = "6080cc05b30c2bb26f0febdfbff2f5ed043fa1fec6cc65a2e669feb71d80a353"
+VERSAO = "fase1-v2"
+# DL1-O: parâmetros de cálculo citados nos rótulos, declarados como números citáveis.
+PARAMETROS_DE_CALCULO = {
+    "preco_medias": {"media_movel_curta": 50, "media_movel_longa": 200},
+    "rsi_macd": {"rsi": 14, "macd_ema_curta": 12, "macd_ema_longa": 26, "macd_sinal": 9},
+    "volatilidade": {"volatilidade_curta": 20},
+    "drawdown": {},
+}
+
+
+def rotulo_janela(pregoes: int) -> str:
+    """DL1-O: a janela de N pregões tem N variações e N + 1 observações; as duas leituras são citáveis."""
+    return f"{pregoes} pregões de variação ({pregoes + 1} observações)"
+# SHA-256 do arquivo congelado (DL1-O). Qualquer mudança no conjunto refaz a rodada inteira.
+HASH_CONGELADO = "18e5eeee22efae9459b3f99bffe932aa07b538ba4eb0bf7b8634641b5da5a5a2"
+# Hash anterior (fase1-v1, commit cfd6bd2), substituído pela DL1-O.
+HASH_ANTERIOR = "6080cc05b30c2bb26f0febdfbff2f5ed043fa1fec6cc65a2e669feb71d80a353"
 CHARTS_SINTESE = ["preco_medias", "volatilidade", "drawdown"]
 RECURSOS = (("preco_medias", "preço e médias móveis"), ("rsi_macd", "RSI/MACD"),
             ("volatilidade", "volatilidade"), ("drawdown", "drawdown e recuperação"))
@@ -68,7 +82,8 @@ def casos_sintese(fechamentos: dict) -> list:
                      lc.metric("drawdown_maximo", "Queda máxima no recorte", _pct(e["drawdown_maximo"]), "%", 2),
                      lc.metric("volatilidade_anualizada", "Volatilidade anualizada", _pct(e["volatilidade_anualizada"]),
                                "%", 2)],
-            notes=[f"Recorte de {e['pregoes']} pregões ({c['janela']}). Regime pela variação: {c['regime_alvo']}."])
+            extra_numbers=[e["pregoes"]],
+            notes=[f"Janela {c['janela']} de {rotulo_janela(e['pregoes'])}. Regime pela variação: {c['regime_alvo']}."])
         casos.append({"id": f"S{n:02d}", "bloco": "sintese", "ativo": c["ativo"], "janela": c["janela"],
                       "regime": c["regime_alvo"], "metadados": e, "contexto": contexto})
     return casos
@@ -108,7 +123,10 @@ def _metricas_recurso(recurso: str, serie: pd.Series, recorte: dict) -> tuple[li
         metricas.append(lc.metric("dias_do_fundo_a_recuperacao", "Dias corridos do fundo à recuperação",
                                   int(maior["Dias do fundo à recuperação"]), "dias corridos", 0))
     else:
-        notas.append("A maior queda do recorte não foi recuperada até o fim do recorte.")
+        pico = pd.Timestamp(maior["Pico"]).strftime("%d/%m/%Y")
+        fim = pd.Timestamp(recorte["fim"]).strftime("%d/%m/%Y")
+        queda = f"{abs(maior['Queda']) * 100:.2f}".replace(".", ",")
+        notas.append(f"Queda de {queda}% iniciada em {pico}, não recuperada até {fim}.")
     return metricas, notas
 
 
@@ -120,11 +138,16 @@ def casos_grafico(fechamentos: dict) -> list:
         for chart, nome in RECURSOS:
             n += 1
             metricas, notas = _metricas_recurso(chart, serie, recorte)
+            parametros = PARAMETROS_DE_CALCULO[chart]
+            declaracao = ([f"Parâmetros de cálculo: {', '.join(f'{k} = {v}' for k, v in parametros.items())}."]
+                          if parametros else [])
             contexto = _contexto(
                 scope=ec.SCOPE_CHART, chart_type=chart, asset=ativo, asset_name=_nome(ativo),
                 period_start=recorte["inicio"], period_end=recorte["fim"], frequency="Diário",
                 n_observations=recorte["pregoes"] + 1, metrics=metricas,
-                notes=[f"Recorte de {recorte['pregoes']} pregões, o mesmo para os quatro recursos do ativo."] + notas)
+                extra_numbers=[recorte["pregoes"], *parametros.values()],
+                notes=[f"Recorte de {rotulo_janela(recorte['pregoes'])}, o mesmo para os quatro recursos do ativo."]
+                + declaracao + notas)
             casos.append({"id": f"G{n:02d}", "bloco": "grafico", "ativo": ativo, "recurso": nome,
                           "metadados": recorte, "contexto": contexto})
     return casos
@@ -246,6 +269,8 @@ def parametros() -> dict:
                               "fechamento_original": j.P1_FECHAMENTO_ORIGINAL, "fechamento_b3": j.P1_FECHAMENTO_B3,
                               "provento": j.P1_PROVENTO, "valor_corrigido": j.P1_VALOR_CORRIGIDO_CONHECIDO,
                               "observacao": "não substitui a política de qualidade oficial do piloto"},
+        "parametros_de_calculo": PARAMETROS_DE_CALCULO,
+        "rotulo_de_janela": "N pregões de variação (N + 1 observações); N vai em extra_numbers",
         "janela_grafico": {"pregoes": j.JANELA_GRAFICO, "definida_por": "ativo",
                            "charts_sintese": CHARTS_SINTESE},
         "bloco_media": {"retorno_mensal": "último pregão do mês sobre o do mês anterior, menos 1",
@@ -259,6 +284,21 @@ def parametros() -> dict:
         "contagem": {"registros": 38, "avaliaveis": 34, "chamadas_reais_por_modelo": 33, "chamadas_dois_modelos": 66,
                      "pior_caso": 132, "teto_por_rodada": 200, "saidas_avaliacao_humana": 84},
     }
+
+
+def numeros_nao_citaveis(contexto: dict) -> list:
+    """
+    Autoconsistência (DL1-O): todo número escrito em rótulos e notas do contexto precisa ser
+    citável pela mesma regra da verificação 6 (métrica, extra_numbers, anos do período, N).
+    Devolve os que não são; a lista vazia é a condição para congelar.
+    """
+    from core.llm_validation import _is_traceable, _numbers_in
+
+    textos = list(contexto["historical"]["notes"]) + [m["label"] for m in contexto["historical"]["metrics"]]
+    permitidos = ec.historical_allowed_numbers(contexto)
+    remover = [contexto["asset"], contexto.get("asset_name", "")]
+    return [leituras[0][0] for texto in textos for leituras in _numbers_in(texto, remover)
+            if not any(_is_traceable(v, d, permitidos) for v, d in leituras)]
 
 
 def montar(fechamentos: dict) -> dict:

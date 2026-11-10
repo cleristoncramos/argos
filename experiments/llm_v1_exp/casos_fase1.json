@@ -90,7 +90,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     126.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2017-01-31",
@@ -122,7 +124,7 @@
       }
      ],
      "notes": [
-      "Recorte de 126 pregões (curta). Regime pela variação: alta."
+      "Janela curta de 126 pregões de variação (127 observações). Regime pela variação: alta."
      ]
     },
     "n_observations": 127,
@@ -175,7 +177,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     126.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2017-04-28",
@@ -207,7 +211,7 @@
       }
      ],
      "notes": [
-      "Recorte de 126 pregões (curta). Regime pela variação: baixa."
+      "Janela curta de 126 pregões de variação (127 observações). Regime pela variação: baixa."
      ]
     },
     "n_observations": 127,
@@ -260,7 +264,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     126.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2017-09-29",
@@ -292,7 +298,7 @@
       }
      ],
      "notes": [
-      "Recorte de 126 pregões (curta). Regime pela variação: lateral."
+      "Janela curta de 126 pregões de variação (127 observações). Regime pela variação: lateral."
      ]
     },
     "n_observations": 127,
@@ -345,7 +351,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2018-07-31",
@@ -377,7 +385,7 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões (longa). Regime pela variação: alta."
+      "Janela longa de 504 pregões de variação (505 observações). Regime pela variação: alta."
      ]
     },
     "n_observations": 505,
@@ -430,7 +438,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2016-04-29",
@@ -462,7 +472,7 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões (longa). Regime pela variação: baixa."
+      "Janela longa de 504 pregões de variação (505 observações). Regime pela variação: baixa."
      ]
     },
     "n_observations": 505,
@@ -515,7 +525,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2017-04-28",
@@ -547,7 +559,7 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões (longa). Regime pela variação: lateral."
+      "Janela longa de 504 pregões de variação (505 observações). Regime pela variação: lateral."
      ]
     },
     "n_observations": 505,
@@ -600,7 +612,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     126.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2021-06-30",
@@ -632,7 +646,7 @@
       }
      ],
      "notes": [
-      "Recorte de 126 pregões (curta). Regime pela variação: alta."
+      "Janela curta de 126 pregões de variação (127 observações). Regime pela variação: alta."
      ]
     },
     "n_observations": 127,
@@ -685,7 +699,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     126.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2016-03-31",
@@ -717,7 +733,7 @@
       }
      ],
      "notes": [
-      "Recorte de 126 pregões (curta). Regime pela variação: baixa."
+      "Janela curta de 126 pregões de variação (127 observações). Regime pela variação: baixa."
      ]
     },
     "n_observations": 127,
@@ -770,7 +786,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     126.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2019-11-29",
@@ -802,7 +820,7 @@
       }
      ],
      "notes": [
-      "Recorte de 126 pregões (curta). Regime pela variação: lateral."
+      "Janela curta de 126 pregões de variação (127 observações). Regime pela variação: lateral."
      ]
     },
     "n_observations": 127,
@@ -855,7 +873,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2019-05-31",
@@ -887,7 +907,7 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões (longa). Regime pela variação: alta."
+      "Janela longa de 504 pregões de variação (505 observações). Regime pela variação: alta."
      ]
     },
     "n_observations": 505,
@@ -940,7 +960,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2016-06-30",
@@ -972,7 +994,7 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões (longa). Regime pela variação: baixa."
+      "Janela longa de 504 pregões de variação (505 observações). Regime pela variação: baixa."
      ]
     },
     "n_observations": 505,
@@ -1025,7 +1047,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2020-02-28",
@@ -1057,7 +1081,7 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões (longa). Regime pela variação: lateral."
+      "Janela longa de 504 pregões de variação (505 observações). Regime pela variação: lateral."
      ]
     },
     "n_observations": 505,
@@ -1108,7 +1132,11 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0,
+     50.0,
+     200.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2021-12-30",
@@ -1140,7 +1168,8 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões, o mesmo para os quatro recursos do ativo."
+      "Recorte de 504 pregões de variação (505 observações), o mesmo para os quatro recursos do ativo.",
+      "Parâmetros de cálculo: media_movel_curta = 50, media_movel_longa = 200."
      ]
     },
     "n_observations": 505,
@@ -1188,7 +1217,13 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0,
+     14.0,
+     12.0,
+     26.0,
+     9.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2021-12-30",
@@ -1213,7 +1248,8 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões, o mesmo para os quatro recursos do ativo."
+      "Recorte de 504 pregões de variação (505 observações), o mesmo para os quatro recursos do ativo.",
+      "Parâmetros de cálculo: rsi = 14, macd_ema_curta = 12, macd_ema_longa = 26, macd_sinal = 9."
      ]
     },
     "n_observations": 505,
@@ -1261,7 +1297,10 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0,
+     20.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2021-12-30",
@@ -1286,7 +1325,8 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões, o mesmo para os quatro recursos do ativo."
+      "Recorte de 504 pregões de variação (505 observações), o mesmo para os quatro recursos do ativo.",
+      "Parâmetros de cálculo: volatilidade_curta = 20."
      ]
     },
     "n_observations": 505,
@@ -1334,7 +1374,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2021-12-30",
@@ -1366,7 +1408,7 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões, o mesmo para os quatro recursos do ativo."
+      "Recorte de 504 pregões de variação (505 observações), o mesmo para os quatro recursos do ativo."
      ]
     },
     "n_observations": 505,
@@ -1414,7 +1456,11 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0,
+     50.0,
+     200.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2021-12-30",
@@ -1446,7 +1492,8 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões, o mesmo para os quatro recursos do ativo."
+      "Recorte de 504 pregões de variação (505 observações), o mesmo para os quatro recursos do ativo.",
+      "Parâmetros de cálculo: media_movel_curta = 50, media_movel_longa = 200."
      ]
     },
     "n_observations": 505,
@@ -1494,7 +1541,13 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0,
+     14.0,
+     12.0,
+     26.0,
+     9.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2021-12-30",
@@ -1519,7 +1572,8 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões, o mesmo para os quatro recursos do ativo."
+      "Recorte de 504 pregões de variação (505 observações), o mesmo para os quatro recursos do ativo.",
+      "Parâmetros de cálculo: rsi = 14, macd_ema_curta = 12, macd_ema_longa = 26, macd_sinal = 9."
      ]
     },
     "n_observations": 505,
@@ -1567,7 +1621,10 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0,
+     20.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2021-12-30",
@@ -1592,7 +1649,8 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões, o mesmo para os quatro recursos do ativo."
+      "Recorte de 504 pregões de variação (505 observações), o mesmo para os quatro recursos do ativo.",
+      "Parâmetros de cálculo: volatilidade_curta = 20."
      ]
     },
     "n_observations": 505,
@@ -1640,7 +1698,9 @@
      "disponivel": false,
      "motivo": "sem_modelo_autorizado"
     },
-    "extra_numbers": [],
+    "extra_numbers": [
+     504.0
+    ],
     "filters": {
      "frequency": "Diário",
      "period_end": "2021-12-30",
@@ -1665,8 +1725,8 @@
       }
      ],
      "notes": [
-      "Recorte de 504 pregões, o mesmo para os quatro recursos do ativo.",
-      "A maior queda do recorte não foi recuperada até o fim do recorte."
+      "Recorte de 504 pregões de variação (505 observações), o mesmo para os quatro recursos do ativo.",
+      "Queda de 41,34% iniciada em 28/07/2021, não recuperada até 30/12/2021."
      ]
     },
     "n_observations": 505,
@@ -2655,6 +2715,22 @@
    "drawdown_maximo",
    "volatilidade_anualizada"
   ],
+  "parametros_de_calculo": {
+   "drawdown": {},
+   "preco_medias": {
+    "media_movel_curta": 50,
+    "media_movel_longa": 200
+   },
+   "rsi_macd": {
+    "macd_ema_curta": 12,
+    "macd_ema_longa": 26,
+    "macd_sinal": 9,
+    "rsi": 14
+   },
+   "volatilidade": {
+    "volatilidade_curta": 20
+   }
+  },
   "protocolo": {
    "esquema": "9a4cb5cb5a0c",
    "impressao": "b1ee60720f24",
@@ -2669,8 +2745,9 @@
    "definicao": "DL1-K: só pela variação",
    "lateral": "de -10% a +10%, inclusive"
   },
+  "rotulo_de_janela": "N pregões de variação (N + 1 observações); N vai em extra_numbers",
   "snapshot": "snap-20261108-01 (CSV ajustado, hash conferido pelo manifesto)",
   "trava_temporal": "2021-12-30"
  },
- "versao": "fase1-v1"
+ "versao": "fase1-v2"
 }

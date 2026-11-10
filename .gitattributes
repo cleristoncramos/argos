@@ -9,3 +9,6 @@ docs/preditivo/nota_teste_estatistico.md -text
 docs/preditivo/protocolo_piloto_v2.md -text
 experiments/preditivo/config_v2.py -text
 experiments/llm_v1_exp/casos_fase1.json -text
+experiments/llm_v1_exp/template.py -text
+experiments/llm_v1_exp/respostas_template.json -text
+experiments/llm_v1_exp/adversariais_montados.json -text
