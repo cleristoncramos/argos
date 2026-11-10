@@ -420,4 +420,23 @@ Se alguma condição falhar, o estado final é abstenção.
 
 **Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar fora do repositório a mensagem original (data e remetente).
 
-Status: recebida em 09/11/2026. Confirmação original: a arquivar. Correção 1 e redação da correção 4: aguardando o orientador.
+Status: recebida em 09/11/2026. Confirmação original: a arquivar.
+
+### DL1 — Complemento: correções 1 e 4 e pontos técnicos (09/11/2026)
+
+- **Correção 1:** regra do texto gerado, e também das frases do template que citem média histórica. Quando a frase contiver média, comparação entre períodos ou frequência histórica, o mesmo parágrafo precisa ter a limitação da amostra e a não garantia de repetição. A verificação é por classe de expressão, com pelo menos duas variantes para cada elemento. Em caso de falha, uma regeneração e, depois, abstenção. O template aplica a regra por composição fixa.
+- **Correção 4:**
+  - textos fixos com marca na própria frase;
+  - **código do motor não alterado**: marca no rótulo do bloco ("Conclusão experimental") e texto intacto; quando houver motor autorizado, a marca na emissão vira condição da autorização;
+  - texto da LLM com marca no nível do bloco: o validador exige o cabeçalho e verifica que nenhuma frase atribua aprovação, recomendação ou garantia ao indicador, à estratégia ou ao modelo.
+  "Indicador" não é correção pendente nos cinco textos.
+- **Pontos técnicos** (registrados como pendências de implementação no protocolo, seção 13.2):
+  - cliente Gemini separado, só no job offline, sem tocar o `llm_client` da v0.6;
+  - temperatura do GPT-5 mini como restrição do provedor (seed ou duas execuções por caso);
+  - contador próprio do job como autoridade de orçamento, com reserva antes da chamada e contagem das falhas;
+  - teto de US$ 16 na rodada de avaliação, mantido o de US$ 20 por mês;
+  - app privado separado com convite nominal, sem afirmar noindex;
+  - lista com identificadores derivados e rótulo de papel, com o mapeamento para e-mails fora do Git e uma cópia com o orientador.
+- **Autorização:** aplicar as correções aos textos e fazer o commit da DL1 com a seção 13 atualizada. Os hashes dos cinco textos só são atualizados depois das correções, em commit separado. Próxima entrega: fase 1 (conjunto de casos congelado, template e respostas salvas); a avaliação humana só começa com os três sob hash.
+
+**Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.

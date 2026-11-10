@@ -267,38 +267,41 @@ Uma estimativa só aparece depois de um modelo entrar em `AUTHORIZED_MODELS`, o 
 
 A DL1 aprovou o protocolo com condições e definiu acesso (R3), orçamento e fases de chamada (R10), avaliação humana cega e um portão de ativação de seis condições. O registro completo está em [`pibiti/decisoes_orientador.md`](pibiti/decisoes_orientador.md), entrada DL1.
 
-### 13.1 Correções dos cinco textos fixos (DL1-B)
+### 13.1 Correções dos textos (DL1-B, decisões do orientador de 09/11/2026)
 
-| # | Correção | Situação nos cinco textos | Encaminhamento |
-| --- | --- | --- | --- |
-| 1 | Toda menção à média histórica com a ressalva de amostra limitada e dispersão entre anos | **Não se aplica**: nenhum dos cinco textos menciona média histórica. A correção parece valer para o texto gerado pelo modelo, como regra do prompt e do validador | **Volta ao orientador**: confirmar se é regra para o texto gerado, com que redação mínima da ressalva e se o validador deve exigi-la por palavras-chave |
-| 2 | Nenhum "tende", "deve subir" ou equivalente fora do bloco de estimativa | Já atendida: nenhum texto fixo tem esses termos. No texto gerado, a verificação 9 já bloqueia "tende a", "deve subir", "vai subir", "próximo mês" e equivalentes fora da estimativa autorizada | Sem mudança |
-| 3 | Sem modelo autorizado, declarar a ausência de estimativa | Já atendida: o texto de abstenção declara a ausência, e a verificação 7 exige esse texto em todas as telas | Sem mudança |
-| 4 | Estratégia, indicador e modelo sempre marcados como experimentais | **Aplica-se** a três textos, que falam de "modelo" ou "estratégia" sem a marca | Redação proposta abaixo, **não aplicada no código** até o orientador confirmar |
-| 5 | Abstenção e encerramento idênticos em todas as telas, sem variação por ativo | Já atendida: os textos são constantes, sem nome de ativo nem horizonte interpolado | Sem mudança |
+**Correção 1: ressalva sobre média histórica.** É regra do **texto gerado**, não dos cinco textos fixos. Vale também para as frases montadas pelo template que citem média histórica.
+- **Gatilho:** frase com média, comparação entre períodos ou frequência histórica.
+- **Exigência:** o mesmo parágrafo tem de conter os dois elementos:
+  - limitação da amostra, dita de forma explícita ("amostra limitada", "poucos anos" ou equivalente);
+  - não garantia de repetição ("não indica que o próximo período repetirá o resultado" ou equivalente).
+- **Verificação:** por classe de expressão, com pelo menos duas variantes aceitas para cada elemento, sem string exata.
+- **Falha:** uma única regeneração; se falhar de novo, abstenção. Uma tentativa só, para caber no limite de 200 chamadas por rodada.
+- **Template:** aplica a mesma regra por composição fixa, sem depender do validador.
 
-**Redação proposta para a correção 4** (o trecho novo é "experimental"):
+**Correção 4: marca de experimental.** São três casos, com tratamentos diferentes de propósito:
+- **Textos fixos:** marca na própria frase, junto ao termo, nos três textos que citam "modelo" ou "estratégia" sem a marca (recusa de garantia, abstenção da estimativa e conclusão indisponível).
+- **Texto do motor de decisão:** **o código do motor não é alterado.** Ele está fora do escopo aprovado (a política autoriza zero motores), e a conclusão é cópia literal, o que tornaria a exigência circular. A marca fica no rótulo do bloco, exibido como "Conclusão experimental", e o texto do motor fica intacto. Quando houver motor autorizado, a emissão dele passa a incluir a marca, e isso vira condição daquela autorização.
+- **Texto gerado pela LLM:** marca no nível do bloco, não por frase, porque repetir "experimental" a cada menção degrada a leitura e aumenta a chance de frase artificial. O validador exige o cabeçalho do bloco e verifica que nenhuma frase atribua aprovação, recomendação ou garantia ao indicador, à estratégia ou ao modelo.
 
-| Texto | Redação atual | Redação proposta |
+**Indicador:** não aparece nos cinco textos, então não é correção pendente. Vira regra do prompt e do validador, na forma acima, quando houver geração de texto.
+
+**Correções 2, 3 e 5:** já atendidas pelos textos atuais e pelo validador, sem mudança.
+
+**Hashes:** os hashes dos cinco textos só são atualizados depois de aplicadas as correções, em commit separado deste registro.
+
+### 13.2 Pontos técnicos decididos e pendências de implementação
+
+| Ponto | Decisão do orientador | Situação |
 | --- | --- | --- |
-| Recusa de garantia | "[...] e, quando houver modelo autorizado, estimativas com incerteza e limitações." | "[...] e, quando houver modelo experimental autorizado, estimativas com incerteza e limitações." |
-| Abstenção da estimativa | "Não há modelo preditivo validado e autorizado para este ativo e horizonte; [...]" | "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; [...]" |
-| Conclusão indisponível | "Nenhuma conclusão sobre estratégia está disponível: não há motor de decisão autorizado para este ativo." | "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental autorizado para este ativo." |
+| Cliente Gemini | Aprovado: cliente separado, usado só no job offline. O `llm_client` da v0.6 fica intocado e sem caminho para o Gemini; a chave fica só no ambiente do job | **Pendente de implementação** |
+| Temperatura no GPT-5 mini | Restrição do provedor aceita e registrada. Se não aceitar temperatura fixa, usar seed quando houver; sem seed, rodar cada caso duas vezes e registrar a variação como parte do resultado | **Pendente**: conferir na documentação do provedor na implementação |
+| Alertas de orçamento do Google | Confirmado que o alerta não bloqueia. O contador próprio do job é a autoridade: verifica antes da chamada, com reserva do custo estimado, e conta também as chamadas que falharem, porque tokens podem ser cobrados | **Pendente de implementação** |
+| Teto efetivo da avaliação | US$ 16 na rodada de avaliação, com margem para retentativas. O teto mensal de US$ 20 continua como limite absoluto | **Pendente de implementação** |
+| Acesso e noindex | Aprovado app privado separado, com convite nominal. **O noindex não é garantível no Streamlit**: o controle real é a autenticação, não a obscuridade, e a rota não será descrita como "não indexável" | **Pendente de implementação** |
+| Lista de acesso | Aprovada a proposta: no repositório entram só identificadores derivados, com rótulo de papel. O mapeamento para e-mails fica fora do Git, em arquivo controlado, com uma cópia com o orientador | **Pendente de implementação** |
+| Hashes separados (prompt, esquema, conjunto de casos) e interruptor de abstenção sem deploy | Exigências da DL1-A | **Pendente de implementação** (os hashes de prompt, esquema e textos entram no commit das correções; o do conjunto de casos, na fase 1) |
+| Template determinístico | Referência da avaliação cega; aplica a correção 1 por composição | **Pendente** (fase 1) |
 
-Os textos do motor de decisão (`CONCLUSION_TEXTS`), que não estão entre os cinco, já dizem "regra experimental", mas também dizem "o modelo produziu" sem a marca. Para seguir a correção 4, eles passariam a "o modelo experimental produziu". Quanto a **indicador**: nenhum dos cinco textos menciona indicador. Se a correção valer também para o texto gerado (por exemplo, "o RSI" na observação histórica), ela é uma regra nova do prompt e do validador e precisa de confirmação, assim como a correção 1.
+**Próxima entrega (fase 1):** conjunto de casos congelado, template como referência e respostas salvas. A avaliação humana só começa quando os três existirem com hash.
 
-### 13.2 O que a DL1 exige implementar
-
-| Exigência | Estado | Ponto a confirmar ou risco técnico |
-| --- | --- | --- |
-| Hashes separados: prompt, esquema de saída e conjunto de casos | Hoje há uma impressão única (prompt, instruções e esquema) e nenhum conjunto de casos | Nenhum: separar em três hashes |
-| Interruptor de abstenção total sem deploy | Inexistente | Uma configuração lida em tempo de execução (segredo ou variável do ambiente) atende "sem deploy"; confirmar se reiniciar o app conta como deploy |
-| Fase 1: respostas em lote, versionadas | Há um mecanismo de respostas salvas da v0.6 (`data/llm_demo.json`) a reaproveitar com arquivo próprio | Nenhum |
-| Provedor Gemini (Flash, versão fixada) | O cliente atual só fala com a API da OpenAI | Exige um cliente novo, usado só no job offline. O esquema estrito do Gemini tem regras próprias; o validador continua sendo a garantia |
-| Secundário GPT-5 mini com "temperatura baixa e fixa" | — | A conferir na documentação na implementação: os modelos de raciocínio da OpenAI podem não aceitar temperatura diferente da padrão. Nesse caso, registrar como restrição do provedor |
-| Bloqueio em 100% do teto | O limitador por sessão existe; não há teto mensal | A conferir na implementação: os alertas de orçamento do faturamento do Google costumam só avisar, sem bloquear. Por isso, o bloqueio em 100% e o limite de 200 chamadas devem ficar também no job, com contador próprio |
-| Template determinístico de referência | Inexistente | Precisa ser construído, com as mesmas três camadas e os mesmos textos fixos, para a comparação cega |
-| Rota própria, noindex, até cinco contas, sessão curta, registro de acessos | Inexistente | O Streamlit não controla facilmente a meta tag `noindex` nem a expiração da sessão. Uma alternativa é publicar a tela experimental como app privado separado, com acesso por convite nominal. Decisão técnica a confirmar |
-| Lista versionada sem e-mails no repositório público | — | Há tensão entre "versionada" e "sem e-mails no repositório". Proposta: versionar só identificadores derivados (hash) e a versão da lista, com os e-mails em segredo fora do Git. Nos registros de acesso, gravar o identificador derivado, nunca o e-mail |
-
-**Nada disso foi implementado ainda.** A política de liberação continua com zero modelos e zero motores; o serviço continua bloqueando por padrão (`protocolo_nao_aprovado`); nenhuma tela usa a camada.
+**Estado:** a política de liberação continua com zero modelos e zero motores. O serviço bloqueia por padrão (`protocolo_nao_aprovado`) e nenhuma tela usa a camada.

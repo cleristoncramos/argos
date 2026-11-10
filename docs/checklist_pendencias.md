@@ -492,9 +492,10 @@ Etapa 0 — revisão de escopo:
 - [ ] Condições da seção 12 do protocolo antes de abrir a avaliação final: hash da versão consolidada, dados e configuração congelados, testes de alinhamento e expurgo, conferência de custos, caixa e referências
 - [ ] Revisar as minutas do CEP e do TCLE, conforme a decisão R9
 - [ ] Atualizar a seção Pesquisa da página "Sobre o Projeto" depois de R5
-- [ ] Remover a conta `claude` do quadro "Contributors" do GitHub: chamado de suporte #4973378 aberto em 08/11/2026 (pedido de recálculo do cache de contribuidores e limpeza dos commits órfãos da reescrita do histórico). Concluir quando a lateral do repositório mostrar 1 contribuidor
+- [x] Remover a conta `claude` do quadro "Contributors" do GitHub: chamado de suporte #4973378, aberto em 08/11/2026 e atendido em 09/11/2026; a lateral do repositório mostra um único contribuidor (Clériston Ramos)
 - [x] DL1 (09/11/2026): protocolo v1.0-experimental aprovado com condições; R3 e R10 decididos; avaliação cega definida; portão de ativação com seis condições (`docs/pibiti/decisoes_orientador.md`, entrada DL1)
-- [ ] DL1-B: o orientador decide a correção 1 (média histórica) e confirma a redação da correção 4, inclusive "indicador" e os textos do motor (`docs/protocolo_llm_v1.0-experimental.md`, seção 13.1)
+- [x] DL1-B: correções 1 e 4 decididas pelo orientador em 09/11/2026 (`docs/protocolo_llm_v1.0-experimental.md`, seção 13.1)
+- [ ] DL1-B: aplicar as correções 1 e 4 no código e atualizar os hashes dos cinco textos, em commit separado
 - [ ] DL1: hashes separados de prompt, esquema e casos; interruptor de abstenção sem deploy; conjunto de casos congelado; template determinístico
 - [ ] DL1-C: acesso nominal (rota isolada ou app privado, até cinco contas, registro de acessos sem e-mail)
 - [ ] DL1-D fase 1: respostas em lote versionadas (Gemini Flash no job offline, teto de US$ 20, 200 chamadas por rodada)
