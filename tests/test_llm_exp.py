@@ -541,19 +541,19 @@ def test_bloqueios_antes_da_chamada(context, kw, motivo):
 
 
 def test_aprovacao_vinculada_aos_quatro_hashes_ratificados():
-    """A mudança da regra 9a (DL1-M) mudou o prompt: a aprovação da DL1-H caiu até a ratificação."""
-    assert es.APPROVED_HASHES == {"prompt": "b5ef179c9376", "esquema": "9a4cb5cb5a0c",
-                                  "impressao": "6f50a1cadd7c", "textos_fixos": "95845577dba9"}
-    atuais = es.current_hashes()
-    assert atuais["esquema"] == es.APPROVED_HASHES["esquema"] and atuais["textos_fixos"] == es.APPROVED_HASHES["textos_fixos"]
-    assert atuais["prompt"] != es.APPROVED_HASHES["prompt"] and atuais["impressao"] != es.APPROVED_FINGERPRINT
-    result = es.explain_experimental(ctx(), mode=es.MODE_LIVE, api_key="k")
-    assert result.reason == "protocolo_nao_aprovado"
-    context = ctx()                                                    # com os hashes atuais, a exibição volta
+    """Hashes ratificados na DL1-M; os da DL1-H (b5ef179c9376 / 6f50a1cadd7c) não valem mais."""
+    assert es.APPROVED_HASHES == {"prompt": "f41d1cf2a5fc", "esquema": "9a4cb5cb5a0c",
+                                  "impressao": "b1ee60720f24", "textos_fixos": "95845577dba9"}
+    assert es.current_hashes() == es.APPROVED_HASHES and es.APPROVED_FINGERPRINT == "b1ee60720f24"
+    context = ctx()
     result = es.explain_experimental(context, mode=es.MODE_LIVE, api_key="k", sleep=lambda s: None,
-                                     approved_fingerprint=atuais["impressao"], approved_hashes=atuais,
                                      transport=_transport(json.dumps(resposta(context), ensure_ascii=False)))
     assert result.status == es.STATUS_OK
+    antiga = {"prompt": "b5ef179c9376", "esquema": "9a4cb5cb5a0c", "impressao": "6f50a1cadd7c",
+              "textos_fixos": "95845577dba9"}
+    result = es.explain_experimental(ctx(), mode=es.MODE_LIVE, api_key="k",
+                                     approved_fingerprint="6f50a1cadd7c", approved_hashes=antiga)
+    assert result.reason == "protocolo_nao_aprovado"                  # a aprovação substituída não serve
 
 
 @pytest.mark.parametrize("nome,valor", [

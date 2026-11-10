@@ -47,15 +47,16 @@ from core.llm_service import (
     context_key,
 )
 
-# Hashes ratificados pelo orientador em 09/11/2026 (aprovação DL1-H), referentes ao commit c106f6d.
+# Hashes ratificados pelo orientador em 09/11/2026 na DL1-M (registro no commit 4ae0e51; implementação
+# no commit 3c8f5c2). Substituem os da DL1-H (prompt b5ef179c9376, impressão 6f50a1cadd7c).
 # A aprovação vale só para estes valores exatos: qualquer mudança em prompt, esquema ou texto
 # fixo muda um dos hashes e bloqueia a exibição (`protocolo_nao_aprovado`) até nova ratificação,
 # sem reaproveitar o mesmo valor. A aprovação dos hashes é só uma das seis condições do portão
 # de ativação; nenhuma tela usa esta camada.
 APPROVED_HASHES = {
-    "prompt": "b5ef179c9376",
+    "prompt": "f41d1cf2a5fc",
     "esquema": "9a4cb5cb5a0c",
-    "impressao": "6f50a1cadd7c",
+    "impressao": "b1ee60720f24",
     "textos_fixos": "95845577dba9",
 }
 APPROVED_FINGERPRINT: Optional[str] = APPROVED_HASHES["impressao"]
