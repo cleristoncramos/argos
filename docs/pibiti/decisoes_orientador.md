@@ -590,4 +590,78 @@ Composição das células laterais e alcance da correção P1:
 
 **Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.
 
-Status: recebida em 09/11/2026. Pontos 1 a 5: aguardando o orientador; conjunto **não congelado**.
+Status: recebida em 09/11/2026. Pontos 1 a 5: decididos na DL1-K; conjunto **não congelado**.
+
+### DL1-K — Definição de regime corrigida, P1, bloco de média e tabela antes do hash (09/11/2026)
+
+Data: 09/11/2026, sujeita à confirmação do orientador. Autorizou o commit da DL1-J (`2c87fcc`), que registra a regra original, as células vazias e os cinco pontos abertos, sem afirmar congelamento.
+
+- **Limiar mantido:** o drawdown de 15% não foi relaxado para preencher a célula alta longa. Ajustar o limiar depois de ver a célula vazia é o erro que a D1 e a V2-7 foram escritas para impedir.
+- **Correção de rótulo:** os regimes passam a depender só da variação, e drawdown e volatilidade viram metadados (ver abaixo).
+- **Cobertura declarada, não meta de 12:** o conjunto é congelado com o número que a regra produzir, com as células vazias nomeadas.
+- **P1:** checagem de sensibilidade sem rodar código do piloto; se a escolha mudasse, reimplementação isolada com teste e rodada refeita.
+- **Bloco de média (8 casos):**
+  - sazonalidade (4): maior e menor média mensal por ativo, antes de 2022; em empate, o mês mais antigo;
+  - frequência histórica (2): proporção de meses e de anos positivos por ativo;
+  - comparação (2): último ano contra os cinco anteriores, por ativo;
+  - todos acionam a 13a e exigem, no mesmo parágrafo, número de anos, dispersão entre anos e não garantia de repetição, sem linguagem de expectativa.
+- **Tabela final antes do hash.**
+
+**Mudança de definição depois de ver os dados.** A definição de regime foi trocada **depois** de ver os dados, por **defeito de validade do construto**: um caso "lateral" com +83,72% e drawdown de 70,89% não é interpretável, porque o rótulo misturava direção e profundidade da queda. **Não é ajuste para atingir 12 casos**, e o limiar de drawdown de 15% **não foi relaxado**.
+
+| | Antes (DL1-J) | Depois (DL1-K) |
+| --- | --- | --- |
+| Alta | variação > +10% e drawdown < 15% | variação > +10% |
+| Baixa | variação < −10% | variação < −10% |
+| Lateral | de −10% a +10%, ou fora dessa faixa com drawdown ≥ 15% | de −10% a +10%, inclusive |
+| Drawdown e volatilidade | Classificavam | Metadados obrigatórios no contexto; não classificam |
+
+- **Efeitos:** os três regimes ficam mutuamente exclusivos e exaustivos, sem prioridade; nenhum "lateral" tem +83%; as quedas severas continuam declaradas no contexto.
+- **Regra de seleção:** a da DL1-J, sem mudança.
+- **Auditoria:** a classificação antiga continua no módulo (`classificar_original`), sem uso e com teste.
+- **Borda de +10%:** a variação é arredondada a 10 casas antes de comparar, para que +10% exatos sejam lateral, como diz a regra. Nenhuma candidata real cai nessa borda.
+
+**Achado sobre os ativos** (vai para a discussão do capítulo): entre 2016 e 2021, nenhuma janela de 504 pregões da PETR4 ou da VALE3 subiu mais de 10% com queda máxima abaixo de 15%. O menor drawdown entre as que subiram foi de 36,04% na PETR4 e de 28,09% na VALE3.
+
+**Correção P1:**
+- **Primeira checagem: exclusão das seis candidatas que contêm 02/04/2014.** Ela muda a escolha em duas células, a baixa longa da PETR4 e a da VALE3. Pela regra do orientador, isso exigiu reimplementar a correção.
+- **Reimplementação isolada:** em `janelas.corrigir_p1`, só para o fechamento da PETR4, sem código do piloto. Usa as constantes do relatório do snapshot, seção 7.2 (fechamento de 15,56 para 16,56, provento de 0,99757 com data ex em 03/04/2014, razão 1,004137). O teste confere o valor corrigido conhecido: 3,8986 em 02/04/2014.
+- **VALE3:** não precisa de correção, porque a P1 só alterou máxima e mínima de 2012, que nenhum cálculo daqui usa. Na VALE3, a mudança da primeira checagem vem só da redução da amostra.
+- **Rodada refeita com a série corrigida:** as 12 escolhas, as medianas e as métricas ficaram idênticas. **A P1 é imaterial para a seleção.** Nenhuma janela escolhida contém 02/04/2014, e as variações e drawdowns escolhidos não mudam.
+
+| Ativo | Janela | Regime | Janela escolhida contém 02/04/2014? | Série sem a P1 × série com a P1 (janela, variação e drawdown) | Excluindo as candidatas que contêm 02/04/2014 |
+| --- | --- | --- | --- | --- | --- |
+| PETR4.SA | curta | alta | não | igual | igual |
+| PETR4.SA | curta | baixa | não | igual | igual |
+| PETR4.SA | curta | lateral | não | igual | igual |
+| PETR4.SA | longa | alta | não | igual | igual |
+| PETR4.SA | longa | baixa | não | igual | muda para 18/09/2014 a 30/09/2016 |
+| PETR4.SA | longa | lateral | não | igual | igual |
+| VALE3.SA | curta | alta | não | igual | igual |
+| VALE3.SA | curta | baixa | não | igual | igual |
+| VALE3.SA | curta | lateral | não | igual | igual |
+| VALE3.SA | longa | alta | não | igual | igual |
+| VALE3.SA | longa | baixa | não | igual | muda para 18/07/2014 a 29/07/2016 |
+| VALE3.SA | longa | lateral | não | igual | igual |
+
+**Correção de contagem (não é decisão nova).** No registro da DL1-I ficou "Total avaliado: 36", mas 12 + 8 + 8 + 6 = **34** casos avaliáveis; com os 4 controles, são **38 registros**. O erro foi copiado da contagem original para o registro. As chamadas reais por modelo são 34: os 12 de síntese, os 8 por gráfico, os 8 de média, os 2 adversariais de modelo e os 4 controles. Os 4 adversariais de fluxo não chamam o modelo. Isso dá **68 chamadas** nos dois modelos e **136** no pior caso, com regeneração total, dentro das 200 por rodada; esses números batem com os da DL1-K. Na avaliação humana, os textos a avaliar são os 30 casos com resposta de modelo (síntese, gráfico, média e os 2 adversariais de modelo), × 3 fontes = **90 saídas**, e não 108; a confirmar se os 2 adversariais de modelo entram na rubrica.
+
+A tabela **candidata, não congelada**, com os 38 registros, está em [`llm_v1_exp_fase1.md`](../llm_v1_exp_fase1.md), seção 3.3. **Nenhum hash foi gerado.**
+
+**Escopo da correção P1 local:** só o fechamento ajustado da PETR4. Os fechamentos anteriores à data ex (03/04/2014) são reescalados por 1,004137, e o de 02/04/2014 é trocado pelo valor com o fechamento da B3 (3,8986). Nenhum outro campo, data ou ativo muda, e o arquivo congelado não é alterado (`test_p1_escopo_restrito_ao_fechamento_da_petr4`). **Não substitui a política de qualidade oficial do piloto:** os casos da camada de linguagem usam uma série corrigida localmente, com este escopo declarado.
+
+**Regra de arredondamento da classificação:** antes de comparar com os limites, a variação é arredondada a **10 casas decimais** (`round(variacao, 10)`). Assim, **+10,00% e −10,00% exatos são lateral**, e +10,0001% e −10,0001% são alta e baixa. Há testes nos quatro valores e nas variações ±10% calculadas em ponto flutuante (110/100 − 1 e 90/100 − 1). O arredondamento serve só para a comparação; os valores registrados nos casos não são arredondados.
+
+**Definições do desenvolvedor, a confirmar com a tabela** (nada foi congelado):
+1. **Bloco de média:**
+   - retorno mensal: do último fechamento de um mês ao último do mês seguinte, de fev/2008 a dez/2021 (167 meses);
+   - retorno anual: de um fim de ano ao seguinte, de 2009 a 2021 (13 anos);
+   - "média do último ano contra a dos cinco anteriores": média do retorno mensal em 2021 contra a média do retorno mensal em 2016 a 2020;
+   - dispersão: desvio-padrão amostral entre anos.
+2. **Período do bloco por gráfico:** a DL1-J não fixou. A proposta é usar os mesmos 504 pregões terminados em 30/12/2021 para os 8 casos.
+3. **Bases dos adversariais:** as da tabela A, escolhidas pela ordem dos casos. Também a confirmar se a recusa fixa de A02 conta como a "abstenção" esperada.
+4. **Controles:** pela regra, os quatro primeiros casos são S01 a S04. Os quatro são da PETR4, e três deles são da janela curta.
+
+**Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.
+
+Status: recebida em 09/11/2026. Tabela final e definições 1 a 4: aguardando o orientador antes do hash.

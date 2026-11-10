@@ -504,4 +504,5 @@ Etapa 0 — revisão de escopo:
 - [ ] DL1-E: avaliação cega com ao menos dois avaliadores e relatório; portão de ativação
 - [ ] Arquivar a mensagem original da DL1
 - [x] DL1-J: regimes, janelas, ativos, recursos e adversariais de fluxo decididos (`docs/llm_v1_exp_fase1.md`, seção 3.1)
-- [ ] DL1-J: o orientador decide os cinco pontos abertos pela aplicação da regra (alta longa vazia, composição do lateral, precedência baixa × lateral, correção P1 e bloco de média histórica) antes do congelamento
+- [x] DL1-K: definição de regime corrigida (só a variação), P1 imaterial após a reimplementação isolada e bloco de média definido
+- [ ] DL1-K: o orientador confere a tabela final dos 38 registros e as definições 1 a 4 (`docs/llm_v1_exp_fase1.md`, seção 3.3) antes do hash

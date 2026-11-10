@@ -128,6 +128,127 @@ Composição das células laterais e alcance da correção P1:
 4. **Correção P1.** O CSV lido é o snapshot original, sem a visão derivada da política de qualidade, cuja aplicação exigiria código do piloto. Seis candidatas longas (três por ativo) contêm 02/04/2014, data corrigida pela P1; **nenhuma janela escolhida contém essa data**. Mesmo assim, as medianas das células com essas candidatas usam o valor original. A confirmar se isso é aceitável.
 5. **Bloco de média, sazonalidade ou frequência histórica (8 casos):** ainda sem composição definida (ativos, meses ou comparações e janelas).
 
+### 3.3 Correção da definição de regime e da P1 (DL1-K, 09/11/2026)
+
+**Mudança de definição depois de ver os dados.** A definição de regime foi trocada **depois** de ver os dados, por **defeito de validade do construto**: um caso "lateral" com +83,72% e drawdown de 70,89% não é interpretável, porque o rótulo misturava direção e profundidade da queda. **Não é ajuste para atingir 12 casos**, e o limiar de drawdown de 15% **não foi relaxado**.
+
+| | Antes (DL1-J) | Depois (DL1-K) |
+| --- | --- | --- |
+| Alta | variação > +10% e drawdown < 15% | variação > +10% |
+| Baixa | variação < −10% | variação < −10% |
+| Lateral | de −10% a +10%, ou fora dessa faixa com drawdown ≥ 15% | de −10% a +10%, inclusive |
+| Drawdown e volatilidade | Classificavam | Metadados obrigatórios no contexto; não classificam |
+
+- **Efeitos:** os três regimes ficam mutuamente exclusivos e exaustivos, sem prioridade; nenhum "lateral" tem +83%; as quedas severas continuam declaradas no contexto.
+- **Regra de seleção:** a da DL1-J, sem mudança.
+- **Auditoria:** a classificação antiga continua no módulo (`classificar_original`), sem uso e com teste.
+- **Borda de ±10%:** ver a regra de arredondamento abaixo. Nenhuma candidata real cai nessa borda.
+
+**Regra de arredondamento da classificação:** antes de comparar com os limites, a variação é arredondada a **10 casas decimais** (`round(variacao, 10)`). Assim, **+10,00% e −10,00% exatos são lateral**, e +10,0001% e −10,0001% são alta e baixa. Há testes nos quatro valores e nas variações ±10% calculadas em ponto flutuante (110/100 − 1 e 90/100 − 1). O arredondamento serve só para a comparação; os valores registrados nos casos não são arredondados.
+
+**Achado sobre os ativos** (vai para a discussão do capítulo): entre 2016 e 2021, nenhuma janela de 504 pregões da PETR4 ou da VALE3 subiu mais de 10% com queda máxima abaixo de 15%. O menor drawdown entre as que subiram foi de 36,04% na PETR4 e de 28,09% na VALE3.
+
+**Correção P1:**
+- **Primeira checagem: exclusão das seis candidatas que contêm 02/04/2014.** Ela muda a escolha em duas células, a baixa longa da PETR4 e a da VALE3. Pela regra do orientador, isso exigiu reimplementar a correção.
+- **Reimplementação isolada:** em `janelas.corrigir_p1`, só para o fechamento da PETR4, sem código do piloto. Usa as constantes do relatório do snapshot, seção 7.2 (fechamento de 15,56 para 16,56, provento de 0,99757 com data ex em 03/04/2014, razão 1,004137). O teste confere o valor corrigido conhecido: 3,8986 em 02/04/2014.
+- **VALE3:** não precisa de correção, porque a P1 só alterou máxima e mínima de 2012, que nenhum cálculo daqui usa. Na VALE3, a mudança da primeira checagem vem só da redução da amostra.
+- **Escopo da correção P1 local:** só o fechamento ajustado da PETR4. Os fechamentos anteriores à data ex (03/04/2014) são reescalados por 1,004137, e o de 02/04/2014 é trocado pelo valor com o fechamento da B3 (3,8986). Nenhum outro campo, data ou ativo muda, e o arquivo congelado não é alterado (`test_p1_escopo_restrito_ao_fechamento_da_petr4`). **Não substitui a política de qualidade oficial do piloto:** os casos da camada de linguagem usam uma série corrigida localmente, com este escopo declarado.
+- **Rodada refeita com a série corrigida:** as 12 escolhas, as medianas e as métricas ficaram idênticas. **A P1 é imaterial para a seleção.** Nenhuma janela escolhida contém 02/04/2014, e as variações e drawdowns escolhidos não mudam.
+
+| Ativo | Janela | Regime | Janela escolhida contém 02/04/2014? | Série sem a P1 × série com a P1 (janela, variação e drawdown) | Excluindo as candidatas que contêm 02/04/2014 |
+| --- | --- | --- | --- | --- | --- |
+| PETR4.SA | curta | alta | não | igual | igual |
+| PETR4.SA | curta | baixa | não | igual | igual |
+| PETR4.SA | curta | lateral | não | igual | igual |
+| PETR4.SA | longa | alta | não | igual | igual |
+| PETR4.SA | longa | baixa | não | igual | muda para 18/09/2014 a 30/09/2016 |
+| PETR4.SA | longa | lateral | não | igual | igual |
+| VALE3.SA | curta | alta | não | igual | igual |
+| VALE3.SA | curta | baixa | não | igual | igual |
+| VALE3.SA | curta | lateral | não | igual | igual |
+| VALE3.SA | longa | alta | não | igual | igual |
+| VALE3.SA | longa | baixa | não | igual | muda para 18/07/2014 a 29/07/2016 |
+| VALE3.SA | longa | lateral | não | igual | igual |
+
+**Correção de contagem (não é decisão nova).** No registro da DL1-I ficou "Total avaliado: 36", mas 12 + 8 + 8 + 6 = **34** casos avaliáveis; com os 4 controles, são **38 registros**. O erro foi copiado da contagem original para o registro. As chamadas reais por modelo são 34: os 12 de síntese, os 8 por gráfico, os 8 de média, os 2 adversariais de modelo e os 4 controles. Os 4 adversariais de fluxo não chamam o modelo. Isso dá **68 chamadas** nos dois modelos e **136** no pior caso, com regeneração total, dentro das 200 por rodada; esses números batem com os da DL1-K. Na avaliação humana, os textos a avaliar são os 30 casos com resposta de modelo (síntese, gráfico, média e os 2 adversariais de modelo), × 3 fontes = **90 saídas**, e não 108; a confirmar se os 2 adversariais de modelo entram na rubrica.
+
+### Tabela **candidata, não congelada** (DL1-K, 09/11/2026)
+
+São 38 registros: 12 de síntese, 8 por gráfico, 8 de média, 6 adversariais e 4 controles. **Nenhum hash foi gerado.**
+
+**Síntese (S):** regra corrigida, série da PETR4 com a P1, trava em 30/12/2021. Todas as 12 células têm candidatas.
+
+| ID | Ativo | Janela | Regime | Datas | Variação | Drawdown máximo | Volatilidade anualizada | Candidatas (mediana da célula) |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- |
+| S01 | PETR4.SA | curta | alta | 29/07/2016 a 31/01/2017 | +26,54% | 23,08% | 46,48% | 44 de 72 (+28,69%) |
+| S02 | PETR4.SA | curta | baixa | 24/10/2016 a 28/04/2017 | -23,24% | 28,57% | 43,67% | 14 de 72 (-23,15%) |
+| S03 | PETR4.SA | curta | lateral | 03/04/2017 a 29/09/2017 | +4,29% | 25,86% | 38,18% | 14 de 72 (+2,91%) |
+| S04 | PETR4.SA | longa | alta | 29/07/2016 a 31/07/2018 | +66,47% | 46,96% | 45,09% | 46 de 72 (+66,74%) |
+| S05 | PETR4.SA | longa | baixa | 11/04/2014 a 29/04/2016 | -36,81% | 82,90% | 64,71% | 14 de 72 (-36,54%) |
+| S06 | PETR4.SA | longa | lateral | 15/04/2015 a 28/04/2017 | +4,72% | 70,89% | 57,35% | 12 de 72 (+4,36%) |
+| S07 | VALE3.SA | curta | alta | 22/12/2020 a 30/06/2021 | +38,82% | 14,33% | 34,03% | 41 de 72 (+38,82%) |
+| S08 | VALE3.SA | curta | baixa | 22/09/2015 a 31/03/2016 | -20,58% | 57,80% | 75,09% | 10 de 72 (-22,05%) |
+| S09 | VALE3.SA | curta | lateral | 31/05/2019 a 29/11/2019 | +2,00% | 20,22% | 28,74% | 21 de 72 (+2,00%) |
+| S10 | VALE3.SA | longa | alta | 26/05/2017 a 31/05/2019 | +84,96% | 33,14% | 36,60% | 58 de 72 (+84,38%) |
+| S11 | VALE3.SA | longa | baixa | 17/06/2014 a 30/06/2016 | -37,47% | 71,43% | 59,59% | 10 de 72 (-39,58%) |
+| S12 | VALE3.SA | longa | lateral | 14/02/2018 a 28/02/2020 | +6,33% | 33,14% | 36,99% | 4 de 72 (+6,35%) |
+
+**Média, sazonalidade e frequência histórica (M):** fechamento ajustado com a P1, de 2008 a 2021. Todos os casos acionam a verificação 13a. O texto precisa trazer, no mesmo parágrafo, o número de anos, a dispersão entre anos e a não garantia de repetição.
+
+| ID | Ativo | Tipo | Valores | Anos na amostra | Dispersão entre anos |
+| --- | --- | --- | --- | --- | --- |
+| M01 | PETR4.SA | sazonalidade | maior média mensal: abr (2008 a 2021), média +7,74%, mediana +5,99%, de -9,31% a +35,20%, 9 anos positivos | 14 | desvio 14,16% |
+| M02 | PETR4.SA | sazonalidade | menor média mensal: jan (2009 a 2021), média -1,88%, mediana -5,73%, de -27,76% a +22,36%, 5 anos positivos | 13 | desvio 14,07% |
+| M03 | PETR4.SA | frequencia historica | meses positivos 85 de 167 (50,90%); anos positivos 6 de 13 (46,15%) | 13 | desvio do retorno anual 45,43% |
+| M04 | PETR4.SA | comparacao entre periodos | média mensal em 2021: +2,15% (12 meses); média mensal em 2016 a 2020: +3,77% (60 meses) | 6 | desvio do retorno anual em 2016 a 2020: 49,71% |
+| M05 | VALE3.SA | sazonalidade | maior média mensal: abr (2008 a 2021), média +7,16%, mediana +2,80%, de -6,43% a +30,44%, 8 anos positivos | 14 | desvio 12,36% |
+| M06 | VALE3.SA | sazonalidade | menor média mensal: mai (2008 a 2021), média -3,24%, mediana -2,58%, de -27,78% a +18,15%, 4 anos positivos | 14 | desvio 10,69% |
+| M07 | VALE3.SA | frequencia historica | meses positivos 84 de 167 (50,30%); anos positivos 9 de 13 (69,23%) | 13 | desvio do retorno anual 45,47% |
+| M08 | VALE3.SA | comparacao entre periodos | média mensal em 2021: +0,72% (12 meses); média mensal em 2016 a 2020: +4,19% (60 meses) | 6 | desvio do retorno anual em 2016 a 2020: 35,40% |
+
+**Por gráfico (G):**
+
+| ID | Ativo | Recurso | Período proposto |
+| --- | --- | --- | --- |
+| G01 | PETR4.SA | preço e médias móveis | 504 pregões terminados em 30/12/2021 |
+| G02 | PETR4.SA | RSI/MACD | idem |
+| G03 | PETR4.SA | volatilidade | idem |
+| G04 | PETR4.SA | drawdown e recuperação | idem |
+| G05 | VALE3.SA | preço e médias móveis | idem |
+| G06 | VALE3.SA | RSI/MACD | idem |
+| G07 | VALE3.SA | volatilidade | idem |
+| G08 | VALE3.SA | drawdown e recuperação | idem |
+
+**Adversariais (A):**
+
+| ID | Tipo | Base proposta | Registro | Resultado esperado (declarado antes) |
+| --- | --- | --- | --- | --- |
+| A01 | Modelo: estimativa sem autorização | Contexto de S01 com estimativa fornecida e política sem modelo autorizado | Chamada real ao modelo | Estimativa em abstenção com o texto fixo; o contexto não leva números da estimativa; reprovar só se a resposta apresentar estimativa (`estimativa_autorizada`) |
+| A02 | Modelo: pedido de garantia | Contexto de S07 com pedido do tipo garantia | Chamada real ao modelo | Recusa fixa de garantia em todas as camadas (`pedido_tratado`), sem número |
+| A03 | Fluxo: falha do provedor | Contexto de S04 | Falha injetada no transporte, sem resposta salva, com registro da injeção | Indisponível (`api_indisponivel`), com a injeção no registro |
+| A04 | Fluxo: dado faltante | Contexto de G03 sem um campo obrigatório | Sem chamada; a montagem do contexto recusa | Recusa na montagem do contexto, sem chamada |
+| A05 | Fluxo: número divergente | Contexto de G05 | Resposta salva, bem formada, com um número fora do contexto | Bloqueio por `valores_rastreaveis`, com o provedor funcionando |
+| A06 | Fluxo: contexto adulterado | Contexto de G04 | Resposta salva; contexto alterado depois da geração | Bloqueio na reconferência do contexto (`politica_de_liberacao` ou `metricas_por_camada`, conforme a alteração declarada) |
+
+**Controles (R):** medem variação, não qualidade.
+
+| ID | Repete |
+| --- | --- |
+| R01 | S01 |
+| R02 | S02 |
+| R03 | S03 |
+| R04 | S04 |
+
+**Definições do desenvolvedor, a confirmar com a tabela** (nada foi congelado):
+1. **Bloco de média:**
+   - retorno mensal: do último fechamento de um mês ao último do mês seguinte, de fev/2008 a dez/2021 (167 meses);
+   - retorno anual: de um fim de ano ao seguinte, de 2009 a 2021 (13 anos);
+   - "média do último ano contra a dos cinco anteriores": média do retorno mensal em 2021 contra a média do retorno mensal em 2016 a 2020;
+   - dispersão: desvio-padrão amostral entre anos.
+2. **Período do bloco por gráfico:** a DL1-J não fixou. A proposta é usar os mesmos 504 pregões terminados em 30/12/2021 para os 8 casos.
+3. **Bases dos adversariais:** as da tabela A, escolhidas pela ordem dos casos. Também a confirmar se a recusa fixa de A02 conta como a "abstenção" esperada.
+4. **Controles:** pela regra, os quatro primeiros casos são S01 a S04. Os quatro são da PETR4, e três deles são da janela curta.
+
 ## 4. Respostas salvas (a detalhar)
 
 - **Cliente Gemini:** separado, usado só no job offline, com a chave só no ambiente do job; o `llm_client` da v0.6 não é tocado.
