@@ -508,5 +508,7 @@ Etapa 0 — revisão de escopo:
 - [x] DL1-L: controles S01, S05, S07 e S11; janela de gráficos por ativo; definições do bloco de média; contagem recomposta
 - [x] Pontos da DL1-L decididos: dezembro de 2021 mantido pela regra, 33 chamadas por modelo, A02 implementado (recusa por política), regra 9a e 13a ampliadas
 - [x] DL1-M: hashes ratificados (prompt `f41d1cf2a5fc`, impressão `b1ee60720f24`); quatro elementos confirmados na 13a
-- [ ] Preencher `APPROVED_HASHES` com os hashes da DL1-M (commit próprio, depois do registro)
-- [ ] Congelar o conjunto de casos com hash, sem o valor alternativo de dezembro no contexto de M04 e M08, com teste
+- [x] `APPROVED_HASHES` com os hashes da DL1-M (commit `7ac2996`)
+- [x] Conjunto de casos congelado: `experiments/llm_v1_exp/casos_fase1.json`, SHA-256 `6080cc05b30c2bb2…`, sem o valor alternativo de dezembro em M04 e M08 (testado)
+- [ ] O orientador aceita as escolhas do desenvolvedor embutidas no conjunto (síntese, métricas por gráfico, casos de média, adversariais)
+- [ ] Fase 1: template com ressalva estrutural, respostas salvas (Gemini Flash no job offline) e avaliação cega

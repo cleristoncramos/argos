@@ -465,3 +465,46 @@ Trocar o juízo pelo fato deixaria o texto tecnicamente correto e epistemicament
 O hash do conjunto de casos só é gerado depois do terceiro commit. A partir daí não há ajuste parcial: qualquer mudança refaz a rodada inteira.
 
 **O conjunto continua candidato** até o hash, que só é gerado depois do terceiro commit.
+
+### 3.6 Congelamento do conjunto de casos (09/11/2026)
+
+**Arquivo:** `experiments/llm_v1_exp/casos_fase1.json`, gerado por `experiments/llm_v1_exp/conjunto.py` sobre o snapshot do piloto, com a P1 local e a trava em 30/12/2021. O arquivo é versionado byte a byte (`.gitattributes`).
+
+**SHA-256:** `6080cc05b30c2bb26f0febdfbff2f5ed043fa1fec6cc65a2e669feb71d80a353`, também em `conjunto.HASH_CONGELADO`.
+
+Gerado depois dos três commits da DL1-M:
+1. `3c8f5c2`: implementação;
+2. `4ae0e51`: registro;
+3. `7ac2996`: `APPROVED_HASHES`.
+
+**O hash cobre:**
+- os 38 registros: 28 casos com contexto completo (S01–S12, G01–G08, M01–M08), 6 adversariais com desfecho, verificação e classe declarados antes, e 4 controles (R01–R04 = S01, S05, S07, S11);
+- as definições do bloco de média;
+- a janela de gráficos por ativo;
+- o escopo da P1 local;
+- a regra de arredondamento;
+- a contagem de chamadas: 33 por modelo, 66 no total, 132 no pior caso e 84 saídas humanas;
+- os hashes do protocolo ratificados na DL1-M.
+
+**Testes** (`tests/test_llm_exp_conjunto.py`):
+- o arquivo confere com o hash;
+- a composição tem os 38 registros, os controles e a contagem;
+- todos os contextos terminam até 30/12/2021, sem estimativa, conclusão nem pedido;
+- **o valor alternativo de dezembro de 2021 (+2,15% e +0,72%) e o retorno anual de 2021 não aparecem no contexto de M04 e M08**, nem a palavra "dezembro";
+- os adversariais têm desfecho declarado, e A02 passa pela recusa por política;
+- regenerar a partir dos dados reproduz o arquivo byte a byte (esse teste só roda onde está o snapshot, que fica fora do Git).
+
+**A partir daqui, não há ajuste parcial:** qualquer mudança refaz a rodada inteira, com novo hash.
+
+**Escolhas do desenvolvedor dentro do arquivo congelado**, que não estavam nas decisões e precisam do aceite do orientador. Como ainda não há nenhuma geração, recusar alguma delas custa só um novo hash:
+1. **Síntese:** o contexto cobre os gráficos "preço e médias móveis", "volatilidade" e "drawdown", com variação, queda máxima e volatilidade anualizada do recorte. O regime e o tamanho da janela vão nas notas.
+2. **Métricas por recurso de gráfico**, calculadas com as funções do `core` sobre a série até 30/12/2021:
+   - preço e médias móveis: variação no recorte e fechamento final em relação às médias de 50 e 200 pregões;
+   - RSI/MACD: RSI de 14 no último pregão e histograma do MACD em relação ao fechamento;
+   - volatilidade: volatilidade do recorte e dos últimos 20 pregões, anualizadas;
+   - drawdown: queda máxima e dias corridos do pico ao fundo e do fundo à recuperação da maior queda. Em G08, a maior queda não se recuperou dentro do recorte, o que aparece como nota.
+3. **Casos de média:** gráfico do tipo "sazonalidade" nos oito casos. As datas são as reais das observações, e "anos na amostra" vira métrica, para o número de anos ser citável.
+4. **Adversariais:**
+   - A01 recebe uma estimativa de um modelo não registrado;
+   - A05 é montado a partir da resposta válida do template para G05, com o primeiro valor citado no resumo multiplicado por 1,1;
+   - A06 reaproveita a resposta de G04 e altera o contexto para recomendação habilitada.
