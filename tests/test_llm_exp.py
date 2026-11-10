@@ -497,7 +497,7 @@ def test_servico_mostra_resposta_valida_e_registra_sem_segredo():
     logs = []
     result = explain(context, transport=_transport(json.dumps(resposta(context), ensure_ascii=False)),
                      log_sink=logs.append)
-    assert result.status == es.STATUS_OK and result.shown
+    assert result.status == es.STATUS_OK and result.shown and result.fallback_text is None
     registro = json.dumps(logs[0], ensure_ascii=False)
     assert "sk-teste-secreto" not in registro and "12,34" not in registro
     assert logs[0]["protocol_family"] == "v1.0-experimental" and logs[0]["estimate_available"] is False
@@ -529,7 +529,7 @@ def test_resposta_cortada_e_bloqueada():
     ({}, {}, "contexto_invalido"),
     ({**ctx(), "protocol_family": "v0.6"}, {}, "familia_de_protocolo_divergente"),
     (ctx(environment=policy.ENV_PUBLIC), {}, "fora_do_ambiente_experimental"),
-    (ctx(user_request=("garantia", "x")), {}, "entrada_livre_nao_permitida"),
+    (ctx(user_request=("previsao", "x")), {}, "entrada_livre_nao_permitida"),
     (ctx(), {"approved_fingerprint": None}, "protocolo_nao_aprovado"),
     (ctx(), {"approved_fingerprint": "000000000000"}, "protocolo_nao_aprovado"),
 ])
@@ -541,11 +541,17 @@ def test_bloqueios_antes_da_chamada(context, kw, motivo):
 
 
 def test_aprovacao_vinculada_aos_quatro_hashes_ratificados():
+    """A mudança da regra 9a (DL1-M) mudou o prompt: a aprovação da DL1-H caiu até a ratificação."""
     assert es.APPROVED_HASHES == {"prompt": "b5ef179c9376", "esquema": "9a4cb5cb5a0c",
                                   "impressao": "6f50a1cadd7c", "textos_fixos": "95845577dba9"}
-    assert es.current_hashes() == es.APPROVED_HASHES and es.APPROVED_FINGERPRINT == "6f50a1cadd7c"
-    context = ctx()
+    atuais = es.current_hashes()
+    assert atuais["esquema"] == es.APPROVED_HASHES["esquema"] and atuais["textos_fixos"] == es.APPROVED_HASHES["textos_fixos"]
+    assert atuais["prompt"] != es.APPROVED_HASHES["prompt"] and atuais["impressao"] != es.APPROVED_FINGERPRINT
+    result = es.explain_experimental(ctx(), mode=es.MODE_LIVE, api_key="k")
+    assert result.reason == "protocolo_nao_aprovado"
+    context = ctx()                                                    # com os hashes atuais, a exibição volta
     result = es.explain_experimental(context, mode=es.MODE_LIVE, api_key="k", sleep=lambda s: None,
+                                     approved_fingerprint=atuais["impressao"], approved_hashes=atuais,
                                      transport=_transport(json.dumps(resposta(context), ensure_ascii=False)))
     assert result.status == es.STATUS_OK
 
@@ -576,11 +582,9 @@ def test_hashes_divergentes_da_impressao_aprovada_bloqueiam():
 
 
 def test_rodada_de_avaliacao_nunca_exibe():
-    context = ctx(user_request=("garantia", "Garante lucro?"))
-    data = resposta(context, resumo=ep.REFUSAL_GUARANTEE, tratamento_do_pedido="recusa_garantia",
-                    o_que_nao_pode_ser_concluido=[ep.REFUSAL_LIMIT])
-    data["observacao_historica"] = {"rotulo": ep.BLOCK_LABELS["observacao_historica"], "texto": ep.NOT_APPLICABLE, "metricas_relevantes": [],
-                                    "limite_da_evidencia": ep.REFUSAL_LIMIT}
+    context = ctx(user_request=("previsao", "Quanto vai render?"))
+    data = resposta(context, tratamento_do_pedido="previsao_abstencao",
+                    resumo=ep.ESTIMATE_ABSTENTION + " O retorno total foi de 12,34%.")
     result = explain(context, transport=_transport(json.dumps(data, ensure_ascii=False)), evaluation_run=True,
                      approved_fingerprint=None)
     assert result.status == es.STATUS_EVALUATION and not result.shown and all(result.log["validation"].values())
@@ -630,8 +634,14 @@ SAZONAL = ("No recorte selecionado, outubro apresentou média histórica superio
 
 
 @pytest.mark.parametrize("texto,ok", [
-    (SAZONAL + " Isso não indica que o próximo período repetirá o resultado.", True),
-    ("A mediana de outubro foi positiva em poucos anos; o resultado pode não se repetir.", True),
+    (SAZONAL + " Em 5 anos, o resultado variou bastante entre os anos. Isso não indica que o próximo período "
+     "repetirá o resultado.", True),                                           # os quatro elementos
+    (SAZONAL + " Isso não indica que o próximo período repetirá o resultado.", False),        # sem anos e dispersão
+    ("A mediana de outubro foi positiva em poucos anos; o resultado pode não se repetir.", False),  # "poucos anos" não é número
+    ("A média de outubro foi positiva em 5 anos, com amostra limitada; isso pode não se repetir.", False),  # sem dispersão
+    ("A média de outubro foi positiva, com amostra limitada e resultado que variou bastante entre os anos; "
+     "isso pode não se repetir.", False),                                       # sem número de anos
+    ("Em 5 anos, a proporção de anos positivos foi limitada pela amostra limitada; pode não se repetir.", True),  # frequência: só amostra e repetição
     (SAZONAL, False),                                                           # sem a não repetição
     ("A média histórica de outubro foi positiva. Isso não indica que o próximo período repetirá o resultado.",
      False),                                                                    # sem a amostra limitada
@@ -651,7 +661,7 @@ def test_ressalva_vale_por_paragrafo():
     data["observacao_historica"]["limite_da_evidencia"] = (
         "A amostra é limitada e o resultado não se repete necessariamente.")
     assert "ressalva_media_historica" in check(data, context).failed       # ressalva em outro parágrafo
-    data["resumo"] = "A média de outubro foi positiva, com amostra limitada; isso pode não se repetir."
+    data["resumo"] = "A média de outubro foi positiva em 5 anos, com amostra limitada, e o resultado variou bastante entre os anos; isso pode não se repetir."
     assert check(data, context).ok, check(data, context).as_dict()
 
 
@@ -681,7 +691,7 @@ def _sequencia(*conteudos):
 def test_uma_regeneracao_quando_so_falta_a_ressalva():
     context = ctx()
     sem = resposta(context, resumo="A média de outubro foi positiva no período.")
-    com = resposta(context, resumo="A média de outubro foi positiva, com amostra limitada; isso pode não se repetir.")
+    com = resposta(context, resumo="A média de outubro foi positiva em 5 anos, com amostra limitada, e o resultado variou bastante entre os anos; isso pode não se repetir.")
     transport = _sequencia(json.dumps(sem, ensure_ascii=False), json.dumps(com, ensure_ascii=False))
     result = explain(context, transport=transport)
     assert result.shown and result.log["regenerations"] == 1 and transport.chamadas == 2
@@ -726,7 +736,7 @@ def test_registro_traz_hashes_separados():
 def test_auditoria_separa_primeira_chamada_e_regeneracao():
     context = ctx()
     sem = resposta(context, resumo="A média de outubro foi positiva no período.")
-    com = resposta(context, resumo="A média de outubro foi positiva, com amostra limitada; isso pode não se repetir.")
+    com = resposta(context, resumo="A média de outubro foi positiva em 5 anos, com amostra limitada, e o resultado variou bastante entre os anos; isso pode não se repetir.")
     result = explain(context, transport=_sequencia(json.dumps(sem, ensure_ascii=False),
                                                    json.dumps(com, ensure_ascii=False)))
     tipos = [c["tipo"] for c in result.log["calls"]]
@@ -814,3 +824,38 @@ def test_bloqueio_por_hash_sem_degradacao(monkeypatch):
         assert result.status == es.STATUS_BLOCKED and result.reason == "protocolo_nao_aprovado"
         assert result.log["calls"] == [] and result.log["regenerations"] == 0 and result.log["attempts"] == 0
         assert "context_key" not in result.log
+
+
+# ------------------------------------------------------------------ A02: recusa por política (DL1-M)
+
+def test_pedido_de_garantia_recusado_pela_politica_sem_chamada():
+    def nunca(*a):
+        raise AssertionError("o pedido de garantia não pode chegar ao provedor")
+    context = ctx(user_request=("garantia", "Garante que vou lucrar?"))
+    logs = []
+    for mode, kw in ((es.MODE_LIVE, {"transport": nunca}), (es.MODE_DEMO, {"demo_store": _DemoQueNaoPodeSerLida()})):
+        result = es.explain_experimental(context, mode=mode, api_key="k", evaluation_run=True, log_sink=logs.append,
+                                         **kw)
+        assert result.status == es.STATUS_POLICY and result.reason == "bloqueio_politica" and not result.shown
+        assert result.fallback_text == ep.REFUSAL_GUARANTEE
+        assert result.log["calls"] == [] and "context_key" not in result.log
+        assert result.log["policy_text_hash"] == "de703a62818b"
+    assert all(registro["reason"] == "bloqueio_politica" for registro in logs)
+
+
+def test_politica_decide_antes_de_montar_o_contexto():
+    result = es.policy_refusal("garantia")
+    assert result.reason == "bloqueio_politica" and result.fallback_text == ep.REFUSAL_GUARANTEE
+    assert es.policy_refusal("previsao") is None and es.policy_refusal(None) is None
+
+
+def test_recusa_por_politica_com_texto_divergente_nao_exibe(monkeypatch):
+    monkeypatch.setattr(ep, "REFUSAL_GUARANTEE", "Garantia alterada.")
+    result = es.policy_refusal("garantia")
+    assert result.reason == "protocolo_nao_aprovado" and result.fallback_text != "Garantia alterada."
+
+
+def test_leitura_alternativa_do_mesmo_numero_reprova():
+    context = ctx()
+    data = resposta(context, resumo="No período, o ativo teve retorno total de 12,34%, ou 13,10% incluindo dezembro.")
+    assert "valores_rastreaveis" in check(data, context).failed

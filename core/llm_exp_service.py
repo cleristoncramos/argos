@@ -60,6 +60,11 @@ APPROVED_HASHES = {
 }
 APPROVED_FINGERPRINT: Optional[str] = APPROVED_HASHES["impressao"]
 STATUS_EVALUATION = "avaliacao"
+STATUS_POLICY = "recusa_politica"
+REASON_POLICY = "bloqueio_politica"
+# DL1-L/DL1-M: a política decide antes do contexto e antes de qualquer chamada. O pedido de
+# garantia nunca chega ao modelo: a resposta é o texto fixo aprovado (hash `de703a62818b`).
+POLICY_REFUSALS = {ec.REQUEST_GUARANTEE: "recusa_garantia"}
 
 FALLBACK_TEXT = ep.FALLBACK_TEXT
 # Correção 1 (DL1-B): só a falha da ressalva sobre média histórica dá direito a uma
@@ -137,13 +142,34 @@ class ExperimentalExplanation(Explanation):
 
     @property
     def fallback_text(self) -> Optional[str]:
-        return None if self.shown else safe_fallback_text()
+        if self.shown:
+            return None
+        if self.reason == REASON_POLICY:
+            return ep.fixed_texts()[self.log["policy_text_id"]]
+        return safe_fallback_text()
 
 
 def safe_fallback_text() -> str:
     if ep.fixed_text_hashes()["conjunto"] == APPROVED_HASHES["textos_fixos"]:
         return ep.FALLBACK_TEXT
     return llm_service.FALLBACK_TEXT
+
+
+def policy_refusal(request_type: Optional[str], *, log_sink: Optional[Callable] = None,
+                   now: Callable = lambda: datetime.now(timezone.utc)) -> Optional[Explanation]:
+    """
+    Verificação de política do pedido, para usar ANTES de montar o contexto. Devolve a recusa
+    fixa (sem contexto, sem chamada e sem resposta salva) ou None se o pedido não é recusado
+    por política. Se o texto fixo divergir do hash aprovado, bloqueia em vez de exibi-lo.
+    """
+    text_id = POLICY_REFUSALS.get(request_type)
+    if text_id is None:
+        return None
+    log = _log(MODE_OFF, {}, now)
+    log.update(mode=None, policy_text_id=text_id, policy_text_hash=ep.fixed_text_hashes()[text_id])
+    if ep.fixed_text_hashes()["conjunto"] != APPROVED_HASHES["textos_fixos"]:
+        return _result(STATUS_BLOCKED, None, "protocolo_nao_aprovado", log, log_sink)
+    return _result(STATUS_POLICY, None, REASON_POLICY, log, log_sink)
 
 
 def _result(status: str, data, reason: str, log: dict, sink) -> Explanation:
@@ -176,6 +202,10 @@ def explain_experimental(
     log = _log(mode, context, now)
     if mode == MODE_OFF:
         return _result(STATUS_OFF, None, "desativado", log, log_sink)
+    request = context.get("user_request") if isinstance(context, dict) else None
+    refused = policy_refusal((request or {}).get("type"), log_sink=log_sink, now=now)
+    if refused is not None:
+        return refused
     if approved_hashes is None and approved_fingerprint == APPROVED_FINGERPRINT:
         approved_hashes = APPROVED_HASHES
     problem = _problem(context, mode, evaluation_run, approved_fingerprint, approved_hashes)

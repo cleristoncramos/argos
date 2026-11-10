@@ -92,6 +92,16 @@ SAMPLE_CAVEATS = (
     r"\bpoucas observacoes\b", r"\bnumero (pequeno|limitado|reduzido) de (anos|observacoes|meses)\b",
     r"\bperiodo curto\b",
 )
+# DL1-M: parágrafo que cite média ou mediana de período exige também o número de anos da
+# amostra e a dispersão entre anos (classes de expressão, com variantes).
+PERIOD_AVERAGE_TRIGGERS = (r"\bmedias?\b(?!\s+mov)", r"\bmediana\b")
+YEARS_STATEMENTS = (
+    r"\b\d+ anos\b", r"\b(19|20)\d\d (a|e|ate) (19|20)\d\d\b", r"\bamostra de \d+ (anos|meses)\b",
+)
+DISPERSION_STATEMENTS = (
+    r"\bdesvio(-padrao| padrao)?\b", r"\bdispersao\b", r"\bvari(ou|aram|acao) (muito |bastante )?(de|entre)\b",
+    r"[-+]?\d+(,\d+)?% a [-+]?\d+(,\d+)?%", r"\bamplitude\b", r"\boscil\w+ (de|entre)\b",
+)
 REPETITION_CAVEATS = (
     r"\bnao (indica|garante|significa|assegura|permite (concluir|afirmar)) que\b.{0,80}"
     r"(repet|se mant|continu|volt|ocorr)",
@@ -231,11 +241,16 @@ def missing_average_caveat(data: dict, fixed: Iterable[str]) -> list:
         folded = fold(unit)
         if not any(re.search(p, _strip(folded, fixed)) for p in HISTORICAL_AVERAGE_TRIGGERS):
             continue
-        sample = any(re.search(p, folded) for p in SAMPLE_CAVEATS)
-        repetition = any(re.search(p, folded) for p in REPETITION_CAVEATS)
-        if not (sample and repetition):
-            falta = " e ".join(x for x, ok in (("amostra limitada", sample), ("não repetição", repetition)) if not ok)
-            problems.append(f"falta {falta} em «{unit[:120]}»")
+        stripped = _strip(folded, fixed)
+        period = any(re.search(p, stripped) for p in PERIOD_AVERAGE_TRIGGERS)
+        elements = [("amostra limitada", any(re.search(p, folded) for p in SAMPLE_CAVEATS)),
+                    ("não repetição", any(re.search(p, folded) for p in REPETITION_CAVEATS))]
+        if period:
+            elements += [("número de anos", any(re.search(p, folded) for p in YEARS_STATEMENTS)),
+                         ("dispersão entre anos", any(re.search(p, folded) for p in DISPERSION_STATEMENTS))]
+        missing = [name for name, ok in elements if not ok]
+        if missing:
+            problems.append(f"falta {', '.join(missing)} em «{unit[:120]}»")
     return problems
 
 
