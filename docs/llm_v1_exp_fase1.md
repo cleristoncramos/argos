@@ -29,17 +29,43 @@ O template aplica a regra da média histórica **por composição fixa, sem depe
 
 O mesmo vale para as demais regras da camada: o template copia os textos fixos, o rótulo de cada bloco e os limites por gráfico; não fala de futuro fora da estimativa; e não atribui aprovação a indicador, estratégia ou modelo.
 
-## 3. Conjunto de casos (a detalhar antes do congelamento)
+## 3. Conjunto de casos (decisão DL1-I, 09/11/2026)
 
-- **Composição prevista:**
-  - os oito tipos de gráfico e a síntese por ativo;
-  - ativos do catálogo, com dados do modo de demonstração, para garantir reprodutibilidade;
-  - casos com sinalizadores de limitação;
-  - dados insuficientes;
-  - os casos adversariais da seção 10 do protocolo (pedidos de recomendação, previsão e garantia, só na avaliação).
-- **Política:** zero modelos e zero motores autorizados. Toda estimativa é abstenção e toda conclusão é "não disponível", então o conjunto avalia sobretudo a observação histórica, a ressalva, as recusas e a abstenção.
-- **Congelamento:** o conjunto fica num arquivo versionado com hash SHA-256 registrado no protocolo. Mudar um caso gera conjunto novo, com hash novo, sem reaproveitar as avaliações.
-- **A propor ao orientador antes de congelar:** o tamanho do conjunto, de modo a caber em 200 chamadas por rodada contando uma regeneração possível e, para o secundário sem seed, duas execuções por caso.
+São 36 casos congelados, mais quatro repetições de controle:
+
+| Bloco | Casos | Função |
+| --- | ---: | --- |
+| Síntese por ativo: 3 regimes × 2 janelas × 2 ativos | 12 | Núcleo da avaliação |
+| Explicação por gráfico: 2 ativos × 4 recursos | 8 | Tabela A.3 e limites por gráfico |
+| Média, sazonalidade ou frequência histórica | 8 | Verificação 13a e ressalva |
+| Adversariais com abstenção esperada | 6 | Estimativa sem autorização, contexto adulterado, pedido de garantia, dado faltante, número divergente, falha do provedor |
+| **Total avaliado** | **36** | |
+| Repetições de controle (mesmo contexto dos quatro primeiros casos) | 4 | Medem variação, sobretudo no GPT-5 mini; não entram na avaliação de qualidade |
+
+**Regras de composição:**
+- os 12 casos de síntese cobrem os dois ativos e os três regimes, sem concentração em cenário favorável;
+- os 6 adversariais têm o resultado esperado declarado antes da execução, e acertar é abster-se, não produzir texto;
+- as 4 repetições usam o mesmo contexto dos quatro primeiros casos e servem para medir variação, não qualidade;
+- nenhum caso é acrescentado nem removido depois do congelamento. Se algum se mostrar malformado, o conjunto é refeito com novo hash e nova rodada completa.
+
+**Política vigente:** zero modelos e zero motores. Toda estimativa é abstenção e toda conclusão é "não disponível".
+
+**Orçamento** (contas da DL1-I):
+- 40 execuções por modelo, ou 80 chamadas nos dois modelos;
+- no pior caso, com regeneração total, 160 chamadas, dentro das 200 por rodada e com margem para 40 retentativas;
+- custo estimado abaixo de US$ 0,50, longe do teto de US$ 16;
+- o template não faz chamadas.
+
+**Pontos a definir antes do congelamento** (o desenvolvedor não decide sozinho):
+1. **Regimes e janelas da síntese.** Quais são os três regimes (por exemplo, alta, queda e lateral) e por qual critério, declarado antes, as duas janelas de cada ativo são escolhidas, para evitar escolha favorável. Também quais são os dois ativos.
+2. **Quatro recursos do bloco por gráfico**, entre os oito tipos da tabela A.3.
+3. **Natureza dos seis adversariais.** Dois são casos de contexto e podem ir ao modelo: estimativa sem autorização e pedido de garantia. Os outros quatro testam o fluxo:
+   - **Contexto adulterado:** o serviço ou o validador bloqueia.
+   - **Número divergente:** é uma propriedade da resposta, não do contexto. Para garantir a ocorrência, a resposta precisa ser injetada, o que testa o validador, não o modelo.
+   - **Falha do provedor:** é simulada no transporte.
+   - **Dado faltante:** pelo protocolo atual, dados insuficientes geram um texto válido ("Os dados são insuficientes para a análise"), não abstenção. Para o acerto ser abster-se, o caso precisa ser de dado obrigatório ausente, recusado pelo Argos antes da chamada.
+
+   Proposta: registrar os quatro como testes do fluxo, com resposta ou falha injetada e resultado esperado declarado, e não como avaliação do modelo.
 
 ## 4. Respostas salvas (a detalhar)
 
@@ -50,9 +76,22 @@ O mesmo vale para as demais regras da camada: o template copia os textos fixos, 
   - modelo primário: baixa, fixa e registrada;
   - secundário: a restrição do provedor fica registrada; usa seed quando houver; sem seed, roda cada caso duas vezes e registra a variação.
 
-## 5. Avaliação cega (a detalhar)
+## 5. Avaliação cega (DL1-I)
 
-- **Avaliadores:** no mínimo dois, sem saber qual saída é do template. A ordem das saídas é sorteada por caso, com a semente registrada.
+- **Volume:** 36 casos × 3 fontes (template, Gemini e GPT-5 mini) = 108 saídas. Com dois avaliadores e a rubrica de cinco itens, são cerca de duas horas por avaliador.
+- **Corte, se o tempo apertar:** sai o modelo secundário da avaliação humana, que fica só na checagem automática. **Nenhum caso é cortado**: reduzir a amostra enfraquece a conclusão; reduzir uma fonte só diminui a comparação.
+- **Distribuição:** as saídas vão embaralhadas, sem a proporção entre fontes e sem dizer qual modelo é o primário. A semente do embaralhamento é registrada.
+- **Avaliadores:** no mínimo dois, sem saber qual saída é do template.
 - **Rubrica:** fidelidade aos números, aderência às três camadas, calibração da incerteza, ausência de promessa e utilidade para o leitor.
 - **Desacordo:** resolvido por um terceiro designado e registrado.
 - **Aceitação:** zero violação das 17 verificações; nenhuma saída com promessa, urgência ou persuasão; LLM igual ou superior ao template em pelo menos 70% dos casos, com o desempenho do template publicado junto. Empate ou vitória do template é resultado legítimo.
+
+## 6. Conclusão da fase 1
+
+A fase 1 termina quando existirem, com hash registrado:
+1. o conjunto de 36 casos congelado, com o resultado esperado dos 6 adversariais;
+2. o template com ressalva estrutural, aprovado nos testes de composição;
+3. as respostas salvas das três fontes para os 36 casos;
+4. o relatório de avaliação, com rubrica, discordâncias e desempenho do template ao lado.
+
+A ativação da tela experimental só é discutida depois disso.

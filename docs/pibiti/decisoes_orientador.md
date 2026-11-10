@@ -479,3 +479,37 @@ O mérito da decisão não muda.
 **Próxima entrega:** fase 1 completa: conjunto congelado, template com ressalva estrutural, respostas salvas com hash e o primeiro relatório de avaliação cega. A regra do template está escrita na especificação da fase 1 ([`llm_v1_exp_fase1.md`](../llm_v1_exp_fase1.md)).
 
 **Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.
+
+### DL1-I — Conjunto de casos da fase 1 (09/11/2026)
+
+Data: 09/11/2026, sujeita à confirmação do orientador. Aprova o commit da DL1-H (`9ffcda0`) com as três condições pedidas: a ordem de preenchimento de `APPROVED_HASHES` depois de `c106f6d`; a nota explícita do caso de teste; e as correções de 16 para 17 como correção de contagem. Antes do commit, foram confirmados e testados os dois comportamentos do bloqueio por hash: abstenção sem texto anterior e nenhuma degradação graciosa.
+
+Sobre a negação, registra que excluir a "negação seguida de mas" foi correto: "não garante reversão, mas o sinal está favorável" é uma afirmação, não uma negação.
+
+**Conjunto:** 36 casos congelados e 4 repetições de controle:
+
+| Bloco | Casos | Função |
+| --- | ---: | --- |
+| Síntese por ativo: 3 regimes × 2 janelas × 2 ativos | 12 | Núcleo da avaliação |
+| Explicação por gráfico: 2 ativos × 4 recursos | 8 | Tabela A.3 e limites por gráfico |
+| Média, sazonalidade ou frequência histórica | 8 | Verificação 13a e ressalva |
+| Adversariais com abstenção esperada | 6 | Estimativa sem autorização, contexto adulterado, pedido de garantia, dado faltante, número divergente, falha do provedor |
+| **Total avaliado** | **36** | |
+| Repetições de controle (mesmo contexto dos quatro primeiros casos) | 4 | Medem variação, sobretudo no GPT-5 mini; não entram na avaliação de qualidade |
+
+As regras de composição, o orçamento, a avaliação humana (108 saídas; se o tempo apertar, sai o secundário, nunca casos; saídas embaralhadas, sem proporção nem identificação do primário) e a conclusão da fase 1 estão em [`llm_v1_exp_fase1.md`](../llm_v1_exp_fase1.md), seções 3 a 6. A ativação da tela experimental só é discutida depois da fase 1.
+
+**Pontos a definir antes do congelamento** (o desenvolvedor não decide sozinho):
+1. **Regimes e janelas da síntese.** Quais são os três regimes (por exemplo, alta, queda e lateral) e por qual critério, declarado antes, as duas janelas de cada ativo são escolhidas, para evitar escolha favorável. Também quais são os dois ativos.
+2. **Quatro recursos do bloco por gráfico**, entre os oito tipos da tabela A.3.
+3. **Natureza dos seis adversariais.** Dois são casos de contexto e podem ir ao modelo: estimativa sem autorização e pedido de garantia. Os outros quatro testam o fluxo:
+   - **Contexto adulterado:** o serviço ou o validador bloqueia.
+   - **Número divergente:** é uma propriedade da resposta, não do contexto. Para garantir a ocorrência, a resposta precisa ser injetada, o que testa o validador, não o modelo.
+   - **Falha do provedor:** é simulada no transporte.
+   - **Dado faltante:** pelo protocolo atual, dados insuficientes geram um texto válido ("Os dados são insuficientes para a análise"), não abstenção. Para o acerto ser abster-se, o caso precisa ser de dado obrigatório ausente, recusado pelo Argos antes da chamada.
+
+   Proposta: registrar os quatro como testes do fluxo, com resposta ou falha injetada e resultado esperado declarado, e não como avaliação do modelo.
+
+**Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.
+
+Status: recebida em 09/11/2026. Pontos 1 a 3: aguardando o orientador.
