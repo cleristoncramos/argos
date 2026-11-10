@@ -54,14 +54,16 @@ def resposta(context, **over):
                               "periodo_fim": context["filters"]["period_end"],
                               "frequencia": context["filters"]["frequency"]},
         "observacao_historica": {
+            "rotulo": ep.BLOCK_LABELS["observacao_historica"],
             "texto": "No recorte selecionado, a volatilidade anualizada foi de 25,1%.",
             "metricas_relevantes": [{"id": "retorno_total", "valor": 12.34, "unidade": "%",
                                      "leitura": "O preço subiu no período analisado."}],
             "limite_da_evidencia": "A amostra é limitada e o resultado passado é só um recorte.",
         },
-        "estimativa": {"situacao": "abstencao", "texto": ep.ESTIMATE_ABSTENTION, "metricas_relevantes": [],
-                       "incerteza": ""},
-        "conclusao_experimental": {"situacao": "nao_disponivel", "texto": ep.CONCLUSION_UNAVAILABLE},
+        "estimativa": {"rotulo": ep.BLOCK_LABELS["estimativa"], "situacao": "abstencao", "texto": ep.ESTIMATE_ABSTENTION,
+                       "metricas_relevantes": [], "incerteza": ""},
+        "conclusao_experimental": {"rotulo": ep.BLOCK_LABELS["conclusao_experimental"], "situacao": "nao_disponivel",
+                                   "texto": ep.CONCLUSION_UNAVAILABLE},
         "limitacoes": ["Os dados são históricos e não indicam o futuro."],
         "o_que_nao_pode_ser_concluido": list(context["required_limits"]),
         "nota_educativa": ep.EDUCATIONAL_NOTE,
@@ -74,13 +76,14 @@ def resposta(context, **over):
 def resposta_autorizada(context):
     data = resposta(context, tratamento_do_pedido="sem_pedido")
     data["estimativa"] = {
+        "rotulo": ep.BLOCK_LABELS["estimativa"],
         "situacao": "apresentada",
         "texto": "Para o horizonte de 20 pregões, com dados até 2025, o modelo estimou retorno de 1,5%.",
         "metricas_relevantes": [{"id": "retorno_estimado", "valor": 1.5, "unidade": "%", "leitura": "Ponto central."},
                                 {"id": "limite_inferior", "valor": -6.2, "unidade": "%", "leitura": "Limite baixo."}],
         "incerteza": "O intervalo foi de -6,2% a 8,4%; no teste, o R² fora da amostra foi de 0,8%.",
     }
-    data["conclusao_experimental"] = {"situacao": "emitida_pelo_motor",
+    data["conclusao_experimental"] = {"rotulo": ep.BLOCK_LABELS["conclusao_experimental"], "situacao": "emitida_pelo_motor",
                                       "texto": context["decision"]["texto_conclusao"]}
     return data
 
@@ -330,7 +333,7 @@ def test_futuro_na_camada_historica_reprova():
 def test_conclusao_propria_reprova():
     context = ctx()
     data = resposta(context)
-    data["conclusao_experimental"] = {"situacao": "emitida_pelo_motor", "texto": "Sinal favorável."}
+    data["conclusao_experimental"] = {"rotulo": ep.BLOCK_LABELS["conclusao_experimental"], "situacao": "emitida_pelo_motor", "texto": "Sinal favorável."}
     assert "conclusao_autorizada" in check(data, context).failed
     context = authorized_ctx()
     data = resposta_autorizada(context)
@@ -349,7 +352,7 @@ def test_pedido_de_garantia_de_lucro():
     context = ctx(user_request=("garantia", "Garante que vou lucrar?"))
     data = resposta(context, resumo=ep.REFUSAL_GUARANTEE, tratamento_do_pedido="recusa_garantia",
                     o_que_nao_pode_ser_concluido=[ep.REFUSAL_LIMIT])
-    data["observacao_historica"] = {"texto": ep.NOT_APPLICABLE, "metricas_relevantes": [],
+    data["observacao_historica"] = {"rotulo": ep.BLOCK_LABELS["observacao_historica"], "texto": ep.NOT_APPLICABLE, "metricas_relevantes": [],
                                     "limite_da_evidencia": ep.REFUSAL_LIMIT}
     assert check(data, context).ok, check(data, context).as_dict()
     promessa = copy.deepcopy(data)
@@ -362,7 +365,7 @@ def test_pedido_de_recomendacao_direta():
     context = ctx(user_request=("recomendacao", "Devo comprar PETR4 agora?"))
     data = resposta(context, resumo=ep.REFUSAL_RECOMMENDATION, tratamento_do_pedido="recusa_recomendacao",
                     o_que_nao_pode_ser_concluido=[ep.REFUSAL_LIMIT])
-    data["observacao_historica"] = {"texto": ep.NOT_APPLICABLE, "metricas_relevantes": [],
+    data["observacao_historica"] = {"rotulo": ep.BLOCK_LABELS["observacao_historica"], "texto": ep.NOT_APPLICABLE, "metricas_relevantes": [],
                                     "limite_da_evidencia": ep.REFUSAL_LIMIT}
     assert check(data, context).ok
     atende = resposta(context, resumo="Compre agora, aproveite a queda.")
@@ -463,6 +466,8 @@ def _estrutura(data, caminho, valor):
     (("observacao_historica", "metricas_relevantes"), "lista"),
     (("limitacoes",), []),
     (("nota_educativa",), "Outra nota."),
+    (("observacao_historica", "rotulo"), "Observação histórica"),
+    (("conclusao_experimental", "rotulo"), KeyError),
 ])
 def test_estrutura_invalida_reprova(caminho, valor):
     context = ctx()
@@ -545,7 +550,7 @@ def test_rodada_de_avaliacao_nunca_exibe():
     context = ctx(user_request=("garantia", "Garante lucro?"))
     data = resposta(context, resumo=ep.REFUSAL_GUARANTEE, tratamento_do_pedido="recusa_garantia",
                     o_que_nao_pode_ser_concluido=[ep.REFUSAL_LIMIT])
-    data["observacao_historica"] = {"texto": ep.NOT_APPLICABLE, "metricas_relevantes": [],
+    data["observacao_historica"] = {"rotulo": ep.BLOCK_LABELS["observacao_historica"], "texto": ep.NOT_APPLICABLE, "metricas_relevantes": [],
                                     "limite_da_evidencia": ep.REFUSAL_LIMIT}
     result = explain(context, transport=_transport(json.dumps(data, ensure_ascii=False)), evaluation_run=True,
                      approved_fingerprint=None)
@@ -572,3 +577,118 @@ def test_servico_aceita_resposta_ja_decodificada():
     context = ctx()
     demo = {llm_service.context_key(context): resposta(context)}
     assert explain(context, mode=es.MODE_DEMO, demo_store=demo).shown
+
+
+# ------------------------------------------------------------------ DL1-B: correções 1 e 4
+
+def test_textos_fixos_com_marca_de_experimental_e_motor_intacto():
+    for texto in (ep.REFUSAL_GUARANTEE, ep.ESTIMATE_ABSTENTION, ep.CONCLUSION_UNAVAILABLE):
+        assert "experimental" in texto
+    assert "estratégia experimental" in ep.CONCLUSION_UNAVAILABLE and "decisão experimental" in ep.CONCLUSION_UNAVAILABLE
+    assert ec.CONCLUSION_TEXTS["sinal_favoravel"].startswith("Para o horizonte selecionado, o modelo produziu")
+    assert es.FALLBACK_TEXT == ep.FALLBACK_TEXT
+
+
+def test_hashes_separados_de_prompt_esquema_e_textos():
+    hashes = ep.fixed_text_hashes()
+    assert set(hashes) == set(ep.APPROVED_TEXT_IDS) | {"conjunto"}
+    assert len({ep.prompt_hash(), ep.schema_hash(), ep.prompt_fingerprint(), hashes["conjunto"]}) == 4
+    assert all(len(h) == 12 for h in hashes.values())
+
+
+SAZONAL = ("No recorte selecionado, outubro apresentou média histórica superior à de setembro. "
+           "Entretanto, houve anos com resultado negativo e a amostra é limitada.")
+
+
+@pytest.mark.parametrize("texto,ok", [
+    (SAZONAL + " Isso não indica que o próximo período repetirá o resultado.", True),
+    ("A mediana de outubro foi positiva em poucos anos; o resultado pode não se repetir.", True),
+    (SAZONAL, False),                                                           # sem a não repetição
+    ("A média histórica de outubro foi positiva. Isso não indica que o próximo período repetirá o resultado.",
+     False),                                                                    # sem a amostra limitada
+    ("O preço ficou acima das médias móveis no período.", True),               # indicador, não média histórica
+])
+def test_ressalva_sobre_media_historica(texto, ok):
+    context = ctx()
+    data = resposta(context)
+    data["observacao_historica"]["texto"] = texto
+    data["observacao_historica"]["limite_da_evidencia"] = "O resultado depende do recorte escolhido."
+    assert ("ressalva_media_historica" not in check(data, context).failed) is ok
+
+
+def test_ressalva_vale_por_paragrafo():
+    context = ctx()
+    data = resposta(context, resumo="A média de outubro foi positiva no período.")
+    data["observacao_historica"]["limite_da_evidencia"] = (
+        "A amostra é limitada e o resultado não se repete necessariamente.")
+    assert "ressalva_media_historica" in check(data, context).failed       # ressalva em outro parágrafo
+    data["resumo"] = "A média de outubro foi positiva, com amostra limitada; isso pode não se repetir."
+    assert check(data, context).ok, check(data, context).as_dict()
+
+
+@pytest.mark.parametrize("frase,ok", [
+    ("O sinal do indicador não garante reversão do preço.", True),
+    ("O RSI subiu no período analisado.", True),
+    ("A estratégia é recomendada para este ativo.", False),
+    ("O modelo foi aprovado e é confiável.", False),
+])
+def test_atribuicao_a_indicador_estrategia_ou_modelo(frase, ok):
+    context = ctx()
+    data = resposta(context)
+    data["limitacoes"] = [frase]
+    assert ("sem_recomendacao_propria" not in check(data, context).failed) is ok
+
+
+def _sequencia(*conteudos):
+    respostas = list(conteudos)
+
+    def transport(payload, key, timeout):
+        transport.chamadas = getattr(transport, "chamadas", 0) + 1
+        return {"choices": [{"message": {"content": respostas.pop(0)}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 1000, "completion_tokens": 400}}
+    return transport
+
+
+def test_uma_regeneracao_quando_so_falta_a_ressalva():
+    context = ctx()
+    sem = resposta(context, resumo="A média de outubro foi positiva no período.")
+    com = resposta(context, resumo="A média de outubro foi positiva, com amostra limitada; isso pode não se repetir.")
+    transport = _sequencia(json.dumps(sem, ensure_ascii=False), json.dumps(com, ensure_ascii=False))
+    result = explain(context, transport=transport)
+    assert result.shown and result.log["regenerations"] == 1 and transport.chamadas == 2
+    assert result.log["input_tokens"] == 2000 and result.log["attempts"] == 2
+    transport = _sequencia(json.dumps(sem, ensure_ascii=False), json.dumps(sem, ensure_ascii=False))
+    result = explain(context, transport=transport)
+    assert result.status == es.STATUS_BLOCKED and result.log["regenerations"] == 1 and transport.chamadas == 2
+
+
+def test_outras_falhas_nao_regeneram_e_limite_impede_regeneracao():
+    context = ctx()
+    ruim = resposta(context, resumo="Compre agora; a média de outubro foi positiva.")
+    transport = _sequencia(json.dumps(ruim, ensure_ascii=False))
+    assert explain(context, transport=transport).log["regenerations"] == 0 and transport.chamadas == 1
+    sem = resposta(context, resumo="A média de outubro foi positiva no período.")
+    transport = _sequencia(json.dumps(sem, ensure_ascii=False))
+    result = explain(context, transport=transport, limiter=llm_service.UsageLimiter(max_calls=1))
+    assert result.status == es.STATUS_BLOCKED and transport.chamadas == 1
+
+
+def test_falha_do_provedor_na_regeneracao():
+    context = ctx()
+    sem = json.dumps(resposta(context, resumo="A média de outubro foi positiva no período."), ensure_ascii=False)
+    estado = {"n": 0}
+
+    def transport(payload, key, timeout):
+        estado["n"] += 1
+        if estado["n"] > 1:
+            raise llm_client.ApiError(503, "fora")
+        return {"choices": [{"message": {"content": sem}, "finish_reason": "stop"}], "usage": {}}
+    result = explain(context, transport=transport)
+    assert result.status == es.STATUS_UNAVAILABLE and result.log["regenerations"] == 1
+
+
+def test_registro_traz_hashes_separados():
+    logs = []
+    explain(ctx(), mode=es.MODE_OFF, log_sink=logs.append)
+    assert logs[0]["prompt_hash"] == ep.prompt_hash() and logs[0]["schema_hash"] == ep.schema_hash()
+    assert logs[0]["fixed_texts_hash"] == ep.fixed_text_hashes()["conjunto"]

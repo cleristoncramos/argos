@@ -28,7 +28,9 @@ from core.llm_validation import (
     Check,
     ValidationResult,
     _is_traceable,
+    _negated,
     _numbers_in,
+    _sentences,
     _soft_hits,
     fold,
 )
@@ -47,6 +49,7 @@ CHECK_NAMES = (
     "sem_termos_proibidos",
     "sem_promessa_nem_persuasao",
     "limitacoes",
+    "ressalva_media_historica",
     "limite_da_evidencia",
     "pedido_tratado",
     "politica_de_liberacao",
@@ -68,6 +71,34 @@ PROMISE_TERMS = (
     r"\bretorno (certo|garantido|assegurado)\b", r"\bcom certeza\b", r"\bcertamente\b", r"\binfalive\w*",
     r"\bseguramente\b",
 )
+# Correção 4 (DL1-B): nenhuma frase atribui aprovação, recomendação, validação ou garantia
+# a indicador, estratégia, regra, sinal ou modelo (aceito só em frase negada).
+ATTRIBUTION_TERMS = (
+    r"\b(indicador(es)?|rsi|macd|estrategias?|regras?|sinal|sinais|modelos?)\b[^.;:]{0,60}?"
+    r"\b(aprovad\w*|recomendad\w*|recomenda\w*|validad[oa]s?|comprovad\w*|garant\w*|confiave\w*|eficaz\w*|"
+    r"infalive\w*|segur[oa]s?)",
+)
+
+# Correção 1 (DL1-B): frase com média, comparação entre períodos ou frequência histórica
+# exige, no mesmo parágrafo, limitação da amostra e não garantia de repetição. A checagem é
+# por classe de expressão; médias móveis (indicador) não disparam a regra.
+HISTORICAL_AVERAGE_TRIGGERS = (
+    r"\bmedias?\b(?!\s+mov)", r"\bmediana\b", r"\b(superior|inferior)(es)? (a|ao|aos|as|a de|a do|ao de|ao do)\b",
+    r"\b(acima|abaixo) da media\b", r"\banos positivos\b", r"\bproporcao de (anos|meses|periodos)\b",
+    r"\bfrequencia historica\b", r"\bem \d+ de \d+ (anos|meses)\b", r"\bem comparacao (com|a)\b",
+)
+SAMPLE_CAVEATS = (
+    r"\bamostra (e |foi |era |ainda e )?(limitada|pequena|curta|reduzida)\b", r"\bpoucos anos\b",
+    r"\bpoucas observacoes\b", r"\bnumero (pequeno|limitado|reduzido) de (anos|observacoes|meses)\b",
+    r"\bperiodo curto\b",
+)
+REPETITION_CAVEATS = (
+    r"\bnao (indica|garante|significa|assegura|permite (concluir|afirmar)) que\b.{0,80}"
+    r"(repet|se mant|continu|volt|ocorr)",
+    r"\b(pode|podera) nao se repetir\b", r"\bnao se repete(m)? necessariamente\b",
+    r"\bsem garantia de (que )?.{0,40}repet", r"\bnao ha garantia de repeticao\b",
+)
+
 _INSUFFICIENT = re.compile(r"insuficient|nao (sao|ha|foi possivel|e possivel)\b.{0,40}suficiente")
 
 
@@ -118,12 +149,15 @@ def _structure_problem(data: dict) -> Optional[str]:
     if not isinstance(filters["ativos"], list) or not all(isinstance(a, str) for a in filters["ativos"]):
         return "'filtros_aplicados.ativos' deve ser lista de textos"
     hist, est, concl = data["observacao_historica"], data["estimativa"], data["conclusao_experimental"]
-    if not isinstance(hist, dict) or set(hist) != {"texto", "metricas_relevantes", "limite_da_evidencia"}:
+    if not isinstance(hist, dict) or set(hist) != {"rotulo", "texto", "metricas_relevantes", "limite_da_evidencia"}:
         return "'observacao_historica' incompleta"
-    if not isinstance(est, dict) or set(est) != {"situacao", "texto", "metricas_relevantes", "incerteza"}:
+    if not isinstance(est, dict) or set(est) != {"rotulo", "situacao", "texto", "metricas_relevantes", "incerteza"}:
         return "'estimativa' incompleta"
-    if not isinstance(concl, dict) or set(concl) != {"situacao", "texto"}:
+    if not isinstance(concl, dict) or set(concl) != {"rotulo", "situacao", "texto"}:
         return "'conclusao_experimental' incompleta"
+    for name in ep.BLOCK_LABELS:
+        if data[name]["rotulo"] != ep.BLOCK_LABELS[name]:
+            return f"'{name}.rotulo' diferente do cabeçalho fixo do bloco"
     for name, value in (("observacao_historica.texto", hist["texto"]),
                         ("observacao_historica.limite_da_evidencia", hist["limite_da_evidencia"]),
                         ("estimativa.texto", est["texto"]), ("conclusao_experimental.texto", concl["texto"])):
@@ -163,6 +197,46 @@ def _metric_problems(cited: list, reference: list, layer: str) -> tuple[list, in
 def _untraceable(text: str, allowed: list, remove: list) -> list:
     return [readings[0][0] for readings in _numbers_in(text, remove)
             if not any(_is_traceable(v, d, allowed) for v, d in readings)]
+
+
+def attribution_hits(folded: str) -> list:
+    """
+    (termo, frase) em que indicador, estratégia, regra, sinal ou modelo recebe aprovação,
+    recomendação, validação ou garantia. A frase só passa se houver negação antes do termo
+    ou entre o termo e o atributo ("o sinal do indicador não garante reversão").
+    """
+    hits = []
+    for sentence in _sentences(folded):
+        for pattern in ATTRIBUTION_TERMS:
+            for match in re.finditer(pattern, sentence):
+                between = sentence[match.start():match.start(match.lastindex)]
+                if not _negated(sentence[: match.start()]) and not _negated(between):
+                    hits.append((match.group(0), sentence.strip()))
+    return hits
+
+
+def _paragraphs(data: dict) -> list:
+    """Unidades de texto em que a ressalva da correção 1 precisa aparecer junto da afirmação."""
+    hist, est = data["observacao_historica"], data["estimativa"]
+    units = [data["resumo"],
+             _texts([hist["texto"], *_metric_texts(hist), hist["limite_da_evidencia"]]),
+             _texts([est["texto"], *_metric_texts(est), est["incerteza"]])]
+    return units + list(data["limitacoes"]) + list(data["o_que_nao_pode_ser_concluido"])
+
+
+def missing_average_caveat(data: dict, fixed: Iterable[str]) -> list:
+    """Parágrafos com média, comparação ou frequência histórica sem as duas ressalvas."""
+    problems = []
+    for unit in _paragraphs(data):
+        folded = fold(unit)
+        if not any(re.search(p, _strip(folded, fixed)) for p in HISTORICAL_AVERAGE_TRIGGERS):
+            continue
+        sample = any(re.search(p, folded) for p in SAMPLE_CAVEATS)
+        repetition = any(re.search(p, folded) for p in REPETITION_CAVEATS)
+        if not (sample and repetition):
+            falta = " e ".join(x for x, ok in (("amostra limitada", sample), ("não repetição", repetition)) if not ok)
+            problems.append(f"falta {falta} em «{unit[:120]}»")
+    return problems
 
 
 def validate_experimental(
@@ -289,9 +363,9 @@ def validate_experimental(
     add("sem_futuro_fora_da_estimativa", not future,
         f"futuro fora da estimativa: '{future[0][0]}' em «{future[0][1][:140]}»" if future else "")
     everything = _strip(fold(all_text), fixed)
-    rec = _soft_hits(everything, SOFT_RECOMMENDATION)
+    rec = _soft_hits(everything, SOFT_RECOMMENDATION) + attribution_hits(everything)
     add("sem_recomendacao_propria", not rec,
-        f"recomendação: '{rec[0][0]}' em «{rec[0][1][:140]}»" if rec else "")
+        f"recomendação ou atribuição: '{rec[0][0]}' em «{rec[0][1][:140]}»" if rec else "")
     hard = [m.group(0) for p in HARD_TERMS for m in re.finditer(p, everything)]
     hard += [h[0] for h in _soft_hits(everything, SOFT_JUDGMENT)]
     add("sem_termos_proibidos", not hard, f"termo proibido: '{hard[0]}'" if hard else "")
@@ -305,6 +379,10 @@ def validate_experimental(
     missing = [flag for flag in ctx_hist["limitation_flags"]
                if not any(k in lim_text for k in LIMITATION_KEYWORDS[flag])]
     add("limitacoes", refusal or not missing, f"limitação obrigatória ausente: {missing[0]}" if missing else "")
+
+    # 13a. Ressalva sobre média histórica (correção 1) ------------------------------------
+    caveats = missing_average_caveat(data, fixed)
+    add("ressalva_media_historica", not caveats, caveats[0] if caveats else "")
 
     # 14. Limite por gráfico ou da síntese -----------------------------------------------
     items = {fold(x).strip() for x in data["o_que_nao_pode_ser_concluido"]}

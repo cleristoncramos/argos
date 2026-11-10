@@ -1,6 +1,6 @@
 # Protocolo da camada de linguagem — v1.0-experimental
 
-**Situação:** protocolo **aprovado com condições** pela DL1 (09/11/2026, sujeita à confirmação original) · textos fixos **pendentes de correção** (seção 13) · impressão digital ainda não aprovada (atual `4268ef4e27ec`) · política de liberação 1.0 (`477ef9b1d362`) · não ligada a nenhuma tela
+**Situação:** protocolo **aprovado com condições** pela DL1 (09/11/2026, sujeita à confirmação original) · correções 1 e 4 aplicadas (seção 13.3) · impressão combinada `6f50a1cadd7c` (prompt `b5ef179c9376`, esquema `9a4cb5cb5a0c`, cinco textos `95845577dba9`), **ainda não registrada como aprovada** · política de liberação 1.0 (`477ef9b1d362`) · não ligada a nenhuma tela
 **Código:** `core/llm_exp_policy.py` (política), `core/llm_exp_context.py` (contexto), `core/llm_exp_prompts.py` (prompt e esquema), `core/llm_exp_validation.py` (validação), `core/llm_exp_service.py` (fluxo). Testes em `tests/test_llm_exp.py`.
 **Origem:** [plano de reformulação](plano_reformulacao_preditiva.md), seções 2.3, 4 e 6 (etapa 4), e instrução de trabalho de 08/11/2026.
 
@@ -165,12 +165,12 @@ O esquema é `OUTPUT_SCHEMA` em `core/llm_exp_prompts.py`, enviado como JSON Sch
 
 ## 7. Verificações antes da exibição
 
-Todas precisam passar; uma falha bloqueia a resposta. As comparações ignoram acentos e maiúsculas, e as frases fixas copiadas literalmente são retiradas antes da análise de linguagem.
+Todas as 17 precisam passar (as 16 aprovadas na DL1-A e a 13a, acrescentada pela correção 1); uma falha bloqueia a resposta. As comparações ignoram acentos e maiúsculas, e as frases fixas copiadas literalmente são retiradas antes da análise de linguagem.
 
 | # | Verificação | O que exige |
 | --- | --- | --- |
 | 1 | `json_valido` | A resposta é um objeto JSON |
-| 2 | `campos_obrigatorios` | Estrutura exata do esquema, situações dentro das listas, textos não vazios e curtos, até 6 métricas por camada, listas de 1 a 4 itens, nota fixa |
+| 2 | `campos_obrigatorios` | Estrutura exata do esquema, situações dentro das listas, textos não vazios e curtos, até 6 métricas por camada, listas de 1 a 4 itens, nota fixa e o **rótulo fixo de cada bloco** ("Observação histórica (camada experimental)", "Estimativa experimental", "Conclusão experimental"; correção 4) |
 | 3 | `ativo_consistente` | Ativo igual ao do contexto e nenhum outro ativo do catálogo citado |
 | 4 | `periodo_frequencia` | Datas e frequência iguais às do contexto |
 | 5 | `metricas_por_camada` | Métrica histórica só da camada histórica e métrica da estimativa só da estimativa, com o mesmo valor (tolerância de arredondamento) e unidade. Dados insuficientes: nenhuma métrica e aviso no resumo. Recusa: nenhuma métrica |
@@ -178,10 +178,11 @@ Todas precisam passar; uma falha bloqueia a resposta. As comparações ignoram a
 | 7 | `estimativa_autorizada` | Sem autorização: abstenção com texto fixo, sem métricas e sem incerteza. Com autorização: ponto, ao menos uma medida de incerteza e descrição da incerteza |
 | 8 | `conclusao_autorizada` | Sem motor autorizado: texto fixo de indisponível. Com motor: cópia literal do texto emitido, sem acréscimo |
 | 9 | `sem_futuro_fora_da_estimativa` | Linguagem de futuro ("vai", "tende a", "próximo mês", "previsão"...) só no bloco de estimativa apresentada; fora dele, só em frase negada |
-| 10 | `sem_recomendacao_propria` | Linguagem de recomendação só em frase negada |
+| 10 | `sem_recomendacao_propria` | Linguagem de recomendação só em frase negada. Também reprova a frase que atribui aprovação, recomendação, validação ou garantia a indicador, estratégia, regra, sinal ou modelo, salvo com negação antes do termo ou entre o termo e o atributo (correção 4) |
 | 11 | `sem_termos_proibidos` | Termos da v0.6 (compre, invista, aposte, "deve investir" em qualquer forma; barato, caro, "vale a pena"... só negados) |
 | 12 | `sem_promessa_nem_persuasao` | **Bloqueio de promessa de retorno.** Persuasão e urgência proibidas mesmo negadas: aproveite, não perca, imperdível, última chance, corra, urgente, agora mesmo, só hoje. Promessa e falsa certeza só em frase negada: garantia, lucro ou retorno certo/garantido, sem risco, com certeza, certamente, infalível, seguramente |
 | 13 | `limitacoes` | Cada sinalizador ativo aparece nas limitações, pelas palavras da v0.6 (dispensado nas recusas, que têm texto fixo) |
+| 13a | `ressalva_media_historica` | **Correção 1.** Todo parágrafo com média, mediana, comparação entre períodos ou frequência histórica (médias móveis não contam) tem as duas ressalvas: amostra limitada e não garantia de repetição. A checagem é por classe de expressão, com cinco variantes aceitas para cada ressalva. Parágrafo é o resumo, cada bloco ou cada item de lista. Falha só desta verificação dá direito a **uma regeneração**; se falhar de novo, abstenção |
 | 14 | `limite_da_evidencia` | Cada frase de `required_limits` aparece literalmente em `o_que_nao_pode_ser_concluido` (nas recusas, o limite fixo da recusa) |
 | 15 | `pedido_tratado` | Sem pedido: `sem_pedido`. Recomendação ou garantia: recusa com os textos fixos em todas as camadas. Previsão sem modelo: resumo começa pela abstenção. Previsão com modelo autorizado: estimativa apresentada |
 | 16 | `politica_de_liberacao` | Integridade do contexto: família correta, recomendação desligada e estimativa ou conclusão "disponível" só se a política, consultada de novo pelo validador, as autorizar. Detecta contexto adulterado |
@@ -305,3 +306,28 @@ A DL1 aprovou o protocolo com condições e definiu acesso (R3), orçamento e fa
 **Próxima entrega (fase 1):** conjunto de casos congelado, template como referência e respostas salvas. A avaliação humana só começa quando os três existirem com hash.
 
 **Estado:** a política de liberação continua com zero modelos e zero motores. O serviço bloqueia por padrão (`protocolo_nao_aprovado`) e nenhuma tela usa a camada.
+
+### 13.3 Correções aplicadas e hashes (09/11/2026)
+
+Commit separado do registro da DL1, conforme a autorização.
+
+- **Correção 4, textos fixos:** "modelo experimental autorizado" na recusa de garantia; "modelo preditivo experimental" na abstenção da estimativa; "estratégia experimental" e "motor de decisão experimental" na conclusão indisponível.
+- **Correção 4, motor de decisão:** `CONCLUSION_TEXTS` não foi alterado. A marca fica no rótulo "Conclusão experimental".
+- **Correção 4, texto gerado:** o campo `rotulo`, com valor fixo, entra em cada bloco do esquema. O prompt (regra 9b) e o validador (verificações 2 e 10) proíbem atribuir aprovação, recomendação, validação ou garantia a indicador, estratégia, regra, sinal ou modelo.
+- **Correção 1, texto gerado:** a regra 9a do prompt, a verificação 13a do validador e uma regeneração no serviço, só quando essa é a única falha, contada no limite de chamadas. A regra no template fica para a fase 1, quando o template for construído.
+- **Fallback:** o texto passou para o módulo de textos fixos, sem mudança de redação, para entrar no hash do conjunto.
+
+| Item | Hash (SHA-256, 12 caracteres) |
+| --- | --- |
+| Prompt (sistema e instruções) | `b5ef179c9376` |
+| Esquema de saída | `9a4cb5cb5a0c` |
+| Impressão combinada (prompt, instruções e esquema) | `6f50a1cadd7c` |
+| Recusa de garantia | `de703a62818b` |
+| Abstenção da estimativa | `b05df10c8f4b` |
+| Conclusão indisponível | `63ca156584c8` |
+| Nota educativa | `814fb90ff2c3` |
+| Fallback | `2ce80ff863f4` |
+| Conjunto dos cinco textos | `95845577dba9` |
+| Conjunto de casos | Pendente (fase 1) |
+
+Os valores vêm de `prompt_hash()`, `schema_hash()`, `prompt_fingerprint()` e `fixed_text_hashes()` em `core/llm_exp_prompts.py`. Cada execução os grava no registro de uso. `APPROVED_FINGERPRINT` continua vazio: o portão de ativação exige a aprovação do orientador com hash.

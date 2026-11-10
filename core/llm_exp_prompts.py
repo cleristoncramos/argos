@@ -17,19 +17,33 @@ from core.llm_prompts import REFUSAL_TEXT
 PROMPT_VERSION = "v1.0-experimental"
 
 # Textos fixos. A recusa de recomendação é a frase do orientador (10/10/2026). Os
-# demais são propostas do desenvolvedor, a aprovar junto com o protocolo.
+# demais tiveram a redação aprovada na DL1 (09/11/2026), com a correção 4 (marca de
+# experimental na própria frase) aplicada aos três que citam modelo ou estratégia.
 REFUSAL_RECOMMENDATION = REFUSAL_TEXT
 REFUSAL_GUARANTEE = (
     "Nenhum resultado de investimento pode ser garantido. O Argos DataLab apresenta dados históricos e, "
-    "quando houver modelo autorizado, estimativas com incerteza e limitações."
+    "quando houver modelo experimental autorizado, estimativas com incerteza e limitações."
 )
 ESTIMATE_ABSTENTION = (
-    "Não há modelo preditivo validado e autorizado para este ativo e horizonte; por isso, nenhuma "
-    "estimativa é apresentada."
+    "Não há modelo preditivo experimental validado e autorizado para este ativo e horizonte; por isso, "
+    "nenhuma estimativa é apresentada."
 )
 CONCLUSION_UNAVAILABLE = (
-    "Nenhuma conclusão sobre estratégia está disponível: não há motor de decisão autorizado para este ativo."
+    "Nenhuma conclusão sobre estratégia experimental está disponível: não há motor de decisão experimental "
+    "autorizado para este ativo."
 )
+FALLBACK_TEXT = (
+    "A explicação experimental não está disponível agora. Os gráficos, as métricas e os textos educativos "
+    "do Argos continuam disponíveis. Os dados são históricos e a análise tem finalidade educativa; não é "
+    "recomendação de investimento."
+)
+# Correção 4, texto gerado: a marca de experimental fica no rótulo de cada bloco
+# (o texto do motor de decisão fica intacto e é exibido sob "Conclusão experimental").
+BLOCK_LABELS = {
+    "observacao_historica": "Observação histórica (camada experimental)",
+    "estimativa": "Estimativa experimental",
+    "conclusao_experimental": "Conclusão experimental",
+}
 NOT_APPLICABLE = "Não se aplica a este pedido."
 REFUSAL_LIMIT = "Os dados históricos não permitem concluir o que fazer nem o que acontecerá depois."
 EDUCATIONAL_NOTE = (
@@ -61,6 +75,8 @@ REGRAS DE CONTEÚDO
 7. Limitações: em "limitacoes", um item para cada sinalizador de "historical.limitation_flags", com as palavras: poucas_observacoes → "poucas observações"; poucos_anos → "poucos anos"; mes_em_andamento → "mês em andamento"; preco_nao_positivo → "preço menor ou igual a zero". Sempre inclua ao menos "Os dados são históricos e não indicam o futuro." quando não houver estimativa autorizada.
 8. Limite por gráfico: copie em "o_que_nao_pode_ser_concluido", letra por letra, cada frase de "required_limits". Você pode acrescentar outras frases curtas.
 9. Dados insuficientes: se "status" for "dados_insuficientes", comece o resumo com "Os dados são insuficientes para a análise" e deixe as métricas da observação histórica vazias.
+9a. Média histórica: sempre que um trecho citar média, mediana, comparação entre períodos ou frequência histórica (por exemplo, "anos positivos"), o mesmo trecho (o mesmo campo ou o mesmo bloco) precisa dizer que a amostra é limitada ("amostra limitada", "poucos anos") e que o resultado não indica repetição ("não indica que o próximo período repetirá o resultado").
+9b. Rótulos e atribuição: preencha "rotulo" de cada bloco exatamente com "{BLOCK_LABELS['observacao_historica']}", "{BLOCK_LABELS['estimativa']}" e "{BLOCK_LABELS['conclusao_experimental']}". Não atribua aprovação, recomendação, validação ou garantia a indicador, estratégia, regra, sinal ou modelo.
 10. Pedidos (só existem em testes; o aplicativo não tem campo livre):
    - sem "user_request": "tratamento_do_pedido" = "sem_pedido".
    - "recomendacao": "recusa_recomendacao"; resumo exatamente "{REFUSAL_RECOMMENDATION}".
@@ -73,9 +89,9 @@ SAÍDA
 Responda somente com o objeto JSON do esquema:
 - resumo: no máximo 3 frases.
 - tratamento_do_pedido, filtros_aplicados (ativos, periodo_inicio, periodo_fim e frequencia iguais aos do contexto).
-- observacao_historica: texto, metricas_relevantes (até 6 itens {{id, valor, unidade, leitura}}, leitura de até 20 palavras), limite_da_evidencia.
-- estimativa: situacao, texto, metricas_relevantes, incerteza.
-- conclusao_experimental: situacao, texto.
+- observacao_historica: rotulo, texto, metricas_relevantes (até 6 itens {{id, valor, unidade, leitura}}, leitura de até 20 palavras), limite_da_evidencia.
+- estimativa: rotulo, situacao, texto, metricas_relevantes, incerteza.
+- conclusao_experimental: rotulo, situacao, texto.
 - limitacoes: de 1 a 4 frases curtas, nenhuma vazia.
 - o_que_nao_pode_ser_concluido: de 1 a 4 frases curtas, incluindo as de "required_limits".
 - nota_educativa: exatamente "{EDUCATIONAL_NOTE}"
@@ -129,8 +145,9 @@ OUTPUT_SCHEMA = {
         "observacao_historica": {
             "type": "object",
             "additionalProperties": False,
-            "required": ["texto", "metricas_relevantes", "limite_da_evidencia"],
+            "required": ["rotulo", "texto", "metricas_relevantes", "limite_da_evidencia"],
             "properties": {
+                "rotulo": {"type": "string", "enum": [BLOCK_LABELS["observacao_historica"]]},
                 "texto": {"type": "string"},
                 "metricas_relevantes": {"type": "array", "items": _METRIC},
                 "limite_da_evidencia": {"type": "string"},
@@ -139,8 +156,9 @@ OUTPUT_SCHEMA = {
         "estimativa": {
             "type": "object",
             "additionalProperties": False,
-            "required": ["situacao", "texto", "metricas_relevantes", "incerteza"],
+            "required": ["rotulo", "situacao", "texto", "metricas_relevantes", "incerteza"],
             "properties": {
+                "rotulo": {"type": "string", "enum": [BLOCK_LABELS["estimativa"]]},
                 "situacao": {"type": "string", "enum": list(ESTIMATE_STATES)},
                 "texto": {"type": "string"},
                 "metricas_relevantes": {"type": "array", "items": _METRIC},
@@ -150,8 +168,9 @@ OUTPUT_SCHEMA = {
         "conclusao_experimental": {
             "type": "object",
             "additionalProperties": False,
-            "required": ["situacao", "texto"],
+            "required": ["rotulo", "situacao", "texto"],
             "properties": {
+                "rotulo": {"type": "string", "enum": [BLOCK_LABELS["conclusao_experimental"]]},
                 "situacao": {"type": "string", "enum": list(CONCLUSION_STATES)},
                 "texto": {"type": "string"},
             },
@@ -182,6 +201,41 @@ def build_messages(context: dict) -> list:
     return [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": user_prompt(context)}]
 
 
+def _short_hash(material) -> str:
+    text = json.dumps(material, ensure_ascii=False, sort_keys=True)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:12]
+
+
+# Os cinco textos fixos submetidos na DL1 (a recusa de recomendação é a da v0.6, já aprovada).
+APPROVED_TEXT_IDS = ("recusa_garantia", "abstencao_estimativa", "conclusao_indisponivel", "nota_educativa", "fallback")
+
+
+def fixed_texts() -> dict:
+    return {
+        "recusa_garantia": REFUSAL_GUARANTEE,
+        "abstencao_estimativa": ESTIMATE_ABSTENTION,
+        "conclusao_indisponivel": CONCLUSION_UNAVAILABLE,
+        "nota_educativa": EDUCATIONAL_NOTE,
+        "fallback": FALLBACK_TEXT,
+    }
+
+
+def prompt_hash() -> str:
+    """Hash do prompt (sistema e instruções), sem o esquema (DL1-A)."""
+    return _short_hash([SYSTEM_PROMPT, _INSTRUCTIONS])
+
+
+def schema_hash() -> str:
+    """Hash do esquema de saída (DL1-A)."""
+    return _short_hash(OUTPUT_SCHEMA)
+
+
+def fixed_text_hashes() -> dict:
+    """Hash de cada um dos cinco textos fixos e do conjunto (DL1-B)."""
+    texts = fixed_texts()
+    return {**{name: _short_hash(text) for name, text in texts.items()}, "conjunto": _short_hash(texts)}
+
+
 def prompt_fingerprint() -> str:
-    material = json.dumps([SYSTEM_PROMPT, _INSTRUCTIONS, OUTPUT_SCHEMA], ensure_ascii=False, sort_keys=True)
-    return hashlib.sha256(material.encode("utf-8")).hexdigest()[:12]
+    """Impressão combinada (prompt, instruções e esquema), usada para aprovar a exibição."""
+    return _short_hash([SYSTEM_PROMPT, _INSTRUCTIONS, OUTPUT_SCHEMA])

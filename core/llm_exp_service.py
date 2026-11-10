@@ -49,11 +49,11 @@ from core.llm_service import (
 APPROVED_FINGERPRINT: Optional[str] = None
 STATUS_EVALUATION = "avaliacao"
 
-FALLBACK_TEXT = (
-    "A explicação experimental não está disponível agora. Os gráficos, as métricas e os textos educativos "
-    "do Argos continuam disponíveis. Os dados são históricos e a análise tem finalidade educativa; não é "
-    "recomendação de investimento."
-)
+FALLBACK_TEXT = ep.FALLBACK_TEXT
+# Correção 1 (DL1-B): só a falha da ressalva sobre média histórica dá direito a uma
+# regeneração; se falhar de novo (ou se falhar qualquer outra verificação), abstenção.
+REGENERABLE_CHECKS = ("ressalva_media_historica",)
+MAX_REGENERATIONS = 1
 
 REQUIRED_KEYS = ("protocol_family", "scope", "status", "asset", "filters", "n_observations", "historical",
                  "estimate", "decision", "release", "required_limits")
@@ -92,12 +92,16 @@ def _log(mode: str, context: dict, now: Callable) -> dict:
         "model": llm_client.MODEL if mode == MODE_LIVE else None,
         "prompt_version": ep.PROMPT_VERSION,
         "prompt_fingerprint": ep.prompt_fingerprint(),
+        "prompt_hash": ep.prompt_hash(),
+        "schema_hash": ep.schema_hash(),
+        "fixed_texts_hash": ep.fixed_text_hashes()["conjunto"],
         "policy_fingerprint": policy.policy_fingerprint(),
         "environment": (ctx.get("release") or {}).get("ambiente"),
         "estimate_available": bool((ctx.get("estimate") or {}).get("disponivel")),
         "decision_available": bool((ctx.get("decision") or {}).get("disponivel")),
         "input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0, "latency_s": 0.0, "attempts": 0,
         "failed_checks": [],
+        "regenerations": 0,
     }
 
 
@@ -147,20 +151,29 @@ def explain_experimental(
     limited = limiter.check()
     if limited:
         return _result(STATUS_UNAVAILABLE, None, limited, log, log_sink)
-    try:
-        call = llm_client.call_model(context, api_key, transport, sleep, clock, payload=build_payload(context))
-    except llm_client.CallFailed as exc:
-        limiter.record(0.0)
-        log["attempts"], log["latency_s"] = exc.attempts, exc.latency_s
-        return _result(STATUS_UNAVAILABLE, None, f"api_indisponivel:{exc}", log, log_sink)
-    cost = llm_eval.estimate_cost(llm_client.MODEL, call["input_tokens"], call["output_tokens"])
-    limiter.record(cost)
-    log.update(input_tokens=call["input_tokens"], output_tokens=call["output_tokens"], cost_usd=round(cost, 6),
-               latency_s=call["latency_s"], attempts=call["attempts"])
-    if call["finish_reason"] != "stop":
-        return _result(STATUS_BLOCKED, None, "resposta_incompleta", log, log_sink)
     status = STATUS_EVALUATION if evaluation_run else STATUS_OK
-    return _finish(call["raw"], context, known_tickers, log, log_sink, status)
+    while True:
+        try:
+            call = llm_client.call_model(context, api_key, transport, sleep, clock, payload=build_payload(context))
+        except llm_client.CallFailed as exc:
+            limiter.record(0.0)
+            log["attempts"] += exc.attempts
+            log["latency_s"] = round(log["latency_s"] + exc.latency_s, 3)
+            return _result(STATUS_UNAVAILABLE, None, f"api_indisponivel:{exc}", log, log_sink)
+        cost = llm_eval.estimate_cost(llm_client.MODEL, call["input_tokens"], call["output_tokens"])
+        limiter.record(cost)
+        log.update(input_tokens=log["input_tokens"] + call["input_tokens"],
+                   output_tokens=log["output_tokens"] + call["output_tokens"],
+                   cost_usd=round(log["cost_usd"] + cost, 6),
+                   latency_s=round(log["latency_s"] + call["latency_s"], 3),
+                   attempts=log["attempts"] + call["attempts"])
+        if call["finish_reason"] != "stop":
+            return _result(STATUS_BLOCKED, None, "resposta_incompleta", log, log_sink)
+        failed = ev.validate_experimental(call["raw"], context, known_tickers).failed
+        regenerable = failed and all(name in REGENERABLE_CHECKS for name in failed)
+        if not regenerable or log["regenerations"] >= MAX_REGENERATIONS or limiter.check():
+            return _finish(call["raw"], context, known_tickers, log, log_sink, status)
+        log["regenerations"] += 1
 
 
 def _finish(raw, context: dict, known_tickers, log: dict, sink, ok_status: str) -> Explanation:
