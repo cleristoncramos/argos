@@ -37,6 +37,7 @@ from app.ui.data_info import (
 )
 from app.ui.disclaimers import render_footer_disclaimer
 from app.ui.education import render_glossary, render_what_it_means
+from app.ui.events_panel import add_events, render_events_panel
 from app.ui.llm_explain import asset_name, render_explain_section
 from app.ui.metric_card import render_metric_card
 from app.ui.season_explorer import (
@@ -486,6 +487,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Eventos históricos (recurso trazido do projeto Previsão, 13/11/2026): marcados nos
+# gráficos de preço e de volatilidade, sempre no período carregado na barra lateral.
+period_events = render_events_panel(df)
+
 fig_line = go.Figure()
 formatted_y = df["Value"].apply(format_number_br)
 
@@ -505,6 +510,14 @@ fig_line.add_trace(go.Scatter(
 ))
 
 fig_line = apply_custom_layout(fig_line)
+add_events(
+    fig_line,
+    period_events,
+    min(0.0, float(df["Value"].min())),
+    float(df["Value"].max()),
+)
+if not period_events.empty:
+    fig_line.update_layout(hovermode="x unified")
 
 with st.container(border=True):
     st.plotly_chart(fig_line, use_container_width=True, config=PLOTLY_CONFIG)
@@ -635,6 +648,7 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
         yaxis_title=None,
         yaxis_ticksuffix="%"
     )
+    add_events(fig_vol, period_events, 0.0, float(df_monthly_vol['Volatility'].max()))
 
     with st.container(border=True):
         st.plotly_chart(fig_vol, use_container_width=True, config=PLOTLY_CONFIG)

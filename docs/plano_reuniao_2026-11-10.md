@@ -4,7 +4,7 @@
 - transcrição automática da reunião de 10/11/2026 com o Prof. Arlino (arquivo `Argos - 10-11-2026.docx`, fora do repositório);
 - mensagens do orientador por WhatsApp em 11/11 e 13/11/2026, anexadas ao mesmo arquivo.
 
-**Situação:** plano **aprovado** pelo orientador na DL2 (13/11/2026), com os seis conflitos resolvidos (seção 5) · etapas 1 e 2 concluídas (seção 6) · **etapa 3 concluída** (seção 7), aguardando commit
+**Situação:** plano **aprovado** pelo orientador na DL2 (13/11/2026), com os seis conflitos resolvidos (seção 5) · etapas 1 e 2 concluídas (seção 6) · etapa 3 concluída (seção 7) · **eventos históricos** antecipados da etapa 5 (seção 8), aguardando commit
 
 > **Sobre a transcrição.** O reconhecimento automático trocou vários termos: "Grock" e "Glock" são o **Grok**; "LNM" e "LLMM" são **LLM**; "Lorana" é a **Lorena**. Num trecho, o orientador diz que a ferramenta "é determinística", mas o contexto deixa claro que ele quis dizer **não determinística**. As orientações abaixo seguem o sentido evidente da conversa; onde houve dúvida, o item está marcado "a confirmar".
 
@@ -183,3 +183,25 @@ O registro completo está em [`pibiti/decisoes_orientador.md`](pibiti/decisoes_o
 **Pendente:** testar o gráfico revisto com um leitor leigo (previsto no plano), de preferência com a Lorena, que não participou da revisão.
 
 **Observação sobre a suíte:** com `-W error`, 7 testes de `tests/test_llm_experiment.py` falham por arquivos não fechados em `experiments/llm_7a`. A falha já existia antes desta etapa (conferida no commit `ccd9aae`) e fica numa área que não pode ser alterada. Na configuração padrão da suíte, todos os testes passam.
+
+---
+
+## 8. Eventos históricos, antecipado da etapa 5 (13/11/2026)
+
+**Origem:** pedido do desenvolvedor em 13/11/2026, antes da etapa 4: trazer para o Argos o recurso "Período e eventos históricos" do projeto Previsão Financial Risk, idêntico ao de lá. O recurso atende o item A9 da reunião (marcar datas importantes, como circuit breaker e COVID, no gráfico de evolução temporal) e adianta a base da etapa 5.
+
+**Ajuste do desenvolvedor (13/11/2026):** o seletor de trecho do projeto Previsão (1 ano, 2 anos, 5 anos, Tudo, Personalizado) **não existe no Argos**. O período é sempre o escolhido na barra lateral, e os eventos são os que caem nesse período.
+
+**O que o usuário vê** (Análise Individual, acima do gráfico de evolução temporal):
+
+| Parte | Como funciona |
+| --- | --- |
+| Eventos do sistema | 27 eventos de 2016 a 2026, em `data/eventos_historicos.csv` (cópia do `assets/eventos.csv` do projeto Previsão), aparecem como linhas pontilhadas nos dois gráficos, com título, data e descrição ao passar o mouse. São quatro categorias, que ligam e desligam pela legenda do gráfico e pelo filtro "Eventos históricos nos gráficos": **Mercado e crises** (Joesley Day, greve dos caminhoneiros e os seis circuit breakers de março de 2020, registrados em cinco linhas porque dois foram no mesmo pregão), **Saúde** (primeiro caso de COVID no Brasil, pandemia, vacina da Pfizer, início da vacinação), **Política** (eleições de 2018, 2022 e 2026, impeachment, reforma da Previdência, 8 de janeiro) e **Mundo** (Brexit, eleições nos EUA, invasão da Ucrânia, alta de juros do Fed, quebra do SVB, tarifas de 2025) |
+| Eventos do usuário | Botão "Adicionar evento próprio": data, título e descrição. Os eventos ficam na sessão do navegador, na categoria "Seus eventos"; a lista pode ser baixada em CSV (`data;titulo;descricao`, datas dd/mm/aaaa) e carregada de novo numa próxima visita. Há também "Remover meus eventos" |
+| Aviso | "As linhas pontilhadas marcam acontecimentos que mexeram com o mercado, para dar contexto ao período analisado. Elas não indicam que o evento causou a variação do ativo." Mantém a regra da DL2-D: evento é contexto, não causa |
+
+**Código:** lógica pura em `core/historical_events.py` (10 testes em `tests/test_historical_events.py`, 100% de cobertura) e painel em `app/ui/events_panel.py`. Duas diferenças em relação ao projeto Previsão, ambas sem efeito para o usuário: a lógica saiu da página para o `core/`, como é regra no Argos; e o filtro de categorias passa a marcar "Seus eventos" antes de ser desenhado, porque, na versão do Streamlit usada no Argos, apagar o estado do filtro deixava a tela e o gráfico desencontrados.
+
+**Verificação na tela** (PETR4.SA, 10 anos, frequência mensal): linhas e legenda nos dois gráficos, com os eventos de 01/12/2016 em diante. Evento próprio adicionado e removido, com o filtro e os gráficos de acordo. Defeito achado e corrigido na verificação: depois de incluir um evento próprio, o filtro de categorias não mostrava "Seus eventos", embora o gráfico mostrasse.
+
+**Pendente para fechar a etapa 5 (DL2-D):** a DL2-D e o plano pedem lista curada **com data e fonte**, "nenhum evento sem fonte". A base trazida do projeto Previsão tem data, categoria, título e descrição, mas não tem fonte. Falta acrescentar uma coluna `fonte` com a referência de cada um dos 27 eventos (órgão oficial ou veículo de imprensa) e mostrá-la ao passar o mouse. As fontes não foram inventadas: precisam ser levantadas e conferidas. Os eventos do usuário ficam fora dessa regra, porque são dele e não do sistema.

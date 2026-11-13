@@ -524,7 +524,8 @@ Etapa 0 — revisão de escopo:
 - [x] Etapa 3 (13/11/2026): aviso de não determinismo (redação da DL2-G), anos fora do padrão, dicas sob os gráficos, comparação de anos revista e vista conjunta (`docs/plano_reuniao_2026-11-10.md`, seção 7)
 - [ ] Testar o gráfico de comparação de anos revisto com um leitor leigo
 - [ ] Etapa 4: página de Configurações (referência configurável; catálogo editável só na instalação local)
-- [ ] Etapa 5: lista curada de eventos históricos, com data e fonte
+- [x] Eventos históricos nos gráficos de preço e de volatilidade, no período da barra lateral, trazido do projeto Previsão (13/11/2026; `docs/plano_reuniao_2026-11-10.md`, seção 8)
+- [ ] Etapa 5: acrescentar a fonte de cada um dos 27 eventos (coluna `fonte`, exibida ao passar o mouse), exigência da DL2-D
 - [ ] Etapa 6: LLM com o Grok primeiro (DL2-C), mantidas as regras do protocolo
 - [ ] Em paralelo: texto da submissão (Lorena), citações dos indicadores e opções de logo
 - [ ] Arquivar a mensagem original da DL2

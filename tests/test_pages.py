@@ -52,4 +52,4 @@ def test_every_date_field_uses_the_brazilian_format():
                 calls += 1
                 formats = [k.value.value for k in node.keywords if k.arg == "format"]
                 assert formats == ["DD/MM/YYYY"], f"{path.name}:{node.lineno}"
-    assert calls == 5
+    assert calls == 6   # +1 no painel de eventos (data do evento próprio)
