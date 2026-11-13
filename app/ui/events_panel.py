@@ -13,6 +13,7 @@ import streamlit as st
 from core.historical_events import (
     CSV_FORMAT_ERROR,
     EVENTS_NOTE,
+    applies_to,
     available_categories,
     combine_events,
     event_traces,
@@ -20,6 +21,7 @@ from core.historical_events import (
     load_events,
     new_user_event,
     parse_user_csv,
+    sources_table,
     user_events_csv,
     user_events_frame,
 )
@@ -86,10 +88,11 @@ def _user_events_popover(data_min: date, data_max: date) -> None:
                 _refresh_categories()
 
 
-def render_events_panel(df: pd.DataFrame, date_col: str = "Date") -> pd.DataFrame:
+def render_events_panel(df: pd.DataFrame, ticker: str | None = None, date_col: str = "Date") -> pd.DataFrame:
     """
     Escolha das categorias de eventos e eventos do usuário. Devolve os eventos que caem
-    no período carregado na barra lateral (o mesmo dos gráficos).
+    no período carregado na barra lateral (o mesmo dos gráficos) e que valem para o
+    ativo analisado: os gerais e os ligados a ele (categoria "Do ativo").
     """
     data_min = df[date_col].min().date()
     data_max = df[date_col].max().date()
@@ -101,6 +104,7 @@ def render_events_panel(df: pd.DataFrame, date_col: str = "Date") -> pd.DataFram
     )
 
     events = combine_events(_base_events(), _user_events())
+    events = events[applies_to(events, ticker)]
     categories = available_categories(events)
     if st.session_state.pop(SELECT_ALL_KEY, False) or CATEGORIES_KEY not in st.session_state:
         st.session_state[CATEGORIES_KEY] = categories
@@ -120,7 +124,18 @@ def render_events_panel(df: pd.DataFrame, date_col: str = "Date") -> pd.DataFram
         _user_events_popover(data_min, data_max)
 
     st.caption(f"ℹ️ {EVENTS_NOTE}")
-    return filter_events(events, shown, data_min, data_max)
+    selected = filter_events(events, shown, data_min, data_max, ticker)
+
+    # Etapa 5 da DL2 (DL2-D): todo evento do sistema tem fonte, que pode ser conferida aqui.
+    if not selected.empty:
+        with st.expander(f"📚 Eventos no período e fontes ({len(selected)})"):
+            st.dataframe(
+                sources_table(selected),
+                hide_index=True,
+                use_container_width=True,
+                column_config={"Endereço": st.column_config.LinkColumn("Endereço", display_text="Abrir fonte")},
+            )
+    return selected
 
 
 def add_events(fig: go.Figure, events: pd.DataFrame, y_min: float, y_max: float) -> None:

@@ -491,7 +491,7 @@ st.markdown(
 
 # Eventos históricos (recurso trazido do projeto Previsão, 13/11/2026): marcados nos
 # gráficos de preço e de volatilidade, sempre no período carregado na barra lateral.
-period_events = render_events_panel(df)
+period_events = render_events_panel(df, ticker=symbol)
 
 fig_line = go.Figure()
 formatted_y = df["Value"].apply(format_number_br)

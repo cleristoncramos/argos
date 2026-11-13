@@ -1,28 +1,40 @@
-data,categoria,titulo,descricao
-2016-06-23,Mundo,Brexit,Reino Unido aprova em plebiscito a saída da União Europeia.
-2016-08-31,Política,Impeachment de Dilma Rousseff,Senado aprova o impeachment da presidente da República.
-2016-11-08,Mundo,Eleição nos Estados Unidos,Eleição presidencial norte-americana de 2016.
-2017-05-18,Mercado e crises,Joesley Day,Divulgação de gravações envolvendo o presidente da República; a B3 aciona o circuit breaker.
-2018-05-21,Mercado e crises,Greve dos caminhoneiros,Paralisação nacional dos caminhoneiros afeta o abastecimento e a atividade econômica.
-2018-10-07,Política,Eleições 2018 (1º turno),Primeiro turno das eleições gerais no Brasil.
-2018-10-28,Política,Eleições 2018 (2º turno),Segundo turno da eleição presidencial no Brasil.
-2019-10-22,Política,Reforma da Previdência,Senado conclui a aprovação da reforma da Previdência.
-2020-02-26,Saúde,Primeiro caso de COVID-19 no Brasil,Ministério da Saúde confirma o primeiro caso da doença no país.
-2020-03-09,Mercado e crises,Circuit breaker (1º de 6),Queda forte da bolsa interrompe os negócios na B3 no início da pandemia.
-2020-03-11,Saúde,OMS declara pandemia,A Organização Mundial da Saúde classifica a COVID-19 como pandemia.
-2020-03-11,Mercado e crises,Circuit breaker (2º de 6),Nova interrupção dos negócios na B3.
-2020-03-12,Mercado e crises,Circuit breakers (3º e 4º de 6),Duas interrupções dos negócios na B3 no mesmo pregão.
-2020-03-16,Mercado e crises,Circuit breaker (5º de 6),Nova interrupção dos negócios na B3.
-2020-03-18,Mercado e crises,Circuit breaker (6º de 6),Sexta interrupção dos negócios na B3 em março de 2020.
-2020-11-09,Saúde,Eficácia da vacina da Pfizer,Divulgação dos primeiros resultados de eficácia de uma vacina contra a COVID-19.
-2021-01-17,Saúde,Início da vacinação no Brasil,Anvisa autoriza o uso emergencial de vacinas e a vacinação começa no país.
-2022-02-24,Mundo,Invasão da Ucrânia,Rússia invade a Ucrânia; petróleo e outras commodities disparam.
-2022-03-16,Mundo,Fed inicia alta de juros,Banco central dos Estados Unidos começa um ciclo de alta da taxa de juros.
-2022-10-02,Política,Eleições 2022 (1º turno),Primeiro turno das eleições gerais no Brasil.
-2022-10-30,Política,Eleições 2022 (2º turno),Segundo turno da eleição presidencial no Brasil.
-2023-01-08,Política,Ataques em Brasília,Invasão e depredação das sedes dos Três Poderes.
-2023-03-10,Mundo,Quebra do Silicon Valley Bank,Falência de banco norte-americano gera temor de crise bancária.
-2024-11-05,Mundo,Eleição nos Estados Unidos,Eleição presidencial norte-americana de 2024.
-2025-04-02,Mundo,Tarifas dos Estados Unidos,Governo norte-americano anuncia tarifas amplas sobre importações.
-2026-10-04,Política,Eleições 2026 (1º turno),Primeiro turno das eleições gerais no Brasil.
-2026-10-25,Política,Eleições 2026 (2º turno),Segundo turno da eleição presidencial no Brasil.
+data,categoria,titulo,descricao,fonte,url,ativos
+2016-06-23,Mundo,Brexit,Reino Unido aprova em plebiscito a saída da União Europeia.,Electoral Commission (Reino Unido),https://www.electoralcommission.org.uk/media-centre/official-result-eu-referendum-declared-electoral-commission-manchester,
+2016-08-31,Política,Impeachment de Dilma Rousseff,Senado aprova o impeachment da presidente da República.,Agência Senado,https://www12.senado.leg.br/noticias/materias/2016/08/31/dilma-rousseff-perde-o-mandato-e-temer-e-confirmado-presidente,
+2016-11-08,Mundo,Eleição nos Estados Unidos,Eleição presidencial norte-americana de 2016.,National Archives (EUA),https://www.archives.gov/electoral-college/2016,
+2017-05-18,Mercado e crises,Joesley Day,Divulgação de gravações envolvendo o presidente da República; a B3 aciona o circuit breaker.,Agência Brasil,https://agenciabrasil.ebc.com.br/economia/noticia/2017-05/denuncias-afetam-mercado-e-provocam-suspensao-do-pregao-da-bovespa,
+2018-05-21,Mercado e crises,Greve dos caminhoneiros,Paralisação nacional dos caminhoneiros afeta o abastecimento e a atividade econômica.,Agência Brasil,https://agenciabrasil.ebc.com.br/economia/noticia/2018-05/caminhoneiros-fecham-estradas-e-fazem-protestos-na-maior-parte-do-pais,
+2018-10-07,Política,Eleições 2018 (1º turno),Primeiro turno das eleições gerais no Brasil.,Tribunal Superior Eleitoral,https://www.tse.jus.br/comunicacao/noticias/2018/Outubro/concluida-totalizacao-de-votos-do-1o-turno-das-eleicoes-2018,
+2018-10-28,Política,Eleições 2018 (2º turno),Segundo turno da eleição presidencial no Brasil.,Tribunal Superior Eleitoral,https://www.tse.jus.br/comunicacao/noticias/2018/Outubro/presidente-do-tse-anuncia-eleicao-de-jair-bolsonaro-para-presidente-da-republica,
+2019-01-25,Do ativo,Rompimento da barragem em Brumadinho,Barragem da Vale se rompe em Brumadinho (MG). A B3 estava fechada; as ações caem no pregão seguinte.,A Gazeta,https://www.agazeta.com.br/economia/acoes-da-vale-nos-eua-caem-10-apos-rompimento-de-barragem-0119,VALE3.SA
+2019-10-22,Política,Reforma da Previdência,Senado aprova em segundo turno o texto-base da reforma da Previdência; a votação termina no dia seguinte.,Agência Senado,https://www12.senado.leg.br/noticias/materias/2019/10/22/senado-aprova-texto-base-da-reforma-da-previdencia-em-votacao-final,
+2020-02-26,Saúde,Primeiro caso de COVID-19 no Brasil,Ministério da Saúde confirma o primeiro caso da doença no país.,OPAS/OMS,https://www.paho.org/pt/node/69303,
+2020-03-09,Mercado e crises,Circuit breaker (1º de 6),Queda forte da bolsa interrompe os negócios na B3 no início da pandemia.,InfoMoney,https://www.infomoney.com.br/mercados/ibovespa-fecha-o-mes-com-queda-de-30-e-tem-pior-trimestre-da-historia-dolar-sobe-16-em-marco/,
+2020-03-11,Mercado e crises,Circuit breaker (2º de 6),Nova interrupção dos negócios na B3.,InfoMoney,https://www.infomoney.com.br/mercados/ibovespa-fecha-o-mes-com-queda-de-30-e-tem-pior-trimestre-da-historia-dolar-sobe-16-em-marco/,
+2020-03-11,Saúde,OMS caracteriza a COVID-19 como pandemia,A Organização Mundial da Saúde passa a classificar a COVID-19 como pandemia.,Organização Mundial da Saúde,https://www.who.int/news-room/speeches/item/who-director-general-s-opening-remarks-at-the-media-briefing-on-covid-19---11-march-2020,
+2020-03-12,Mercado e crises,Circuit breakers (3º e 4º de 6),Duas interrupções dos negócios na B3 no mesmo pregão.,InfoMoney,https://www.infomoney.com.br/mercados/ibovespa-fecha-o-mes-com-queda-de-30-e-tem-pior-trimestre-da-historia-dolar-sobe-16-em-marco/,
+2020-03-15,Mundo,Fed leva os juros para perto de zero,"Banco central dos Estados Unidos reduz a taxa básica para a faixa de 0 a 0,25% ao ano.",Federal Reserve,https://www.federalreserve.gov/newsevents/pressreleases/monetary20200315a.htm,
+2020-03-16,Mercado e crises,Circuit breaker (5º de 6),Nova interrupção dos negócios na B3.,InfoMoney,https://www.infomoney.com.br/mercados/ibovespa-fecha-o-mes-com-queda-de-30-e-tem-pior-trimestre-da-historia-dolar-sobe-16-em-marco/,
+2020-03-18,Mercado e crises,Circuit breaker (6º de 6),Sexta interrupção dos negócios na B3 em março de 2020.,InfoMoney,https://www.infomoney.com.br/mercados/ibovespa-fecha-o-mes-com-queda-de-30-e-tem-pior-trimestre-da-historia-dolar-sobe-16-em-marco/,
+2020-04-20,Do ativo,Petróleo WTI abaixo de zero,Contrato futuro do petróleo WTI fecha com preço negativo pela primeira vez na história.,World Oil,https://worldoil.com/news/2020/4/20/wti-crude-price-goes-negative-for-the-first-time-in-history,CL=F
+2020-08-05,Mercado e crises,Selic em 2% ao ano,"Copom reduz a taxa básica de juros para 2% ao ano, o menor nível da série histórica.",Agência Brasil,https://agenciabrasil.ebc.com.br/economia/noticia/2020-08/copom-reduz-juros-basicos-da-economia-para-2-ao-ano,
+2020-11-09,Saúde,Eficácia da vacina da Pfizer,Divulgação dos primeiros resultados de eficácia de uma vacina contra a COVID-19.,Pfizer,https://www.pfizer.com/news/press-release/press-release-detail/pfizer-and-biontech-announce-vaccine-candidate-against,
+2021-01-17,Saúde,Início da vacinação no Brasil,Anvisa autoriza o uso emergencial de vacinas e a vacinação começa no país.,Anvisa,https://www.gov.br/anvisa/pt-br/assuntos/noticias-anvisa/2021/anvisa-aprova-por-unanimidade-uso-emergencial-das-vacinas,
+2021-02-19,Do ativo,Troca no comando da Petrobras,Governo anuncia a indicação de novo presidente da Petrobras; as ações caem forte no pregão seguinte.,O Povo,https://www.opovo.com.br/noticias/economia/2021/02/19/amp/bolsonaro-pede-demissao-de-presidente-da-petrobras-e-indica-general-para-vaga.html,PETR4.SA
+2022-02-24,Mundo,Invasão da Ucrânia,Rússia invade a Ucrânia; petróleo e outras commodities disparam.,Nações Unidas,https://press.un.org/en/2022/sgsm21158.doc.htm,
+2022-03-16,Mundo,Fed inicia alta de juros,Banco central dos Estados Unidos começa um ciclo de alta da taxa de juros.,Federal Reserve,https://www.federalreserve.gov/newsevents/pressreleases/monetary20220316a.htm,
+2022-10-02,Política,Eleições 2022 (1º turno),Primeiro turno das eleições gerais no Brasil.,Tribunal Superior Eleitoral,https://www.tse.jus.br/comunicacao/noticias/2022/Outubro/lula-e-bolsonaro-vao-disputar-o-2o-turno-para-a-presidencia-da-republica,
+2022-10-30,Política,Eleições 2022 (2º turno),Segundo turno da eleição presidencial no Brasil.,Tribunal Superior Eleitoral,https://www.tse.jus.br/comunicacao/noticias/2022/Outubro/lula-e-eleito-novamente-presidente-da-republica-do-brasil,
+2022-11-11,Do ativo,Falência da FTX,Corretora de criptomoedas FTX pede recuperação judicial nos Estados Unidos.,CoinDesk,https://www.coindesk.com/policy/2022/11/11/ftx-files-for-bankruptcy-protections-in-us,BTC-USD ETH-USD
+2023-01-08,Política,Ataques em Brasília,Invasão e depredação das sedes dos Três Poderes.,Agência Senado,https://www12.senado.leg.br/noticias/materias/2024/01/05/ataques-de-8-de-janeiro-tiveram-reflexo-na-agenda-legislativa-em-2023,
+2023-03-10,Mundo,Quebra do Silicon Valley Bank,Falência de banco norte-americano gera temor de crise bancária.,FDIC (EUA),https://www.fdic.gov/news/press-releases/2023/pr23016.html,
+2023-05-05,Saúde,Fim da emergência global da COVID-19,OMS declara o fim da emergência de saúde pública de importância internacional.,OPAS/OMS,https://www.paho.org/pt/noticias/5-5-2023-oms-declara-fim-da-emergencia-saude-publica-importancia-internacional-referente,
+2024-01-10,Do ativo,Aprovação dos ETFs de bitcoin à vista,SEC aprova os primeiros fundos de bitcoin à vista negociados em bolsa nos Estados Unidos.,The Block,https://www.theblock.co/post/271324/the-sec-said-it-has-approved-proposals-for-spot-bitcoin-etfs-on-an-accelerated-basis,BTC-USD
+2024-04-20,Do ativo,Halving do bitcoin,"Recompensa por bloco minerado cai de 6,25 para 3,125 bitcoins (bloco 840.000).",Finance Magnates,https://www.financemagnates.com/cryptocurrency/breaking-bitcoin-halving-is-sealed-after-mining-of-block-840000/,BTC-USD
+2024-11-05,Mundo,Eleição nos Estados Unidos,Eleição presidencial norte-americana de 2024.,National Archives (EUA),https://www.archives.gov/electoral-college/2024,
+2025-01-27,Do ativo,DeepSeek,Lançamento de modelo de IA chinês de baixo custo derruba as ações da NVIDIA em cerca de 17% no dia.,Fortune,https://fortune.com/2025/01/27/deepseek-crisis-american-ai-companies-nvidia-500-billion-stock-landslide/,NVDA
+2025-04-02,Mundo,Tarifas dos Estados Unidos,Governo norte-americano anuncia tarifas amplas sobre importações.,Casa Branca,https://www.whitehouse.gov/fact-sheets/2025/04/fact-sheet-president-donald-j-trump-declares-national-emergency-to-increase-our-competitive-edge-protect-our-sovereignty-and-strengthen-our-national-and-economic-security/,
+2026-10-04,Política,Eleições 2026 (1º turno),Primeiro turno das eleições gerais no Brasil.,Tribunal Superior Eleitoral,https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/flavio-bolsonaro-e-lula-vao-disputar-o-2o-turno-para-a-presidencia-da-republica,
+2026-10-25,Política,Eleições 2026 (2º turno),Segundo turno da eleição presidencial no Brasil.,Tribunal Superior Eleitoral,https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/presidente-do-tse-anuncia-reeleicao-de-lula-e-faz-balanco-do-2o-turno-das-eleicoes-2026,
+2026-11-09,Do ativo,Caso de espionagem na NVIDIA,Ações caem após reportagens sobre relação do CEO com executiva apontada por autoridades dos EUA como suspeita de espionagem para a China; o conselho abre investigação.,CNBC,https://www.cnbc.com/2026/11/10/nvidia-nvda-jensen-huang-affair-chinese-spy.html,NVDA
+2026-11-12,Do ativo,Jensen Huang deixa o comando da NVIDIA,CEO e cofundador renuncia; a diretora financeira Colette Kress assume interinamente.,TechCrunch,https://techcrunch.com/2026/11/12/nvidias-jensen-huang-resigns-chipmaker-names-cfo-colette-kress-as-interim-ceo/,NVDA

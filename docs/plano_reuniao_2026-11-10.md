@@ -4,7 +4,7 @@
 - transcrição automática da reunião de 10/11/2026 com o Prof. Arlino (arquivo `Argos - 10-11-2026.docx`, fora do repositório);
 - mensagens do orientador por WhatsApp em 11/11 e 13/11/2026, anexadas ao mesmo arquivo.
 
-**Situação:** plano **aprovado** pelo orientador na DL2 (13/11/2026), com os seis conflitos resolvidos (seção 5) · etapas 1 e 2 concluídas (seção 6) · etapa 3 concluída (seção 7) · eventos históricos antecipados da etapa 5 (seção 8) · **etapa 4 concluída** (seção 9), aguardando commit
+**Situação:** plano **aprovado** pelo orientador na DL2 (13/11/2026), com os seis conflitos resolvidos (seção 5) · etapas 1 e 2 concluídas (seção 6) · etapa 3 concluída (seção 7) · eventos históricos antecipados da etapa 5 (seção 8) · etapa 4 concluída (seção 9) · **etapa 5 concluída** (seção 10), aguardando commit
 
 > **Sobre a transcrição.** O reconhecimento automático trocou vários termos: "Grock" e "Glock" são o **Grok**; "LNM" e "LLMM" são **LLM**; "Lorana" é a **Lorena**. Num trecho, o orientador diz que a ferramenta "é determinística", mas o contexto deixa claro que ele quis dizer **não determinística**. As orientações abaixo seguem o sentido evidente da conversa; onde houve dúvida, o item está marcado "a confirmar".
 
@@ -223,3 +223,32 @@ Nova página **Configurações** (⚙️) no menu, entre o Panorama do Catálogo
 **Documentação:** variáveis `ARGOS_CATALOGO_EDITAVEL` e `ARGOS_CATALOGO_ARQUIVO` no README.
 
 **Limites registrados:** ativos locais não entram no Panorama do Catálogo nem nos números da página inicial ("148 ativos no catálogo"), que descrevem o catálogo base conferido. Nas páginas que ainda buscam o ativo só no catálogo base (Indicadores Técnicos, Risco e Retorno, Simulação), um ativo local é tratado como ticker digitado: funciona, mas sem os metadados do catálogo.
+
+---
+
+## 10. Execução da etapa 5, eventos com fonte e eventos por ativo (13/11/2026)
+
+**Pedido do desenvolvedor (13/11/2026):** fechar a etapa 5 e ampliar a base de eventos, inclusive com eventos ligados a um ativo, como o caso recente de espionagem na NVIDIA.
+
+**Fontes (DL2-D).** Todo evento do sistema passou a ter **fonte e endereço**, conferidos por pesquisa em 13/11/2026. A preferência foi por fontes oficiais ou públicas: TSE, Agência Senado, Agência Brasil, Anvisa, OPAS/OMS, Organização Mundial da Saúde, Nações Unidas, Federal Reserve, FDIC, Casa Branca, National Archives e Electoral Commission. Quando não havia fonte oficial, entrou imprensa especializada: InfoMoney, A Gazeta, O Povo, World Oil, CoinDesk, The Block, Finance Magnates, Fortune, CNBC e TechCrunch. A fonte aparece ao passar o mouse sobre a linha ("Fonte: …"), e o quadro "📚 Eventos no período e fontes", abaixo do filtro, lista os eventos do período com link para cada fonte. Os eventos do usuário aparecem como "Evento seu (sem fonte)", porque são dele e não do sistema.
+
+**Correções feitas na conferência das fontes:**
+- "OMS declara pandemia" passou a "OMS caracteriza a COVID-19 como pandemia". No briefing de 11/03/2020, o diretor-geral disse que a COVID-19 "pode ser caracterizada" como pandemia e que pandemias não são declaradas formalmente.
+- Reforma da Previdência: em 22/10/2019 o Senado aprovou o texto-base em segundo turno, e a votação terminou no dia seguinte. A descrição passou a dizer isso, no lugar de "conclui a aprovação".
+
+**Base ampliada:** de 27 para **39 eventos**.
+
+| Tipo | Eventos novos |
+| --- | --- |
+| Gerais (valem para todos os ativos) | Fed leva os juros para perto de zero (15/03/2020); Selic em 2% ao ano, mínima histórica (05/08/2020); fim da emergência global da COVID-19 (05/05/2023) |
+| **Do ativo** (nova categoria, só aparece para os ativos indicados) | Vale (VALE3.SA): rompimento da barragem em Brumadinho (25/01/2019) · Petróleo WTI (CL=F): preço negativo pela primeira vez (20/04/2020) · Petrobras (PETR4.SA): troca no comando (19/02/2021) · Bitcoin e Ethereum: falência da FTX (11/11/2022) · Bitcoin: aprovação dos ETFs à vista (10/01/2024) e halving (20/04/2024) · **NVIDIA (NVDA): DeepSeek (27/01/2025), caso de espionagem (09/11/2026) e saída de Jensen Huang do comando (12/11/2026)** |
+
+**Como funciona o vínculo por ativo:** a base ganhou as colunas `fonte`, `url` e `ativos`. A coluna `ativos` traz tickers separados por espaço. Vazia, o evento vale para todos os ativos; preenchida, ele só aparece na análise desses ativos. A categoria "Do ativo" só aparece no filtro quando o ativo analisado tem eventos próprios.
+
+**Cuidado de redação no caso da NVIDIA:** a reportagem ainda está em andamento, e parte dos fatos não foi confirmada. A descrição fala em executiva "apontada por autoridades dos EUA como suspeita de espionagem", sem afirmar que houve espionagem, e registra só fatos noticiados: a queda das ações, a investigação do conselho e a renúncia, com a diretora financeira Colette Kress como presidente interina. Como em todos os eventos, o texto não diz que o evento causou a variação do preço.
+
+**Testes:** a base exige fonte e endereço `https://` em todo evento do sistema, e coerência entre a categoria "Do ativo" e a coluna `ativos`. Há também testes do filtro por ativo (NVDA vê os 30 eventos gerais e os 3 dela; um ativo sem eventos próprios vê só os gerais) e da tabela de fontes. A suíte tem 1.168 testes, com 100% de cobertura do `core/`.
+
+**Verificação na tela** (NVDA, 5 anos): as categorias do filtro incluem "Do ativo". Os três eventos da NVIDIA aparecem no gráfico com fonte, e o quadro de fontes lista os 14 eventos do período.
+
+**Base para a LLM (D5):** esta é a lista curada, com data e fonte, que a DL2-D prevê enviar no contexto da explicação. Sem evento curado, o texto deve dizer que não há explicação curada disponível.

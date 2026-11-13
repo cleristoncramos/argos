@@ -525,7 +525,8 @@ Etapa 0 — revisão de escopo:
 - [ ] Testar o gráfico de comparação de anos revisto com um leitor leigo
 - [x] Etapa 4 (13/11/2026): página Configurações, com referência padrão (B1) e catálogo editável só na instalação local (B2, DL2-E) (`docs/plano_reuniao_2026-11-10.md`, seção 9)
 - [x] Eventos históricos nos gráficos de preço e de volatilidade, no período da barra lateral, trazido do projeto Previsão (13/11/2026; `docs/plano_reuniao_2026-11-10.md`, seção 8)
-- [ ] Etapa 5: acrescentar a fonte de cada um dos 27 eventos (coluna `fonte`, exibida ao passar o mouse), exigência da DL2-D
+- [x] Etapa 5 (13/11/2026): fonte em todos os eventos (DL2-D), base ampliada para 39 eventos e categoria "Do ativo" com eventos por ativo, inclusive o caso da NVIDIA (`docs/plano_reuniao_2026-11-10.md`, seção 10)
+- [ ] Revisar o evento "Caso de espionagem na NVIDIA" quando a apuração terminar (fatos ainda em andamento em 13/11/2026)
 - [ ] Etapa 6: LLM com o Grok primeiro (DL2-C), mantidas as regras do protocolo
 - [ ] Em paralelo: texto da submissão (Lorena), citações dos indicadores e opções de logo
 - [ ] Arquivar a mensagem original da DL2
