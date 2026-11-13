@@ -991,3 +991,63 @@ Os dois arquivos ficam guardados byte a byte.
 **Evidência:** texto recebido pelo desenvolvedor em 09/11/2026. **Pendente:** arquivar a mensagem original.
 
 Status: recebida em 09/11/2026.
+
+### DL2 — Plano de implantação da reunião de 10/11 (13/11/2026)
+
+Data: 13/11/2026, sujeita à confirmação do orientador. Referência: [`plano_reuniao_2026-11-10.md`](../plano_reuniao_2026-11-10.md). Alcance: as 27 orientações da reunião de 10/11, o plano de seis etapas e a resolução dos seis conflitos.
+
+- **DL2-A, plano aprovado:** as 27 orientações, em seis frentes, e o plano nesta ordem:
+  1. ajustes rápidos de interface;
+  2. período por ativo no menu lateral;
+  3. aviso de não determinismo e gráficos de destaque;
+  4. página de Configurações;
+  5. eventos históricos curados;
+  6. LLM.
+
+  Escrita, bolsa e logo seguem em paralelo, sem bloquear a interface.
+- **DL2-B, início pela etapa 1:**
+  - datas limitadas ao período disponível do ativo assim que ele é escolhido;
+  - aviso visual, com ícone e cor, quando o histórico é menor que o pedido;
+  - "No ano" passa a "Neste ano";
+  - rodapé de termos para leigos;
+  - reescrita da página inicial, sem afirmar "milhares de ativos" se não for o caso;
+  - controles no vídeo;
+  - origem do nome Argos em "Sobre".
+
+  Nenhuma dessas mudanças altera protocolo, dados ou a camada de linguagem.
+- **DL2-C, provedor da LLM:** substitui o primário da DL1-D. Agora o **Grok vem primeiro**, por custo, e o **Gemini fica como alternativa registrada**. A troca é de configuração, não de protocolo, e o conjunto de casos e o template congelados continuam válidos. Condições vinculantes:
+  - política de liberação consultada antes de qualquer chamada;
+  - contexto só em JSON, sem imagem;
+  - saída estruturada validada antes de exibir;
+  - auditoria com modelo, versão, tokens e custo por chamada;
+  - contador de orçamento próprio, com teto de US$ 16 na rodada de avaliação;
+  - temperatura e saída estrita: se o Grok não oferecer, isso fica registrado como restrição do provedor e o trabalho segue documentado;
+  - nenhuma chamada ao vivo a partir do navegador do usuário.
+- **DL2-D, imagens e causas:**
+  - imagens dos gráficos podem ser testadas no chat, só para explorar; o sistema continua recebendo apenas o JSON calculado pelo Argos;
+  - causas de altas e quedas vêm de uma lista curada de eventos, com data e fonte, enviada no contexto. O modelo não inventa causa; sem evento curado, o texto diz que não há explicação curada disponível.
+- **DL2-E, provedor e catálogo:**
+  - a escolha de provedor pelo usuário só existe no ambiente experimental, com acesso nominal; na versão pública, o provedor é fixo;
+  - o catálogo editável só vale na instalação local; na versão pública, é fixo e somente leitura.
+- **DL2-F, atualização do parecer de 25/10:** a reunião de 10/11 atualiza o parecer. As funcionalidades aprovadas são de interface e informação, não de sinal preditivo. Nada disso habilita recomendação, altera o protocolo da LLM sem nova ratificação nem toca o período reservado.
+- **DL2-G, aviso de não determinismo:** obrigatório, com a redação "Os resultados podem variar entre execuções. O padrão histórico não garante repetição." A ferramenta é de apoio à decisão, não de investimento.
+- **DL2-H, escrita, bolsa e logo:**
+  - a Lorena escreve o texto da submissão;
+  - os artigos com citações dos indicadores entram no material de apoio;
+  - o relatório parcial no SIGAA tem prioridade de calendário;
+  - a logo deve lembrar finanças, ser simples e não tem pressa.
+
+**Não aprovado:**
+- recomendação de qualquer tipo;
+- alteração do protocolo da LLM sem nova ratificação;
+- uso do período reservado da linha preditiva;
+- chamadas ao vivo a partir do navegador do usuário.
+
+**Observações do desenvolvedor no registro:**
+1. **Ordem das etapas:** a DL2-B põe "limitar as datas ao período disponível" dentro da etapa 1, mas no plano esse item era a etapa 2. Foi seguida a DL2-B, que é a autorização específica, e o item entra na etapa 1.
+2. **Redação do aviso (DL2-G):** os cálculos históricos do Argos dão o mesmo resultado para os mesmos dados e período. Só variam se a fonte revisar os dados, e as respostas da LLM variam entre execuções. A frase "os resultados podem variar entre execuções" é exata para a LLM e para revisões da fonte, mas pode ser lida como imprecisão do cálculo. O aviso entra na etapa 3 com a redação aprovada; antes disso, o orientador pode confirmar se quer acrescentar o motivo (por exemplo, "…entre execuções, quando a fonte revisa os dados ou na explicação por IA").
+3. **"Milhares de ativos":** o Argos aceita qualquer ticker do Yahoo Finance, mas não há uma contagem verificada. Por isso, a página inicial diz que dá para analisar os 148 do catálogo **e outros tickers disponíveis no Yahoo Finance**, sem citar um número que não pode ser comprovado.
+
+**Evidência:** texto recebido pelo desenvolvedor em 13/11/2026. **Pendente:** arquivar a mensagem original.
+
+Status: recebida em 13/11/2026. Etapa 1 em andamento.

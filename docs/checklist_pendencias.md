@@ -514,3 +514,16 @@ Etapa 0 — revisão de escopo:
 - [x] DL1-O: conjunto corrigido (`18e5eeee…`), template congelado (código `e0142ffb…`, respostas `960c6aef…`) e A05 montado, com registro de execução
 - [ ] Fase 1: cliente Gemini no job offline, rodada de aquecimento em 3 casos, respostas salvas e avaliação cega
 - [ ] Fase 1: template com ressalva estrutural, respostas salvas (Gemini Flash no job offline) e avaliação cega
+
+## Plano da reunião de 10/11/2026 (DL2, 13/11/2026)
+
+- [x] DL2: plano de seis etapas aprovado, com os seis conflitos resolvidos (`docs/plano_reuniao_2026-11-10.md`)
+- [ ] **SIGAA:** acompanhar a abertura do relatório parcial (prioridade de calendário; perder o prazo pode custar a bolsa)
+- [x] Etapa 1 (13/11/2026): limite de datas por ativo, aviso visual de histórico menor, "Neste ano", rodapé de termos, página inicial, origem do nome Argos; controles do vídeo já existiam (`docs/plano_reuniao_2026-11-10.md`, seção 6)
+- [x] Etapa 2: período por ativo no menu lateral, feito na etapa 1 por determinação da DL2-B
+- [ ] Etapa 3: aviso de não determinismo (redação da DL2-G) e gráficos de destaque da sazonalidade
+- [ ] Etapa 4: página de Configurações (referência configurável; catálogo editável só na instalação local)
+- [ ] Etapa 5: lista curada de eventos históricos, com data e fonte
+- [ ] Etapa 6: LLM com o Grok primeiro (DL2-C), mantidas as regras do protocolo
+- [ ] Em paralelo: texto da submissão (Lorena), citações dos indicadores e opções de logo
+- [ ] Arquivar a mensagem original da DL2
