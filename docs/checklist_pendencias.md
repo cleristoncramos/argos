@@ -531,11 +531,12 @@ Etapa 0 — revisão de escopo:
   - [x] Provedor fixado e implementado sem chamadas: xAI `grok-4.3`, Responses API, temperatura 0, contador com teto de US$ 16 (DL2-I, 13/11/2026)
   - [x] Autoria da DL2-I confirmada pelo autor (13/11/2026)
   - [ ] Arquivar o texto original da DL2-I e do complemento
-  - [ ] Receber a chave da xAI por canal seguro (variável `XAI_API_KEY`, só no ambiente do job)
-  - [ ] Consultar `/v1/language-models`: `grok-4.3` disponível? Há snapshot datado? Se não estiver, usar a reserva `grok-4.20-0309-non-reasoning`, com novo registro
+  - [x] Chave da xAI configurada pelo autor na variável de usuário `XAI_API_KEY`, sem passar pela conversa (13/11/2026)
+  - [x] Lista de modelos consultada (13/11/2026): `grok-4.3` disponível (versão 1.0, criado em 17/04/2026), sem snapshot datado; a reserva também está disponível
   - [ ] Ligar o provedor à rodada de avaliação: 33 casos × 2 execuções = 66 chamadas, registro de versão, tokens e custo
   - [x] Temperatura 0 confirmada como desvio documentado (reprodutibilidade antes da fluência)
-  - [ ] Confirmar que a chave não vaza (busca no repositório e no log de execução)
+  - [x] Chave ausente do repositório: 0 ocorrências em 873 arquivos (13/11/2026)
+  - [ ] Confirmar que a chave não aparece no log de execução, depois do aquecimento
   - [ ] Aquecimento em 3 casos (custo real e formato da saída) antes das 66 chamadas
 - [ ] Em paralelo: texto da submissão (Lorena), citações dos indicadores e opções de logo
 - [ ] Arquivar a mensagem original da DL2

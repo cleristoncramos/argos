@@ -1103,4 +1103,20 @@ O complemento também registra que a saída estrita é suportada pela Responses 
 5. fazer uma chamada de aquecimento em 3 casos e conferir o custo real e o formato da saída;
 6. só então fazer as 66 chamadas da rodada.
 
-Status: registrada em 13/11/2026, com autoria confirmada e commit autorizado. Primeira chamada **não feita**.
+**Esclarecimento de leitura da documentação (13/11/2026; não é mudança de decisão):** o aviso "Model Retirement (May 15, 2026)" na página do `grok-4.3` trata dos modelos antigos que passaram a ser redirecionados para ele, e não da retirada do próprio `grok-4.3`. Os pedidos aos nomes retirados (`grok-4-0709`, `grok-3` e versões `fast`) são atendidos pelo `grok-4.3`, com esforço de raciocínio `low` para modelos de raciocínio e `none` para os demais. A página de preços o lista como ativo, a US$ 1,25 e US$ 2,50 por milhão de tokens abaixo de 200 mil tokens. Isso confirma duas decisões já tomadas: o `grok-4.3` como versão fixa e o esforço de raciocínio `low`, alinhado ao redirecionamento da própria xAI para cargas de raciocínio.
+
+**Modelo reserva confirmado:** `grok-4.20-0309-non-reasoning`, com o mesmo preço, contexto de 1 milhão de tokens, saída estruturada e Batch. Ele só pode ser usado com novo registro e nova ratificação, porque muda a versão fixa. Observação do autor: esse modelo tem snapshot datado no próprio nome, enquanto o `grok-4.3` é um alias que pode mudar. Se a reprodutibilidade um dia exigir uma versão congelada por data, esse é o caminho.
+
+**Chave e lista de modelos da conta (13/11/2026):**
+- A chave foi criada pelo autor no console da xAI e gravada por ele como variável de ambiente do usuário no Windows (`XAI_API_KEY`), sem passar pela conversa. O desenvolvedor só conferiu que ela existe e tem o formato esperado, sem exibir o valor.
+- Consulta `GET /v1/language-models` e `GET /v1/models`, que não gera texto nem consome tokens:
+
+| Modelo | Disponível | Versão informada | Criado em | Alias |
+| --- | --- | --- | --- | --- |
+| `grok-4.3` | sim | 1.0 | 17/04/2026 | `grok-4.3-latest` |
+| `grok-4.20-0309-non-reasoning` (reserva) | sim | 1.0 | 09/03/2026 | `grok-4.20-non-reasoning` e outros |
+
+- **Conclusão:** o `grok-4.3` está disponível, e não há snapshot datado dele na conta. Fica a regra: fixar o ID `grok-4.3` e registrar em cada chamada a versão devolvida. Como evidência da versão no início da rodada, ficam registrados o ID `grok-4.3`, a versão 1.0 e a data de criação (17/04/2026, carimbo 1776384000). Uma mudança desses dados durante a rodada indica troca de versão e anula a ratificação.
+- **Vazamento (parte do passo 4):** busca pelo valor exato da chave nos 873 arquivos do repositório, inclusive os ignorados pelo git, com 0 ocorrências. A conferência do log de execução fica para depois do aquecimento.
+
+Status: registrada em 13/11/2026, com autoria confirmada e commit autorizado. Chave configurada e `grok-4.3` confirmado na conta. Primeira chamada de geração **não feita**.
