@@ -83,6 +83,40 @@ ATTRIBUTION_TERMS = (
 # exige, no mesmo parágrafo, limitação da amostra e não garantia de repetição. A checagem é
 # por classe de expressão; médias móveis e médias exponenciais (EMA), que são indicadores, não
 # disparam a regra (DL1-O). Continuam sujeitas às checagens de futuro e de atribuição.
+#
+# Correção de implementação (DL2-I, 13/11/2026; não é decisão nova): a exclusão da DL1-O só
+# reconhecia "médias móveis" no plural e logo depois da palavra. O aquecimento da fase 1 mostrou
+# o defeito no G01: "acima da média móvel de 50 pregões" disparava pelo padrão "acima da média",
+# e a forma abreviada "acima da média de 50" também disparava (o limite obrigatório do contexto,
+# copiado literalmente, já era descontado e não disparou). `_without_moving_averages` retira essas
+# expressões antes de procurar os gatilhos. As formas abreviadas só saem quando o contexto declara
+# média móvel (rótulo de métrica "média móvel de N"); média histórica, média de período, mediana e
+# frequência histórica continuam sujeitas à regra.
+# Média móvel explícita, com o parâmetro opcional ("media movel de 50 pregoes", "medias moveis").
+MOVING_AVERAGE_EXPLICIT = r"\bmedias? mo(vel|veis)\b(\s+(de\s+)?\d+(\s+(pregoes|dias|sessoes|periodos))?)?"
+MOVING_AVERAGE_LABEL = r"\bmedias? movel de (\d+)\b"
+
+
+def moving_average_parameters(context: Optional[dict]) -> set:
+    """Parâmetros (N) das médias móveis que o contexto declara nos rótulos das métricas."""
+    if not isinstance(context, dict):
+        return set()
+    labels = [m.get("label", "") for m in (context.get("historical") or {}).get("metrics", ())]
+    return {int(n) for label in labels for n in re.findall(MOVING_AVERAGE_LABEL, fold(label))}
+
+
+def _without_moving_averages(folded: str, parameters: set) -> str:
+    """Texto sem as menções a média móvel (explícitas sempre; abreviadas só com média móvel no contexto)."""
+    text = re.sub(MOVING_AVERAGE_EXPLICIT, " ", folded)
+    if parameters:
+        numbers = "|".join(str(n) for n in sorted(parameters))
+        # "média de 50", "médias de 50 e 200", "acima da média de 200"
+        text = re.sub(rf"\bmedias? (de |da |do )?({numbers})\b(\s+(e|ou)\s+(da |de )?({numbers})\b)?", " ", text)
+        # "das médias", "as médias", "nas médias": a referência abreviada às médias móveis do gráfico
+        text = re.sub(r"\b(d|n)?as medias\b(?!\s+(historica|de periodo|do periodo|anua|mensa|do mes|dos anos))", " ", text)
+    return text
+
+
 HISTORICAL_AVERAGE_TRIGGERS = (
     r"\bmedias?\b(?!\s+(mov|exponenc))", r"\bmediana\b", r"\b(superior|inferior)(es)? (a|ao|aos|as|a de|a do|ao de|ao do)\b",
     r"\b(acima|abaixo) da media\b", r"\banos positivos\b", r"\bproporcao de (anos|meses|periodos)\b",
@@ -235,14 +269,15 @@ def _paragraphs(data: dict) -> list:
     return units + list(data["limitacoes"]) + list(data["o_que_nao_pode_ser_concluido"])
 
 
-def missing_average_caveat(data: dict, fixed: Iterable[str]) -> list:
+def missing_average_caveat(data: dict, fixed: Iterable[str], context: Optional[dict] = None) -> list:
     """Parágrafos com média, comparação ou frequência histórica sem as duas ressalvas."""
     problems = []
+    parameters = moving_average_parameters(context)
     for unit in _paragraphs(data):
         folded = fold(unit)
-        if not any(re.search(p, _strip(folded, fixed)) for p in HISTORICAL_AVERAGE_TRIGGERS):
+        stripped = _without_moving_averages(_strip(folded, fixed), parameters)
+        if not any(re.search(p, stripped) for p in HISTORICAL_AVERAGE_TRIGGERS):
             continue
-        stripped = _strip(folded, fixed)
         period = any(re.search(p, stripped) for p in PERIOD_AVERAGE_TRIGGERS)
         elements = [("amostra limitada", any(re.search(p, folded) for p in SAMPLE_CAVEATS)),
                     ("não repetição", any(re.search(p, folded) for p in REPETITION_CAVEATS))]
@@ -397,7 +432,7 @@ def validate_experimental(
     add("limitacoes", refusal or not missing, f"limitação obrigatória ausente: {missing[0]}" if missing else "")
 
     # 13a. Ressalva sobre média histórica (correção 1) ------------------------------------
-    caveats = missing_average_caveat(data, fixed)
+    caveats = missing_average_caveat(data, fixed, context)
     add("ressalva_media_historica", not caveats, caveats[0] if caveats else "")
 
     # 14. Limite por gráfico ou da síntese -----------------------------------------------

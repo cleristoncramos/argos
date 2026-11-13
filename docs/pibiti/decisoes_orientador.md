@@ -1139,7 +1139,7 @@ O complemento também registra que a saída estrita é suportada pela Responses 
 - **Vazamento (passo 4, conclusão):** a chave não aparece no log de execução, no contador nem nas respostas gravadas, e a busca no repositório inteiro achou 0 ocorrências em 878 arquivos.
 
 **Análise dos dois bloqueios:**
-1. **G01 (preço e médias móveis): falso positivo do validador.** Os três parágrafos que dispararam a regra falam só de médias móveis: "acima da média de 50", "acima da média móvel de 50 pregões" e "o afastamento das médias". Pela DL1-O, médias móveis não disparam a regra, mas a exclusão só cobre a forma "médias móveis" logo após a palavra. O padrão "acima/abaixo da média" dispara mesmo quando vem seguido de "móvel", e a forma abreviada ("das médias", "da de 200") também dispara. Até os rótulos das métricas do próprio contexto ("Fechamento acima da média móvel de 50") acionam a regra. Na rodada, isso tende a bloquear de forma sistemática os casos de gráfico com médias móveis.
+1. **G01 (preço e médias móveis): falso positivo do validador.** Os parágrafos que dispararam a regra falam só de médias móveis: "acima da média de 50" e "acima da média móvel de 50 pregões". *Correção deste diagnóstico (13/11/2026): a primeira análise listou também "o afastamento das médias", mas esse é o limite obrigatório do contexto, que o validador desconta quando copiado literalmente. Ele não disparou: refeita com o validador antigo e com os mesmos textos descontados, a análise mostra só os dois parágrafos.* Pela DL1-O, médias móveis não disparam a regra, mas a exclusão só cobre a forma "médias móveis" logo após a palavra. O padrão "acima/abaixo da média" dispara mesmo quando vem seguido de "móvel", e a forma abreviada ("das médias", "da de 200") também dispara. Até os rótulos das métricas do próprio contexto ("Fechamento acima da média móvel de 50") acionam a regra. Na rodada, isso tende a bloquear de forma sistemática os casos de gráfico com médias móveis.
 2. **M01 (média sazonal): falha real do modelo.** Os parágrafos citam a média e a mediana de abril de 2008 a 2021 sem a ressalva de **amostra limitada** exigida pela regra 9a. A regeneração repetiu a omissão. O bloqueio funcionou como previsto.
 
 **O que não foi feito:** nada foi mudado no prompt, no esquema, nos textos fixos, no validador, no conjunto ou no template. Corrigir o validador (item 1) ou reforçar a instrução sobre a amostra (item 2) é mudança de protocolo e exige decisão e ratificação. **A rodada de 66 chamadas fica suspensa até essa decisão.**
@@ -1152,4 +1152,17 @@ O complemento também registra que a saída estrita é suportada pela Responses 
 - **Custo:** o custo real, de cerca de US$ 0,0073 por chamada, passa a ser a referência; a projeção da rodada é de US$ 0,48, e de US$ 1,00 no pior caso.
 - **Contagem do aquecimento (decisão do desenvolvedor, pedida pelo autor):** as 5 chamadas do aquecimento e as da reexecução **entram no mesmo contador** da rodada (`logs/llm_custos_xai.jsonl`). Os tetos de US$ 16 e 200 chamadas valem para o total da fase, e o arquivo único mantém o teto verificável. As chamadas do aquecimento são as cinco primeiras linhas do contador (13/11/2026, 22h49 UTC). A contagem da rodada continua em 66 chamadas (33 casos × 2 execuções), sem contar aquecimento e reexecução.
 
-Status: registrada em 13/11/2026, com autoria confirmada e commit autorizado. Aquecimento feito (5 chamadas, US$ 0,0367). Rodada de 66 chamadas **suspensa** até a correção do validador e a reexecução de G01 e M01.
+**Correção de implementação da verificação 13a (13/11/2026; não é decisão nova):** `core/llm_exp_validation.py`.
+
+| | Antes | Depois |
+| --- | --- | --- |
+| Exclusão das médias móveis | Só "médias móveis" no plural, logo depois da palavra (`medias?` seguido de `mov`) | Retira, antes de procurar os gatilhos, "média móvel" e "médias móveis", com o parâmetro opcional ("de 50 pregões"), em qualquer contexto |
+| "acima/abaixo da média móvel de 50" | Disparava pelo padrão "acima da média" | Não dispara |
+| Formas abreviadas ("média de 50", "médias de 50 e 200", "das médias") | Disparavam | Só deixam de disparar quando o contexto declara média móvel no rótulo de uma métrica ("média móvel de N"), e só com os parâmetros desse rótulo |
+| Média histórica, média de período, mediana, "em N de M anos", comparação entre períodos | Sujeitas à regra | **Continuam sujeitas**, inclusive em contexto com média móvel |
+
+- **Testes** (`tests/test_llm_exp_media_movel.py`, 57 casos): os trechos exatos da resposta do G01 e os rótulos de métrica; a forma abreviada continua sujeita sem média móvel no contexto; a regra não afrouxa para M01 a M08 nem para média histórica no G01; o M01 do aquecimento continua bloqueado por falta de amostra limitada; as respostas congeladas do template continuam aprovadas em todos os casos. A contagem continua em 17 verificações. Com o validador antigo, os testes do G01 falham. A suíte tem 1.248 testes, com 100% de cobertura do `core/`.
+- **Revalidação das respostas já gravadas no aquecimento, sem chamada nova:** S01 continua aprovado; **G01 passa a ser aprovado**; **M01 continua bloqueado** em `ressalva_media_historica`, por falta de amostra limitada.
+- Prompt, esquema, textos fixos e impressão combinada não mudam: os quatro hashes aprovados são os mesmos.
+
+Status: registrada em 13/11/2026, com autoria confirmada e commit autorizado. Aquecimento feito (5 chamadas, US$ 0,0367). Validador corrigido. Rodada de 66 chamadas **suspensa** até a reexecução de G01 e M01 e o envio do resultado ao autor.

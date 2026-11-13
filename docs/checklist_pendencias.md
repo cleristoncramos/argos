@@ -539,6 +539,8 @@ Etapa 0 — revisão de escopo:
   - [x] Chave ausente do repositório: 0 ocorrências em 873 arquivos (13/11/2026)
   - [x] Chave ausente do log de execução, do contador e das respostas, depois do aquecimento (13/11/2026)
   - [x] Aquecimento em 3 casos (13/11/2026): S01 aprovado; G01 bloqueado por falso positivo do validador (médias móveis); M01 bloqueado por omissão real da ressalva de amostra; US$ 0,0367 em 5 chamadas
-  - [ ] Decidir sobre os dois bloqueios do aquecimento (validador e ressalva de amostra) antes das 66 chamadas
+  - [x] Decisão sobre os bloqueios (13/11/2026): G01 é defeito do validador, M01 é abstenção legítima e o prompt não muda
+  - [x] Validador corrigido (exclusão de médias móveis na 13a), com testes do G01 e de não afrouxamento em M01–M08
+  - [ ] Reexecutar G01 e M01 (uma chamada cada) e mandar o resultado ao autor antes das 66 chamadas
 - [ ] Em paralelo: texto da submissão (Lorena), citações dos indicadores e opções de logo
 - [ ] Arquivar a mensagem original da DL2
