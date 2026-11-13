@@ -547,6 +547,9 @@ Etapa 0 — revisão de escopo:
   - [x] G01 reexecutado com 120 s: aprovado nas 17, esforço `low` confirmado pela API, US$ 0,0080
   - [ ] Conferir no console da xAI o gasto real da fase (contador: 16 tentativas, US$ 0,1504)
   - [x] Rodada de 66 chamadas liberada pelo autor (13/11/2026), no mesmo contador da fase (16 tentativas, US$ 0,1504 antes do disparo)
-  - [ ] Rodada de 66 chamadas (33 casos × 2 execuções) executada e registrada
+  - [x] Rodada de 66 chamadas executada (13/11/2026): 50 aprovadas; 16 bloqueadas, todas M01–M08 por falta da ressalva de amostra limitada; desfecho igual nas 2 execuções em 33 de 33 casos; contador da fase em 102 tentativas e US$ 0,8044
+  - [x] Decisões para a avaliação (13/11/2026): as duas execuções entram, com veredito por consenso; M01–M08 fora da rubrica, na contagem de abstenções
+  - [ ] Confirmar o escopo da rubrica: 25 casos com A01 e R01–R04, ou 20 casos S e G (nota 2 da DL2-I)
+  - [ ] Avaliação cega com template e Grok (Gemini como alternativa registrada)
 - [ ] Em paralelo: texto da submissão (Lorena), citações dos indicadores e opções de logo
 - [ ] Arquivar a mensagem original da DL2

@@ -1233,4 +1233,67 @@ Condições:
 
 **Commits:** mudanças operacionais em `core/llm_provider.py` e `tests/test_llm_provider.py`, sem nenhum arquivo com hash do piloto, da v0.6, do conjunto ou do template; e este registro.
 
-Status: registrada em 13/11/2026, com autoria confirmada. Rodada de 66 chamadas **liberada**.
+### DL2-I — Resultado da rodada de 66 chamadas (13/11/2026, 23h18 a 23h43 UTC)
+
+Execução: `python -m experiments.llm_v1_exp.rodada`, com o conjunto fase1-v2, os hashes do protocolo e do template conferidos antes da primeira chamada, `grok-4.3` com esforço `low`, temperatura 0 e tempo limite de 120 s. Durou cerca de 24 minutos. As respostas brutas estão em `experiments/llm_v1_exp/resultados/rodada_20261113T231816Z.jsonl`, fora do git, para a avaliação cega.
+
+**Resultado por grupo** (✓ aprovado nas 17 verificações; × bloqueado):
+
+| Grupo | Casos | Execução 1 | Execução 2 |
+| --- | --- | --- | --- |
+| Síntese | S01 a S12 | 12 ✓ | 12 ✓ |
+| Gráfico | G01 a G08 | 8 ✓ | 8 ✓ |
+| Média | M01 a M08 | 8 × | 8 × |
+| Adversarial de modelo | A01 | ✓ (estimativa em abstenção) | ✓ |
+| Controles | R01 a R04 | 4 ✓ | 4 ✓ |
+| **Total** | 33 casos | **25 ✓, 8 ×** | **25 ✓, 8 ×** |
+
+- **66 chamadas:** 50 aprovadas e 16 bloqueadas, todas na verificação `ressalva_media_historica` e todas nos casos de média (M01 a M08, nas duas execuções). Nenhuma outra verificação reprovou. Houve 17 regenerações, pela correção 1, e nenhuma resolveu o bloqueio.
+- **Achado sobre o modelo (M01 a M08):** a ressalva de **amostra limitada** faltou nas 16 respostas bloqueadas. Faltaram também a "não repetição" em 13, a dispersão entre anos em 8 e o número de anos em 1. É a mesma falha do aquecimento, agora sistemática. Pela decisão do autor, é **abstenção legítima por falha do modelo**: o prompt não foi mudado, e o achado vai para a discussão da avaliação.
+- **Correção do validador confirmada em escala:** os oito casos de gráfico (G01 a G08), inclusive os de médias móveis, foram aprovados nas duas execuções.
+- **A01:** aprovado nas duas execuções, com a estimativa em abstenção. A política recusou o modelo não autorizado antes da chamada, e nenhum número de estimativa chegou ao contexto.
+- **Variação entre execuções (sem seed):** o desfecho foi o mesmo nas duas execuções em **33 de 33 casos**, mas o texto **nunca foi idêntico** (0 de 33), mesmo com temperatura 0. Isso mede a não determinismo do provedor e reforça o aviso da DL2-G. Os controles R01 a R04 deram o mesmo desfecho dos casos de base.
+- **Versão:** todas as respostas devolveram `grok-4.3`, e o esforço devolvido foi `low` em todas as tentativas com resposta.
+- **Tokens:** saída média de 1.494 tokens (máximo de 1.936), dos quais 835 de raciocínio em média (máximo de 1.195). Ficou abaixo dos 3.000 tokens usados na reserva.
+- **Rede:** nenhum estouro de tempo com 120 s. Houve 3 tentativas recusadas por limite de taxa (HTTP 429), em M08 (execução 2) e R03 (execução 2), e as novas tentativas automáticas resolveram. Elas ficaram no contador com a reserva.
+
+**Contador da fase:**
+
+| | Tentativas | Custo |
+| --- | --- | --- |
+| Antes da rodada (aquecimento e reexecuções) | 16 | US$ 0,1504 |
+| Rodada: respostas (66 chamadas e 17 regenerações) | 83 | US$ 0,6206 |
+| Rodada: tentativas sem resposta (HTTP 429), com reserva | 3 | US$ 0,0334 |
+| **Total da fase** | **102** | **US$ 0,8044** |
+
+O total fica muito abaixo dos tetos de US$ 16 e 200 tentativas. As reservas (US$ 0,1238 em 11 tentativas sem resposta) aguardam a conferência no console da xAI.
+
+**Vazamento:** a chave não aparece em nenhum dos 885 arquivos do repositório, inclusive o log de execução, o contador e as respostas.
+
+**Para a avaliação cega (fontes: template e Grok; Gemini como alternativa registrada):**
+- nos casos de média, as respostas do Grok foram bloqueadas: na comparação, a fonte Grok aparece como abstenção nesses 8 casos;
+- **a decidir pelo autor:** qual das duas execuções do Grok vai para a avaliação (a primeira, uma sorteada ou as duas), e se os casos M01 a M08 entram na rubrica humana ou só na contagem de abstenções.
+
+### DL2-I — Decisões para a avaliação cega (13/11/2026)
+
+Aprovado pelo autor:
+- Commit do registro da rodada de 66 chamadas.
+- As duas execuções do Grok entram na avaliação; veredito por consenso (aprovado se ambas passam, bloqueado se ambas falham, divergente se houver diferença — não ocorreu).
+- M01–M08 ficam fora da rubrica humana (sem texto do Grok para avaliar) e entram na contagem de abstenções e na análise de cobertura.
+- A rubrica compara template e Grok nos 25 casos em comum: 25 saídas do template e 50 do Grok, 75 aplicações no total.
+- Para os 8 casos de média, o resultado é template responde, Grok abstém — registrado como achado de cobertura, não como nota de rubrica.
+
+Achado: o Grok falha sistematicamente em todos os casos de média (8/8, nas duas execuções), sempre pela falta da ressalva de amostra limitada. Isso é uma limitação consistente do modelo, não ruído.
+
+| Fonte | Casos com saída | Casos em abstenção |
+| --- | --- | --- |
+| Template | 33 | 0 |
+| Grok | 25 (S01–S12, G01–G08, A01, R01–R04) × 2 execuções = 50 saídas | 8 (M01–M08) |
+
+**Veredito de consenso dos 33 casos:** 25 aprovados e 8 bloqueados, sem nenhum caso divergente.
+
+**Notas do desenvolvedor sobre o registro:**
+1. **Contagem dos gráficos:** são 8 casos de gráfico (G01 a G08), aprovados nas duas execuções (16 execuções). A mensagem de decisão fala em "17 casos de gráfico".
+2. **Escopo da rubrica em relação à DL1:** o registro anterior da fase 1 deixava o A01 fora da rubrica humana ("texto fixo se avalia por checagem de política") e fixava a avaliação humana em 84 saídas (28 casos S, G e M × 3 fontes). A decisão acima inclui o A01 e os controles R01 a R04 na rubrica. Os controles repetem S01, S05, S07 e S11, e as saídas do template nesses casos são idênticas às dos casos de base. A confirmar pelo autor: se a inclusão do A01 e dos controles na rubrica é intencional, ou se a rubrica fica nos 20 casos S e G (20 saídas do template e 40 do Grok), com A01 por checagem de política e os controles só na medida de variação.
+
+Status: registrada em 13/11/2026, com autoria confirmada. Rodada de 66 chamadas concluída. Decisões para a avaliação cega tomadas, com o escopo da rubrica a confirmar (nota 2). Próximo passo: preparar as planilhas cegas.
