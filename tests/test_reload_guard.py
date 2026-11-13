@@ -72,3 +72,45 @@ def test_project_fingerprint_covers_core_and_app():
     root = Path(__file__).resolve().parents[1]
     files = {entry[0] for entry in reload_guard.code_fingerprint(root)}
     assert "core/data_loader.py" in files and "app/ui/data_cache.py" in files
+
+
+def test_purge_keeps_a_module_being_imported_by_another_session(fake_project):
+    # 13/11/2026: KeyError em core.demo_mode no Streamlit Cloud logo depois de um deploy.
+    # Uma sessão descartava os módulos enquanto outra ainda importava um deles.
+    import threading
+
+    _, package = fake_project
+    (package / "slow.py").write_text(
+        "import threading, time\n"
+        "import pkgdeploy\n"
+        "pkgdeploy.started.set()\n"
+        "time.sleep(0.3)\n"
+        "VALUE = 1\n",
+        encoding="utf-8",
+    )
+    import pkgdeploy
+    import pkgdeploy.loader  # noqa: F401  (módulo comum, que deve ser descartado)
+    pkgdeploy.started = threading.Event()
+    errors, result = [], {}
+
+    def other_session():
+        try:
+            result["value"] = importlib.import_module("pkgdeploy.slow").VALUE
+        except Exception as error:      # pragma: no cover - só se a regressão voltar
+            errors.append(error)
+
+    thread = threading.Thread(target=other_session)
+    thread.start()
+    assert pkgdeploy.started.wait(5)
+    purged = reload_guard.purge_project_modules(("pkgdeploy",))
+    thread.join(5)
+
+    assert errors == [] and result == {"value": 1}
+    assert "pkgdeploy.slow" not in purged and "pkgdeploy" not in purged   # o pai também fica
+    assert "pkgdeploy.loader" in purged                                   # os demais saem
+    sys.modules.pop("pkgdeploy.slow", None)
+
+
+def test_reload_check_is_serialized():
+    assert reload_guard._LOCK.acquire(blocking=False)
+    reload_guard._LOCK.release()
