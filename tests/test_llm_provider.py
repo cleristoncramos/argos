@@ -87,7 +87,12 @@ def test_corpo_da_responses_api():
 def test_leitura_da_resposta():
     parsed = lp.parse_response(_response(model="grok-4.3-0101"))
     assert parsed == {"raw": '{"ok": true}', "finish_reason": "completed", "input_tokens": 2500,
-                      "output_tokens": 600, "model_version": "grok-4.3-0101"}
+                      "output_tokens": 600, "reasoning_tokens": 0, "reasoning_effort": "",
+                      "model_version": "grok-4.3-0101"}
+    com_raciocinio = {**_response(), "reasoning": {"effort": "low"},
+                      "usage": {"input_tokens": 1, "output_tokens": 9, "output_tokens_details": {"reasoning_tokens": 7}}}
+    assert lp.parse_response(com_raciocinio)["reasoning_effort"] == "low"
+    assert lp.parse_response(com_raciocinio)["reasoning_tokens"] == 7
     assert lp.parse_response({"output_text": "x"})["raw"] == "x"
     assert lp.parse_response({})["model_version"] == "" and lp.parse_response({})["input_tokens"] == 0
 
@@ -95,28 +100,81 @@ def test_leitura_da_resposta():
 def test_registro_sem_chave_nem_texto(tmp_path):
     ledger = lp.BudgetLedger(tmp_path / "custos" / "rodada.jsonl")
     assert ledger.entries() == [] and ledger.spent() == 0
-    fixed = lambda: datetime(2026, 11, 13, 12, 0, tzinfo=timezone.utc)
     result = lp.call_provider(lp.XAI, _messages(), ep.response_format(), FAKE_KEY, ledger, "C01", 2500,
                               transport=lambda *a: _response(text="segredo do texto"))
     entry = ledger.entries()[0]
     assert result["raw"] == "segredo do texto" and result["attempts"] == 1
+    assert entry["situacao"] == "resposta" and entry["tentativa"] == 1
     assert entry["modelo_pedido"] == "grok-4.3" and entry["modelo_devolvido"] == "grok-4.3"
     assert entry["custo_usd"] == pytest.approx(0.004625) and entry["caso"] == "C01"
+    assert entry["custo_reservado_usd"] == pytest.approx(lp.estimate_cost(lp.XAI, 2500, 3000))
     content = (tmp_path / "custos" / "rodada.jsonl").read_text(encoding="utf-8")
     assert FAKE_KEY not in content and "segredo do texto" not in content
-    assert ledger.record(lp.XAI, {"input_tokens": 1, "output_tokens": 1}, "C02", now=fixed)["horario"] \
-        == "2026-11-13T12:00:00+00:00"
+
+
+def test_reserva_antes_de_cada_tentativa(tmp_path):
+    ledger = lp.BudgetLedger(tmp_path / "r.jsonl")
+    vistos = []
+
+    def transporte(prov, corpo, key, timeout):
+        # Quando a tentativa sai, a reserva dela já está no contador.
+        vistos.append([(e["situacao"], e["custo_usd"]) for e in ledger.entries()])
+        return _response()
+
+    lp.call_provider(lp.XAI, _messages(), ep.response_format(), FAKE_KEY, ledger, "C01", 2500, transport=transporte)
+    reserva = round(lp.estimate_cost(lp.XAI, 2500, 3000), 6)
+    assert vistos == [[("reservada", reserva)]]
+    assert ledger.entries()[0]["situacao"] == "resposta"           # a resposta troca a reserva pelo real
+    assert ledger.spent() == pytest.approx(0.004625)
+
+
+def test_tentativa_sem_resposta_entra_no_contador_com_reserva(tmp_path):
+    ledger = lp.BudgetLedger(tmp_path / "r.jsonl")
+    script = [TimeoutError(), TimeoutError(), _response()]
+
+    def instavel(*args):
+        passo = script.pop(0)
+        if isinstance(passo, Exception):
+            raise passo
+        return passo
+
+    lp.call_provider(lp.XAI, _messages(), ep.response_format(), FAKE_KEY, ledger, "M01#1", 3079,
+                     transport=instavel, sleep=lambda s: None)
+    entradas = ledger.entries()
+    reserva = round(lp.estimate_cost(lp.XAI, 3079, 3000), 6)
+    assert [(e["tentativa"], e["situacao"], e["motivo"]) for e in entradas] == [
+        (1, "sem_resposta", "rede: TimeoutError"), (2, "sem_resposta", "rede: TimeoutError"), (3, "resposta", "")]
+    assert entradas[0]["custo_usd"] == entradas[1]["custo_usd"] == reserva
+    assert ledger.spent() == pytest.approx(2 * reserva + 0.004625)  # o total inclui as reservas
+
+    def sempre_fora(*a):
+        raise TimeoutError()
+
+    with pytest.raises(CallFailed):
+        lp.call_provider(lp.XAI, _messages(), ep.response_format(), FAKE_KEY, ledger, "G01#1", 2978,
+                         transport=sempre_fora, sleep=lambda s: None)
+    assert [e["situacao"] for e in ledger.entries()[3:]] == ["sem_resposta"] * 3
 
 
 def test_teto_de_custo(tmp_path):
-    ledger = lp.BudgetLedger(tmp_path / "r.jsonl", cap_usd=0.01)
+    reserva = lp.estimate_cost(lp.XAI, 2500, 3000)
+    ledger = lp.BudgetLedger(tmp_path / "r.jsonl", cap_usd=reserva + 0.001)
     lp.call_provider(lp.XAI, _messages(), ep.response_format(), FAKE_KEY, ledger, "C01", 2500,
                      transport=lambda *a: _response(tokens=(2500, 3000)))
     calls = []
-    with pytest.raises(lp.BudgetExceeded, match="Teto de US\\$ 0.01"):
+    with pytest.raises(lp.BudgetExceeded, match="Teto de US\\$"):
         lp.call_provider(lp.XAI, _messages(), ep.response_format(), FAKE_KEY, ledger, "C02", 2500,
                          transport=lambda *a: calls.append(1))
-    assert calls == []                                       # nada chega à API
+    assert calls == [] and len(ledger.entries()) == 1               # a recusa vem antes da reserva
+
+
+def test_tempo_limite_por_provedor():
+    from core import llm_client
+    assert lp.XAI.timeout_s == 120.0 and lp.XAI_FALLBACK.timeout_s == 120.0
+    assert llm_client.TIMEOUT_S == 20                                   # a 7B continua com 20 s
+    assert lp.Provider(**{**lp.XAI.__dict__, "timeout_s": 20.0}).timeout_s == 20.0
+    corpo = lp.build_payload(lp.XAI, _messages(), ep.response_format())
+    assert corpo["reasoning"] == {"effort": "low"}                       # esforço enviado no payload
 
 
 def test_teto_de_chamadas(tmp_path):
@@ -183,7 +241,9 @@ def test_transporte_http(monkeypatch):
 
     monkeypatch.setattr(lp.urllib.request, "urlopen", fake_urlopen)
     assert lp.http_transport(lp.XAI, {"x": 1}, FAKE_KEY)["model"] == "grok-4.3"
-    assert seen == {"url": lp.XAI.api_url, "auth": f"Bearer {FAKE_KEY}", "timeout": 20}
+    assert seen == {"url": lp.XAI.api_url, "auth": f"Bearer {FAKE_KEY}", "timeout": 120.0}
+    lp.http_transport(lp.XAI, {"x": 1}, FAKE_KEY, 5)
+    assert seen["timeout"] == 5
 
     def http_error(body):
         def raise_(request, timeout):

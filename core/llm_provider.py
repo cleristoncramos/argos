@@ -20,6 +20,10 @@ Provedor de referência (DL2-I, 13/11/2026): xAI, modelo `grok-4.3`.
   ratificação. Se o grok-4.3 não estiver na lista de modelos da conta, a reserva é
   `grok-4.20-0309-non-reasoning` (snapshot datado, mesmo preço), com novo registro.
 - Rodada: 33 casos x 2 execuções = 66 chamadas por modelo; tetos de US$ 16 e 200 chamadas.
+- Ajuste operacional (DL2-I, 13/11/2026): tempo limite de 120 s por tentativa, só neste provedor
+  (o grok-4.3 com raciocínio passa de 20 s; a 7B mantém 20 s), com as mesmas 3 tentativas. O
+  contador reserva o custo de pior caso ANTES de cada tentativa; a resposta troca a reserva pelo
+  valor real, e a tentativa sem resposta fica com a reserva até a conferência no console.
 - A chave vem só da variável de ambiente XAI_API_KEY e nunca é gravada.
 
 Toda chamada de rede passa por `transport`, para os testes usarem um cliente simulado.
@@ -38,7 +42,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, Optional
 
-from core.llm_client import MAX_RETRIES, RETRY_STATUS, TIMEOUT_S, ApiError, CallFailed
+from core.llm_client import MAX_RETRIES, RETRY_STATUS, ApiError, CallFailed
 
 BUDGET_CAP_USD = 16.0
 MAX_CALLS = 200
@@ -62,6 +66,10 @@ class Provider:
     seed: Optional[int]
     reasoning_effort: Optional[str]
     max_output_tokens: int = 1400
+    timeout_s: float = 20.0          # por tentativa; o padrão é o da 7B
+    # Saída usada na reserva de pior caso. Na xAI, os tokens de raciocínio contam como saída e
+    # passam de `max_output_tokens` (aquecimento: 1.457 a 1.534 com limite de 1.400).
+    reserve_output_tokens: int = 1400
 
 
 XAI = Provider(
@@ -77,6 +85,8 @@ XAI = Provider(
     temperature=0.0,
     seed=None,                      # não documentado pela xAI (13/11/2026)
     reasoning_effort="low",         # padrão do grok-4.3
+    timeout_s=120.0,                # DL2-I: o raciocínio passa de 20 s
+    reserve_output_tokens=3000,     # cerca do dobro da saída medida no aquecimento
 )
 
 # Reserva, só se o grok-4.3 não constar da lista de modelos da conta (DL2-I). Modelo sem
@@ -94,6 +104,8 @@ XAI_FALLBACK = Provider(
     temperature=0.0,
     seed=None,
     reasoning_effort=None,
+    timeout_s=120.0,
+    reserve_output_tokens=3000,
 )
 
 PROVIDER_RESTRICTIONS = (
@@ -154,16 +166,19 @@ def parse_response(data: dict) -> dict:
             if part.get("type") == "output_text":
                 texts.append(part.get("text") or "")
     usage = data.get("usage") or {}
+    details = usage.get("output_tokens_details") or {}
     return {
         "raw": "".join(texts) or (data.get("output_text") or ""),
         "finish_reason": data.get("status"),
         "input_tokens": int(usage.get("input_tokens", 0)),
         "output_tokens": int(usage.get("output_tokens", 0)),
+        "reasoning_tokens": int(details.get("reasoning_tokens", 0)),
+        "reasoning_effort": (data.get("reasoning") or {}).get("effort") or "",
         "model_version": data.get("model") or "",
     }
 
 
-def http_transport(provider: Provider, payload: dict, key: str, timeout: float = TIMEOUT_S) -> dict:
+def http_transport(provider: Provider, payload: dict, key: str, timeout: Optional[float] = None) -> dict:
     """Chamada real (não usada nos testes)."""
     request = urllib.request.Request(
         provider.api_url,
@@ -172,7 +187,7 @@ def http_transport(provider: Provider, payload: dict, key: str, timeout: float =
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
+        with urllib.request.urlopen(request, timeout=provider.timeout_s if timeout is None else timeout) as response:
             return json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         body = exc.read().decode("utf-8", errors="replace")
@@ -185,10 +200,14 @@ def http_transport(provider: Provider, payload: dict, key: str, timeout: float =
 
 class BudgetLedger:
     """
-    Contador de custo da rodada, num arquivo JSONL próprio (DL2-C). Cada linha guarda
-    provedor, modelo pedido, modelo devolvido, tokens, custo, caso e horário; nunca o
-    texto gerado, o contexto ou a chave.
+    Contador de custo da fase, num arquivo JSONL próprio (DL2-C e regra da fase 1): uma linha por
+    TENTATIVA. Antes de cada tentativa, `reserve` grava o custo de pior caso; com resposta, `settle`
+    troca a reserva pelo valor real; sem resposta, `fail` mantém a reserva até a conferência no
+    console. O total é a soma de todas as linhas, inclusive reservas, e é sobre ele que valem os
+    tetos de US$ 16 e 200 tentativas. Nunca guarda o texto gerado, o contexto ou a chave.
     """
+
+    RESERVED, ANSWERED, NO_ANSWER = "reservada", "resposta", "sem_resposta"
 
     def __init__(self, path: Path | str, cap_usd: float = BUDGET_CAP_USD, max_calls: int = MAX_CALLS) -> None:
         self.path = Path(path)
@@ -200,39 +219,79 @@ class BudgetLedger:
             return []
         return [json.loads(line) for line in self.path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
+    def _write(self, entries: list[dict]) -> None:
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        text = "".join(json.dumps(e, ensure_ascii=False) + "\n" for e in entries)
+        self.path.write_text(text, encoding="utf-8")
+
     def spent(self) -> float:
+        """Soma de tudo o que está no contador: valores reais e reservas."""
         return sum(float(e.get("custo_usd", 0.0)) for e in self.entries())
 
+    def worst_case(self, provider: Provider, input_tokens: int) -> float:
+        return estimate_cost(provider, input_tokens, max(provider.max_output_tokens, provider.reserve_output_tokens))
+
     def check(self, provider: Provider, input_tokens: int) -> None:
-        """Recusa a chamada se passar do teto de chamadas ou se o pior caso dela (saída máxima) passar do teto de custo."""
+        """Recusa a tentativa se passar do teto de tentativas ou se a reserva dela passar do teto de custo."""
         if len(self.entries()) >= self.max_calls:
             raise BudgetExceeded(f"Teto de {self.max_calls} chamadas atingido.")
-        worst = estimate_cost(provider, input_tokens, provider.max_output_tokens)
+        worst = self.worst_case(provider, input_tokens)
         if self.spent() + worst > self.cap_usd:
             raise BudgetExceeded(
                 f"Teto de US$ {self.cap_usd:.2f} atingido: gasto US$ {self.spent():.4f}, "
                 f"pior caso da chamada US$ {worst:.4f}."
             )
 
-    def record(self, provider: Provider, result: dict, case_id: str, now: Callable = None) -> dict:
+    def reserve(self, provider: Provider, case_id: str, attempt: int, input_tokens: int,
+                now: Callable = None) -> int:
+        """Grava a reserva de pior caso antes da tentativa; devolve o número da linha."""
         now = now or (lambda: datetime.now(timezone.utc))
-        entry = {
+        worst = round(self.worst_case(provider, input_tokens), 6)
+        entries = self.entries()
+        entries.append({
             "horario": now().isoformat(timespec="seconds"),
             "caso": case_id,
+            "tentativa": attempt,
+            "situacao": self.RESERVED,
             "provedor": provider.name,
             "modelo_pedido": provider.model,
-            "modelo_devolvido": result.get("model_version", ""),
-            "tokens_entrada": result["input_tokens"],
-            "tokens_saida": result["output_tokens"],
-            "custo_usd": round(estimate_cost(provider, result["input_tokens"], result["output_tokens"]), 6),
+            "modelo_devolvido": "",
+            "tokens_entrada": input_tokens,
+            "tokens_saida": 0,
+            "tokens_raciocinio": 0,
+            "esforco_devolvido": "",
+            "custo_reservado_usd": worst,
+            "custo_usd": worst,
             "temperatura": provider.temperature,
             "seed": provider.seed,
-            "tentativas": result.get("attempts"),
-        }
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        with self.path.open("a", encoding="utf-8") as handle:
-            handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
+            "tempo_limite_s": provider.timeout_s,
+            "motivo": "",
+        })
+        self._write(entries)
+        return len(entries) - 1
+
+    def settle(self, index: int, provider: Provider, result: dict) -> dict:
+        """Troca a reserva pelo valor real da resposta."""
+        entries = self.entries()
+        entry = entries[index]
+        entry.update(
+            situacao=self.ANSWERED,
+            modelo_devolvido=result.get("model_version", ""),
+            tokens_entrada=result["input_tokens"],
+            tokens_saida=result["output_tokens"],
+            tokens_raciocinio=result.get("reasoning_tokens", 0),
+            esforco_devolvido=result.get("reasoning_effort", ""),
+            custo_usd=round(estimate_cost(provider, result["input_tokens"], result["output_tokens"]), 6),
+        )
+        self._write(entries)
         return entry
+
+    def fail(self, index: int, reason: str) -> dict:
+        """Tentativa sem resposta: a reserva fica como custo, até a conferência no console."""
+        entries = self.entries()
+        entries[index].update(situacao=self.NO_ANSWER, motivo=reason)
+        self._write(entries)
+        return entries[index]
 
 
 def call_provider(
@@ -248,34 +307,37 @@ def call_provider(
     clock: Callable = time.monotonic,
 ) -> dict:
     """
-    Uma chamada com as mesmas regras de rede da 7B (timeout de 20 s, até 2 retentativas
-    em 429, 5xx e falha de rede). Confere o teto antes e registra o custo depois.
+    Uma chamada com até 3 tentativas (a primeira e até 2 novas, em 429, 5xx e falha de rede), com o
+    tempo limite do provedor. Antes de CADA tentativa, confere o teto e reserva o custo de pior caso.
     Levanta BudgetExceeded ou CallFailed.
     """
     if not key:
         raise CallFailed("sem chave da API", 0, 0.0)
-    ledger.check(provider, estimated_input_tokens)
     payload = build_payload(provider, messages, response_format)
     started = clock()
     attempts = 0
     last = "erro desconhecido"
     while attempts <= MAX_RETRIES:
+        ledger.check(provider, estimated_input_tokens)
         attempts += 1
+        index = ledger.reserve(provider, case_id, attempts, estimated_input_tokens)
         try:
-            data = transport(provider, payload, key, TIMEOUT_S)
+            data = transport(provider, payload, key, provider.timeout_s)
         except ApiError as exc:
             last = f"HTTP {exc.status}"
+            ledger.fail(index, last)
             if exc.status in RETRY_STATUS and attempts <= MAX_RETRIES:
                 sleep(2 ** (attempts - 1))
                 continue
             break
         except (TimeoutError, OSError) as exc:
             last = f"rede: {type(exc).__name__}"
+            ledger.fail(index, last)
             if attempts <= MAX_RETRIES:
                 sleep(2 ** (attempts - 1))
                 continue
             break
         result = {**parse_response(data), "latency_s": round(clock() - started, 3), "attempts": attempts}
-        result["log"] = ledger.record(provider, result, case_id)
+        result["log"] = ledger.settle(index, provider, result)
         return result
     raise CallFailed(last, attempts, round(clock() - started, 3))
