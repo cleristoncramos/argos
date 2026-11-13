@@ -541,6 +541,8 @@ Etapa 0 — revisão de escopo:
   - [x] Aquecimento em 3 casos (13/11/2026): S01 aprovado; G01 bloqueado por falso positivo do validador (médias móveis); M01 bloqueado por omissão real da ressalva de amostra; US$ 0,0367 em 5 chamadas
   - [x] Decisão sobre os bloqueios (13/11/2026): G01 é defeito do validador, M01 é abstenção legítima e o prompt não muda
   - [x] Validador corrigido (exclusão de médias móveis na 13a), com testes do G01 e de não afrouxamento em M01–M08
-  - [ ] Reexecutar G01 e M01 (uma chamada cada) e mandar o resultado ao autor antes das 66 chamadas
+  - [x] Reexecução (13/11/2026): M01 continua bloqueado (falha real); G01 indisponível por estouro de tempo (20 s) nas 3 tentativas
+  - [ ] Decidir o tempo limite do provedor xAI (o grok-4.3 com raciocínio passa de 20 s) e repetir o G01
+  - [ ] Contador: reservar e contar também as tentativas sem resposta (regra da fase 1); conferir no console da xAI o custo real das 8 tentativas sem resposta
 - [ ] Em paralelo: texto da submissão (Lorena), citações dos indicadores e opções de logo
 - [ ] Arquivar a mensagem original da DL2

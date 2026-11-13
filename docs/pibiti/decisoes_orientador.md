@@ -1165,4 +1165,16 @@ O complemento também registra que a saída estrita é suportada pela Responses 
 - **Revalidação das respostas já gravadas no aquecimento, sem chamada nova:** S01 continua aprovado; **G01 passa a ser aprovado**; **M01 continua bloqueado** em `ressalva_media_historica`, por falta de amostra limitada.
 - Prompt, esquema, textos fixos e impressão combinada não mudam: os quatro hashes aprovados são os mesmos.
 
-Status: registrada em 13/11/2026, com autoria confirmada e commit autorizado. Aquecimento feito (5 chamadas, US$ 0,0367). Validador corrigido. Rodada de 66 chamadas **suspensa** até a reexecução de G01 e M01 e o envio do resultado ao autor.
+**Reexecução de G01 e M01 (13/11/2026, 23h03 UTC), uma chamada cada, com o validador corrigido:**
+
+| Caso | Situação | Detalhe |
+| --- | --- | --- |
+| G01 | **indisponível** (`api_indisponivel: rede: TimeoutError`) | As 3 tentativas estouraram o tempo limite de 20 s; não houve resposta, e o G01 não pôde ser testado |
+| M01 | bloqueado (`ressalva_media_historica`) | A primeira resposta e a regeneração omitiram de novo a amostra limitada; cada uma precisou de 3 tentativas, com 2 estouros de tempo antes de responder |
+
+- **Custo registrado:** US$ 0,0152 (duas respostas do M01). O contador soma 7 respostas e US$ 0,0520 na fase.
+- **Achado operacional:** o `grok-4.3` com raciocínio está levando mais de 20 s para gerar cerca de 1.500 tokens de saída. O tempo limite de 20 s e as 2 novas tentativas vieram da 7B, que usava o gpt-5-mini sem raciocínio. Das 8 chamadas da fase (5 no aquecimento e 3 na reexecução), 3 precisaram de nova tentativa e 1 falhou em todas.
+- **Lacuna no contador:** o contador registra só as respostas recebidas. As tentativas que estouram o tempo do lado do Argos provavelmente continuam sendo processadas e cobradas pela xAI. Isso contraria a regra da fase 1 ("o contador próprio do job é a autoridade: reserva o custo antes da chamada e conta também as que falharem"). Houve 8 tentativas sem resposta (1 no aquecimento e 7 na reexecução), cujo custo não está no contador. O pior caso é de cerca de US$ 0,0075 cada, ou US$ 0,06 no total; o valor real deve ser conferido no console da xAI.
+- **Situação do G01:** a correção do validador está confirmada sobre a resposta gravada no aquecimento (o G01 passa a ser aprovado), mas **não foi confirmada numa chamada nova**.
+
+Status: registrada em 13/11/2026, com autoria confirmada e commit autorizado. Aquecimento (5 chamadas) e reexecução (2 casos) feitos. Validador corrigido. Rodada de 66 chamadas **suspensa**: o G01 não pôde ser reexecutado por estouro de tempo, e o contador não conta as tentativas sem resposta. Os dois pontos voltam ao autor.
