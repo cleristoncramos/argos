@@ -4,7 +4,7 @@
 - transcrição automática da reunião de 10/11/2026 com o Prof. Arlino (arquivo `Argos - 10-11-2026.docx`, fora do repositório);
 - mensagens do orientador por WhatsApp em 11/11 e 13/11/2026, anexadas ao mesmo arquivo.
 
-**Situação:** plano **aprovado** pelo orientador na DL2 (13/11/2026), com os seis conflitos resolvidos (seção 5) · etapas 1 e 2 concluídas (seção 6) · etapa 3 concluída (seção 7) · **eventos históricos** antecipados da etapa 5 (seção 8), aguardando commit
+**Situação:** plano **aprovado** pelo orientador na DL2 (13/11/2026), com os seis conflitos resolvidos (seção 5) · etapas 1 e 2 concluídas (seção 6) · etapa 3 concluída (seção 7) · eventos históricos antecipados da etapa 5 (seção 8) · **etapa 4 concluída** (seção 9), aguardando commit
 
 > **Sobre a transcrição.** O reconhecimento automático trocou vários termos: "Grock" e "Glock" são o **Grok**; "LNM" e "LLMM" são **LLM**; "Lorana" é a **Lorena**. Num trecho, o orientador diz que a ferramenta "é determinística", mas o contexto deixa claro que ele quis dizer **não determinística**. As orientações abaixo seguem o sentido evidente da conversa; onde houve dúvida, o item está marcado "a confirmar".
 
@@ -205,3 +205,21 @@ O registro completo está em [`pibiti/decisoes_orientador.md`](pibiti/decisoes_o
 **Verificação na tela** (PETR4.SA, 10 anos, frequência mensal): linhas e legenda nos dois gráficos, com os eventos de 01/12/2016 em diante. Evento próprio adicionado e removido, com o filtro e os gráficos de acordo. Defeito achado e corrigido na verificação: depois de incluir um evento próprio, o filtro de categorias não mostrava "Seus eventos", embora o gráfico mostrasse.
 
 **Pendente para fechar a etapa 5 (DL2-D):** a DL2-D e o plano pedem lista curada **com data e fonte**, "nenhum evento sem fonte". A base trazida do projeto Previsão tem data, categoria, título e descrição, mas não tem fonte. Falta acrescentar uma coluna `fonte` com a referência de cada um dos 27 eventos (órgão oficial ou veículo de imprensa) e mostrá-la ao passar o mouse. As fontes não foram inventadas: precisam ser levantadas e conferidas. Os eventos do usuário ficam fora dessa regra, porque são dele e não do sistema.
+
+---
+
+## 9. Execução da etapa 4, página Configurações (13/11/2026)
+
+Nova página **Configurações** (⚙️) no menu, entre o Panorama do Catálogo e o "Sobre o Projeto". Ela não é módulo de análise: não ganha número nem cartão em "Primeiros passos". O cabeçalho do menu lateral das análises já tinha passado a se chamar "Parâmetros", o que evita confusão com o nome da página.
+
+| Item | O que foi feito | Verificação |
+| --- | --- | --- |
+| B1, referência padrão | Escolha entre "Automática, pela classe do ativo (recomendado)", que continua sendo o padrão, as quatro referências fixas, qualquer ativo do catálogo ou um ticker digitado, conferido na fonte. Na Análise Individual, a referência escolhida aparece selecionada, marcada "· padrão", com a legenda "Referência padrão: …, escolhida em Configurações". Quando o ativo analisado é a própria referência, o Argos volta à sugestão automática. Na versão pública, a escolha vale até fechar o navegador; na instalação local, fica salva no SQLite | `resolve_reference` e `reference_name` em `core/benchmark.py` (funções novas, as existentes não mudaram). Na tela: com o S&P 500 como padrão, a AMD foi comparada ao S&P 500 com a legenda de referência padrão |
+| B2, catálogo editável | `core/local_catalog.py`: camada em SQLite **por cima** do catálogo base, que não muda. Permite criar grupo (nome e classe, marcado com ⭐), acrescentar ativo a um grupo base ou novo (o ticker é conferido na fonte antes de salvar; ticker do catálogo base ou repetido é recusado), remover ativo e remover grupo vazio. Os ativos locais aparecem na escolha de ativos da barra lateral e da Comparação de Ativos; o Panorama do Catálogo e os números da página inicial continuam com o catálogo base | 10 testes em `tests/test_local_catalog.py`, inclusive a página nos dois modos. Na tela, no modo local: grupo "Tecnologia" criado, AMD acrescentada depois da consulta à fonte e escolhida pela barra lateral |
+| DL2-E, só na instalação local | A edição só liga com `ARGOS_CATALOGO_EDITAVEL=on` e nunca no modo de demonstração. Sem a variável, como na versão pública, a página mostra o catálogo como **fixo e somente leitura** (tabela de grupos e quantidades) e explica que ativos fora do catálogo podem ser analisados por "Digitar ticker". O arquivo fica em `data/catalogo_local.sqlite`, fora do git | Teste da regra e conferência na tela sem a variável: nenhum formulário de edição e nenhum arquivo criado |
+
+**Testes:** 1.166, com 100% de cobertura do `core/`. Testes ajustados para a página nova: ordem do menu (`test_pages.py`), cartões da página inicial (`test_app_smoke.py`) e uso do catálogo de demonstração, que agora passa por `active_catalog()` (`test_demo_mode.py`).
+
+**Documentação:** variáveis `ARGOS_CATALOGO_EDITAVEL` e `ARGOS_CATALOGO_ARQUIVO` no README.
+
+**Limites registrados:** ativos locais não entram no Panorama do Catálogo nem nos números da página inicial ("148 ativos no catálogo"), que descrevem o catálogo base conferido. Nas páginas que ainda buscam o ativo só no catálogo base (Indicadores Técnicos, Risco e Retorno, Simulação), um ativo local é tratado como ticker digitado: funciona, mas sem os metadados do catálogo.

@@ -37,6 +37,7 @@ from app.ui.data_info import (
 )
 from app.ui.disclaimers import render_footer_disclaimer
 from app.ui.education import render_glossary, render_what_it_means
+from app.ui.catalog_state import active_catalog, find_asset, preferred_reference
 from app.ui.events_panel import add_events, render_events_panel
 from app.ui.llm_explain import asset_name, render_explain_section
 from app.ui.metric_card import render_metric_card
@@ -93,7 +94,6 @@ from core.analyzer import (
     calculate_statistics,
     create_monthly_return_matrix,
 )
-from core.assets import ASSETS
 from core.config import ANNUALIZATION_FACTORS
 from core.currency import currency_info
 from core.data_availability import assess_availability
@@ -124,10 +124,12 @@ from core.trailing_returns import base_description, trailing_returns
 from core.visualizations import gradient_fill
 from core.benchmark import (
     BENCHMARKS,
+    PREFERRED_REASON,
+    reference_name,
+    resolve_reference,
     align_with_benchmark,
     benchmark_notes,
     describe_comparison,
-    suggest_benchmark,
 )
 from core.extreme_moves import (
     DEFAULT_TOP as EXTREMES_TOP,
@@ -339,7 +341,7 @@ frequency = query["frequency"]
 # Card visual do ativo (logo em destaque) lado a lado com o
 # expander de detalhes da análise, na mesma fileira.
 # =====================
-current_asset = next((a for a in ASSETS if a["ticker"] == symbol), None)
+current_asset = find_asset(symbol)
 
 # Ativos digitados fora do catálogo usam um registro mínimo
 logo_asset = current_asset or {
@@ -533,18 +535,29 @@ st.markdown(
     "não é uma meta nem indica o que o ativo deveria ter feito."
 )
 
-suggestion = suggest_benchmark(symbol, current_asset)
+# B1 (etapa 4 da DL2): a referência padrão escolhida em Configurações tem prioridade;
+# sem escolha, vale a sugestão automática pela classe do ativo.
+suggestion = resolve_reference(symbol, current_asset, preferred_reference())
 NO_REFERENCE = "Nenhuma (desativar)"
 reference_options = [NO_REFERENCE] + [
     ticker for ticker in BENCHMARKS if ticker.upper() != symbol.upper()
 ]
+if suggestion.ticker and suggestion.ticker not in reference_options:
+    reference_options.append(suggestion.ticker)
+_catalog_now = active_catalog()
+
+
+def ref_name(ticker: str) -> str:
+    return reference_name(ticker, _catalog_now)
 
 
 def reference_label(option: str) -> str:
     if option == NO_REFERENCE:
         return option
-    label = f"{BENCHMARKS[option]} ({option})"
-    return f"{label} · sugerida" if option == suggestion.ticker else label
+    label = f"{ref_name(option)} ({option})"
+    if option != suggestion.ticker:
+        return label
+    return f"{label} · padrão" if suggestion.reason == PREFERRED_REASON else f"{label} · sugerida"
 
 
 reference = st.selectbox(
@@ -555,8 +568,13 @@ reference = st.selectbox(
     key=f"reference_{symbol}",
 )
 
-if suggestion.ticker:
-    st.caption(f"Sugestão automática: {BENCHMARKS[suggestion.ticker]}, porque {suggestion.reason}.")
+if suggestion.ticker and suggestion.reason == PREFERRED_REASON:
+    st.caption(
+        f"Referência padrão: {ref_name(suggestion.ticker)}, escolhida em Configurações. "
+        "Para voltar à sugestão automática, mude a escolha em Configurações."
+    )
+elif suggestion.ticker:
+    st.caption(f"Sugestão automática: {ref_name(suggestion.ticker)}, porque {suggestion.reason}.")
 else:
     st.caption(
         f"Sem referência sugerida para este ativo: {suggestion.reason}. Você pode escolher "
@@ -583,11 +601,11 @@ if reference != NO_REFERENCE:
 
     if aligned.empty:
         st.info(
-            f"Não foi possível obter dados de {BENCHMARKS[reference]} em datas comuns com o "
+            f"Não foi possível obter dados de {ref_name(reference)} em datas comuns com o "
             "ativo neste período."
         )
     else:
-        st.markdown(describe_comparison(aligned, symbol.upper(), BENCHMARKS[reference]))
+        st.markdown(describe_comparison(aligned, symbol.upper(), ref_name(reference)))
         fig_reference = go.Figure()
         fig_reference.add_trace(go.Scatter(
             x=aligned["Date"], y=aligned["Ativo"], name=symbol.upper(), mode="lines",
@@ -595,9 +613,9 @@ if reference != NO_REFERENCE:
             hovertemplate="%{x|%d/%m/%Y}<br>" + symbol.upper() + ": %{y:.1f}<extra></extra>",
         ))
         fig_reference.add_trace(go.Scatter(
-            x=aligned["Date"], y=aligned["Referência"], name=BENCHMARKS[reference], mode="lines",
+            x=aligned["Date"], y=aligned["Referência"], name=ref_name(reference), mode="lines",
             line=dict(color="#475569", width=2, dash="dash"),
-            hovertemplate="%{x|%d/%m/%Y}<br>" + BENCHMARKS[reference] + ": %{y:.1f}<extra></extra>",
+            hovertemplate="%{x|%d/%m/%Y}<br>" + ref_name(reference) + ": %{y:.1f}<extra></extra>",
         ))
         fig_reference.add_hline(y=100, line_color="#94a3b8", line_width=1)
         fig_reference = apply_custom_layout(fig_reference, show_legend=True)

@@ -31,8 +31,8 @@ from app.ui.disclaimers import (
 from app.ui.education import render_what_it_means
 from app.ui.llm_explain import render_explain_section
 from app.ui.metric_card import render_metric_card
+from app.ui.catalog_state import active_catalog, find_asset, group_label
 from app.ui.sidebar import (
-    GROUP_MAPPING,
     fetch_recent,
     inject_compact_dropdown_script,
     inject_compact_sidebar_css,
@@ -49,8 +49,8 @@ from app.ui.tables import (
 from core.clock import now_brasilia, today_brasilia
 from core.analysis_feasibility import diagnose_series, infeasibility_summary, unknown_infeasibility
 from core.analyzer import calculate_returns
-from core.assets import ASSETS, facet_values, filter_assets
-from core.demo_mode import catalog_assets, is_demo_mode
+from core.assets import facet_values, filter_assets
+from core.demo_mode import is_demo_mode
 from core.comparison import (
     build_base_100_table,
     build_price_table,
@@ -148,7 +148,7 @@ COMPARISON_COMMON_PERIOD_KEY = "comparison_common_period_widget"
 # Utilitários de catálogo
 # ==========================================================
 def asset_meta(ticker: str) -> dict | None:
-    return next((a for a in ASSETS if a["ticker"] == ticker), None)
+    return find_asset(ticker)
 
 
 def asset_or_placeholder(ticker: str) -> dict:
@@ -668,8 +668,9 @@ with st.sidebar:
 
     st.header("Parâmetros")
 
-    # No modo demo, o catálogo mostra só os ativos dos dados salvos.
-    catalog = catalog_assets(ASSETS)
+    # No modo demo, o catálogo mostra só os ativos dos dados salvos; na instalação
+    # local com edição ligada, inclui os ativos acrescentados em Configurações.
+    catalog = active_catalog()
 
     groups = []
     for asset in catalog:
@@ -681,7 +682,7 @@ with st.sidebar:
         "Grupo de ativos:",
         options=groups,
         placeholder="Selecione um grupo...",
-        format_func=lambda x: GROUP_MAPPING.get(str(x).lower(), str(x).replace("_", " ").title()),
+        format_func=group_label,
         key=COMPARISON_GROUP_WIDGET_KEY,
         on_change=sync_comparison_group,
     )

@@ -16,6 +16,7 @@ def test_menu_order_puts_analyses_first_and_about_last():
         "Risco e Retorno",
         "Simulação de Aportes",
         "Panorama do Catálogo",
+        "Configurações",
         "Sobre o Projeto",
     ]
 

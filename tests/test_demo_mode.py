@@ -634,7 +634,11 @@ def test_catalog_falls_back_to_full_list_without_a_package():
 
 def test_pages_use_the_demo_catalog_and_hide_free_ticker_input():
     sidebar = (ROOT / "app" / "ui" / "sidebar.py").read_text(encoding="utf-8")
-    assert "catalog_assets(ASSETS)" in sidebar and "if is_demo_mode():" in sidebar
+    # Etapa 4 da DL2: os menus usam active_catalog(), que parte de catalog_assets(ASSETS)
+    # (no modo demo, só os ativos salvos) e só acrescenta ativos locais fora dele.
+    state = (ROOT / "app" / "ui" / "catalog_state.py").read_text(encoding="utf-8")
+    assert "catalog = catalog_assets(ASSETS)" in state
+    assert "active_catalog()" in sidebar and "if is_demo_mode():" in sidebar
     comparison = (ROOT / "app" / "views" / "comparacao_ativos.py").read_text(encoding="utf-8")
-    assert comparison.count("catalog_assets(ASSETS)") == 1
+    assert comparison.count("active_catalog()") == 1
     assert "if not is_demo_mode():" in comparison

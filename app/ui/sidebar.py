@@ -4,11 +4,10 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from core.clock import today_brasilia
-from core.assets import ASSETS
 from core.config import config
 from app.ui.data_cache import asset_date_range, download_active_data
 from core.asset_range import adjusted_note, clamp_period, range_caption
-from core.demo_mode import catalog_assets, is_demo_mode
+from core.demo_mode import is_demo_mode
 from core.date_validation import validate_date_range
 from core.periods import (
     DEFAULT_PERIOD,
@@ -16,6 +15,7 @@ from core.periods import (
     period_start_date,
 )
 from core.ticker_input import validate_ticker
+from app.ui.catalog_state import active_catalog, find_asset, group_label
 
 
 GROUP_MAPPING = {
@@ -244,7 +244,7 @@ def _render_ticker_input(button_key: str) -> str:
         st.error(result.message)
         return ""
 
-    asset = next((a for a in ASSETS if a.get("ticker") == result.ticker), None)
+    asset = find_asset(result.ticker)
     if asset:
         st.success(f"{result.ticker} — {asset.get('name')}")
     else:
@@ -267,8 +267,9 @@ def render_asset_controls(
     with st.sidebar:
         st.header(title)
 
-        # No modo demo, o catálogo mostra só os ativos dos dados salvos.
-        catalog = catalog_assets(ASSETS)
+        # No modo demo, o catálogo mostra só os ativos dos dados salvos; na instalação
+        # local com edição ligada, inclui os ativos acrescentados em Configurações.
+        catalog = active_catalog()
 
         groups = []
         for asset in catalog:
@@ -325,11 +326,7 @@ def render_asset_controls(
                     else 0
                 ),
                 format_func=lambda value: (
-                    value if value == PLACEHOLDER_GROUP
-                    else GROUP_MAPPING.get(
-                        str(value).lower(),
-                        str(value).replace("_", " ").title(),
-                    )
+                    value if value == PLACEHOLDER_GROUP else group_label(value)
                 ),
                 key=f"{button_key}_group_select",
                 width="stretch",

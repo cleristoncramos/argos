@@ -10,7 +10,7 @@ docs/metodologia_de_calculo.md, seção 2.5).
 """
 
 from dataclasses import dataclass
-from typing import Mapping, Optional
+from typing import Iterable, Mapping, Optional
 
 import pandas as pd
 
@@ -178,3 +178,32 @@ def describe_comparison(aligned: pd.DataFrame, asset_label: str, benchmark_label
         f"**{asset_label}** variou **{pct(asset_change)}** e **{benchmark_label}**, "
         f"**{pct(ref_change)}**."
     )
+
+
+# ----------------------------------------------------------------------------
+# Referência padrão escolhida pelo usuário (B1, etapa 4 da DL2)
+# ----------------------------------------------------------------------------
+PREFERRED_REASON = "é a referência padrão escolhida em Configurações"
+
+
+def resolve_reference(
+    ticker: str,
+    asset: Optional[Mapping[str, str]] = None,
+    preferred: Optional[str] = None,
+) -> BenchmarkSuggestion:
+    """
+    Referência usada como padrão: a escolhida pelo usuário em Configurações, se houver
+    e se não for o próprio ativo; senão, a sugestão automática (`suggest_benchmark`).
+    """
+    chosen = str(preferred or "").strip().upper()
+    if chosen and chosen != str(ticker or "").strip().upper():
+        return BenchmarkSuggestion(chosen, PREFERRED_REASON)
+    return suggest_benchmark(ticker, asset)
+
+
+def reference_name(ticker: str, catalog: Iterable[Mapping[str, str]] = ()) -> str:
+    """Nome de exibição de uma referência: as fixas, depois o catálogo, depois o próprio ticker."""
+    if ticker in BENCHMARKS:
+        return BENCHMARKS[ticker]
+    asset = next((a for a in catalog if str(a.get("ticker", "")).upper() == str(ticker).upper()), None)
+    return str(asset["name"]) if asset and asset.get("name") else str(ticker)

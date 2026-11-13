@@ -22,10 +22,11 @@ def test_home_opens_with_one_card_per_analysis_module():
     at = AppTest.from_file(str(APP / "main.py"), default_timeout=60)
     at.run()
     assert not at.exception, [e.message for e in at.exception]
-    # "Sobre o Projeto" fica só no menu principal, sem cartão na página inicial.
+    # "Configurações" e "Sobre o Projeto" ficam só no menu principal, sem cartão na página inicial.
     links = at.get("page_link")
-    assert len(links) == len(ANALYSIS_PAGES) == len(MENU_PAGES) - 1
+    assert len(links) == len(ANALYSIS_PAGES) == len(MENU_PAGES) - 2
     assert all("sobre_projeto" not in link.proto.page for link in links)
+    assert all("configuracoes" not in link.proto.page for link in links)
 
 
 @pytest.mark.parametrize("spec", MENU_PAGES, ids=lambda spec: spec.title)

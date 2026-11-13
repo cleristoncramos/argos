@@ -3,9 +3,9 @@ Ordem oficial das páginas do sistema.
 
 O menu principal (`app/main.py`) e os atalhos "Primeiros passos" da página
 inicial são montados a partir desta lista, para nunca divergirem. Os atalhos
-mostram só os módulos de análise; "Sobre o Projeto" fica apenas no menu. As análises
-vêm primeiro, na ordem do fluxo de estudo, e "Sobre o Projeto" fica no fim,
-como informação institucional. O botão "Get Started" abre a primeira página.
+mostram só os módulos de análise; "Configurações" e "Sobre o Projeto" ficam apenas
+no menu. As análises vêm primeiro, na ordem do fluxo de estudo, e "Sobre o Projeto"
+fica no fim, como informação institucional. O botão "Get Started" abre a primeira página.
 """
 
 from dataclasses import dataclass
@@ -21,7 +21,8 @@ class PageSpec:
 
 HOME_PAGE = PageSpec("views/home.py", "Início", "🏠", "")
 
-MENU_PAGES = (
+# Módulos de análise (numerados no cabeçalho e com cartão em "Primeiros passos").
+ANALYSIS_PAGES = (
     PageSpec("views/analise_individual.py", "Análise Individual", "📈",
              "Preço, volatilidade mensal e sazonalidade de um ativo ao longo do tempo."),
     PageSpec("views/comparacao_ativos.py", "Comparação de Ativos", "⚖️",
@@ -34,13 +35,16 @@ MENU_PAGES = (
              "E se eu tivesse investido? Simulação histórica, sem custos nem impostos."),
     PageSpec("views/panorama_catalogo.py", "Panorama do Catálogo", "🗂️",
              "Todos os ativos de um grupo no mesmo período: variação, volatilidade e queda máxima."),
-    PageSpec("views/sobre_projeto.py", "Sobre o Projeto", "📊",
-             "Objetivos, metodologia de cálculo, fontes de dados e limitações."),
 )
 
-# Módulos de análise (numerados no cabeçalho e com cartão em "Primeiros passos").
-# "Sobre o Projeto", a última página, é institucional: só aparece no menu.
-ANALYSIS_PAGES = MENU_PAGES[:-1]
+# Etapa 4 da DL2: preferências (referência padrão) e catálogo. Não é módulo de análise.
+SETTINGS_PAGE = PageSpec("views/configuracoes.py", "Configurações", "⚙️",
+                         "Referência de comparação padrão e catálogo de ativos.")
+ABOUT_PAGE = PageSpec("views/sobre_projeto.py", "Sobre o Projeto", "📊",
+                      "Objetivos, metodologia de cálculo, fontes de dados e limitações.")
+
+# Menu: análises primeiro; Configurações e "Sobre o Projeto" (institucional) no fim.
+MENU_PAGES = (*ANALYSIS_PAGES, SETTINGS_PAGE, ABOUT_PAGE)
 
 # Destino do botão "Get Started": a primeira página do menu.
 START_PAGE = MENU_PAGES[0]

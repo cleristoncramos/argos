@@ -349,6 +349,8 @@ A aplicação funciona sem nenhuma configuração adicional. Os recursos opciona
 | --- | --- | --- |
 | `ARGOS_DEMO_MODE` | `true` / `false` (padrão) | Usa apenas os dados salvos em `data/demo/`, sem acessar a internet |
 | `ARGOS_DEMO_DIR` | caminho | Pasta alternativa para o pacote de demonstração |
+| `ARGOS_CATALOGO_EDITAVEL` | `on` / desligado (padrão) | Só em instalação local: libera a edição do catálogo na página Configurações (grupos novos e ativos acrescentados, guardados em `data/catalogo_local.sqlite`). Na versão pública fica desligado, e o catálogo é somente leitura |
+| `ARGOS_CATALOGO_ARQUIVO` | caminho | Arquivo SQLite alternativo para o catálogo local |
 | `ARGOS_EDU_LAYER` | `on` (padrão) / `off` | Oculta os textos educativos para a condição experimental da avaliação com usuários; os avisos obrigatórios continuam visíveis |
 | `ARGOS_LLM_MODE` | `off` (padrão), `demo`, `live` | Controla a explicação assistida: desligada, respostas salvas ou chamadas à API |
 | `OPENAI_API_KEY` | chave da API | Necessária apenas no modo `live` da explicação assistida |
