@@ -153,7 +153,7 @@ render_page_header(
 # Controles compartilhados
 # =====================
 asset_params = render_asset_controls(
-    title="Parâmetros de Risco e Retorno",
+    title="Parâmetros",
     button_label="📊 Analisar risco e retorno",
     button_key="risk_return_load_button",
 )

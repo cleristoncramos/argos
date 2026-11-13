@@ -164,6 +164,8 @@ O registro completo está em [`pibiti/decisoes_orientador.md`](pibiti/decisoes_o
 
 **Observação para a etapa 4:** o menu lateral das páginas de análise já tem um cabeçalho "CONFIGURAÇÕES" (escolha de ativo, período e frequência). A página "Configurações" nova (referência e catálogo) precisa de outro nome, ou o cabeçalho atual passa a "Consulta", para não confundir.
 
+**Decisão do desenvolvedor (13/11/2026):** o cabeçalho do menu lateral passa a se chamar **"Parâmetros"** em todas as páginas, no lugar de "Configurações" (Análise Individual), "Parâmetros da Comparação", "Parâmetros da Análise" (Indicadores Técnicos), "Parâmetros de Risco e Retorno", "Parâmetros da Simulação" e "Parâmetros do Panorama". O nome "Configurações" fica livre para a página nova da etapa 4.
+
 ---
 
 ## 7. Execução da etapa 3 (13/11/2026)

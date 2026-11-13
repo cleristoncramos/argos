@@ -140,7 +140,7 @@ def build_simple_line_chart(
 # Controles compartilhados
 # =====================
 asset_params = render_asset_controls(
-    title="Parâmetros da Análise",
+    title="Parâmetros",
     button_label="📊 Gerar análise técnica",
     button_key="indicators_load_button",
 )

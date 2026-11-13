@@ -189,7 +189,7 @@ def render_custom_metric_card(title: str, value: str) -> None:
 # Controles compartilhados
 # =====================
 asset_params = render_asset_controls(
-    title="Configurações",
+    title="Parâmetros",
     button_label="🔄 Carregar Dados",
     button_key="asset_load_button",
 )

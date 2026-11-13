@@ -666,7 +666,7 @@ with st.sidebar:
     inject_compact_sidebar_css()
     inject_compact_dropdown_script()
 
-    st.header("Parâmetros da Comparação")
+    st.header("Parâmetros")
 
     # No modo demo, o catálogo mostra só os ativos dos dados salvos.
     catalog = catalog_assets(ASSETS)

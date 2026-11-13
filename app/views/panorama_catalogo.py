@@ -67,7 +67,7 @@ catalog = catalog_assets(ASSETS)
 groups = [g["key"] for g in ASSET_GROUPS if any(a["group"] == g["key"] for a in catalog)]
 
 with st.sidebar:
-    st.header("Parâmetros do Panorama")
+    st.header("Parâmetros")
     group = st.selectbox(
         "Grupo de ativos",
         groups,

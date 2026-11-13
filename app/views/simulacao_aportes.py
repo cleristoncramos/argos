@@ -275,7 +275,7 @@ def build_windows_chart(outcomes: pd.DataFrame, symbol: str) -> go.Figure:
 # Controles
 # ==========================================================
 asset_params = render_asset_controls(
-    title="Parâmetros da Simulação",
+    title="Parâmetros",
     button_label="🧪 Carregar histórico",
     button_key="simulation_load_button",
 )
