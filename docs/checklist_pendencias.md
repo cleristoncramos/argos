@@ -528,5 +528,14 @@ Etapa 0 — revisão de escopo:
 - [x] Etapa 5 (13/11/2026): fonte em todos os eventos (DL2-D), base ampliada para 39 eventos e categoria "Do ativo" com eventos por ativo, inclusive o caso da NVIDIA (`docs/plano_reuniao_2026-11-10.md`, seção 10)
 - [ ] Revisar o evento "Caso de espionagem na NVIDIA" quando a apuração terminar (fatos ainda em andamento em 13/11/2026)
 - [ ] Etapa 6: LLM com o Grok primeiro (DL2-C), mantidas as regras do protocolo
+  - [x] Provedor fixado e implementado sem chamadas: xAI `grok-4.3`, Responses API, temperatura 0, contador com teto de US$ 16 (DL2-I, 13/11/2026)
+  - [x] Autoria da DL2-I confirmada pelo autor (13/11/2026)
+  - [ ] Arquivar o texto original da DL2-I e do complemento
+  - [ ] Receber a chave da xAI por canal seguro (variável `XAI_API_KEY`, só no ambiente do job)
+  - [ ] Consultar `/v1/language-models`: `grok-4.3` disponível? Há snapshot datado? Se não estiver, usar a reserva `grok-4.20-0309-non-reasoning`, com novo registro
+  - [ ] Ligar o provedor à rodada de avaliação: 33 casos × 2 execuções = 66 chamadas, registro de versão, tokens e custo
+  - [x] Temperatura 0 confirmada como desvio documentado (reprodutibilidade antes da fluência)
+  - [ ] Confirmar que a chave não vaza (busca no repositório e no log de execução)
+  - [ ] Aquecimento em 3 casos (custo real e formato da saída) antes das 66 chamadas
 - [ ] Em paralelo: texto da submissão (Lorena), citações dos indicadores e opções de logo
 - [ ] Arquivar a mensagem original da DL2

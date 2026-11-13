@@ -558,8 +558,10 @@ NETWORK_MODULES = r"^\s*(?:import|from)\s+(requests|urllib|urllib3|httpx|aiohttp
 # o resto do código só o usa por injeção (transport) e nunca abre conexões por conta própria.
 # scripts/gravar_video_recursos.py baixa os logotipos para gravar o vídeo da home; é
 # ferramenta de produção, não roda no app.
+# core/llm_provider.py: provedor xAI da etapa 6 (DL2-I), com o mesmo papel do llm_client.py;
+# só chama a rede com chave e saldo no contador de custo, nunca no modo demo.
 NETWORK_ALLOWED = {"core/data_loader.py", "scripts/gerar_dados_demo.py", "core/llm_client.py",
-                   "scripts/gravar_video_recursos.py"}
+                   "core/llm_provider.py", "scripts/gravar_video_recursos.py"}
 REMOTE_RESOURCE_PATTERNS = [
     r"""src\s*=\s*["']https?://""",
     r"""<link[^>]+href\s*=\s*["']https?://""",

@@ -1053,3 +1053,54 @@ Data: 13/11/2026, sujeita à confirmação do orientador. Referência: [`plano_r
 **Complemento (mensagem de WhatsApp do orientador, 13/11/2026):** o texto da página inicial deve deixar claro que a ferramenta dá acesso a **milhares de ativos financeiros** e deve convidar o usuário a **analisar ativos**, não a consultar o histórico. Essa orientação substitui a observação 3 acima. O texto passou a dizer "Analise milhares de ativos financeiros com dados do Yahoo Finance". A afirmação se apoia na cobertura da fonte: o Argos aceita qualquer código disponível no Yahoo Finance, que reúne ativos de dezenas de bolsas. O número 148 aparece só como tamanho do catálogo ("ativos no catálogo"). **Pendente:** arquivar a mensagem original.
 
 Status: recebida em 13/11/2026. Etapas 1 a 3 executadas em 13/11/2026 (`docs/plano_reuniao_2026-11-10.md`, seções 6 e 7); a etapa 2 foi absorvida pela etapa 1. Etapas 4 e 5 executadas em 13/11/2026 (seções 9 e 10 do plano); todos os eventos do sistema têm fonte (DL2-D). Por decisão do desenvolvedor, a marcação dos eventos históricos (A9) foi antecipada da etapa 5 com o recurso do projeto Previsão (seção 8).
+
+---
+
+## DL2-I: provedor da etapa 6 fixado (13/11/2026)
+
+**Origem:** texto de 13/11/2026, complementar à DL2-C. **Autoria confirmada** pelo próprio autor em 13/11/2026, na mensagem de complemento (canal: conversa de desenvolvimento). O texto reflete as decisões dele sobre o provedor, a versão fixa do modelo, a temperatura, o esforço de raciocínio, o teto de custo e as condições da primeira chamada. **Pendente:** arquivar o original.
+
+- **Provedor e modelo:** xAI, `grok-4.3`, como versão de referência.
+- **Regra de fixação:** se a xAI oferecer snapshot datado, usar o snapshot e registrar o ID completo. Se só houver alias, fixar `grok-4.3` e registrar, em cada chamada, a versão que a API devolve. Qualquer mudança de versão anula a ratificação e exige uma nova.
+- **Condições da DL2-C, integralmente:** política consultada antes de qualquer chamada; contexto só em JSON; saída validada antes de exibir; registro de modelo, versão, tokens e custo por chamada; teto de US$ 16 na rodada de avaliação.
+- **Restrições do provedor:** se não houver temperatura fixa ou saída estrita, registrar como restrição e seguir com o que houver, documentado. Sem seed, rodar cada caso duas vezes e registrar a variação.
+- **Motivação da escolha (corrigida no complemento):** a escolha do Grok como primeiro provedor vale pela instrução do autor e pelo valor de exploração, **não por economia**. Nessa mistura de tokens, o Gemini Flash custa praticamente o mesmo, até um pouco menos; o argumento de custo do Grok só vale contra o Gemini Pro. Os preços do Gemini foram informados pelo autor e não foram conferidos pelo desenvolvedor.
+
+| Provedor | Entrada por milhão | Saída por milhão | Rodada com 33 chamadas (2,5 mil de entrada e 600 de saída) |
+| --- | --- | --- | --- |
+| Grok 4.3 | US$ 1,25 (conferido) | US$ 2,50 (conferido) | cerca de US$ 0,15 |
+| Gemini 3.8 Flash | US$ 0,75 (informado) | US$ 3,75 (informado) | cerca de US$ 0,14 |
+
+- **Contagem de chamadas (corrigida no complemento):** duas execuções para **todos os 33 casos chamáveis**, não só para os quatro controles: **66 chamadas por modelo**, cerca de US$ 0,31 por modelo (US$ 0,62 com Grok e Gemini). O pior caso, com regeneração, fica dentro dos tetos de US$ 16 e 200 chamadas. Os quatro controles (R01 a R04) continuam no conjunto congelado e rendem quatro pares dentro das 66 chamadas.
+- **O que não muda:** prompt, esquema, textos fixos, conjunto de casos e template congelados. A troca de provedor é configuração, não protocolo.
+- **Antes da primeira chamada, registrar:** provedor, ID do modelo fixado, política de temperatura e seed, e a confirmação de que a chave não aparece no repositório, em log ou no navegador.
+- **Chave:** criada pelo desenvolvedor no console da xAI e entregue por canal seguro.
+
+**Conferência na documentação da xAI (13/11/2026):**
+1. **Preço:** US$ 1,25 de entrada e US$ 2,50 de saída por milhão de tokens, abaixo de 200 mil tokens no pedido; a partir disso, US$ 2,50 e US$ 5,00 em todos os tokens. A cifra do Gemini citada no texto não foi conferida.
+2. **API:** a xAI marca Chat Completions como obsoleto e recomenda a Responses API (`/v1/responses`). Ela aceita o esquema em modo estrito (`text.format`, `strict: true`), então a saída estrita está disponível.
+3. **Temperatura: 0, como desvio documentado.** A API aceita de 0 a 2 (a amostragem fica limitada a 1). A xAI recomenda 0,7 e avisa que outros valores podem piorar a qualidade. Decisão do autor no complemento: a rodada usa 0, porque **a reprodutibilidade dos testes vem antes da fluência do texto**. Se a qualidade cair visivelmente na avaliação humana, a revisão da temperatura entra numa versão futura, nunca como ajuste silencioso no meio da rodada.
+4. **Seed:** não documentado. Vale a regra de duas execuções por caso.
+5. **Snapshot:** nenhuma versão datada do `grok-4.3` aparece na documentação; as versões datadas existem para o `grok-4.20-0309-*`. Fica a regra: fixar o nome e registrar, em cada chamada, a versão que a API devolve.
+6. **Disponibilidade do `grok-4.3`:** o autor apontou, na página do modelo, um aviso "Model Retirement (May 15, 2026)". Na conferência do desenvolvedor (13/11/2026), a página dessa retirada lista como retirados `grok-4-1-fast-*`, `grok-4-fast-*`, `grok-4-0709` e `grok-3`, e indica o **`grok-4.3` como destino** deles. As páginas de preços e de limites ainda listam o `grok-4.3` como ativo. Mesmo assim, a disponibilidade precisa ser confirmada na lista de modelos da conta antes de qualquer chamada. **Reserva:** se o `grok-4.3` não estiver disponível, usar o `grok-4.20-0309-non-reasoning`, que tem snapshot datado e o mesmo preço (US$ 1,25 e US$ 2,50, conferidos). Nesse caso, a versão fixa muda e é preciso um novo registro.
+
+**Implementação (sem nenhuma chamada):** `core/llm_provider.py`, com configuração, custo, corpo da Responses API, leitura da resposta (inclusive o modelo devolvido), contador de custo com teto de US$ 16 em `logs/` (fora do git), sem chave, texto ou contexto, e as mesmas regras de rede da 7B. `core/llm_client.py`, com as regras aprovadas da 7B, não foi alterado. Os hashes aprovados (`f41d1cf2a5fc`, `9a4cb5cb5a0c`, `b1ee60720f24`, `95845577dba9`) não mudam: a impressão digital não inclui o modelo.
+
+**Complemento do autor (13/11/2026):** a implementação foi aprovada e o commit autorizado, com estas condições:
+- nenhum arquivo com hash do piloto preditivo ou da v0.6 foi tocado;
+- os quatro hashes aprovados permanecem iguais;
+- o `core/llm_client.py` da 7B não foi alterado;
+- a chave entra só por `XAI_API_KEY`, e o teste confirma que nem a chave nem o texto vão para o contador;
+- o contador fica em `logs/`, fora do git, e recusa antes de passar de US$ 16.
+
+O complemento também registra que a saída estrita é suportada pela Responses API e, portanto, **não é restrição do provedor**. O código ganhou o teto de 200 chamadas no contador e a configuração do modelo reserva, que só pode ser usado com novo registro.
+
+**Sequência antes da rodada:**
+1. receber a chave por canal seguro (gerenciador de senhas ou mensagem 1:1), nunca colada na conversa, no repositório, em log ou no navegador;
+2. consultar a lista de modelos da conta: disponibilidade do `grok-4.3` e existência de snapshot datado;
+3. ligar o provedor à rodada (33 casos × 2 execuções), com o template como referência e o Grok como fonte experimental;
+4. confirmar que a chave não vaza: busca no repositório sem resultado e log de execução sem a chave;
+5. fazer uma chamada de aquecimento em 3 casos e conferir o custo real e o formato da saída;
+6. só então fazer as 66 chamadas da rodada.
+
+Status: registrada em 13/11/2026, com autoria confirmada e commit autorizado. Primeira chamada **não feita**.

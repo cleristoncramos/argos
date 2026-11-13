@@ -4,7 +4,7 @@
 - transcrição automática da reunião de 10/11/2026 com o Prof. Arlino (arquivo `Argos - 10-11-2026.docx`, fora do repositório);
 - mensagens do orientador por WhatsApp em 11/11 e 13/11/2026, anexadas ao mesmo arquivo.
 
-**Situação:** plano **aprovado** pelo orientador na DL2 (13/11/2026), com os seis conflitos resolvidos (seção 5) · etapas 1 e 2 concluídas (seção 6) · etapa 3 concluída (seção 7) · eventos históricos antecipados da etapa 5 (seção 8) · etapa 4 concluída (seção 9) · **etapa 5 concluída** (seção 10), aguardando commit
+**Situação:** plano **aprovado** pelo orientador na DL2 (13/11/2026), com os seis conflitos resolvidos (seção 5) · etapas 1 e 2 concluídas (seção 6) · etapa 3 concluída (seção 7) · eventos históricos antecipados da etapa 5 (seção 8) · etapa 4 concluída (seção 9) · etapa 5 concluída (seção 10) · **etapa 6 em preparação** (seção 11)
 
 > **Sobre a transcrição.** O reconhecimento automático trocou vários termos: "Grock" e "Glock" são o **Grok**; "LNM" e "LLMM" são **LLM**; "Lorana" é a **Lorena**. Num trecho, o orientador diz que a ferramenta "é determinística", mas o contexto deixa claro que ele quis dizer **não determinística**. As orientações abaixo seguem o sentido evidente da conversa; onde houve dúvida, o item está marcado "a confirmar".
 
@@ -252,3 +252,28 @@ Nova página **Configurações** (⚙️) no menu, entre o Panorama do Catálogo
 **Verificação na tela** (NVDA, 5 anos): as categorias do filtro incluem "Do ativo". Os três eventos da NVIDIA aparecem no gráfico com fonte, e o quadro de fontes lista os 14 eventos do período.
 
 **Base para a LLM (D5):** esta é a lista curada, com data e fonte, que a DL2-D prevê enviar no contexto da explicação. Sem evento curado, o texto deve dizer que não há explicação curada disponível.
+
+---
+
+## 11. Etapa 6, preparação do provedor xAI (13/11/2026)
+
+Registro completo na DL2-I (`docs/pibiti/decisoes_orientador.md`). Resumo:
+
+| Item | Situação |
+| --- | --- |
+| Provedor e modelo | xAI, `grok-4.3`, fixados em `core/llm_provider.py` |
+| Preço | Conferido na documentação da xAI: US$ 1,25 de entrada e US$ 2,50 de saída por milhão de tokens. Rodada de 66 chamadas (33 casos × 2 execuções): cerca de US$ 0,31. A escolha do Grok é por exploração e preferência, não por economia: o Gemini Flash custa praticamente o mesmo |
+| API | Responses API, porque a xAI marca Chat Completions como obsoleto; esquema congelado em modo estrito |
+| Temperatura e seed | Temperatura 0, como desvio documentado da recomendação da xAI (0,7): a reprodutibilidade vem antes da fluência. Seed não documentado: cada um dos 33 casos roda duas vezes |
+| Versão | Sem snapshot datado conhecido: o nome fica fixo e cada chamada registra o modelo devolvido. O `grok-4.3` consta como ativo e é o destino da retirada de 15/05/2026; se não estiver na conta, a reserva é o `grok-4.20-0309-non-reasoning`, com novo registro |
+| Custo e teto | Contador em `logs/llm_custos_xai.jsonl`, fora do git, que recusa a chamada antes de passar de US$ 16 ou de 200 chamadas |
+| Chave | Só pela variável `XAI_API_KEY`; nunca gravada no contador, no repositório ou no navegador |
+| Protocolo | Sem mudança: hashes aprovados intactos e `core/llm_client.py` (7B) sem alteração |
+
+**Falta antes da rodada** (sequência da DL2-I):
+1. receber a chave por canal seguro;
+2. consultar `/v1/language-models` com a chave: disponibilidade do `grok-4.3` e snapshot datado;
+3. ligar o provedor à rodada (`explain_experimental` e o script da rodada): 33 casos × 2 execuções, com o contador de custo;
+4. confirmar que a chave não aparece no repositório nem no log;
+5. fazer o aquecimento em 3 casos, conferindo custo real e formato da saída;
+6. fazer as 66 chamadas da rodada.
