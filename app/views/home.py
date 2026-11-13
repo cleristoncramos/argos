@@ -225,9 +225,10 @@ with col_text:
 <div class="hero-title">Argos</div>
 <div class="hero-tagline">Plataforma de Análise Histórica de Ativos Financeiros</div>
 <div class="hero-sub">
-  Consulte o histórico de {stats["assets"]} ativos do catálogo, entre ações brasileiras e
-  americanas, ETFs, FIIs, criptomoedas, moedas, commodities, índices e renda fixa, com
-  dados do Yahoo Finance. Analise um ativo por vez, compare vários na mesma base,
+  Analise ativos financeiros com dados do Yahoo Finance: escolha um dos {stats["assets"]}
+  ativos do catálogo, entre ações brasileiras e americanas, ETFs, FIIs, criptomoedas,
+  moedas, commodities, índices e renda fixa, ou digite o código de outro ativo
+  disponível na fonte. Analise um ativo por vez, compare vários na mesma base,
   acompanhe indicadores técnicos, meça risco e retorno, observe a sazonalidade,
   simule aportes periódicos e veja o catálogo inteiro em um panorama. Cada gráfico
   traz um roteiro de leitura em linguagem simples, e alertas de qualidade indicam

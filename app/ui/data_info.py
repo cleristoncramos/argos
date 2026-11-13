@@ -30,9 +30,28 @@ QUALITY_INTRO = (
 )
 
 
+SHORTER_HISTORY_ICON = "⚠️"
+
+
+def available_period_markdown(summary: Mapping[str, str], shorter_history: bool) -> str:
+    """
+    Campo "Período disponível". Com histórico menor que o pedido, o período sai em
+    vermelho, com ícone de atenção (reunião de 10/11/2026, DL2-B).
+    """
+    if shorter_history:
+        return (f"**Período disponível** {SHORTER_HISTORY_ICON}  \n"
+                f":red[**{summary['available']}**]  \n:red[menor que o solicitado]")
+    return f"**Período disponível**  \n{summary['available']}"
+
+
 def render_availability_messages(availability: DataAvailability) -> None:
     for level, text in availability_messages(availability):
-        {"error": st.error, "warning": st.warning}.get(level, st.info)(text)
+        if level == "error":
+            st.error(text, icon="⛔")
+        elif level == "warning":
+            st.warning(text, icon=SHORTER_HISTORY_ICON)
+        else:
+            st.info(text)
 
 
 def render_data_availability(
@@ -46,7 +65,7 @@ def render_data_availability(
     with st.container(border=True):
         left, middle, right = st.columns(3)
         left.markdown(f"**Período solicitado**  \n{summary['requested']}")
-        middle.markdown(f"**Período disponível**  \n{summary['available']}")
+        middle.markdown(available_period_markdown(summary, availability.shorter_history))
         right.markdown(f"**Observações**  \n{summary['observations']}")
 
         consulted = fetched_at.strftime("%d/%m/%Y às %H:%M") if fetched_at else "—"

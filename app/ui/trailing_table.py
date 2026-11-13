@@ -23,6 +23,24 @@ TRAILING_NOTES = (
     "o preço de fechamento, sem dividendos, custos ou inflação."
 )
 
+# Rodapé para quem não é da área (reunião de 10/11/2026, DL2-B): um termo por linha.
+TRAILING_GLOSSARY = (
+    ("Variação acumulada", "quanto o preço mudou, no total, do início ao fim do prazo. "
+     "Exemplo: de R\\$ 100 para R\\$ 110 é uma variação de +10%."),  # \$: o Streamlit lê $ como fórmula
+    ("Taxa equivalente ao ano", "a taxa anual que, repetida todo ano, chegaria à mesma variação acumulada. "
+     "Serve para comparar prazos diferentes; só aparece em prazos de 1 ano ou mais."),
+    ("Neste ano", "do último dia do ano passado até a última data disponível deste ano."),
+    ("Início ajustado (*)", "quando não há dado exatamente no começo do prazo, a tabela usa o primeiro dia disponível."),
+    ("Valor no início e no fim", "preço de fechamento nas duas datas usadas no cálculo."),
+)
+
+
+def trailing_glossary_markdown() -> str:
+    """Rodapé "Termos desta tabela", em linguagem simples."""
+    linhas = "\n".join(f"- **{termo}:** {texto}" for termo, texto in TRAILING_GLOSSARY)
+    return "📘 **Termos desta tabela**\n\n" + linhas
+
+
 RATE_NOTE = (
     "Para taxas de juros, a variação percentual do nível da taxa não equivale ao "
     "retorno de um título; por isso a tabela de variação por prazo não é exibida."

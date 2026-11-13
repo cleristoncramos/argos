@@ -68,3 +68,10 @@ def test_team_section_uses_the_academic_record():
 def test_about_css_has_no_rounded_corners():
     radii = re.findall(r"border-radius\s*:\s*([^;}\s]+)", about.ABOUT_CSS)
     assert all(value in ("0", "0!important") for value in radii), radii
+
+
+def test_origem_do_nome_argos():
+    from app.ui.about import NAME_ORIGIN, build_name_html
+    assert "Argos Panoptes" in NAME_ORIGIN and "cem olhos" in NAME_ORIGIN
+    html = build_name_html()
+    assert "Por que Argos" in html and "Panoptes" in html

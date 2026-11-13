@@ -17,6 +17,7 @@ from app.ui.about import (
     build_hero_html,
     build_methodology_html,
     build_modules_html,
+    build_name_html,
     build_quality_html,
     build_research_html,
     build_team_html,
@@ -46,6 +47,7 @@ st.markdown(build_methodology_html(), unsafe_allow_html=True)
 st.markdown(build_data_html(stats, group_counts(ASSETS, ASSET_GROUPS)), unsafe_allow_html=True)
 st.markdown(build_quality_html(), unsafe_allow_html=True)
 st.markdown(build_team_html(), unsafe_allow_html=True)
+st.markdown(build_name_html(), unsafe_allow_html=True)
 st.markdown(build_disclaimer_html(), unsafe_allow_html=True)
 
 st.caption(

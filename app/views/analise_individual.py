@@ -74,6 +74,7 @@ from app.ui.trailing_table import (
     HEADER_LABELS,
     RATE_NOTE,
     TRAILING_NOTES,
+    trailing_glossary_markdown,
     build_trailing_display,
     trailing_intro,
 )
@@ -463,6 +464,7 @@ else:
         min_width=720,
         wrap_header=True,
     )
+    st.markdown(trailing_glossary_markdown())
     st.caption(TRAILING_NOTES)
 
 st.markdown("<br>", unsafe_allow_html=True)

@@ -2,14 +2,14 @@
 Variação por janelas até a última observação (A1).
 
 Funções puras, sem Streamlit. Para cada janela (1 mês, 3 meses, ..., 10
-anos e "no ano"), compara o último valor disponível com o valor do início
+anos e "neste ano"), compara o último valor disponível com o valor do início
 da janela e informa as datas efetivamente usadas.
 
 Regras (detalhes em docs/metodologia_de_calculo.md, seção 2.3):
 - Base: a série recebida (na interface, o período carregado na barra
   lateral). Janelas mais longas que essa base ficam indisponíveis ("—").
 - Data-alvo do início: último dia da série menos o prazo da janela; em
-  "No ano", o último dia do ano anterior.
+  "Neste ano", o último dia do ano anterior.
 - Valor inicial: última observação na data-alvo ou antes dela. Se a série
   começa depois da data-alvo, mas dentro da tolerância, usa a primeira
   observação e marca a janela como ajustada.
@@ -49,7 +49,7 @@ TRAILING_WINDOWS = (
     TrailingWindow("1 mês", months=1),
     TrailingWindow("3 meses", months=3),
     TrailingWindow("6 meses", months=6),
-    TrailingWindow("No ano", year_to_date=True),
+    TrailingWindow("Neste ano", year_to_date=True),
     TrailingWindow("1 ano", years=1),
     TrailingWindow("2 anos", years=2),
     TrailingWindow("3 anos", years=3),

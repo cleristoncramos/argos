@@ -32,13 +32,13 @@ def test_calendar_years():
 
 def test_windows_and_targets():
     assert [w.label for w in TRAILING_WINDOWS] == [
-        "1 mês", "3 meses", "6 meses", "No ano", "1 ano", "2 anos", "3 anos", "5 anos", "10 anos",
+        "1 mês", "3 meses", "6 meses", "Neste ano", "1 ano", "2 anos", "3 anos", "5 anos", "10 anos",
     ]
     assert not TrailingWindow("6 meses", months=6).is_long and TrailingWindow("1 ano", years=1).is_long
     end = pd.Timestamp("2026-10-23 16:00")
     assert window_target(end, TrailingWindow("1 mês", months=1)) == pd.Timestamp("2026-09-23")
     assert window_target(end, TrailingWindow("5 anos", years=5)) == pd.Timestamp("2021-10-23")
-    assert window_target(end, TrailingWindow("No ano", year_to_date=True)) == pd.Timestamp("2025-12-31")
+    assert window_target(end, TrailingWindow("Neste ano", year_to_date=True)) == pd.Timestamp("2025-12-31")
     assert window_target(pd.Timestamp("2024-02-29"), TrailingWindow("1 ano", years=1)) == pd.Timestamp("2023-02-28")
 
 
@@ -64,7 +64,7 @@ def test_values_dates_and_annual_rate():
     assert three["Data inicial"] == pd.Timestamp("2023-10-20") and three["Valor inicial"] == 50.0
     assert three["Taxa anual"] == pytest.approx((121 / 50) ** (1 / (3 + 3 / 365.25)) - 1)
 
-    ytd = row(table, "No ano")
+    ytd = row(table, "Neste ano")
     assert ytd["Data inicial"] == pd.Timestamp("2025-10-23") and pd.isna(ytd["Taxa anual"])
 
 

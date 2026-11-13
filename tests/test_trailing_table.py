@@ -59,3 +59,17 @@ def test_texts():
     assert "fechamentos diários" in TRAILING_NOTES and "Retorno Total" in TRAILING_NOTES
     for text in (TRAILING_NOTES, RATE_NOTE, intro):
         assert contains_forbidden_phrase(text) is None
+
+
+def test_rodape_de_termos_para_leigos():
+    from app.ui.trailing_table import TRAILING_GLOSSARY, trailing_glossary_markdown
+    texto = trailing_glossary_markdown()
+    for termo in ("Variação acumulada", "Taxa equivalente ao ano", "Neste ano", "Início ajustado"):
+        assert termo in texto
+    assert len(TRAILING_GLOSSARY) == 5 and "vai " not in texto.lower() and "recomend" not in texto.lower()
+
+
+def test_rodape_escapa_o_cifrao_para_nao_virar_formula():
+    from app.ui.trailing_table import trailing_glossary_markdown
+    texto = trailing_glossary_markdown()
+    assert "R\\$ 100" in texto and "R$ 100" not in texto.replace("R\\$", "")

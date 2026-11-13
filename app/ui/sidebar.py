@@ -6,7 +6,8 @@ import streamlit.components.v1 as components
 from core.clock import today_brasilia
 from core.assets import ASSETS
 from core.config import config
-from app.ui.data_cache import download_active_data
+from app.ui.data_cache import asset_date_range, download_active_data
+from core.asset_range import adjusted_note, clamp_period, range_caption
 from core.demo_mode import catalog_assets, is_demo_mode
 from core.date_validation import validate_date_range
 from core.periods import (
@@ -380,6 +381,11 @@ def render_asset_controls(
         else:
             symbol = _render_ticker_input(button_key)
 
+        # Período disponível do ativo, já na escolha (reunião de 10/11/2026, DL2-B).
+        rng = asset_date_range(symbol) if symbol else None
+        if rng is not None:
+            st.caption(range_caption(rng))
+
         st.divider()
 
         current_period = st.session_state.get(
@@ -402,28 +408,39 @@ def render_asset_controls(
         today = today_brasilia()
 
         if selected_period == "Personalizado":
+            # Com o período do ativo conhecido, as datas ficam limitadas a ele.
+            min_date = rng.first if rng is not None else None
+            default_start = st.session_state.get(
+                "asset_start_date",
+                period_start_date(DEFAULT_PERIOD, today),
+            )
+            default_end = st.session_state.get("asset_end_date", today)
+            if min_date is not None:
+                default_start = min(max(default_start, min_date), today)
+                default_end = min(max(default_end, min_date), today)
             start_date = st.date_input(
                 "Data inicial",
-                value=st.session_state.get(
-                    "asset_start_date",
-                    period_start_date(DEFAULT_PERIOD, today),
-                ),
+                value=default_start,
+                min_value=min_date,
+                max_value=today,
                 format="DD/MM/YYYY",
                 key=f"{button_key}_start_date",
             )
 
             end_date = st.date_input(
                 "Data final",
-                value=st.session_state.get(
-                    "asset_end_date",
-                    today,
-                ),
+                value=default_end,
+                min_value=min_date,
+                max_value=today,
                 format="DD/MM/YYYY",
                 key=f"{button_key}_end_date",
             )
         else:
             end_date = today
-            start_date = period_start_date(selected_period, today)
+            requested_start = period_start_date(selected_period, today)
+            start_date, end_date, adjusted = clamp_period(requested_start, end_date, rng)
+            if adjusted:
+                st.warning(adjusted_note(rng, requested_start))
 
         # Valida o intervalo digitado; períodos predefinidos já são válidos
         dates_valid = True

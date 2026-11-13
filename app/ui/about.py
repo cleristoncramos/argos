@@ -150,6 +150,20 @@ def build_hero_html(stats: Mapping[str, int]) -> str:
 </div>"""
 
 
+NAME_ORIGIN = (
+    "Na mitologia grega, Argos Panoptes era um gigante de cem olhos encarregado de vigiar. "
+    "Como parte dos olhos ficava sempre aberta, nada escapava à sua observação. O nome resume "
+    "a proposta da plataforma: observar com atenção, ao mesmo tempo, muitos ativos, indicadores "
+    "e períodos, e apontar nos dados o que merece cuidado antes de qualquer interpretação."
+)
+
+
+def build_name_html() -> str:
+    """Origem do nome Argos (reunião de 10/11/2026, DL2-B)."""
+    body = f'<div class="ab-cards"><div class="ab-card"><p>{escape(NAME_ORIGIN)}</p></div></div>'
+    return _section("Sobre o nome", "Por que Argos", body)
+
+
 def build_context_html() -> str:
     cards = (
         ("O problema",

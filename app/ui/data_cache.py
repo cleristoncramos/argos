@@ -11,8 +11,11 @@ from typing import Optional
 import pandas as pd
 import streamlit as st
 
-from core import data_loader
-from core.demo_mode import load_demo_frame
+from datetime import date
+
+from core import asset_range, data_loader
+from core.clock import today_brasilia
+from core.demo_mode import DemoDataError, is_demo_mode, load_demo_frame, load_manifest
 
 
 @st.cache_data(
@@ -68,7 +71,30 @@ def download_active_data(
     )
 
 
+@st.cache_data(
+    ttl=3600,
+    max_entries=256,
+    show_spinner=False,
+)
+def _cached_online_range(symbol: str, today_iso: str) -> Optional[asset_range.AssetRange]:
+    """Período disponível do ativo na fonte (duas buscas pequenas), cacheado por 1 hora."""
+    return asset_range.online_range(symbol, data_loader.fetch_history, date.fromisoformat(today_iso))
+
+
+def asset_date_range(symbol: str) -> Optional[asset_range.AssetRange]:
+    """Período disponível do ativo escolhido, para limitar as datas do menu (DL2-B)."""
+    if not symbol:
+        return None
+    if is_demo_mode():
+        try:
+            return asset_range.demo_range(symbol, load_manifest())
+        except DemoDataError:
+            return None
+    return _cached_online_range(symbol, today_brasilia().isoformat())
+
+
 def clear_cache() -> None:
     """Esvazia o cache dos downloads (usado nos testes)."""
     _cached_fetch.clear()
     _cached_demo.clear()
+    _cached_online_range.clear()
