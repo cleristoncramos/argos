@@ -1125,4 +1125,31 @@ O complemento também registra que a saída estrita é suportada pela Responses 
 - Testes sem rede (`tests/test_llm_v1_rodada.py`): o transporte simulado devolve as respostas congeladas do template, e a rodada simulada passa pelas 17 verificações com versão e custo registrados; o teto interrompe a rodada antes da chamada seguinte. A suíte tem 1.191 testes, com 100% de cobertura do `core/`.
 - **Fora deste script:** os adversariais sem chamada ao modelo (A02 de política; A03 a A06 de fluxo) não dependem do provedor e continuam a executar à parte, sem custo.
 
-Status: registrada em 13/11/2026, com autoria confirmada e commit autorizado. Chave configurada, `grok-4.3` confirmado na conta e provedor ligado à rodada. Próximo passo: aquecimento em 3 casos. Primeira chamada de geração **não feita**.
+**Aquecimento (passo 5, 13/11/2026, 22h49 UTC):** S01, G01 e M01, com uma execução cada, autorizado pelo autor.
+
+| Caso | Situação | Verificação reprovada | Regenerações | Tokens (entrada / saída) | Custo |
+| --- | --- | --- | --- | --- | --- |
+| S01 | aprovado nas 17 verificações | — | 0 | 2.938 / 1.457 | US$ 0,0073 |
+| G01 | bloqueado | `ressalva_media_historica` | 1 (falhou de novo) | 5.956 / 2.945 | US$ 0,0148 |
+| M01 | bloqueado | `ressalva_media_historica` | 1 (falhou de novo) | 6.158 / 2.758 | US$ 0,0146 |
+
+- **Versão:** todas as 5 chamadas devolveram `grok-4.3`.
+- **Formato:** saída estrita aceita. As respostas vieram em JSON no esquema congelado e terminaram com status "completed", sem resposta incompleta. Uma chamada do M01 precisou de uma nova tentativa automática, já prevista nas regras de rede.
+- **Custo real:** US$ 0,0367 nas 5 chamadas, cerca de US$ 0,0073 por chamada, contra US$ 0,0046 estimados. A entrada ficou perto de 3 mil tokens, contra 2,5 mil estimados, e a saída perto de 1,4 mil, contra 600, porque inclui os tokens de raciocínio (esforço `low`). **Projeção da rodada:** 66 chamadas custam cerca de US$ 0,48; no pior caso, com uma regeneração em cada uma (132 chamadas), cerca de US$ 1,00. Os dois valores ficam dentro dos tetos de US$ 16 e 200 chamadas.
+- **Vazamento (passo 4, conclusão):** a chave não aparece no log de execução, no contador nem nas respostas gravadas, e a busca no repositório inteiro achou 0 ocorrências em 878 arquivos.
+
+**Análise dos dois bloqueios:**
+1. **G01 (preço e médias móveis): falso positivo do validador.** Os três parágrafos que dispararam a regra falam só de médias móveis: "acima da média de 50", "acima da média móvel de 50 pregões" e "o afastamento das médias". Pela DL1-O, médias móveis não disparam a regra, mas a exclusão só cobre a forma "médias móveis" logo após a palavra. O padrão "acima/abaixo da média" dispara mesmo quando vem seguido de "móvel", e a forma abreviada ("das médias", "da de 200") também dispara. Até os rótulos das métricas do próprio contexto ("Fechamento acima da média móvel de 50") acionam a regra. Na rodada, isso tende a bloquear de forma sistemática os casos de gráfico com médias móveis.
+2. **M01 (média sazonal): falha real do modelo.** Os parágrafos citam a média e a mediana de abril de 2008 a 2021 sem a ressalva de **amostra limitada** exigida pela regra 9a. A regeneração repetiu a omissão. O bloqueio funcionou como previsto.
+
+**O que não foi feito:** nada foi mudado no prompt, no esquema, nos textos fixos, no validador, no conjunto ou no template. Corrigir o validador (item 1) ou reforçar a instrução sobre a amostra (item 2) é mudança de protocolo e exige decisão e ratificação. **A rodada de 66 chamadas fica suspensa até essa decisão.**
+
+**Decisão do autor sobre o aquecimento (13/11/2026):** "O aquecimento identificou um falso positivo do validador no G01, por exclusão incompleta de médias móveis na verificação 13a, e uma falha real do modelo no M01, por omissão da ressalva exigida pela regra 9a. A rodada de 66 chamadas permanece suspensa até a correção do validador e a reexecução de G01 e M01."
+
+- **G01:** é defeito de implementação do validador, não mudança de regra. A exclusão das médias móveis já foi decidida na DL1-O. A correção não exige nova ratificação, porque prompt, esquema, textos fixos e impressão combinada não mudam. O escopo é restrito: a exclusão passa a cobrir "média móvel", "médias móveis" e as formas abreviadas quando o contexto indica média móvel, e não se estende a média histórica, média de período ou frequência histórica. A correção vem com testes que reproduzem o G01 e com um teste de que a regra não afrouxa para M01 a M08. A contagem permanece em 17 verificações.
+- **M01:** é abstenção legítima, por falha do modelo. O prompt não muda: reforçar a instrução depois de ver a falha seria ajuste post-hoc. Se o padrão se repetir nos outros casos de média, isso entra na discussão da avaliação como achado sobre o modelo.
+- **Sequência:** commit deste registro com a rodada suspensa; correção do validador com os testes do G01; reexecução de G01 e M01, com uma chamada cada; resultado enviado ao autor antes das 66 chamadas. Se o G01 continuar bloqueado depois da correção, o problema é outro e volta ao autor.
+- **Custo:** o custo real, de cerca de US$ 0,0073 por chamada, passa a ser a referência; a projeção da rodada é de US$ 0,48, e de US$ 1,00 no pior caso.
+- **Contagem do aquecimento (decisão do desenvolvedor, pedida pelo autor):** as 5 chamadas do aquecimento e as da reexecução **entram no mesmo contador** da rodada (`logs/llm_custos_xai.jsonl`). Os tetos de US$ 16 e 200 chamadas valem para o total da fase, e o arquivo único mantém o teto verificável. As chamadas do aquecimento são as cinco primeiras linhas do contador (13/11/2026, 22h49 UTC). A contagem da rodada continua em 66 chamadas (33 casos × 2 execuções), sem contar aquecimento e reexecução.
+
+Status: registrada em 13/11/2026, com autoria confirmada e commit autorizado. Aquecimento feito (5 chamadas, US$ 0,0367). Rodada de 66 chamadas **suspensa** até a correção do validador e a reexecução de G01 e M01.

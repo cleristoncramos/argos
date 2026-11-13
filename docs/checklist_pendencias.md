@@ -537,7 +537,8 @@ Etapa 0 — revisão de escopo:
   - [ ] Executar à parte, sem custo, os adversariais sem chamada ao modelo (A02 a A06)
   - [x] Temperatura 0 confirmada como desvio documentado (reprodutibilidade antes da fluência)
   - [x] Chave ausente do repositório: 0 ocorrências em 873 arquivos (13/11/2026)
-  - [ ] Confirmar que a chave não aparece no log de execução, depois do aquecimento
-  - [ ] Aquecimento em 3 casos (custo real e formato da saída) antes das 66 chamadas
+  - [x] Chave ausente do log de execução, do contador e das respostas, depois do aquecimento (13/11/2026)
+  - [x] Aquecimento em 3 casos (13/11/2026): S01 aprovado; G01 bloqueado por falso positivo do validador (médias móveis); M01 bloqueado por omissão real da ressalva de amostra; US$ 0,0367 em 5 chamadas
+  - [ ] Decidir sobre os dois bloqueios do aquecimento (validador e ressalva de amostra) antes das 66 chamadas
 - [ ] Em paralelo: texto da submissão (Lorena), citações dos indicadores e opções de logo
 - [ ] Arquivar a mensagem original da DL2
