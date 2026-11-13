@@ -1177,4 +1177,60 @@ O complemento também registra que a saída estrita é suportada pela Responses 
 - **Lacuna no contador:** o contador registra só as respostas recebidas. As tentativas que estouram o tempo do lado do Argos provavelmente continuam sendo processadas e cobradas pela xAI. Isso contraria a regra da fase 1 ("o contador próprio do job é a autoridade: reserva o custo antes da chamada e conta também as que falharem"). Houve 8 tentativas sem resposta (1 no aquecimento e 7 na reexecução), cujo custo não está no contador. O pior caso é de cerca de US$ 0,0075 cada, ou US$ 0,06 no total; o valor real deve ser conferido no console da xAI.
 - **Situação do G01:** a correção do validador está confirmada sobre a resposta gravada no aquecimento (o G01 passa a ser aprovado), mas **não foi confirmada numa chamada nova**.
 
-Status: registrada em 13/11/2026, com autoria confirmada e commit autorizado. Aquecimento (5 chamadas) e reexecução (2 casos) feitos. Validador corrigido. Rodada de 66 chamadas **suspensa**: o G01 não pôde ser reexecutado por estouro de tempo, e o contador não conta as tentativas sem resposta. Os dois pontos voltam ao autor.
+### DL2-I — Ajuste operacional do provedor xAI (13/11/2026)
+
+Aprovado pelo autor:
+- Tempo limite de 120 s, somente no provedor xAI; a 7B mantém 20 s.
+- Contador passa a reservar custo antes de cada tentativa e a registrar tentativas sem resposta com custo de pior caso.
+- Tentativas: mantidas em 3 (1 + 2 novas tentativas).
+- Esforço de raciocínio: confirmado em `low`, verificado no payload.
+
+Motivo: o limite de 20 s veio da 7B, modelo sem raciocínio. O grok-4.3 com raciocínio leva mais de 20 s para gerar cerca de 1.500 tokens. O contador que só registrava chamadas com resposta contrariava a regra da fase 1, que manda reservar o custo antes da chamada e contar também as que falharem.
+
+Condição: se o G01 ainda estourar em 120 s, a rodada permanece suspensa e o caso volta para decisão do orientador. Nenhuma mudança de prompt ou de esforço de raciocínio no meio da rodada.
+
+**Conferências antes da nova chamada:**
+- **Esforço no payload:** o corpo enviado leva `"reasoning": {"effort": "low"}`, com `temperature: 0`, `max_output_tokens: 1400` e o esquema estrito. A resposta da reexecução confirmou do lado da API: `reasoning.effort = low`.
+- **Origem do tempo limite:** era do lado do Argos. O `TimeoutError` vem do `urlopen` quando acaba o tempo dado a ele; um tempo limite da API chegaria como erro HTTP (408 ou 504) e ficaria registrado como "HTTP".
+
+**Implementação** (`core/llm_provider.py`):
+- tempo limite por provedor (`timeout_s`): 120 s no xAI e na reserva `grok-4.20-0309-non-reasoning`; `core/llm_client.py` continua com 20 s;
+- o contador grava uma linha por **tentativa**: reserva de pior caso antes de cada tentativa (`reservada`), valor real com a resposta (`resposta`) ou reserva mantida sem resposta (`sem_resposta`, até a conferência no console). O total é a soma de todas as linhas, e os tetos de US$ 16 e 200 tentativas valem sobre ele, conferidos antes de cada tentativa;
+- **pior caso com 3.000 tokens de saída**: no aquecimento, a saída medida (1.457 a 1.534 tokens) passou do `max_output_tokens` de 1.400, porque a xAI conta o raciocínio como saída. A reserva com 1.400 subestimaria o pior caso;
+- o contador passa a registrar também os tokens de raciocínio e o esforço que a API devolve;
+- testes: reserva gravada antes da tentativa sair; tentativa sem resposta no contador com a reserva; resposta que troca a reserva pelo valor real; recusa pelo teto antes da reserva; 120 s no xAI e 20 s na 7B. A suíte tem 1.251 testes, com 100% de cobertura do `core/`.
+
+**Lançamento retroativo:** as 8 tentativas sem resposta (1 do aquecimento e 7 da reexecução) entraram no contador como `sem_resposta`, com a reserva de pior caso: **US$ 0,0904** no total. O valor fica acima dos ~US$ 0,06 estimados antes porque a reserva usa 3.000 tokens de saída. As 7 linhas antigas foram marcadas como `resposta`. Total da fase depois do lançamento: US$ 0,1424, a confirmar no console da xAI.
+
+**Reexecução do G01 com 120 s (13/11/2026, 23h14 UTC), uma chamada:**
+
+| Caso | Situação | Tentativas | Tokens (entrada / saída / raciocínio) | Esforço devolvido | Custo |
+| --- | --- | --- | --- | --- | --- |
+| G01 | **aprovado nas 17 verificações**, sem regeneração | 1 | 2.978 / 1.726 / 1.031 | `low` | US$ 0,0080 (reserva de US$ 0,0111 trocada pelo valor real) |
+
+- A chamada levou cerca de 15 s, dentro dos 120 s.
+- A chave não aparece no log de execução, no contador nem nas respostas.
+- Total da fase no contador: **16 tentativas, US$ 0,1504**.
+
+**Resultado:** a correção do validador está confirmada numa chamada nova (G01 aprovado), e o M01 continua bloqueado por falha real do modelo. Pela condição da decisão, o G01 passou em 120 s e a rodada pode seguir. O resultado foi enviado ao autor antes de disparar as 66 chamadas.
+
+### DL2-I — Liberação da rodada de 66 chamadas (13/11/2026)
+
+Aprovado pelo autor:
+- Commit das mudanças operacionais (timeout 120 s no xAI, contador com reserva antes de cada tentativa).
+- Disparo das 66 chamadas (33 casos × 2 execuções) no mesmo contador da fase, que já soma 16 tentativas e US$ 0,1504.
+- M01 permanece como abstenção legítima por falha do modelo; nenhuma mudança de prompt no meio da rodada.
+- Avaliação cega com template e Grok como as duas fontes; Gemini fica como alternativa registrada, não como condição de fechamento.
+
+Condições:
+- Contador confere o teto antes de cada tentativa.
+- Chamada que estoura 120 s nas 3 tentativas registra a reserva e segue para o próximo caso; não pausa a rodada.
+- Nenhuma mudança de prompt, esquema, textos ou validador no meio da rodada.
+
+**Conferência do contador antes do disparo:** 16 tentativas, sendo 8 com resposta (5 do aquecimento, 2 do M01 na reexecução e 1 do G01 com 120 s), que somam US$ 0,0600, e 8 sem resposta, lançadas com a reserva de pior caso, que somam **US$ 0,0904**. O total é de **US$ 0,1504**. O valor das reservas é o calculado com 3.000 tokens de saída, e não os ~US$ 0,06 estimados antes com 1.400 tokens.
+
+**Comportamento do script nas condições:** o teto é conferido dentro do contador, antes de cada tentativa. Uma chamada que falha nas 3 tentativas fica como `indisponivel` (`api_indisponivel`), com as reservas no contador, e a rodada passa ao caso seguinte. Só o teto do contador interrompe a rodada.
+
+**Commits:** mudanças operacionais em `core/llm_provider.py` e `tests/test_llm_provider.py`, sem nenhum arquivo com hash do piloto, da v0.6, do conjunto ou do template; e este registro.
+
+Status: registrada em 13/11/2026, com autoria confirmada. Rodada de 66 chamadas **liberada**.

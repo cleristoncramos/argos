@@ -542,7 +542,11 @@ Etapa 0 — revisão de escopo:
   - [x] Decisão sobre os bloqueios (13/11/2026): G01 é defeito do validador, M01 é abstenção legítima e o prompt não muda
   - [x] Validador corrigido (exclusão de médias móveis na 13a), com testes do G01 e de não afrouxamento em M01–M08
   - [x] Reexecução (13/11/2026): M01 continua bloqueado (falha real); G01 indisponível por estouro de tempo (20 s) nas 3 tentativas
-  - [ ] Decidir o tempo limite do provedor xAI (o grok-4.3 com raciocínio passa de 20 s) e repetir o G01
-  - [ ] Contador: reservar e contar também as tentativas sem resposta (regra da fase 1); conferir no console da xAI o custo real das 8 tentativas sem resposta
+  - [x] Tempo limite de 120 s só no provedor xAI; contador com reserva antes de cada tentativa (13/11/2026)
+  - [x] 8 tentativas sem resposta lançadas no contador com reserva de pior caso (US$ 0,0904)
+  - [x] G01 reexecutado com 120 s: aprovado nas 17, esforço `low` confirmado pela API, US$ 0,0080
+  - [ ] Conferir no console da xAI o gasto real da fase (contador: 16 tentativas, US$ 0,1504)
+  - [x] Rodada de 66 chamadas liberada pelo autor (13/11/2026), no mesmo contador da fase (16 tentativas, US$ 0,1504 antes do disparo)
+  - [ ] Rodada de 66 chamadas (33 casos × 2 execuções) executada e registrada
 - [ ] Em paralelo: texto da submissão (Lorena), citações dos indicadores e opções de logo
 - [ ] Arquivar a mensagem original da DL2
