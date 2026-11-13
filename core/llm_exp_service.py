@@ -26,7 +26,7 @@ import time
 from datetime import datetime, timezone
 from typing import Callable, Iterable, Optional
 
-from core import llm_client, llm_eval
+from core import llm_client, llm_eval, llm_provider
 from core import llm_exp_context as ec
 from core import llm_exp_policy as policy
 from core import llm_exp_prompts as ep
@@ -71,6 +71,8 @@ FALLBACK_TEXT = ep.FALLBACK_TEXT
 # Correção 1 (DL1-B): só a falha da ressalva sobre média histórica dá direito a uma
 # regeneração; se falhar de novo (ou se falhar qualquer outra verificação), abstenção.
 REGENERABLE_CHECKS = ("ressalva_media_historica",)
+# Término normal: "stop" no Chat Completions (7B); "completed" na Responses API da xAI (DL2-I).
+COMPLETE_FINISH = ("stop", "completed")
 MAX_REGENERATIONS = 1
 
 REQUIRED_KEYS = ("protocol_family", "scope", "status", "asset", "filters", "n_observations", "historical",
@@ -196,8 +198,18 @@ def explain_experimental(
     sleep: Callable = time.sleep,
     clock: Callable = time.monotonic,
     now: Callable = lambda: datetime.now(timezone.utc),
+    provider: Optional[llm_provider.Provider] = None,
+    ledger: Optional[llm_provider.BudgetLedger] = None,
+    case_id: str = "",
 ) -> Explanation:
-    """Explicação validada para um contexto v1.0-experimental, ou o fallback."""
+    """
+    Explicação validada para um contexto v1.0-experimental, ou o fallback.
+
+    `provider` (etapa 6 da DL2, DL2-I) troca o provedor da chamada: a troca é configuração, não
+    protocolo, e o prompt, o esquema e a validação são os mesmos. Com provedor, o contador de custo
+    `ledger` é obrigatório, e `transport` recebe (provedor, corpo, chave, timeout). Sem provedor, a
+    chamada é a da 7B (core/llm_client.py), sem nenhuma mudança.
+    """
     if mode not in MODES:
         raise ValueError(f"Modo inválido: {mode}.")
     log = _log(mode, context, now)
@@ -227,9 +239,24 @@ def explain_experimental(
     if limited:
         return _result(STATUS_UNAVAILABLE, None, limited, log, log_sink)
     status = STATUS_EVALUATION if evaluation_run else STATUS_OK
+    if provider is not None:
+        if ledger is None:
+            raise ValueError("Chamada por provedor exige o contador de custo (ledger).")
+        if transport is llm_client.http_transport:
+            transport = llm_provider.http_transport
+        log["model"] = provider.model
+        log["provider"] = provider.name
     while True:
         try:
-            call = llm_client.call_model(context, api_key, transport, sleep, clock, payload=build_payload(context))
+            if provider is None:
+                call = llm_client.call_model(context, api_key, transport, sleep, clock, payload=build_payload(context))
+            else:
+                messages = ep.build_messages(context)
+                call = llm_provider.call_provider(
+                    provider, messages, ep.response_format(), api_key, ledger, case_id or log["context_key"],
+                    estimate_input_tokens(messages), transport=transport, sleep=sleep, clock=clock)
+        except llm_provider.BudgetExceeded as exc:
+            return _result(STATUS_UNAVAILABLE, None, f"teto_da_rodada:{exc}", log, log_sink)
         except llm_client.CallFailed as exc:
             limiter.record(0.0)
             log["attempts"] += exc.attempts
@@ -238,18 +265,23 @@ def explain_experimental(
                                  "input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0,
                                  "latency_s": exc.latency_s})
             return _result(STATUS_UNAVAILABLE, None, f"api_indisponivel:{exc}", log, log_sink)
-        cost = llm_eval.estimate_cost(llm_client.MODEL, call["input_tokens"], call["output_tokens"])
+        if provider is None:
+            cost = llm_eval.estimate_cost(llm_client.MODEL, call["input_tokens"], call["output_tokens"])
+        else:
+            cost = llm_provider.estimate_cost(provider, call["input_tokens"], call["output_tokens"])
         limiter.record(cost)
         record = {"tipo": _call_type(log), "status": "resposta", "attempts": call["attempts"],
                   "input_tokens": call["input_tokens"], "output_tokens": call["output_tokens"],
                   "cost_usd": round(cost, 6), "latency_s": call["latency_s"], "failed_checks": []}
+        if provider is not None:
+            record["model_version"] = call.get("model_version", "")
         log["calls"].append(record)
         log.update(input_tokens=log["input_tokens"] + call["input_tokens"],
                    output_tokens=log["output_tokens"] + call["output_tokens"],
                    cost_usd=round(log["cost_usd"] + cost, 6),
                    latency_s=round(log["latency_s"] + call["latency_s"], 3),
                    attempts=log["attempts"] + call["attempts"])
-        if call["finish_reason"] != "stop":
+        if call["finish_reason"] not in COMPLETE_FINISH:
             return _result(STATUS_BLOCKED, None, "resposta_incompleta", log, log_sink)
         failed = ev.validate_experimental(call["raw"], context, known_tickers).failed
         record["failed_checks"] = failed
@@ -257,6 +289,11 @@ def explain_experimental(
         if not regenerable or log["regenerations"] >= MAX_REGENERATIONS or limiter.check():
             return _finish(call["raw"], context, known_tickers, log, log_sink, status)
         log["regenerations"] += 1
+
+
+def estimate_input_tokens(messages: list) -> int:
+    """Estimativa folgada de tokens de entrada (um token a cada 3 caracteres), para o teto do contador."""
+    return len(json.dumps(messages, ensure_ascii=False)) // 3 + 1
 
 
 def _call_type(log: dict) -> str:

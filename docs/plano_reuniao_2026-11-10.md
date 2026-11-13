@@ -273,7 +273,7 @@ Registro completo na DL2-I (`docs/pibiti/decisoes_orientador.md`). Resumo:
 **Falta antes da rodada** (sequência da DL2-I):
 1. receber a chave por canal seguro;
 2. consultar `/v1/language-models` com a chave: disponibilidade do `grok-4.3` e snapshot datado;
-3. ligar o provedor à rodada (`explain_experimental` e o script da rodada): 33 casos × 2 execuções, com o contador de custo;
+3. ~~ligar o provedor à rodada~~: feito em 13/11/2026 (`experiments/llm_v1_exp/rodada.py`), sem chamadas;
 4. confirmar que a chave não aparece no repositório nem no log;
 5. fazer o aquecimento em 3 casos, conferindo custo real e formato da saída;
 6. fazer as 66 chamadas da rodada.

@@ -533,7 +533,8 @@ Etapa 0 — revisão de escopo:
   - [ ] Arquivar o texto original da DL2-I e do complemento
   - [x] Chave da xAI configurada pelo autor na variável de usuário `XAI_API_KEY`, sem passar pela conversa (13/11/2026)
   - [x] Lista de modelos consultada (13/11/2026): `grok-4.3` disponível (versão 1.0, criado em 17/04/2026), sem snapshot datado; a reserva também está disponível
-  - [ ] Ligar o provedor à rodada de avaliação: 33 casos × 2 execuções = 66 chamadas, registro de versão, tokens e custo
+  - [x] Provedor ligado à rodada (13/11/2026): `experiments/llm_v1_exp/rodada.py`, 33 casos × 2 execuções = 66 chamadas, com registro de versão, tokens e custo, sem nenhuma chamada feita
+  - [ ] Executar à parte, sem custo, os adversariais sem chamada ao modelo (A02 a A06)
   - [x] Temperatura 0 confirmada como desvio documentado (reprodutibilidade antes da fluência)
   - [x] Chave ausente do repositório: 0 ocorrências em 873 arquivos (13/11/2026)
   - [ ] Confirmar que a chave não aparece no log de execução, depois do aquecimento

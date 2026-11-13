@@ -100,6 +100,8 @@ data/demo/llm_respostas.json
 
 # Experimento 7A: respostas dos modelos e avaliações humanas ficam locais
 experiments/llm_7a/results/
+# Respostas brutas da rodada da fase 1 (etapa 6 da DL2): dados de avaliação, fora do git.
+experiments/llm_v1_exp/resultados/
 docs/pibiti/avaliadores_7a.md
 
 # Piloto preditivo: dados do Yahoo Finance e do BCB e resultados ficam fora do Git
