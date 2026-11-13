@@ -1,6 +1,6 @@
 import streamlit as st
 
-from core.chart_guides import GUIDE_FIELDS, GUIDE_LABELS, chart_guide
+from core.chart_guides import GUIDE_FIELDS, GUIDE_LABELS, chart_guide, chart_tip
 from core.edu_layer import edu_layer_enabled
 
 
@@ -14,3 +14,11 @@ def render_chart_guide(chart_id: str) -> None:
     with st.expander("ℹ️ Como ler este gráfico", expanded=False):
         for field in GUIDE_FIELDS:
             st.markdown(f"**{GUIDE_LABELS[field]}.** {guide[field]}")
+
+def render_chart_tip(chart_id: str) -> None:
+    """Dica curta, sempre visível, embaixo do gráfico (C1, reunião de 10/11/2026)."""
+    if not edu_layer_enabled():
+        return
+    tip = chart_tip(chart_id)
+    if tip:
+        st.caption(f"💡 **Como ler:** {tip}")

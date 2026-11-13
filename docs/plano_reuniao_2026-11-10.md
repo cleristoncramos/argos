@@ -4,7 +4,7 @@
 - transcrição automática da reunião de 10/11/2026 com o Prof. Arlino (arquivo `Argos - 10-11-2026.docx`, fora do repositório);
 - mensagens do orientador por WhatsApp em 11/11 e 13/11/2026, anexadas ao mesmo arquivo.
 
-**Situação:** plano **aprovado** pelo orientador na DL2 (13/11/2026), com os seis conflitos resolvidos (seção 5) · **etapa 1 concluída** (seção 6), aguardando commit
+**Situação:** plano **aprovado** pelo orientador na DL2 (13/11/2026), com os seis conflitos resolvidos (seção 5) · etapas 1 e 2 concluídas (seção 6) · **etapa 3 concluída** (seção 7), aguardando commit
 
 > **Sobre a transcrição.** O reconhecimento automático trocou vários termos: "Grock" e "Glock" são o **Grok**; "LNM" e "LLMM" são **LLM**; "Lorana" é a **Lorena**. Num trecho, o orientador diz que a ferramenta "é determinística", mas o contexto deixa claro que ele quis dizer **não determinística**. As orientações abaixo seguem o sentido evidente da conversa; onde houve dúvida, o item está marcado "a confirmar".
 
@@ -163,3 +163,21 @@ O registro completo está em [`pibiti/decisoes_orientador.md`](pibiti/decisoes_o
 **Testes:** 1.137, com 100% de cobertura do `core/`.
 
 **Observação para a etapa 4:** o menu lateral das páginas de análise já tem um cabeçalho "CONFIGURAÇÕES" (escolha de ativo, período e frequência). A página "Configurações" nova (referência e catálogo) precisa de outro nome, ou o cabeçalho atual passa a "Consulta", para não confundir.
+
+---
+
+## 7. Execução da etapa 3 (13/11/2026)
+
+| Item | O que foi feito | Verificação |
+| --- | --- | --- |
+| DL2-G, aviso obrigatório | Texto fixo `NON_DETERMINISM_WARNING` em `core/disclaimers.py`, com a redação aprovada: "Os resultados podem variar entre execuções. O padrão histórico não garante repetição." Aparece sempre, fora da camada educativa: no início da sazonalidade da Análise Individual, junto com a frase "ferramenta de apoio à decisão e de educação financeira, não de investimento", e na sazonalidade da Comparação de Ativos | Teste da redação exata. Conferido na tela com PETR4.SA |
+| C2, anos fora do padrão | `pattern_breaks` (em `core/seasonality.py`) acha o sentido da maioria na variação entre dois meses e os anos que não o seguiram, com destaque para os dois anos mais recentes. Embaixo do gráfico, um aviso diz, por exemplo: "Do fechamento de setembro ao fechamento de outubro, o preço subiu em 3 de 5 anos, mas não seguiu esse sentido em 2024 e 2025. Nos 2 anos mais recentes (2025 e 2026), fugiu do padrão em 2025.", seguido do aviso da DL2-G | Testes com o exemplo da reunião (padrão que falhou nos dois últimos anos), com padrão de queda, sem exceção, com empate e com poucos anos. Texto ajustado na verificação para dizer quais são os anos mais recentes |
+| C1, dica sob cada gráfico | Frase "💡 Como ler:" sempre visível embaixo dos quatro gráficos de sazonalidade (mapa de calor, média por mês, anos comparados à média e variação entre dois meses), além do roteiro "Como ler este gráfico", que continua no expansor. As dicas seguem a camada educativa | Teste das dicas (tamanho e vocabulário proibido). Conferido na tela |
+| C1, gráfico de comparação de anos revisto | O orientador não entendeu as barras pareadas. A forma padrão agora é uma única barra por mês, com a diferença para a média em p.p.: verde acima e vermelho abaixo da linha do zero, que é a média de todos os anos. As barras pareadas continuam disponíveis em "Valores lado a lado", com dica própria | Conferido na tela nos dois modos. Defeito achado e corrigido: o rótulo da média cobria a barra de março e foi movido para fora da área das barras |
+| C1, vista conjunta e zoom | "Anos comparados à média" e "Variação entre dois meses" deixaram de ser abas e aparecem um embaixo do outro, com setembro → outubro como padrão. Uma legenda explica o zoom: tela cheia ou seleção de área | Conferido na tela |
+
+**Testes:** 1.142, com 100% de cobertura do `core/`.
+
+**Pendente:** testar o gráfico revisto com um leitor leigo (previsto no plano), de preferência com a Lorena, que não participou da revisão.
+
+**Observação sobre a suíte:** com `-W error`, 7 testes de `tests/test_llm_experiment.py` falham por arquivos não fechados em `experiments/llm_7a`. A falha já existia antes desta etapa (conferida no commit `ccd9aae`) e fica numa área que não pode ser alterada. Na configuração padrão da suíte, todos os testes passam.

@@ -25,6 +25,17 @@ INVESTMENT_DISCLAIMER = (
     "desempenho futuro."
 )
 
+# DL2-G (13/11/2026): redação obrigatória, definida pelo orientador.
+NON_DETERMINISM_WARNING = (
+    "Os resultados podem variar entre execuções. "
+    "O padrão histórico não garante repetição."
+)
+
+DECISION_SUPPORT_NOTE = (
+    "O Argos é uma ferramenta de apoio à decisão e de educação financeira, "
+    "não de investimento."
+)
+
 PROFILE_LIMITATION_DISCLAIMER = (
     "Esta ferramenta não avalia renda, objetivos financeiros, dívidas, "
     "horizonte de tempo ou tolerância individual a risco. As informações "

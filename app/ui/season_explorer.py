@@ -180,3 +180,33 @@ def share_cell(value) -> tuple[str, str]:
 
 def center_cell(value) -> tuple[str, str]:
     return ("—" if value is None else str(value)), _CENTER
+
+
+def describe_pattern_breaks(breaks: Mapping, entry: str, exit_: str) -> str:
+    """
+    Aviso de não determinismo do intervalo (C2 e DL2-G): diz em quantos anos o
+    sentido da maioria se repetiu e em quais anos ele não se repetiu.
+    """
+    label = window_label(entry, exit_)
+    label = label[:1].upper() + label[1:]
+    n = int(breaks["n"])
+
+    if n < 2:
+        return f"{label}, há anos de menos para falar em padrão."
+    if breaks["direction"] is None:
+        return (f"{label}, não houve um sentido dominante: os anos de alta e de queda "
+                "empataram.")
+
+    word = "subiu" if breaks["direction"] == "alta" else "caiu"
+    text = f"{label}, o preço {word} em {breaks['following']} de {n} anos"
+    if not breaks["breaks"]:
+        return text + ", sem exceção no histórico carregado. Isso não impede que o próximo ano seja diferente."
+
+    text += f", mas **não seguiu esse sentido em {years_label(breaks['breaks'])}**."
+    recent = breaks["recent_breaks"]
+    if recent == breaks["recent_years"]:
+        text += f" Inclusive nos {len(recent)} anos mais recentes ({years_label(recent)})."
+    elif recent:
+        text += (f" Nos {len(breaks['recent_years'])} anos mais recentes "
+                 f"({years_label(breaks['recent_years'])}), fugiu do padrão em {years_label(recent)}.")
+    return text

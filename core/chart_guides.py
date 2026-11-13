@@ -184,6 +184,29 @@ CHART_GUIDES: Dict[str, Dict[str, str]] = {
 }
 
 
+# Dica curta que fica visível embaixo do gráfico (C1, reunião de 10/11/2026):
+# uma frase sobre como ler as cores e as barras, para quem não é da área.
+CHART_TIPS = {
+    "mapa_sazonal": "Cada linha é um ano e cada coluna, um mês. Verde: o preço subiu naquele mês; "
+                    "vermelho: caiu. Leia uma coluna de cima para baixo para ver se o mesmo mês "
+                    "mudou de um ano para outro.",
+    "media_mensal": "Cada barra é a média de um mês em todos os anos. Uma barra alta pode vir de um "
+                    "único ano muito forte; confira a coluna desse mês no mapa acima.",
+    "recorte_anos": "A linha do zero é a média de todos os anos. Barra verde: no mês, o ano escolhido "
+                    "foi melhor que a média; barra vermelha: foi pior. Quanto maior a barra, maior a diferença.",
+    "recorte_anos_lado_a_lado": "Em cada mês, a barra cinza é a média de todos os anos e a barra vermelha, "
+                                "o ano escolhido. Compare a altura das duas: barra vermelha mais alta "
+                                "indica que o mês foi melhor que a média naquele ano.",
+    "janela_retorno": "Cada barra é um ano. Verde: o preço subiu entre os dois meses; vermelho: caiu. "
+                      "Barras de cor diferente da maioria são os anos que fugiram do padrão.",
+}
+
+
+def chart_tip(chart_id: str) -> str | None:
+    """Dica curta do gráfico, ou None se ele não tiver dica."""
+    return CHART_TIPS.get(chart_id)
+
+
 def chart_guide(chart_id: str) -> Dict[str, str]:
     """Roteiro de um gráfico. KeyError se o identificador não existir."""
     if chart_id not in CHART_GUIDES:

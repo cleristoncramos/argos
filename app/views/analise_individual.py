@@ -29,7 +29,7 @@ import streamlit as st
 
 from app.ui.page_header import render_page_header
 from app.ui.charts import apply_custom_layout
-from app.ui.chart_guide import render_chart_guide
+from app.ui.chart_guide import render_chart_guide, render_chart_tip
 from app.ui.data_info import (
     render_availability_messages,
     render_catalog_notice,
@@ -46,6 +46,7 @@ from app.ui.season_explorer import (
     WINDOW_NOTE,
     YEARS_INTRO,
     center_cell,
+    describe_pattern_breaks,
     describe_window,
     describe_year_comparison,
     fmt_pct,
@@ -108,10 +109,12 @@ from core.seasonality import (
     exclude_month_in_progress,
     filter_monthly_matrix,
     monthly_closes,
+    pattern_breaks,
     seasonal_summary,
     window_returns,
     window_summary,
 )
+from core.disclaimers import DECISION_SUPPORT_NOTE, NON_DETERMINISM_WARNING
 from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.formatters import format_number_br
 from core.llm_builders import individual_context, window_context
@@ -775,9 +778,12 @@ else:
     with st.container(border=True):
         st.markdown("<h5 style='text-align: center; color: #334155; margin-bottom: 10px; font-size: 1rem;'>Variação Mensal Histórica</h5>", unsafe_allow_html=True)
         st.plotly_chart(fig_heatmap, use_container_width=True, config=PLOTLY_CONFIG)
+        render_chart_tip("mapa_sazonal")
         render_chart_guide("mapa_sazonal")
 
     render_what_it_means("sazonalidade")
+    # DL2-G: aviso obrigatório, fora da camada educativa (aparece sempre).
+    st.warning(f"{NON_DETERMINISM_WARNING} {DECISION_SUPPORT_NOTE}", icon="⚠️")
 
     df_matrix_stats = exclude_month_in_progress(df_matrix)
     monthly_avg = df_matrix_stats.mean(axis=0)
@@ -806,6 +812,7 @@ else:
     with st.container(border=True):
         st.markdown("<h5 style='text-align: center; color: #334155; margin-top: 10px; margin-bottom: 10px; font-size: 1rem;'>Média Consolidada por Mês do Calendário</h5>", unsafe_allow_html=True)
         st.plotly_chart(fig_bar_season, use_container_width=True, config=PLOTLY_CONFIG)
+        render_chart_tip("media_mensal")
         render_chart_guide("media_mensal")
 
     st.caption(
@@ -836,9 +843,15 @@ else:
         int(year) for year, row in df_matrix_stats.iterrows() if row.notna().sum() == 12
     ]
     default_year = max(complete_years) if complete_years else available_years[-1]
-    tab_years, tab_window = st.tabs(["Anos comparados à média", "Variação entre dois meses"])
+    st.caption(
+        "🔍 Para ampliar um gráfico, passe o mouse sobre ele e use o botão de tela cheia, "
+        "ou arraste sobre uma área para dar zoom (duplo clique volta ao normal)."
+    )
+    # Reunião de 10/11/2026 (C1): as duas análises ficam visíveis juntas, sem abas.
+    tab_years, tab_window = st.container(), st.container()
 
     with tab_years:
+        st.markdown("##### Anos comparados à média")
         st.markdown(YEARS_INTRO)
 
         col_years, col_months = st.columns(2)
@@ -900,44 +913,96 @@ else:
                             render_metric_card(title, "—", value_size="1.4rem")
 
             period_years = f"{available_years[0]}–{available_years[-1]}"
+            view_mode = st.radio(
+                "Forma de ver o gráfico",
+                ["Diferença para a média", "Valores lado a lado"],
+                horizontal=True,
+                key=f"season_view_{symbol}",
+                help="Diferença: uma barra por mês, acima ou abaixo da média de todos os anos. "
+                     "Lado a lado: a variação dos anos escolhidos ao lado da média.",
+            )
             fig_cut = go.Figure()
-            fig_cut.add_trace(
-                go.Bar(
-                    x=summary.index,
-                    y=summary["Média geral"],
-                    name=f"Média de todos os anos ({period_years})",
-                    marker_color="#A8A29E",
-                    customdata=[[fmt_pct(v), int(n)] for v, n in zip(summary["Média geral"], summary["N geral"])],
-                    hovertemplate="%{x}: %{customdata[0]}<br>Anos no cálculo: %{customdata[1]}<extra></extra>",
+            if view_mode == "Diferença para a média":
+                # Reunião de 10/11/2026 (C1): o gráfico de barras pareadas não ficou claro
+                # para o orientador. A forma padrão agora mostra uma única barra por mês, a
+                # diferença para a média, com a média como linha de referência no zero.
+                diff = summary["Diferença (p.p.)"]
+                fig_cut.add_trace(
+                    go.Bar(
+                        x=summary.index,
+                        y=diff,
+                        marker_color=["#15803D" if v >= 0 else "#B91C1C" for v in diff.fillna(0)],
+                        text=[fmt_pp(v) if pd.notna(v) else "" for v in diff],
+                        textposition="outside",
+                        textfont=dict(size=11, color="#475569", family="Inter, Arial"),
+                        customdata=[
+                            [fmt_pct(a), fmt_pct(b), fmt_pp(d)]
+                            for a, b, d in zip(summary["Média do recorte"], summary["Média geral"], diff)
+                        ],
+                        hovertemplate=(
+                            "%{x}<br>" + escape(chosen) + ": %{customdata[0]}<br>"
+                            "Média de todos os anos: %{customdata[1]}<br>"
+                            "Diferença: %{customdata[2]}<extra></extra>"
+                        ),
+                    )
                 )
-            )
-            fig_cut.add_trace(
-                go.Bar(
-                    x=summary.index,
-                    y=summary["Média do recorte"],
-                    name=chosen if len(years_cut) == 1 else f"Média de {chosen}",
-                    marker_color="#C8102E",
-                    customdata=[[fmt_pct(v), int(n)] for v, n in zip(summary["Média do recorte"], summary["N do recorte"])],
-                    hovertemplate="%{x}: %{customdata[0]}<br>Anos no cálculo: %{customdata[1]}<extra></extra>",
+                fig_cut.add_hline(y=0, line_color="#475569", line_width=2)
+                # Rótulo fora da área das barras, para não cobrir nenhuma delas.
+                fig_cut.add_annotation(
+                    xref="paper", yref="paper", x=0, y=1.02, xanchor="left", yanchor="bottom",
+                    showarrow=False,
+                    text=f"Linha do zero = média de todos os anos ({period_years})",
+                    font=dict(size=12, color="#475569"),
                 )
-            )
-            fig_cut.add_hline(y=0, line_color="#475569", line_width=1)
-            fig_cut = apply_custom_layout(fig_cut, show_legend=True)
-            fig_cut.update_layout(
-                barmode="group",
-                margin=dict(l=40, r=20, t=50, b=20),
-                xaxis_title=None,
-                yaxis_title="Variação no mês (%)",
-                legend=dict(orientation="h", y=1.14, x=0),
-            )
+                fig_cut = apply_custom_layout(fig_cut)
+                fig_cut.update_layout(
+                    margin=dict(l=40, r=20, t=40, b=20),
+                    xaxis_title=None,
+                    yaxis_title="Diferença para a média (p.p.)",
+                )
+                cut_title = f"Quanto {escape(chosen)} ficou acima ou abaixo da média, mês a mês"
+                cut_tip = "recorte_anos"
+            else:
+                fig_cut.add_trace(
+                    go.Bar(
+                        x=summary.index,
+                        y=summary["Média geral"],
+                        name=f"Média de todos os anos ({period_years})",
+                        marker_color="#A8A29E",
+                        customdata=[[fmt_pct(v), int(n)] for v, n in zip(summary["Média geral"], summary["N geral"])],
+                        hovertemplate="%{x}: %{customdata[0]}<br>Anos no cálculo: %{customdata[1]}<extra></extra>",
+                    )
+                )
+                fig_cut.add_trace(
+                    go.Bar(
+                        x=summary.index,
+                        y=summary["Média do recorte"],
+                        name=chosen if len(years_cut) == 1 else f"Média de {chosen}",
+                        marker_color="#C8102E",
+                        customdata=[[fmt_pct(v), int(n)] for v, n in zip(summary["Média do recorte"], summary["N do recorte"])],
+                        hovertemplate="%{x}: %{customdata[0]}<br>Anos no cálculo: %{customdata[1]}<extra></extra>",
+                    )
+                )
+                fig_cut.add_hline(y=0, line_color="#475569", line_width=1)
+                fig_cut = apply_custom_layout(fig_cut, show_legend=True)
+                fig_cut.update_layout(
+                    barmode="group",
+                    margin=dict(l=40, r=20, t=50, b=20),
+                    xaxis_title=None,
+                    yaxis_title="Variação no mês (%)",
+                    legend=dict(orientation="h", y=1.14, x=0),
+                )
+                cut_title = f"Variação em cada mês: {escape(chosen)} × média de todos os anos"
+                cut_tip = "recorte_anos_lado_a_lado"
 
             with st.container(border=True):
                 st.markdown(
                     "<h5 style='text-align: center; color: #334155; margin-bottom: 10px; font-size: 1rem;'>"
-                    f"Variação em cada mês: {escape(chosen)} × média de todos os anos</h5>",
+                    f"{cut_title}</h5>",
                     unsafe_allow_html=True,
                 )
                 st.plotly_chart(fig_cut, use_container_width=True, config=PLOTLY_CONFIG)
+                render_chart_tip(cut_tip)
                 render_chart_guide("recorte_anos")
 
             years_table = pd.DataFrame(
@@ -985,6 +1050,8 @@ else:
                 )
 
     with tab_window:
+        st.divider()
+        st.markdown("##### Variação entre dois meses")
         st.markdown(WINDOW_INTRO)
 
         col_entry, col_exit, col_mark = st.columns([1, 1, 1.4])
@@ -1112,7 +1179,15 @@ else:
                         unsafe_allow_html=True,
                     )
                     st.plotly_chart(fig_window, use_container_width=True, config=PLOTLY_CONFIG)
+                    render_chart_tip("janela_retorno")
                     render_chart_guide("janela_retorno")
+
+                # C2 e DL2-G: o padrão não é garantido; mostra os anos que fugiram dele.
+                st.warning(
+                    describe_pattern_breaks(pattern_breaks(window_all), entry_name, exit_name)
+                    + f"\n\n{NON_DETERMINISM_WARNING}",
+                    icon="⚠️",
+                )
 
                 window_table = window_all.assign(
                     Diferenca=window_all["Retorno (%)"] - stats_all["Média"]

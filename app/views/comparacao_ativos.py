@@ -79,6 +79,7 @@ from core.data_processor import (
     select_primary_variable,
 )
 from core.date_validation import validate_date_range
+from core.disclaimers import NON_DETERMINISM_WARNING
 from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.llm_builders import comparison_context
 from core.formatters import format_number_br
@@ -1424,6 +1425,8 @@ with tab_seasonality:
             st.plotly_chart(fig_season, use_container_width=True, config=PLOTLY_CONFIG)
             render_chart_guide("sazonalidade_comparada")
         st.caption(LEGEND_HINT)
+        # DL2-G: aviso obrigatório, fora da camada educativa.
+        st.warning(NON_DETERMINISM_WARNING, icon="⚠️")
 
         season_table = pd.DataFrame({"Mês": season_means.index})
         for ticker in season_means.columns:

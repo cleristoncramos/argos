@@ -287,3 +287,37 @@ def compare_monthly_averages(
     mean_table.index.name = count_table.index.name = "Mês"
 
     return mean_table, count_table
+
+def pattern_breaks(window: pd.DataFrame, recent: int = 2) -> dict:
+    """
+    Anos em que a janela fugiu do sentido da maioria (DL2-G, reunião de 10/11/2026).
+
+    O "padrão" é só o sentido mais frequente da variação (alta ou queda) nos anos
+    disponíveis; variação zero não conta para nenhum lado. Devolve o sentido da
+    maioria (None se houver empate ou menos de 2 anos), quantos anos o seguiram,
+    os anos que fugiram dele e, entre os `recent` últimos anos, os que fugiram.
+    """
+    empty = {"direction": None, "following": 0, "n": 0, "breaks": [], "recent_breaks": [], "recent_years": []}
+    if window.empty:
+        return empty
+
+    data = window.dropna(subset=["Retorno (%)"]).sort_values("Ano")
+    years = [int(y) for y in data["Ano"]]
+    values = list(data["Retorno (%)"])
+    ups = sum(v > 0 for v in values)
+    downs = sum(v < 0 for v in values)
+    result = dict(empty, n=len(values), recent_years=years[-recent:])
+
+    if len(values) < 2 or ups == downs:
+        return result
+
+    direction = "alta" if ups > downs else "queda"
+    follows = (lambda v: v > 0) if direction == "alta" else (lambda v: v < 0)
+    breaks = [y for y, v in zip(years, values) if not follows(v)]
+    result.update(
+        direction=direction,
+        following=max(ups, downs),
+        breaks=breaks,
+        recent_breaks=[y for y in breaks if y in years[-recent:]],
+    )
+    return result
