@@ -1296,4 +1296,65 @@ Achado: o Grok falha sistematicamente em todos os casos de média (8/8, nas duas
 1. **Contagem dos gráficos:** são 8 casos de gráfico (G01 a G08), aprovados nas duas execuções (16 execuções). A mensagem de decisão fala em "17 casos de gráfico".
 2. **Escopo da rubrica em relação à DL1:** o registro anterior da fase 1 deixava o A01 fora da rubrica humana ("texto fixo se avalia por checagem de política") e fixava a avaliação humana em 84 saídas (28 casos S, G e M × 3 fontes). A decisão acima inclui o A01 e os controles R01 a R04 na rubrica. Os controles repetem S01, S05, S07 e S11, e as saídas do template nesses casos são idênticas às dos casos de base. A confirmar pelo autor: se a inclusão do A01 e dos controles na rubrica é intencional, ou se a rubrica fica nos 20 casos S e G (20 saídas do template e 40 do Grok), com A01 por checagem de política e os controles só na medida de variação.
 
-Status: registrada em 13/11/2026, com autoria confirmada. Rodada de 66 chamadas concluída. Decisões para a avaliação cega tomadas, com o escopo da rubrica a confirmar (nota 2). Próximo passo: preparar as planilhas cegas.
+### DL2-I — Escopo da rubrica humana (13/11/2026)
+
+Decisão do autor (resolve a nota 2 acima):
+- A rubrica cega cobre os 20 casos S+G: 20 saídas do template e 40 do Grok, 60 aplicações no total.
+- O A01 fica na checagem de política, conforme decisão anterior da DL1 (texto fixo, não é resposta do modelo).
+- Os controles R01–R04 servem apenas para medir variação/consistência, sem nota de rubrica, pois repetem S01, S05, S07 e S11 no template.
+- M01–M08 ficam na contagem de abstenções e na análise de cobertura.
+
+Motivo: incluir A01 e controles na rubrica mudaria a decisão anterior da DL1 sem ganho de informação — A01 tem texto fixo e os controles repetem casos de base no template.
+
+| Parte | Uso |
+| --- | --- |
+| 20 casos S+G | Rubrica cega: 20 do template + 40 do Grok = 60 aplicações |
+| A01 | Checagem de política, como na DL1 |
+| R01–R04 | Medida de variação e consistência, sem nota |
+| M01–M08 | Contagem de abstenções e análise de cobertura |
+
+**Planilhas cegas geradas (13/11/2026)** por `experiments/llm_v1_exp/planilhas.py`, em `experiments/llm_v1_exp/resultados/avaliacao/`, pasta fora do git:
+- `avaliador_1.csv` e `avaliador_2.csv`: as mesmas 60 aplicações, cada uma com ordem própria. Cada linha traz o contexto dado ao sistema, o texto da saída (três camadas, limites e nota, sem JSON) e as cinco notas da rubrica da DL1-I, de 0 a 5, mais um comentário;
+- `chave_cegamento.csv` (não entregar): id cego → caso, fonte e execução;
+- `instrucoes_avaliadores.md`: rubrica, escala e regras, sem citar as fontes;
+- `manifesto.json` (não entregar): escopo, contagem por fonte (20 do template e 40 do Grok), sementes do embaralhamento (20261113, 20261114 e 20261115) e SHA-256 da rodada e do template.
+- Checagens: nenhuma marca da fonte nas planilhas nem nas instruções ("grok", "template", "xai", "execução"); os testes estão em `tests/test_llm_v1_planilhas.py`.
+
+**Vazamento de cegamento por estilo (a decidir pelo autor):** o formato das datas revela a fonte. O Grok escreve as datas no formato ISO (`2014-06-17`) em 39 das 40 saídas, e o template usa `29/07/2016` em 13 das 20 e não cita data nas outras 7. **Proposta:** normalizar todas as datas para dd/mm/aaaa **só na exibição** da planilha, nas saídas das duas fontes e no contexto, sem alterar as respostas gravadas. O registro diria que a normalização é de formato, não de conteúdo, e a contagem por fonte ficaria no manifesto. A alternativa é manter o texto como está e registrar o vazamento como limitação do cegamento. Outras diferenças de estilo, como as leituras das métricas, que no template são frases fixas, não têm correção sem reescrever o texto avaliado e ficam como limitação conhecida.
+
+### DL2-I — Normalização de datas na exibição (13/11/2026)
+
+Decisão do autor:
+- Datas normalizadas para dd/mm/aaaa somente na exibição da planilha, nas duas fontes e no contexto.
+- Respostas gravadas (JSON do Grok e template congelado) permanecem intactas, com os formatos originais, para auditoria.
+- Normalização feita por função única aplicada a ambas as fontes, sem assimetria.
+
+Motivo: o Grok usa formato ISO em 39 de 40 saídas; o template usa dd/mm/aaaa. Isso revelava a fonte de forma determinística. A normalização remove o vazamento sem alterar o conteúdo avaliado.
+
+Limitação registrada: a diferença de estilo (frase fixa no template vs redação variável no Grok) permanece como limitação conhecida do cegamento, pois corrigi-la exigiria reescrever o texto avaliado.
+
+**Execução e conferências (13/11/2026):**
+- `normalizar_datas` em `experiments/llm_v1_exp/planilhas.py`: troca só datas ISO válidas (aaaa-mm-dd) por dd/mm/aaaa. A mesma função é aplicada ao contexto e às saídas das duas fontes, depois da montagem do texto.
+- Testes (`tests/test_llm_v1_planilhas.py`, 7 casos): nenhuma data ISO no contexto ou na saída de nenhuma linha; a conversão é só de formato (datas inválidas e outros números não mudam); o dicionário da resposta e o contexto não são alterados pela exibição. A suíte tem 1.258 testes, com 100% de cobertura do `core/`.
+- Planilhas regeradas: 0 datas ISO nas duas planilhas, e 0 marcas da fonte nas planilhas e nas instruções.
+- **Respostas gravadas intactas**, com o SHA-256 igual antes e depois da normalização:
+  - rodada `rodada_20261113T231816Z.jsonl`: `e0a5eafcb752d89aafcddd5bec2826391d152fcec0386e27e685f8c866c81365`;
+  - template congelado `respostas_template.json`: `960c6aef3f9c7396a0cbedd6d7a17edd3d7368fa0cc4e2e38bcbe1210784deb6`;
+  - conjunto `casos_fase1.json`: `18e5eeee22efae9459b3f99bffe932aa07b538ba4eb0bf7b8634641b5da5a5a2`.
+- **Vestígio residual, do mesmo tipo da limitação de estilo:** as 40 saídas do Grok citam datas, e 7 das 20 do template não citam. Não é sinal determinístico, porque 13 saídas do template também têm data, mas fica registrado junto da limitação de estilo.
+
+### DL2-I — Planilhas cegas prontas para entrega (13/11/2026)
+
+Aprovado pelo autor:
+- Commit do gerador da normalização, dos 7 testes de cegamento e do registro na DL2-I.
+- Planilhas prontas para entrega: avaliador_1.csv, avaliador_2.csv e instrucoes_avaliadores.md.
+- chave_cegamento.csv e manifesto.json não vão para os avaliadores.
+- Pendente: designação do terceiro avaliador (resolvedor de desacordos), conforme previsto na DL1-I.
+
+Conferências:
+- 7 testes de cegamento passam, incluindo verificação de ausência de datas ISO e de que a exibição não altera resposta ou contexto.
+- Suíte completa: 1.258 testes, core/ em 100%.
+- Hashes das respostas gravadas, do template e do conjunto permanecem iguais antes e depois da normalização.
+- Vestígio residual registrado: 7 saídas do template sem data contra 40 do Grok — sinal fraco, não certeiro. Fica junto da limitação de estilo, sem correção.
+
+Status: registrada em 13/11/2026, com autoria confirmada. Planilhas cegas prontas para entrega, a cargo do autor. Pendente: designar o terceiro avaliador.

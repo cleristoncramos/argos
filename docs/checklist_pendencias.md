@@ -549,7 +549,11 @@ Etapa 0 — revisão de escopo:
   - [x] Rodada de 66 chamadas liberada pelo autor (13/11/2026), no mesmo contador da fase (16 tentativas, US$ 0,1504 antes do disparo)
   - [x] Rodada de 66 chamadas executada (13/11/2026): 50 aprovadas; 16 bloqueadas, todas M01–M08 por falta da ressalva de amostra limitada; desfecho igual nas 2 execuções em 33 de 33 casos; contador da fase em 102 tentativas e US$ 0,8044
   - [x] Decisões para a avaliação (13/11/2026): as duas execuções entram, com veredito por consenso; M01–M08 fora da rubrica, na contagem de abstenções
-  - [ ] Confirmar o escopo da rubrica: 25 casos com A01 e R01–R04, ou 20 casos S e G (nota 2 da DL2-I)
+  - [x] Escopo da rubrica (13/11/2026): 20 casos S+G, 60 aplicações; A01 na checagem de política; R01–R04 só para a variação; M01–M08 na cobertura
+  - [x] Planilhas cegas dos 20 casos S+G geradas (60 aplicações, fora do git)
+  - [x] Datas normalizadas para dd/mm/aaaa só na exibição (13/11/2026); respostas gravadas com o hash igual antes e depois
+  - [ ] Entregar `avaliador_1.csv`, `avaliador_2.csv` e `instrucoes_avaliadores.md` aos dois avaliadores; reter a chave e o manifesto
+  - [ ] Designar o terceiro avaliador para os desacordos (DL1-I)
   - [ ] Avaliação cega com template e Grok (Gemini como alternativa registrada)
 - [ ] Em paralelo: texto da submissão (Lorena), citações dos indicadores e opções de logo
 - [ ] Arquivar a mensagem original da DL2
