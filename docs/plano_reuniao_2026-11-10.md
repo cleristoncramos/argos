@@ -274,3 +274,4 @@ Registro completo na DL2-I (`docs/pibiti/decisoes_orientador.md`). Resumo:
 4. confirmar que a chave não aparece no repositório nem no log;
 5. fazer o aquecimento em 3 casos, conferindo custo real e formato da saída;
 6. fazer as 66 chamadas da rodada.
+   
