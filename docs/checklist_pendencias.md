@@ -553,7 +553,10 @@ Etapa 0 — revisão de escopo:
   - [x] Planilhas cegas dos 20 casos S+G geradas (60 aplicações, fora do git)
   - [x] Datas normalizadas para dd/mm/aaaa só na exibição (13/11/2026); respostas gravadas com o hash igual antes e depois
   - [ ] Entregar `avaliador_1.csv`, `avaliador_2.csv` e `instrucoes_avaliadores.md` aos dois avaliadores; reter a chave e o manifesto
-  - [ ] Designar o terceiro avaliador para os desacordos (DL1-I)
+  - [x] Terceira avaliadora designada (13/11/2026): Lorrana Evelyn de Araújo Pereira, sem acesso à chave de cegamento
+  - [x] Avaliadores designados (13/11/2026): Arlino Henrique Magalhães de Araújo (`avaliador_1.csv`) e José Jeovane Reges Cordeiro (`avaliador_2.csv`); entrega em 15/11/2026
+  - [x] Cópia de segurança das planilhas, da chave e da rodada em `Documentos/argos_backup/avaliacao_fase1_20261113/`, conferida por hash
+  - [ ] Entregar as planilhas em 15/11/2026 e registrar a entrega na DL2-I
   - [ ] Avaliação cega com template e Grok (Gemini como alternativa registrada)
 - [ ] Em paralelo: texto da submissão (Lorena), citações dos indicadores e opções de logo
 - [ ] Arquivar a mensagem original da DL2

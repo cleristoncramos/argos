@@ -1357,4 +1357,29 @@ Conferências:
 - Hashes das respostas gravadas, do template e do conjunto permanecem iguais antes e depois da normalização.
 - Vestígio residual registrado: 7 saídas do template sem data contra 40 do Grok — sinal fraco, não certeiro. Fica junto da limitação de estilo, sem correção.
 
-Status: registrada em 13/11/2026, com autoria confirmada. Planilhas cegas prontas para entrega, a cargo do autor. Pendente: designar o terceiro avaliador.
+### DL2-I — Designação dos avaliadores (13/11/2026)
+
+Terceira avaliadora (resolvedora de desacordos):
+- Lorrana Evelyn de Araújo Pereira.
+- É a mesma pessoa que escreve o texto da submissão (a "Lorena" da DL2-H).
+- Independência preservada: ela não participou da construção das respostas avaliadas, nem do template nem da rodada do Grok.
+- Acesso: não recebe a chave de cegamento nem o manifesto; recebe apenas os itens em desacordo, identificados pelo id cego, após os dois avaliadores terminarem.
+
+Avaliadores 1 e 2:
+- Arlino Henrique Magalhães de Araújo.
+- José Jeovane Reges Cordeiro.
+- Data de entrega das planilhas: 15/11/2026.
+- Cada um recebe avaliador_1.csv ou avaliador_2.csv, mais instrucoes_avaliadores.md; nenhum recebe a chave de cegamento ou o manifesto.
+
+Fluxo:
+- Os dois avaliadores pontuam as 60 aplicações de forma independente.
+- Desacordos vão para a Lorrana, identificada pelo id cego.
+- Depois: kappa ponderado entre avaliadores, comparação template × Grok nos 20 casos S+G, e contagem de abstenções nos casos de média.
+
+**Notas do desenvolvedor:**
+1. **Planilha de cada avaliador:** seguindo a ordem da lista, `avaliador_1.csv` vai para Arlino Henrique Magalhães de Araújo e `avaliador_2.csv` para José Jeovane Reges Cordeiro. As duas têm as mesmas 60 aplicações, em ordens diferentes.
+2. **Limitação registrada:** o avaliador 1 é o orientador, que definiu o protocolo e acompanhou as decisões da fase 1, inclusive o desenho do template. Ele não escreveu nenhuma das saídas e não tem acesso à chave, então o cegamento se mantém. Mas a familiaridade com o desenho do template pode facilitar o reconhecimento pelo estilo. Fica registrada junto da limitação de estilo, para a discussão dos resultados.
+3. **Cópia de segurança (13/11/2026):** a pasta `experiments/llm_v1_exp/resultados/avaliacao/` e o arquivo bruto da rodada (`rodada_20261113T231816Z.jsonl`) foram copiados para `Documentos/argos_backup/avaliacao_fase1_20261113/`, fora do repositório. São 6 arquivos, e o SHA-256 de cada um confere com o do original.
+4. **Pendente:** registrar a entrega das planilhas em 15/11/2026.
+
+Status: registrada em 13/11/2026, com autoria confirmada. Avaliadores designados e cópia de segurança feita. Entrega das planilhas prevista para 15/11/2026.
