@@ -1,12 +1,9 @@
 # Plano de implantação: orientações da reunião de 10/11/2026
 
 **Origem:**
-- transcrição automática da reunião de 10/11/2026 com o Prof. Arlino (arquivo `Argos - 10-11-2026.docx`, fora do repositório);
-- mensagens do orientador por WhatsApp em 11/11 e 13/11/2026, anexadas ao mesmo arquivo.
-
+- Reunião de 10/11/2026 com o Prof. Arlino;
+  
 **Situação:** plano **aprovado** pelo orientador na DL2 (13/11/2026), com os seis conflitos resolvidos (seção 5) · etapas 1 e 2 concluídas (seção 6) · etapa 3 concluída (seção 7) · eventos históricos antecipados da etapa 5 (seção 8) · etapa 4 concluída (seção 9) · etapa 5 concluída (seção 10) · **etapa 6 em preparação** (seção 11)
-
-> **Sobre a transcrição.** O reconhecimento automático trocou vários termos: "Grock" e "Glock" são o **Grok**; "LNM" e "LLMM" são **LLM**; "Lorana" é a **Lorena**. Num trecho, o orientador diz que a ferramenta "é determinística", mas o contexto deixa claro que ele quis dizer **não determinística**. As orientações abaixo seguem o sentido evidente da conversa; onde houve dúvida, o item está marcado "a confirmar".
 
 ---
 
