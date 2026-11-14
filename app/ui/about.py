@@ -150,18 +150,48 @@ def build_hero_html(stats: Mapping[str, int]) -> str:
 </div>"""
 
 
+# Origem do nome (DL2-B; revisto em 13/11/2026 para contar a viagem de Jasão). A analogia segue as
+# regras da plataforma: o velocino é o entendimento dos dados, não um lucro, e o histórico descreve
+# o caminho percorrido, sem prever o próximo trecho.
 NAME_ORIGIN = (
-    "Na mitologia grega, Argos Panoptes era um gigante de cem olhos encarregado de vigiar. "
-    "Como parte dos olhos ficava sempre aberta, nada escapava à sua observação. O nome resume "
-    "a proposta da plataforma: observar com atenção, ao mesmo tempo, muitos ativos, indicadores "
-    "e períodos, e apontar nos dados o que merece cuidado antes de qualquer interpretação."
+    "Na mitologia grega, Jasão recebeu a missão de buscar o velocino de ouro, a lã de um carneiro "
+    "alado guardada na Cólquida, no extremo do mundo conhecido, por um dragão que nunca dormia. Para "
+    "a viagem, o construtor Argos ergueu, com a ajuda da deusa Atena, o navio que levou o seu nome: o "
+    "Argo. Na proa ia uma peça de madeira do carvalho sagrado de Dodona, capaz de falar e orientar a "
+    "tripulação. Jasão reuniu os argonautas, heróis de talentos diferentes: Héracles, a força; Orfeu, "
+    "a música que acalmava o mar e venceu o canto das sereias; Linceu, a visão que alcançava o que os "
+    "outros não viam; os irmãos Zetes e Calais, que voavam. No caminho, enfrentaram tempestades e as "
+    "Simplégades, rochas que se fechavam sobre os navios."
+)
+
+NAME_ANALOGIES = (
+    ("O navio",
+     "O Argos é a embarcação: reúne dados de vários mercados e os organiza em gráficos, indicadores e "
+     "explicações. Como a proa do Argo, ele fala com quem navega, mas descreve o caminho já percorrido; "
+     "não prevê o próximo trecho."),
+    ("A tripulação",
+     "Cada classe de ativo tem um comportamento próprio, como cada argonauta tinha um talento: "
+     "criptomoedas oscilam mais e são negociadas todos os dias; ações e FIIs acompanham empresas e "
+     "imóveis; commodities seguem matérias-primas; índices e renda fixa servem de referência. Ler cada "
+     "um exige atenção ao que ele é."),
+    ("O mar",
+     "As tempestades e as rochas são as crises, as quedas e os períodos de volatilidade que o histórico "
+     "registra. O Argos mostra quando aconteceram, quanto mediram e quanto duraram, para que sejam "
+     "estudados, sem dizer que vão se repetir nem que podem ser evitados."),
+    ("O velocino",
+     "Aqui, o tesouro não é um lucro: nenhum dado histórico oferece garantia de resultado. O velocino "
+     "da plataforma é o entendimento: saber ler o que os números mostram e reconhecer o que eles não "
+     "permitem concluir."),
 )
 
 
 def build_name_html() -> str:
-    """Origem do nome Argos (reunião de 10/11/2026, DL2-B)."""
-    body = f'<div class="ab-cards"><div class="ab-card"><p>{escape(NAME_ORIGIN)}</p></div></div>'
-    return _section("Sobre o nome", "Por que Argos", body)
+    """Origem do nome Argos: a viagem de Jasão no navio Argo (DL2-B; revisto em 13/11/2026)."""
+    story = f'<div class="ab-cards"><div class="ab-card"><h3>A viagem do Argo</h3><p>{escape(NAME_ORIGIN)}</p></div></div>'
+    cards = "".join(
+        f'<div class="ab-card"><h3>{escape(title)}</h3><p>{escape(text)}</p></div>' for title, text in NAME_ANALOGIES
+    )
+    return _section("Sobre o nome", "Por que Argos", story + f'<div class="ab-cards ab-cards-2">{cards}</div>')
 
 
 def build_context_html() -> str:
@@ -308,6 +338,7 @@ ABOUT_CSS = """
 .ab-sub { margin: 22px 0 10px !important; padding: 0 !important; font-size: 1.05rem !important; color: #111; }
 .ab-cards { display: grid; gap: 14px; margin-top: 14px; }
 .ab-cards-3 { grid-template-columns: repeat(3, 1fr); }
+.ab-cards-2 { grid-template-columns: repeat(2, 1fr); }
 .ab-card { padding: 18px 20px; background: #fff; border: 1px solid #2a2a2a; border-top: 3px solid #c8102e;
   box-shadow: 0 8px 22px rgba(17,17,17,.07); }
 .ab-card h3 { margin: 0 0 8px !important; padding: 0 !important; font-size: 1.02rem !important; font-weight: 750 !important; color: #111; }
@@ -337,7 +368,7 @@ ABOUT_CSS = """
 .ab-disclaimer { margin-top: 44px; padding: 16px 20px; border: 1px solid #2a2a2a; border-left: 4px solid #92400e;
   background: #fffbeb; color: #3f3f3f; font-size: .92rem; line-height: 1.6; }
 @media (max-width: 900px) {
-  .ab-cards-3 { grid-template-columns: 1fr; }
+  .ab-cards-3, .ab-cards-2 { grid-template-columns: 1fr; }
   .ab-facts { grid-template-columns: repeat(2, 1fr); }
   .ab-kv tbody th { width: 120px; }
 }

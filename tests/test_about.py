@@ -71,7 +71,16 @@ def test_about_css_has_no_rounded_corners():
 
 
 def test_origem_do_nome_argos():
-    from app.ui.about import NAME_ORIGIN, build_name_html
-    assert "Argos Panoptes" in NAME_ORIGIN and "cem olhos" in NAME_ORIGIN
+    from app.ui.about import NAME_ANALOGIES, NAME_ORIGIN, build_name_html
+    from core.disclaimers import contains_forbidden_phrase
+    for termo in ("Jasão", "velocino de ouro", "Argo", "argonautas", "Atena", "Cólquida"):
+        assert termo in NAME_ORIGIN, termo
+    assert [t for t, _ in NAME_ANALOGIES] == ["O navio", "A tripulação", "O mar", "O velocino"]
     html = build_name_html()
-    assert "Por que Argos" in html and "Panoptes" in html
+    assert "Por que Argos" in html and "A viagem do Argo" in html and "ab-cards-2" in html
+    # A analogia segue as regras da plataforma: sem promessa de lucro e sem previsão.
+    velocino = dict(NAME_ANALOGIES)["O velocino"]
+    assert "não é um lucro" in velocino and "nenhum dado histórico oferece garantia" in velocino
+    assert "não prevê" in dict(NAME_ANALOGIES)["O navio"]
+    for texto in (NAME_ORIGIN, *dict(NAME_ANALOGIES).values()):
+        assert contains_forbidden_phrase(texto) is None
