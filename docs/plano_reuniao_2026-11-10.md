@@ -56,7 +56,7 @@ Na coluna "Hoje no Argos", ✔ indica que já existe, ◐ que existe em parte e 
 | # | Orientação | Origem | O que fazer |
 | --- | --- | --- | --- |
 | E1 | Na apresentação e no texto, não explicar todos os resultados: escolher **um exemplo** significativo (por exemplo, Bitcoin), explicá-lo bem e citar o resto rapidamente, de forma didática. Resumir as funcionalidades em cerca de dois parágrafos e dizer que cada gráfico ou tabela terá explicação por LLM | Reunião | Roteiro do texto e da demonstração com um exemplo-âncora |
-| E2 | A Lorena fica com a escrita do texto do trabalho, para a submissão "entre os melhores" (que vai para banca), separado do relatório final, e com o nome dela no texto | Reunião | Combinar com a Lorena o roteiro, o exemplo-âncora e a limitação de não determinismo (C2) |
+| E2 | A Lorrana fica com a escrita do texto do trabalho, para a submissão "entre os melhores" (que vai para banca), separado do relatório final, e com o nome dela no texto | Reunião | Combinar com a Lorena o roteiro, o exemplo-âncora e a limitação de não determinismo (C2) |
 | E3 | Ler os artigos indicados. A revisão do Giovanni tem citações para cada indicador técnico. Cobrar do professor os dois artigos que ele ainda vai enviar | Reunião | Separar as citações por indicador para o texto |
 | E4 | Relatório parcial: acompanhar a data de abertura no SIGAA, porque perder o prazo pode custar a bolsa | Reunião | Lembrete no checklist e conferência periódica no SIGAA e no e-mail |
 
