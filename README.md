@@ -190,9 +190,9 @@ Os textos educativos acompanham cada análise e podem ser desligados para a cond
 
 Os gráficos de preço e de volatilidade da Análise Individual marcam, como linhas pontilhadas, acontecimentos que mexeram com o mercado no período carregado. Ao passar o mouse, aparecem o título, a data, a descrição e a fonte do evento.
 
-- **Base do sistema:** [`data/eventos_historicos.csv`](data/eventos_historicos.csv), com **39 eventos de 2016 a 2026**. **Todo evento tem fonte e endereço**, conferidos, com preferência por fontes oficiais ou públicas (TSE, Agência Senado, Agência Brasil, Anvisa, OMS e OPAS, Nações Unidas, Federal Reserve, FDIC, entre outras).
+- **Base do sistema:** [`data/eventos_historicos.csv`](data/eventos_historicos.csv), com **40 eventos de 2016 a 2026**. **Todo evento tem fonte e endereço**, conferidos, com preferência por fontes oficiais ou públicas (TSE, Agência Senado, Agência Brasil, Anvisa, OMS e OPAS, Nações Unidas, Federal Reserve, FDIC, entre outras).
 - **Categorias**, que ligam e desligam pela legenda e pelo filtro: Mercado e crises, Saúde, Política, Mundo e **Do ativo**.
-- **Eventos de um ativo:** a categoria "Do ativo" só aparece na análise dos ativos indicados na coluna `ativos` (por exemplo, Brumadinho para VALE3.SA, a falência da FTX para BTC-USD e ETH-USD, e o DeepSeek e o caso de espionagem para NVDA).
+- **Eventos de um ativo:** a categoria "Do ativo" só aparece na análise dos ativos indicados na coluna `ativos` (por exemplo, Brumadinho para VALE3.SA, a falência da FTX para BTC-USD e ETH-USD, a lei marcial na Coreia do Sul para TRX-USD, e o DeepSeek e o caso de espionagem para NVDA).
 - **Quadro "Eventos no período e fontes":** lista os eventos do período com o link de cada fonte.
 - **Eventos do usuário:** o botão "Adicionar evento próprio" inclui eventos na sessão do navegador, que podem ser baixados em CSV e carregados de novo numa próxima visita.
 - **Contexto, não causa:** a tela avisa que as linhas não indicam que o evento causou a variação do ativo.

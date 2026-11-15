@@ -27,13 +27,13 @@ from core.historical_events import (
 )
 
 
-def test_base_do_sistema_tem_39_eventos_com_fonte():
+def test_base_do_sistema_tem_40_eventos_com_fonte():
     events = load_events()
-    assert len(events) == 39
+    assert len(events) == 40
     assert events["data"].min() == pd.Timestamp("2016-06-23")
     assert events["data"].max() == pd.Timestamp("2026-11-12")
     assert events["categoria"].value_counts().to_dict() == {
-        "Política": 9, "Do ativo": 9, "Mundo": 8, "Mercado e crises": 8, "Saúde": 5,
+        "Política": 9, "Do ativo": 10, "Mundo": 8, "Mercado e crises": 8, "Saúde": 5,
     }
     assert available_categories(events) == ["Mercado e crises", "Saúde", "Política", "Mundo", ASSET_CATEGORY]
     circuit = events[events["titulo"].str.contains("Circuit breaker")]
@@ -62,6 +62,8 @@ def test_eventos_por_ativo():
     assert ASSET_CATEGORY not in set(sem_ativo["categoria"]) and len(sem_ativo) == 30
     cripto = filter_events(events, todos, *period, ticker="ETH-USD")
     assert list(cripto[cripto["categoria"] == ASSET_CATEGORY]["titulo"]) == ["Falência da FTX"]
+    tron = filter_events(events, todos, *period, ticker="TRX-USD")
+    assert list(tron[tron["categoria"] == ASSET_CATEGORY]["titulo"]) == ["Lei marcial na Coreia do Sul"]
 
 
 def test_arquivo_ausente_devolve_base_vazia(tmp_path):
@@ -77,7 +79,7 @@ def test_eventos_do_usuario_e_combinacao():
 
     assert combine_events(empty_events(), empty_events()).empty
     both = combine_events(load_events(), mine)
-    assert len(both) == 40 and available_categories(both)[-1] == USER_CATEGORY
+    assert len(both) == 41 and available_categories(both)[-1] == USER_CATEGORY
     assert mine.iloc[0]["fonte"] == "" and mine.iloc[0]["ativos"] == ""
     assert pd.api.types.is_datetime64_any_dtype(combine_events(empty_events(), mine)["data"])
 
