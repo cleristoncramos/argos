@@ -2,8 +2,8 @@
 Catálogo em uso e preferências da página Configurações (etapa 4 da DL2).
 
 Junta o catálogo base com a camada local (core/local_catalog.py) quando a edição
-está ligada, e guarda a referência padrão (B1): na sessão do navegador e, na
-instalação local, também no SQLite.
+está ligada, e guarda a referência padrão (B1) e os padrões da análise: na sessão
+do navegador e, na instalação local, também no SQLite.
 """
 
 from __future__ import annotations
@@ -15,8 +15,18 @@ import streamlit as st
 from core.assets import ASSETS
 from core.demo_mode import catalog_assets
 from core.local_catalog import REFERENCE_SETTING, LocalCatalog, db_path, editable_enabled, local_group_labels
+from core.settings_info import (
+    FREQUENCY_SETTING,
+    PERIOD_SETTING,
+    RISK_FREE_SETTING,
+    AnalysisDefaults,
+    defaults_from_settings,
+    settings_from_defaults,
+)
 
 REFERENCE_KEY = "referencia_padrao"
+DEFAULTS_KEY = "padroes_analise"
+SETTING_KEYS = (PERIOD_SETTING, FREQUENCY_SETTING, RISK_FREE_SETTING)
 
 
 @st.cache_resource(show_spinner=False)
@@ -66,3 +76,20 @@ def set_preferred_reference(ticker: Optional[str]) -> None:
     local = local_catalog()
     if local:
         local.set_setting(REFERENCE_SETTING, ticker)
+
+
+def analysis_defaults() -> AnalysisDefaults:
+    """Período, frequência e taxa livre de risco padrão (Configurações)."""
+    if DEFAULTS_KEY not in st.session_state:
+        local = local_catalog()
+        settings = {key: local.get_setting(key) for key in SETTING_KEYS} if local else {}
+        st.session_state[DEFAULTS_KEY] = defaults_from_settings(settings)
+    return st.session_state[DEFAULTS_KEY]
+
+
+def set_analysis_defaults(defaults: AnalysisDefaults) -> None:
+    st.session_state[DEFAULTS_KEY] = defaults
+    local = local_catalog()
+    if local:
+        for key, value in settings_from_defaults(defaults).items():
+            local.set_setting(key, value)

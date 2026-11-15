@@ -8,7 +8,8 @@ Catálogo editável e preferências da página Configurações (etapa 4 da DL2).
   demonstração está desligado. Na versão pública a variável não existe, e o catálogo
   é fixo e somente leitura.
 - O ticker é validado na fonte antes de ser salvo (mesma regra do "Digitar ticker").
-- A mesma base guarda a referência padrão (B1) da instalação local.
+- A mesma base guarda as preferências da instalação local: a referência padrão (B1)
+  e os padrões da análise (período, frequência e taxa livre de risco).
 
 Sem Streamlit: o acesso à fonte de dados é recebido como função.
 """
@@ -155,6 +156,35 @@ class LocalCatalog:
 
     def remove_asset(self, ticker: str) -> None:
         self._execute("DELETE FROM ativos WHERE ticker = ?", (ticker,))
+
+    def update_asset(self, ticker: str, name: str, group: str) -> None:
+        """Muda o nome exibido e o grupo de um ativo seu (o ticker não muda)."""
+        if not self._query("SELECT 1 FROM ativos WHERE ticker = ?", (ticker,)):
+            raise CatalogError(f"{ticker} não está no seu catálogo.")
+        if self.group_class(group) is None:
+            raise CatalogError("Escolha um grupo existente.")
+        self._execute(
+            "UPDATE ativos SET nome = ?, grupo = ? WHERE ticker = ?",
+            ((name or "").strip() or ticker, group, ticker),
+        )
+
+    def clear_entries(self) -> None:
+        """Apaga os grupos e ativos acrescentados; as preferências continuam."""
+        with closing(self._connect()) as db, db:
+            db.execute("DELETE FROM ativos")
+            db.execute("DELETE FROM grupos")
+
+    # ------------------------------------------------------------ arquivo
+    def table_counts(self) -> dict[str, int]:
+        return {
+            table: self._query(f"SELECT COUNT(*) FROM {table}")[0][0]
+            for table in ("grupos", "ativos", "preferencias")
+        }
+
+    def snapshot(self) -> bytes:
+        """Cópia completa e consistente do banco, para baixar como cópia de segurança."""
+        with closing(self._connect()) as db:
+            return db.serialize()
 
     def records(self) -> list[dict]:
         """Ativos locais no formato do catálogo base (core/assets.py)."""

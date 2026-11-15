@@ -21,6 +21,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.catalog_state import analysis_defaults
 from app.ui.page_header import render_page_header
 from app.ui.charts import apply_custom_layout
 from app.ui.chart_guide import render_chart_guide
@@ -137,7 +138,8 @@ st.set_page_config(
 initialize_asset_state()
 
 if RISK_FREE_RATE_STATE_KEY not in st.session_state:
-    st.session_state[RISK_FREE_RATE_STATE_KEY] = 0.0
+    # Valor inicial: a taxa padrão escolhida em Configurações (0% se nenhuma).
+    st.session_state[RISK_FREE_RATE_STATE_KEY] = float(analysis_defaults().risk_free_pct)
 
 if RISK_FREE_RATE_WIDGET_KEY not in st.session_state:
     st.session_state[RISK_FREE_RATE_WIDGET_KEY] = float(
@@ -704,4 +706,4 @@ render_catalog_notice()
 # =====================
 # Rodapé
 # =====================
-render_footer_disclaimer()
+render_footer_disclaimer()

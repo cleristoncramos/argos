@@ -165,8 +165,16 @@ O menu principal tem oito páginas: seis módulos de análise, a página Configu
 
 ### Configurações
 
-- **Referência de comparação padrão:** automática pela classe do ativo (o padrão), uma das quatro referências fixas, qualquer ativo do catálogo ou um ticker digitado, conferido na fonte. Na versão pública, a escolha vale até fechar o navegador; numa instalação local com o catálogo editável, fica salva.
-- **Catálogo de ativos:** na versão pública, fixo e somente leitura, com a lista de grupos e quantidades. Numa **instalação local**, com `ARGOS_CATALOGO_EDITAVEL=on`, é possível criar grupos e acrescentar ativos, sempre conferidos na fonte antes de salvar. Os acréscimos ficam numa camada em SQLite por cima do catálogo base, que não muda, e aparecem na barra lateral e na Comparação de Ativos.
+Organizada em quatro abas:
+
+- **Padrões da análise:**
+  - **referência de comparação padrão:** automática pela classe do ativo (o padrão), uma das quatro referências fixas, qualquer ativo do catálogo ou um ticker digitado, conferido na fonte;
+  - **período, frequência e taxa livre de risco padrão**, com que a barra lateral e os módulos Risco e Retorno e Comparação de Ativos abrem. Uma análise já carregada mantém a escolha feita na barra lateral, e o botão "Voltar aos padrões do Argos" restaura 5 anos, mensal e 0%.
+- **Catálogo de ativos:** resumo por grupo e **consulta** de todos os ativos, por grupo ou por busca de ticker ou nome. Na versão pública, o catálogo é fixo e somente leitura. Numa **instalação local** com `ARGOS_CATALOGO_EDITAVEL=on`, é possível criar grupos, acrescentar ativos (sempre conferidos na fonte antes de salvar), editar o nome e o grupo de um ativo, removê-lo e baixar os seus ativos em CSV.
+- **Instalação local e SQLite:** passo a passo para ligar a edição (PowerShell, Prompt de Comando, macOS e Linux) e explicação do arquivo SQLite: onde fica, quando é criado, as três tabelas (`grupos`, `ativos` e `preferencias`), como fazer cópia de segurança, levar para outro computador ou recomeçar do zero. Com a edição ligada, mostra o caminho, o tamanho e a última alteração do arquivo, o número de linhas por tabela, um botão para baixar a cópia de segurança e outro para apagar os grupos e ativos acrescentados, com confirmação.
+- **Ambiente:** o valor lido e o efeito de cada variável de ambiente do Argos nesta execução. Chaves de API não aparecem.
+
+Na versão pública, as escolhas valem até fechar o navegador. Numa instalação local com o catálogo editável, ficam salvas no arquivo SQLite.
 
 ### Sobre o Projeto
 

@@ -90,6 +90,23 @@ def test_ativos_validados_antes_de_salvar(cat):
     assert cat.groups() == [] and [a["ticker"] for a in cat.assets()] == ["EMBR3.SA"]
 
 
+def test_editar_e_apagar_ativos(cat):
+    key = cat.add_group("Tecnologia", "Ação")
+    cat.add_asset("AMD", "AMD", key, _ok)
+    cat.set_setting(REFERENCE_SETTING, "^GSPC")
+    cat.update_asset("AMD", "  Advanced Micro Devices ", "us_stocks")
+    assert cat.assets() == [{"ticker": "AMD", "name": "Advanced Micro Devices", "group": "us_stocks"}]
+    cat.update_asset("AMD", "", key)                     # nome vazio volta a ser o ticker
+    assert cat.assets()[0] == {"ticker": "AMD", "name": "AMD", "group": key}
+    with pytest.raises(CatalogError, match="não está no seu catálogo"):
+        cat.update_asset("NVDA", "x", key)
+    with pytest.raises(CatalogError, match="grupo existente"):
+        cat.update_asset("AMD", "x", "nao_existe")
+    assert cat.table_counts() == {"grupos": 1, "ativos": 1, "preferencias": 1}
+    cat.clear_entries()
+    assert cat.table_counts() == {"grupos": 0, "ativos": 0, "preferencias": 1}   # preferências ficam
+
+
 def test_registros_no_formato_do_catalogo(cat):
     key = cat.add_group("Tecnologia", "Ação")
     cat.add_asset("AMD", "AMD", key, _ok)
@@ -151,7 +168,10 @@ def test_pagina_publica_mostra_catalogo_somente_leitura(monkeypatch):
     at.run()
     assert not at.exception, [e.message for e in at.exception]
     assert any("fixo e somente leitura" in i.value for i in at.info)
-    assert not at.get("form")
+    # Só o formulário dos padrões da análise: nada de edição do catálogo.
+    assert len(at.get("form")) == 1
+    assert not any(b.label in ("Acrescentar", "Criar grupo") for b in at.button)
+    assert any("ARGOS_CATALOGO_EDITAVEL" in c.value for c in at.code)
     at.selectbox(key="config_referencia").set_value("^GSPC")
     at.button[0].click().run()
     assert at.session_state["referencia_padrao"] == "^GSPC"
@@ -165,7 +185,7 @@ def test_pagina_local_cria_grupo_e_salva_referencia(monkeypatch, tmp_path):
     at = _settings_page()
     at.run()
     assert not at.exception, [e.message for e in at.exception]
-    assert not at.info and len(at.get("form")) == 2
+    assert len(at.get("form")) == 3
     at.text_input[-1].set_value("Tecnologia")
     at.get("form")  # garante que os formulários foram desenhados
     next(b for b in at.button if b.label == "Criar grupo").click().run()
@@ -176,3 +196,54 @@ def test_pagina_local_cria_grupo_e_salva_referencia(monkeypatch, tmp_path):
     at.selectbox(key="config_referencia").set_value("BTC-USD")
     next(b for b in at.button if b.label == "Salvar referência").click().run()
     assert LocalCatalog(tmp_path / "catalogo.sqlite").get_setting(REFERENCE_SETTING) == "BTC-USD"
+
+
+def test_pagina_local_padroes_consulta_e_arquivo(monkeypatch, tmp_path):
+    from core.settings_info import FREQUENCY_SETTING, PERIOD_SETTING, RISK_FREE_SETTING
+
+    monkeypatch.setenv(ENV_VAR, "on")
+    monkeypatch.delenv("ARGOS_DEMO_MODE", raising=False)
+    path = tmp_path / "catalogo.sqlite"
+    monkeypatch.setenv("ARGOS_CATALOGO_ARQUIVO", str(path))
+    base = LocalCatalog(path, base_assets=ASSETS)
+    key = base.add_group("Tecnologia", "Ação")
+    base.add_asset("AMD", "AMD", key, _ok)
+
+    at = _settings_page()
+    at.run()
+    assert not at.exception, [e.message for e in at.exception]
+    assert any(m.label == "Ativos acrescentados" and m.value == "1" for m in at.metric)
+
+    # Padrões da análise gravados no SQLite.
+    at.selectbox[1].set_value("10 anos")
+    at.selectbox[2].set_value("Diário")
+    at.number_input[0].set_value(10.5)
+    next(b for b in at.button if b.label == "Salvar padrões").click().run()
+    assert not at.exception, [e.message for e in at.exception]
+    saved = LocalCatalog(path)
+    assert saved.get_setting(PERIOD_SETTING) == "10 anos" and saved.get_setting(FREQUENCY_SETTING) == "Diário"
+    assert saved.get_setting(RISK_FREE_SETTING) == "10.5"
+    assert any("Padrões da análise salvos" in s.value for s in at.success)
+    # Análises ainda não consultadas passam a abrir com os novos padrões.
+    assert at.session_state["asset_period"] == "10 anos" and at.session_state["asset_frequency"] == "Diário"
+    assert at.session_state["comparison_risk_free_rate_pct"] == 10.5
+    next(b for b in at.button if b.label == "Voltar aos padrões do Argos").click().run()
+    assert LocalCatalog(path).get_setting(PERIOD_SETTING) is None
+
+    # Consulta do catálogo: busca pelo ativo acrescentado.
+    at.text_input(key="config_consulta_busca").set_value("amd").run()
+    assert any("1 ativo(s) encontrado(s)" in c.value for c in at.caption)
+
+    # Edição do ativo e remoção.
+    next(b for b in at.button if b.label == "Salvar alterações").click().run()
+    assert any("AMD atualizado" in s.value for s in at.success)
+    next(b for b in at.button if b.label == "Remover do catálogo").click().run()
+    assert LocalCatalog(path).assets() == []
+
+    # Apagar exige a confirmação.
+    apagar = next(b for b in at.button if b.label == "Apagar grupos e ativos acrescentados")
+    assert apagar.disabled
+    at.checkbox(key="config_confirma_apagar").check().run()
+    next(b for b in at.button if b.label == "Apagar grupos e ativos acrescentados").click().run()
+    assert not at.exception, [e.message for e in at.exception]
+    assert LocalCatalog(path).groups() == []
