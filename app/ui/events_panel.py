@@ -12,6 +12,7 @@ import streamlit as st
 
 from core.historical_events import (
     CSV_FORMAT_ERROR,
+    EVENTS_FILE,
     EVENTS_NOTE,
     applies_to,
     available_categories,
@@ -33,8 +34,19 @@ SELECT_ALL_KEY = "eventos_marcar_todas"
 
 
 @st.cache_data(show_spinner=False)
-def _base_events() -> pd.DataFrame:
+def _cached_events(version: tuple[int, int]) -> pd.DataFrame:
     return load_events()
+
+
+def _base_events() -> pd.DataFrame:
+    # O cache do Streamlit só se renova quando o código muda, não o CSV. A data e o
+    # tamanho do arquivo entram na chave para que um evento novo apareça após o deploy.
+    try:
+        info = EVENTS_FILE.stat()
+        version = (info.st_mtime_ns, info.st_size)
+    except OSError:
+        version = (0, 0)
+    return _cached_events(version)
 
 
 def _user_events() -> pd.DataFrame:
