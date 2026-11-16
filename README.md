@@ -114,6 +114,7 @@ O menu principal tem oito páginas: seis módulos de análise, a página Configu
 ### Análise Individual
 
 - Cartão do ativo ao lado do resumo de disponibilidade (período solicitado × disponível, destacado em vermelho quando o histórico é menor que o pedido) e dos **alertas de qualidade dos dados**: mudança de patamar que se desfaz em poucos dias, variações diárias atípicas, preço sem variação, dias sem volume, intervalos sem dados e histórico curto. Os alertas indicam o que merece atenção, sem afirmar erro.
+- **Sobre o ativo:** quadro recolhido, logo abaixo do resumo, com um texto sobre cada um dos 148 ativos do catálogo (o que é, origem e história, o que observar no histórico e fontes) e números do período carregado: última cotação, mínima e máxima em 12 meses, variação em 12 meses e, para ativos com preço, uma aplicação hipotética de 1.000 há 12 meses. É descritivo: não traz preço justo, preço-teto nem indicação de compra.
 - Visão geral: primeiro e último valor, retorno total e número de observações.
 - **Variação por prazo** (1, 3 e 6 meses, neste ano, 1, 2, 3, 5 e 10 anos), com as datas usadas, a variação acumulada e a taxa equivalente ao ano, e um rodapé com os termos da tabela explicados em linguagem simples.
 - **Evolução temporal** do preço com os **eventos históricos** marcados como linhas pontilhadas (ver [Eventos históricos](#eventos-históricos)).
@@ -191,6 +192,7 @@ Os textos educativos acompanham cada análise e podem ser desligados para a cond
 - **Dicas de leitura** curtas, sempre visíveis, embaixo dos gráficos de sazonalidade.
 - **"O que significa?"** e **glossário** com os termos de cada página.
 - **Rodapé de termos** da tabela de variação por prazo.
+- **Sobre o ativo:** textos de [`data/perfis_ativos/`](data/perfis_ativos), um arquivo por grupo, com fonte em todos.
 - **Avisos obrigatórios:** natureza histórica dos dados, ausência de recomendação, premissas da simulação e o aviso de que o padrão histórico não garante repetição.
 
 ---

@@ -1,0 +1,194 @@
+{
+  "ASML": {
+    "sobre": [
+      "A ASML, empresa holandesa, fabrica as máquinas de litografia que gravam os circuitos nos chips. É a única fornecedora de máquinas de litografia por luz ultravioleta extrema (EUV), necessárias para produzir os chips mais avançados.",
+      "Os clientes são os grandes fabricantes de semicondutores, como TSMC, Samsung e Intel."
+    ],
+    "historia": [
+      "Foi fundada em 1984, como uma empresa conjunta da Philips com a ASM International, em Veldhoven, na Holanda.",
+      "Depois de décadas de desenvolvimento, as primeiras máquinas EUV para produção em escala foram entregues na década de 2010. Restrições de exportação para a China passaram a afetar as vendas a partir de 2023."
+    ],
+    "observar": "O ticker ASML usado aqui é o da bolsa Nasdaq, em dólar. O setor de semicondutores é cíclico, e a política comercial entre Estados Unidos, Europa e China pesa no histórico.",
+    "fontes": [["ASML, Investors", "https://www.asml.com/en/investors"]]
+  },
+  "SAP": {
+    "sobre": [
+      "A SAP, empresa alemã, é uma das maiores fabricantes de software do mundo e líder em sistemas de gestão empresarial (ERP), usados para controlar finanças, compras, produção e pessoal.",
+      "Nos últimos anos, migrou boa parte dos clientes para o modelo de assinatura na nuvem."
+    ],
+    "historia": [
+      "Foi fundada em 1972, em Weinheim, por cinco ex-funcionários da IBM, entre eles Dietmar Hopp e Hasso Plattner. A sede fica em Walldorf, na Alemanha.",
+      "O sistema R/3, lançado em 1992, levou a empresa a se tornar padrão em grandes corporações."
+    ],
+    "observar": "O ticker SAP usado aqui é o recibo negociado na bolsa de Nova York, em dólar, e por isso inclui a variação entre euro e dólar.",
+    "fontes": [["SAP, Investor Relations", "https://www.sap.com/investors/en.html"]]
+  },
+  "NESN.SW": {
+    "sobre": [
+      "A Nestlé, com sede em Vevey, na Suíça, é a maior empresa de alimentos e bebidas do mundo, com marcas como Nescafé, Nespresso, KitKat, Ninho, Maggi e rações Purina.",
+      "Vende em quase todos os países e tem forte presença no Brasil."
+    ],
+    "historia": [
+      "A empresa resulta da união, em 1905, de duas empresas suíças: a Anglo-Swiss Condensed Milk Company, de 1866, e a fabricante da farinha láctea criada por Henri Nestlé em 1867.",
+      "Ao longo do século XX, cresceu com aquisições e com o lançamento de produtos como o Nescafé, em 1938."
+    ],
+    "observar": "Cotada em francos suíços (CHF). Ação de perfil defensivo, com oscilações menores que a média do mercado.",
+    "fontes": [["Nestlé, Investors", "https://www.nestle.com/investors"]]
+  },
+  "MC.PA": {
+    "sobre": [
+      "A LVMH é o maior grupo de artigos de luxo do mundo, com dezenas de marcas (as maisons) em moda e couro, vinhos e destilados, perfumes, joias e relógios e varejo seletivo.",
+      "Entre as marcas estão Louis Vuitton, Dior, Moët & Chandon, Hennessy, Tiffany & Co., Bulgari e Sephora."
+    ],
+    "historia": [
+      "Foi formada em 1987, com a fusão da Louis Vuitton, de 1854, com a Moët Hennessy, que já reunia as casas de champanhe Moët & Chandon e de conhaque Hennessy.",
+      "Bernard Arnault assumiu o controle em 1989. Em 2021, o grupo comprou a joalheria Tiffany & Co."
+    ],
+    "observar": "Cotada em euros. A demanda de consumidores chineses por artigos de luxo é um fator importante no histórico recente.",
+    "fontes": [["LVMH, Investors", "https://www.lvmh.com/investors"]]
+  },
+  "SHEL": {
+    "sobre": [
+      "A Shell é uma das maiores empresas de petróleo e gás do mundo, com destaque em gás natural liquefeito (GNL), além de exploração, refino, comercialização de combustíveis e energias de baixo carbono.",
+      "Tem operações relevantes no Brasil, inclusive em campos do pré-sal."
+    ],
+    "historia": [
+      "Nasceu em 1907, da aliança entre a holandesa Royal Dutch Petroleum e a britânica Shell Transport and Trading. As duas foram unificadas em uma só empresa em 2005.",
+      "Em 2022, transferiu a sede para Londres e deixou de usar Royal Dutch no nome."
+    ],
+    "observar": "O ticker SHEL usado aqui é o recibo negociado em Nova York, em dólar. O preço do petróleo e do gás é o principal fator do histórico.",
+    "fontes": [["Shell, Investors", "https://www.shell.com/investors.html"]]
+  },
+  "NOVO-B.CO": {
+    "sobre": [
+      "A Novo Nordisk, empresa dinamarquesa, é líder mundial em tratamentos para diabetes, com insulinas e medicamentos da classe dos agonistas de GLP-1, como Ozempic e Wegovy, este voltado à obesidade.",
+      "Atua também em doenças raras do sangue e hormonais."
+    ],
+    "historia": [
+      "Resulta da fusão, em 1989, de duas empresas dinamarquesas de insulina fundadas na década de 1920: a Nordisk Insulinlaboratorium e a Novo.",
+      "O sucesso do Ozempic e do Wegovy fez dela a empresa mais valiosa da Europa por um período. A partir de 2024, a concorrência da Eli Lilly e a revisão das projeções de vendas pesaram sobre as ações."
+    ],
+    "observar": "Cotada em coroas dinamarquesas (DKK). Resultados de estudos clínicos e a concorrência no mercado de obesidade provocaram movimentos fortes no histórico recente.",
+    "fontes": [["Novo Nordisk, Investors", "https://www.novonordisk.com/investors.html"]]
+  },
+  "SIE.DE": {
+    "sobre": [
+      "A Siemens, com sede em Munique, é um dos maiores grupos industriais da Europa, com atuação em automação de fábricas, software industrial, infraestrutura de prédios e redes elétricas e transporte ferroviário.",
+      "Mantém participação na Siemens Healthineers, de equipamentos médicos."
+    ],
+    "historia": [
+      "Foi fundada em 1847, em Berlim, por Werner von Siemens e Johann Georg Halske, para fabricar telégrafos.",
+      "Nos anos recentes, separou negócios em empresas próprias, como a Siemens Healthineers, que abriu o capital em 2018, e a Siemens Energy, em 2020."
+    ],
+    "observar": "Cotada em euros. A separação de negócios mudou o perfil da empresa, o que deve ser lembrado ao comparar períodos longos.",
+    "fontes": [["Siemens, Investor Relations", "https://www.siemens.com/global/en/company/investor-relations.html"]]
+  },
+  "AIR.PA": {
+    "sobre": [
+      "A Airbus é uma das duas maiores fabricantes de aviões comerciais do mundo, ao lado da Boeing. Atua também em helicópteros, defesa e espaço.",
+      "A família A320 é uma das linhas de aviões mais vendidas da história."
+    ],
+    "historia": [
+      "Nasceu em 1970 como Airbus Industrie, um consórcio europeu formado por empresas da França e da Alemanha, depois com Espanha e Reino Unido. O primeiro avião, o A300, voou em 1972.",
+      "As empresas foram reunidas na EADS em 2000, que passou a se chamar Airbus em 2014."
+    ],
+    "observar": "Cotada em euros. A pandemia de 2020 parou a aviação comercial e aparece como uma queda forte no histórico.",
+    "fontes": [["Airbus, Investors", "https://www.airbus.com/en/investors"]]
+  },
+  "TSM": {
+    "sobre": [
+      "A TSMC, de Taiwan, é a maior fabricante de chips sob encomenda do mundo. Produz os chips projetados por empresas como Apple, Nvidia e AMD, sem vender chips com marca própria.",
+      "Domina a fabricação dos chips mais avançados, usados em celulares, computadores e inteligência artificial."
+    ],
+    "historia": [
+      "Foi fundada em 1987 por Morris Chang, em Hsinchu, Taiwan, e criou o modelo de fundição dedicada, em que a fábrica produz para terceiros.",
+      "Os recibos de ações (ADRs) são negociados na bolsa de Nova York desde 1997. A empresa constrói fábricas nos Estados Unidos, no Japão e na Alemanha."
+    ],
+    "observar": "O ticker TSM é o ADR em dólar. Tensões geopolíticas entre China e Taiwan e o ciclo de semicondutores aparecem no histórico.",
+    "fontes": [["TSMC, Investor Relations", "https://investor.tsmc.com/english"]]
+  },
+  "BABA": {
+    "sobre": [
+      "O Alibaba é um dos maiores grupos de comércio eletrônico da China, dono das plataformas Taobao e Tmall, com atuação também em computação em nuvem (Alibaba Cloud), logística e comércio internacional.",
+      "O ticker BABA é o recibo de ações (ADR) negociado na bolsa de Nova York."
+    ],
+    "historia": [
+      "Foi fundado em 1999 por Jack Ma e sócios, em Hangzhou. Em 2014, abriu o capital em Nova York, na maior oferta inicial de ações da história até então.",
+      "Em novembro de 2020, a oferta de ações da Ant Group, empresa coligada, foi suspensa pelas autoridades chinesas. Em 2021, o Alibaba recebeu uma multa antitruste recorde, e as ações caíram por vários anos."
+    ],
+    "observar": "Cotado em dólar. Regulação chinesa e tensões comerciais entre Estados Unidos e China pesam muito. O mesmo grupo também é negociado em Hong Kong (9988.HK).",
+    "fontes": [["Alibaba Group, Investor Relations", "https://www.alibabagroup.com/en-US/ir"]]
+  },
+  "SONY": {
+    "sobre": [
+      "A Sony é um grupo japonês com atuação em videogames (PlayStation), música, cinema e séries, sensores de imagem para câmeras de celulares e eletrônicos.",
+      "Desde 2021, a empresa controladora se chama Sony Group."
+    ],
+    "historia": [
+      "Foi fundada em 1946, em Tóquio, por Masaru Ibuka e Akio Morita. O Walkman, de 1979, e o PlayStation, de 1994, estão entre os produtos mais conhecidos.",
+      "Ao longo dos anos, a empresa mudou o foco dos eletrônicos para o entretenimento e os sensores."
+    ],
+    "observar": "O ticker SONY é o recibo negociado em Nova York, em dólar, e por isso inclui a variação entre iene e dólar.",
+    "fontes": [["Sony, Investor Relations", "https://www.sony.com/en/SonyInfo/IR/"]]
+  },
+  "005930.KS": {
+    "sobre": [
+      "A Samsung Electronics, da Coreia do Sul, é uma das maiores fabricantes de chips de memória do mundo e também produz celulares, televisores, eletrodomésticos e telas.",
+      "Faz parte do conglomerado Samsung, um dos maiores grupos empresariais da Ásia."
+    ],
+    "historia": [
+      "O grupo Samsung foi fundado em 1938 por Lee Byung-chul. A Samsung Electronics surgiu em 1969 e passou a ter ações na bolsa da Coreia em 1975.",
+      "Nos anos 1990, tornou-se líder mundial em memória DRAM. Em 2018, as ações foram desdobradas na proporção de 50 para 1."
+    ],
+    "observar": "Cotada em wons sul-coreanos (KRW). O preço das memórias tem ciclos fortes de alta e baixa, que aparecem no histórico.",
+    "fontes": [["Samsung Electronics, Investor Relations", "https://www.samsung.com/global/ir/"]]
+  },
+  "0700.HK": {
+    "sobre": [
+      "A Tencent é um dos maiores grupos de tecnologia da China, dono do aplicativo de mensagens e pagamentos WeChat e de uma das maiores operações de videogames do mundo.",
+      "Atua também em computação em nuvem, publicidade, música e investimentos em outras empresas."
+    ],
+    "historia": [
+      "Foi fundada em 1998, em Shenzhen, por Ma Huateng (Pony Ma) e sócios. O serviço de mensagens QQ foi o primeiro grande produto, e o WeChat foi lançado em 2011.",
+      "Abriu o capital na bolsa de Hong Kong em 2004. Em 2021, as regras chinesas para jogos e empresas de internet derrubaram as ações."
+    ],
+    "observar": "Cotada em dólares de Hong Kong (HKD). A regulação chinesa sobre internet e jogos tem grande peso no histórico.",
+    "fontes": [["Tencent, Investors", "https://www.tencent.com/en-us/investors.html"]]
+  },
+  "7203.T": {
+    "sobre": [
+      "A Toyota, do Japão, é uma das maiores montadoras do mundo em vendas, com marcas como Toyota, Lexus e Daihatsu, e líder em carros híbridos.",
+      "O sistema Toyota de produção, baseado em eliminar desperdícios, influenciou a indústria no mundo todo."
+    ],
+    "historia": [
+      "A empresa nasceu em 1937, quando Kiichiro Toyoda separou a área de automóveis da fábrica de teares criada por seu pai, Sakichi Toyoda.",
+      "Em 1997, lançou o Prius, o primeiro carro híbrido produzido em larga escala. Em 2021, as ações foram desdobradas na proporção de 5 para 1."
+    ],
+    "observar": "Cotada em ienes (JPY). Como grande exportadora, a Toyota costuma se beneficiar quando o iene se desvaloriza.",
+    "fontes": [["Toyota, Investors", "https://global.toyota/en/ir/"]]
+  },
+  "000660.KS": {
+    "sobre": [
+      "A SK Hynix, da Coreia do Sul, é uma das maiores fabricantes de chips de memória (DRAM e NAND) do mundo.",
+      "É uma das principais fornecedoras de memória de alta largura de banda (HBM), usada junto com os processadores de inteligência artificial."
+    ],
+    "historia": [
+      "A empresa começou em 1983 como Hyundai Electronics, passou a se chamar Hynix em 2001 e foi comprada pelo grupo SK em 2012.",
+      "A partir de 2023, a demanda por memórias para inteligência artificial levou a empresa a resultados recordes."
+    ],
+    "observar": "Cotada em wons sul-coreanos (KRW). Memórias são um setor muito cíclico, com quedas fortes quando a oferta supera a demanda.",
+    "fontes": [["SK Hynix, Investor Relations", "https://www.skhynix.com/"]]
+  },
+  "9988.HK": {
+    "sobre": [
+      "É a ação do Alibaba Group negociada na bolsa de Hong Kong. A empresa é a mesma do ticker BABA, um dos maiores grupos de comércio eletrônico e computação em nuvem da China.",
+      "Cada recibo negociado em Nova York (BABA) equivale a 8 ações de Hong Kong."
+    ],
+    "historia": [
+      "O Alibaba fez uma segunda listagem em Hong Kong em novembro de 2019, e em 2024 a bolsa de Hong Kong passou a ser também uma listagem principal da empresa.",
+      "A história do grupo, desde a fundação em 1999 por Jack Ma, está descrita no ativo BABA."
+    ],
+    "observar": "Cotada em dólares de Hong Kong (HKD), com histórico a partir de 2019. A trajetória é muito parecida com a do BABA, com diferenças de câmbio e de horário de negociação.",
+    "fontes": [["Alibaba Group, Investor Relations", "https://www.alibabagroup.com/en-US/ir"]]
+  }
+}

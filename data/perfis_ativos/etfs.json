@@ -1,0 +1,356 @@
+{
+  "SPY": {
+    "sobre": [
+      "O SPDR S&P 500 ETF Trust é um fundo de índice (ETF) que replica o S&P 500, formado por cerca de 500 das maiores empresas abertas dos Estados Unidos.",
+      "É gerido pela State Street e está entre os ETFs mais negociados do mundo."
+    ],
+    "historia": [
+      "Foi lançado em janeiro de 1993 e é considerado o primeiro ETF listado nos Estados Unidos, o que abriu caminho para a indústria de fundos de índice negociados em bolsa."
+    ],
+    "observar": "Cotado em dólar. Acompanha o índice ^GSPC, com pequenas diferenças por causa da taxa de administração e dos dividendos, que o fundo distribui e que não entram no histórico de preços do Argos.",
+    "fontes": [["State Street (SPDR)", "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy"]]
+  },
+  "QQQ": {
+    "sobre": [
+      "O Invesco QQQ é um ETF que replica o Nasdaq-100, índice das 100 maiores empresas não financeiras listadas na Nasdaq, com grande peso de tecnologia.",
+      "Apple, Microsoft, Nvidia, Amazon e Alphabet estão entre as maiores posições."
+    ],
+    "historia": [
+      "Foi lançado em março de 1999, perto do auge da bolha das empresas de internet, e caiu mais de 80% entre 2000 e 2002, antes de se recuperar nas décadas seguintes."
+    ],
+    "observar": "Cotado em dólar. Por concentrar tecnologia, tende a oscilar mais que os ETFs do S&P 500.",
+    "fontes": [["Invesco QQQ", "https://www.invesco.com/qqq-etf/en/home.html"]]
+  },
+  "VTI": {
+    "sobre": [
+      "O Vanguard Total Stock Market ETF investe em praticamente todo o mercado de ações dos Estados Unidos, com milhares de empresas de todos os tamanhos.",
+      "Replica o índice CRSP US Total Market e tem taxa de administração muito baixa."
+    ],
+    "historia": [
+      "Foi lançado em 2001 pela Vanguard, gestora fundada por John Bogle, pioneiro dos fundos de índice para o público em geral."
+    ],
+    "observar": "Cotado em dólar. Como as grandes empresas pesam mais, a trajetória fica muito próxima à do S&P 500.",
+    "fontes": [["Vanguard", "https://investor.vanguard.com/investment-products/etfs/profile/vti"]]
+  },
+  "VT": {
+    "sobre": [
+      "O Vanguard Total World Stock ETF investe em ações de praticamente todo o mundo, em países desenvolvidos e emergentes, com milhares de empresas.",
+      "Replica o índice FTSE Global All Cap. As ações americanas respondem por cerca de 60% da carteira."
+    ],
+    "historia": [
+      "Foi lançado em 2008 pela Vanguard e é um dos ETFs mais usados para acompanhar o mercado global de ações num único fundo."
+    ],
+    "observar": "Cotado em dólar. A variação das moedas dos outros países em relação ao dólar também aparece no histórico.",
+    "fontes": [["Vanguard", "https://investor.vanguard.com/investment-products/etfs/profile/vt"]]
+  },
+  "EEM": {
+    "sobre": [
+      "O iShares MSCI Emerging Markets ETF investe em ações de países emergentes, como China, Índia, Taiwan, Coreia do Sul e Brasil.",
+      "Replica o índice MSCI Emerging Markets e é gerido pela BlackRock."
+    ],
+    "historia": [
+      "Foi lançado em 2003 e se tornou um dos fundos mais usados para acompanhar os mercados emergentes."
+    ],
+    "observar": "Cotado em dólar. O desempenho depende muito da China e das moedas dos países emergentes em relação ao dólar.",
+    "fontes": [["iShares (BlackRock)", "https://www.ishares.com/us/products/239637/ishares-msci-emerging-markets-etf"]]
+  },
+  "EWZ": {
+    "sobre": [
+      "O iShares MSCI Brazil ETF investe em grandes e médias empresas brasileiras e é negociado na bolsa americana, em dólar.",
+      "Petrobras, Vale e os grandes bancos estão entre as principais posições."
+    ],
+    "historia": [
+      "Foi lançado em 2000 e é um dos principais meios para investidores estrangeiros acompanharem a bolsa brasileira."
+    ],
+    "observar": "Por ser cotado em dólar, o histórico combina o desempenho das ações brasileiras com a variação do real. Fica diferente do Ibovespa em reais quando o câmbio se move muito.",
+    "fontes": [["iShares (BlackRock)", "https://www.ishares.com/us/products/239612/ishares-msci-brazil-capped-etf"]]
+  },
+  "IWM": {
+    "sobre": [
+      "O iShares Russell 2000 ETF investe nas empresas de menor porte (small caps) do mercado americano, que formam o índice Russell 2000.",
+      "Essas empresas costumam depender mais da economia interna dos Estados Unidos e do crédito."
+    ],
+    "historia": [
+      "Foi lançado em 2000 pela BlackRock (iShares) e é o ETF de small caps americanas mais negociado."
+    ],
+    "observar": "Cotado em dólar. Tende a oscilar mais que o S&P 500 e a sofrer mais em períodos de juros altos.",
+    "fontes": [["iShares (BlackRock)", "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf"]]
+  },
+  "DIA": {
+    "sobre": [
+      "O SPDR Dow Jones Industrial Average ETF Trust replica o índice Dow Jones, formado por 30 grandes empresas americanas.",
+      "No Dow Jones, o peso de cada empresa depende do preço da ação, e não do tamanho da empresa."
+    ],
+    "historia": [
+      "Foi lançado em janeiro de 1998, pela State Street. O índice que ele acompanha é um dos mais antigos do mundo, criado em 1896."
+    ],
+    "observar": "Cotado em dólar. Com só 30 empresas, a trajetória pode se afastar da do S&P 500 em alguns períodos.",
+    "fontes": [["State Street (SPDR)", "https://www.ssga.com/us/en/intermediary/etfs/spdr-dow-jones-industrial-average-etf-trust-dia"]]
+  },
+  "VEA": {
+    "sobre": [
+      "O Vanguard FTSE Developed Markets ETF investe em ações de países desenvolvidos fora dos Estados Unidos, como Japão, Reino Unido, Canadá, França, Alemanha e Austrália.",
+      "Replica o índice FTSE Developed All Cap ex US."
+    ],
+    "historia": [
+      "Foi lançado em 2007 pela Vanguard como alternativa de baixo custo para diversificar fora do mercado americano."
+    ],
+    "observar": "Cotado em dólar. A variação do euro, do iene e de outras moedas em relação ao dólar pesa no histórico.",
+    "fontes": [["Vanguard", "https://investor.vanguard.com/investment-products/etfs/profile/vea"]]
+  },
+  "VOO": {
+    "sobre": [
+      "O Vanguard S&P 500 ETF replica o S&P 500, como o SPY, com taxa de administração muito baixa.",
+      "É um dos maiores ETFs do mundo em patrimônio."
+    ],
+    "historia": [
+      "Foi lançado em setembro de 2010 pela Vanguard e cresceu com a popularização do investimento em fundos de índice de baixo custo."
+    ],
+    "observar": "Cotado em dólar, com histórico a partir de 2010. A trajetória é praticamente a mesma do SPY e do índice ^GSPC.",
+    "fontes": [["Vanguard", "https://investor.vanguard.com/investment-products/etfs/profile/voo"]]
+  },
+  "BOVA11.SA": {
+    "sobre": [
+      "O iShares Ibovespa (BOVA11) é um fundo de índice negociado na B3 que replica o Ibovespa, o principal índice da bolsa brasileira.",
+      "É gerido pela BlackRock e está entre os ETFs mais negociados do Brasil."
+    ],
+    "historia": [
+      "Começou a ser negociado em dezembro de 2008 e foi um dos primeiros ETFs de grande porte da bolsa brasileira."
+    ],
+    "observar": "Cotado em reais. A trajetória acompanha o índice ^BVSP, descontada a taxa de administração. A logomarca exibida no mosaico é a da gestora (iShares).",
+    "fontes": [["iShares Brasil (BlackRock)", "https://www.blackrock.com/br"]]
+  },
+  "SMAL11.SA": {
+    "sobre": [
+      "O iShares Small Cap (SMAL11) é um fundo de índice da B3 que replica o Índice Small Cap (SMLL), formado por empresas brasileiras de menor valor de mercado.",
+      "É gerido pela BlackRock."
+    ],
+    "historia": [
+      "Foi um dos primeiros ETFs lançados pela BlackRock na bolsa brasileira, no fim dos anos 2000."
+    ],
+    "observar": "Cotado em reais. Empresas menores costumam ser mais sensíveis aos juros e à economia doméstica, e o fundo tende a oscilar mais que o BOVA11.",
+    "fontes": [["iShares Brasil (BlackRock)", "https://www.blackrock.com/br"]]
+  },
+  "IVVB11.SA": {
+    "sobre": [
+      "O iShares S&P 500 (IVVB11) é um fundo negociado na B3 que dá acesso ao S&P 500, o índice das maiores empresas americanas, investindo no ETF americano IVV.",
+      "É gerido pela BlackRock."
+    ],
+    "historia": [
+      "Começou a ser negociado em 2014, como alternativa para investir no mercado americano a partir da bolsa brasileira."
+    ],
+    "observar": "Cotado em reais, sem proteção cambial: o histórico combina o desempenho do S&P 500 com a variação do dólar em relação ao real.",
+    "fontes": [["iShares Brasil (BlackRock)", "https://www.blackrock.com/br"]]
+  },
+  "DIVO11.SA": {
+    "sobre": [
+      "O It Now IDIV (DIVO11) é um fundo de índice negociado na B3 que replica o Índice Dividendos (IDIV), formado por empresas que se destacaram no pagamento de proventos.",
+      "É gerido pela Itaú Asset Management, da família de ETFs It Now."
+    ],
+    "historia": [
+      "O índice IDIV é calculado pela B3 desde 2005 e passou a contar com um ETF dedicado com o DIVO11."
+    ],
+    "observar": "Cotado em reais. Como a carteira é de empresas boas pagadoras, o histórico de preços deixa de fora uma parte maior do retorno do que em outros fundos.",
+    "fontes": [["Itaú Asset (It Now)", "https://www.itnow.com.br/"]]
+  },
+  "BND": {
+    "sobre": [
+      "O Vanguard Total Bond Market ETF investe em títulos de renda fixa dos Estados Unidos com grau de investimento: títulos do Tesouro, de empresas e lastreados em hipotecas.",
+      "Replica uma versão do índice Bloomberg US Aggregate."
+    ],
+    "historia": [
+      "Foi lançado em 2007 pela Vanguard e é um dos maiores ETFs de renda fixa do mundo."
+    ],
+    "observar": "Cotado em dólar. O preço cai quando os juros sobem, como aconteceu com força em 2022. Os juros distribuídos não entram no histórico de preços.",
+    "fontes": [["Vanguard", "https://investor.vanguard.com/investment-products/etfs/profile/bnd"]]
+  },
+  "AGG": {
+    "sobre": [
+      "O iShares Core U.S. Aggregate Bond ETF investe no mercado amplo de renda fixa americana com grau de investimento, replicando o índice Bloomberg US Aggregate.",
+      "É gerido pela BlackRock."
+    ],
+    "historia": [
+      "Foi lançado em 2003 e é um dos ETFs de renda fixa mais conhecidos dos Estados Unidos."
+    ],
+    "observar": "Cotado em dólar. Trajetória muito parecida com a do BND: os preços caem quando os juros sobem.",
+    "fontes": [["iShares (BlackRock)", "https://www.ishares.com/us/products/239458/ishares-core-total-us-bond-market-etf"]]
+  },
+  "TLT": {
+    "sobre": [
+      "O iShares 20+ Year Treasury Bond ETF investe em títulos do Tesouro americano com vencimento acima de 20 anos.",
+      "Títulos longos são muito sensíveis aos juros: o preço varia bastante quando as taxas mudam."
+    ],
+    "historia": [
+      "Foi lançado em 2002. Em 2022, com a alta rápida dos juros nos Estados Unidos, teve uma das maiores quedas da sua história."
+    ],
+    "observar": "Cotado em dólar. Comparar com a taxa de 30 anos (^TYX) ajuda a entender: quando a taxa sobe, o preço do TLT cai.",
+    "fontes": [["iShares (BlackRock)", "https://www.ishares.com/us/products/239454/ishares-20-year-treasury-bond-etf"]]
+  },
+  "IEF": {
+    "sobre": [
+      "O iShares 7-10 Year Treasury Bond ETF investe em títulos do Tesouro americano com vencimento entre 7 e 10 anos.",
+      "Tem sensibilidade intermediária aos juros: menor que a do TLT e maior que a do SHY."
+    ],
+    "historia": [
+      "Foi lançado em 2002 pela BlackRock (iShares)."
+    ],
+    "observar": "Cotado em dólar. Tende a se mover no sentido contrário ao da taxa de 10 anos (^TNX).",
+    "fontes": [["iShares (BlackRock)", "https://www.ishares.com/us/products/239456/ishares-710-year-treasury-bond-etf"]]
+  },
+  "SHY": {
+    "sobre": [
+      "O iShares 1-3 Year Treasury Bond ETF investe em títulos do Tesouro americano com vencimento entre 1 e 3 anos.",
+      "Títulos curtos variam pouco de preço com os juros, por isso o fundo oscila menos que os de prazo mais longo."
+    ],
+    "historia": [
+      "Foi lançado em 2002 pela BlackRock (iShares)."
+    ],
+    "observar": "Cotado em dólar. Oscilação baixa, mas o rendimento distribuído, que é a maior parte do retorno, não entra no histórico de preços.",
+    "fontes": [["iShares (BlackRock)", "https://www.ishares.com/us/products/239452/ishares-13-year-treasury-bond-etf"]]
+  },
+  "TIP": {
+    "sobre": [
+      "O iShares TIPS Bond ETF investe em títulos do Tesouro americano protegidos contra a inflação (TIPS), cujo valor é corrigido pelo índice de preços ao consumidor.",
+      "Funciona de forma parecida com os títulos atrelados ao IPCA no Brasil."
+    ],
+    "historia": [
+      "Foi lançado em 2003 pela BlackRock (iShares)."
+    ],
+    "observar": "Cotado em dólar. Reage tanto à inflação quanto aos juros reais: em 2022, mesmo com inflação alta, caiu com a alta dos juros.",
+    "fontes": [["iShares (BlackRock)", "https://www.ishares.com/us/products/239467/ishares-tips-bond-etf"]]
+  },
+  "VNQ": {
+    "sobre": [
+      "O Vanguard Real Estate ETF investe em fundos imobiliários americanos (REITs), empresas donas de imóveis como escritórios, galpões, torres de telecomunicação, shoppings e apartamentos.",
+      "Replica o índice MSCI US IMI Real Estate 25/50."
+    ],
+    "historia": [
+      "Foi lançado em 2004 pela Vanguard e é um dos maiores ETFs do setor imobiliário."
+    ],
+    "observar": "Cotado em dólar. REITs são sensíveis aos juros e distribuem boa parte do resultado, que não entra no histórico de preços.",
+    "fontes": [["Vanguard", "https://investor.vanguard.com/investment-products/etfs/profile/vnq"]]
+  },
+  "O": {
+    "sobre": [
+      "A Realty Income é um REIT americano dono de milhares de imóveis comerciais alugados por contratos longos a varejistas, indústrias e outros negócios, em geral com os custos do imóvel pagos pelo inquilino.",
+      "É conhecida por pagar dividendos mensais e se apresenta como The Monthly Dividend Company."
+    ],
+    "historia": [
+      "Foi fundada em 1969 por William e Joan Clark e passou a ser negociada na bolsa de Nova York em 1994.",
+      "Cresceu com aquisições, como a da VEREIT, em 2021, e a da Spirit Realty, em 2024, e passou a ter imóveis também na Europa."
+    ],
+    "observar": "Cotada em dólar. O retorno vem em grande parte dos dividendos mensais, que não entram no histórico de preços do Argos.",
+    "fontes": [["Realty Income, Investors", "https://www.realtyincome.com/investors"]]
+  },
+  "PLD": {
+    "sobre": [
+      "A Prologis é a maior dona de galpões logísticos do mundo, alugados a varejistas, empresas de comércio eletrônico e operadores de logística em vários países, inclusive no Brasil.",
+      "É um REIT negociado na bolsa de Nova York."
+    ],
+    "historia": [
+      "A empresa atual surgiu em 2011, da fusão entre a ProLogis e a AMB Property. Em 2022, comprou a Duke Realty.",
+      "O crescimento do comércio eletrônico aumentou a procura por galpões, sobretudo a partir de 2020."
+    ],
+    "observar": "Cotada em dólar. Juros e a demanda por espaço logístico movem o histórico.",
+    "fontes": [["Prologis, Investors", "https://ir.prologis.com/"]]
+  },
+  "AMT": {
+    "sobre": [
+      "A American Tower é dona de centenas de milhares de torres de telecomunicação, alugadas a operadoras de celular em vários países, inclusive no Brasil. Também tem data centers.",
+      "É um REIT: a maior parte do lucro é distribuída aos acionistas."
+    ],
+    "historia": [
+      "Foi separada da American Radio Systems em 1998 e cresceu comprando torres de operadoras. Em 2021, comprou a CoreSite, de data centers."
+    ],
+    "observar": "Cotada em dólar. Juros altos encarecem a dívida e pesam sobre a ação, como em 2022.",
+    "fontes": [["American Tower, Investors", "https://www.americantower.com/investor-relations/"]]
+  },
+  "SPG": {
+    "sobre": [
+      "A Simon Property Group é a maior dona de shopping centers e outlets dos Estados Unidos, com participações também em empreendimentos na Ásia e na Europa.",
+      "É um REIT negociado na bolsa de Nova York."
+    ],
+    "historia": [
+      "A empresa tem origem num negócio imobiliário criado em 1960 pelos irmãos Melvin e Herbert Simon, em Indianápolis, e abriu o capital em 1993."
+    ],
+    "observar": "Cotada em dólar. O fechamento das lojas na pandemia de 2020 aparece como queda forte no histórico.",
+    "fontes": [["Simon Property Group, Investors", "https://investors.simon.com/"]]
+  },
+  "MXRF11.SA": {
+    "sobre": [
+      "O Maxi Renda é um fundo imobiliário (FII) negociado na B3 que investe principalmente em títulos de dívida ligados ao setor imobiliário, como os certificados de recebíveis imobiliários (CRI). É chamado de fundo de papel.",
+      "É um dos FIIs com maior número de cotistas da bolsa, em parte pelo valor baixo da cota. É gerido pela XP Asset."
+    ],
+    "historia": [
+      "A carteira combina recebíveis atrelados à inflação e ao CDI, e o fundo distribui rendimentos mensalmente."
+    ],
+    "observar": "Cotado em reais. Os rendimentos mensais são a maior parte do retorno de um FII e não entram no histórico de preços do Argos. A logomarca exibida no mosaico é a da gestora.",
+    "fontes": [["XP Asset", "https://www.xpasset.com.br/"]]
+  },
+  "HGLG11.SA": {
+    "sobre": [
+      "O Pátria Log (HGLG11) é um fundo imobiliário de galpões logísticos e industriais, alugados a empresas de varejo, comércio eletrônico e indústria, principalmente na região Sudeste.",
+      "É um fundo de tijolo: a receita vem dos aluguéis dos imóveis."
+    ],
+    "historia": [
+      "O fundo foi gerido por muitos anos pela Credit Suisse Hedging-Griffo (CSHG), daí o código HG, e passou à gestão da Pátria Investimentos, que adotou o nome Pátria Log."
+    ],
+    "observar": "Cotado em reais. Os aluguéis distribuídos mensalmente não entram no histórico de preços. A logomarca exibida no mosaico é a da gestora.",
+    "fontes": [["Pátria Investimentos", "https://www.patria.com/"]]
+  },
+  "KNRI11.SA": {
+    "sobre": [
+      "O Kinea Renda Imobiliária (KNRI11) é um fundo imobiliário híbrido, dono de lajes corporativas (escritórios) e de galpões logísticos.",
+      "É gerido pela Kinea, gestora de investimentos alternativos do grupo Itaú."
+    ],
+    "historia": [
+      "Está entre os FIIs de tijolo mais antigos e com maior patrimônio da B3, com imóveis em São Paulo, Rio de Janeiro e outros estados."
+    ],
+    "observar": "Cotado em reais. A vacância (imóveis desocupados) e os juros influenciam o preço da cota. A logomarca exibida no mosaico é a do grupo da gestora.",
+    "fontes": [["Kinea", "https://www.kinea.com.br/"]]
+  },
+  "BTLG11.SA": {
+    "sobre": [
+      "O BTG Pactual Logística (BTLG11) é um fundo imobiliário de galpões logísticos, alugados a empresas de varejo, comércio eletrônico e transporte.",
+      "É gerido pelo BTG Pactual."
+    ],
+    "historia": [
+      "O fundo cresceu nos últimos anos com aquisições de galpões, principalmente perto de grandes centros consumidores, como São Paulo."
+    ],
+    "observar": "Cotado em reais. Os aluguéis distribuídos não entram no histórico de preços. A logomarca exibida no mosaico é a da gestora.",
+    "fontes": [["BTG Pactual Asset", "https://www.btgpactual.com/asset-management"]]
+  },
+  "KNCR11.SA": {
+    "sobre": [
+      "O Kinea Rendimentos Imobiliários (KNCR11) é um fundo de papel: investe em certificados de recebíveis imobiliários (CRI), a maior parte atrelada ao CDI.",
+      "É gerido pela Kinea, do grupo Itaú."
+    ],
+    "historia": [
+      "Por investir em títulos atrelados ao CDI, os rendimentos acompanham de perto a taxa básica de juros, e a cota tende a oscilar pouco."
+    ],
+    "observar": "Cotado em reais. O preço da cota varia pouco: quase todo o retorno vem dos rendimentos mensais, que não entram no histórico de preços do Argos.",
+    "fontes": [["Kinea", "https://www.kinea.com.br/"]]
+  },
+  "HGRU11.SA": {
+    "sobre": [
+      "O Pátria Renda Urbana (HGRU11) é um fundo imobiliário dono de imóveis urbanos alugados por contratos longos a supermercados, lojas, escolas e outros negócios.",
+      "Muitos contratos são do tipo atípico, com prazos longos e regras mais rígidas para rescisão."
+    ],
+    "historia": [
+      "Foi gerido pela Credit Suisse Hedging-Griffo (CSHG), daí o código HG, e passou à gestão da Pátria Investimentos."
+    ],
+    "observar": "Cotado em reais. Os aluguéis distribuídos não entram no histórico de preços. A logomarca exibida no mosaico é a da gestora.",
+    "fontes": [["Pátria Investimentos", "https://www.patria.com/"]]
+  },
+  "VISC11.SA": {
+    "sobre": [
+      "O Vinci Shopping Centers (VISC11) é um fundo imobiliário com participações em shopping centers de várias regiões do Brasil.",
+      "A receita vem dos aluguéis das lojas, com uma parte que depende das vendas dos lojistas."
+    ],
+    "historia": [
+      "É gerido pela Vinci Partners, gestora de investimentos com sede no Rio de Janeiro, e ampliou a carteira com aquisições ao longo dos anos."
+    ],
+    "observar": "Cotado em reais. O fechamento dos shoppings na pandemia de 2020 aparece como queda forte no histórico. A logomarca exibida no mosaico é a da gestora.",
+    "fontes": [["Vinci Partners", "https://www.vincipartners.com/"]]
+  }
+}

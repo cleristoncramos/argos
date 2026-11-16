@@ -1,0 +1,266 @@
+{
+  "PETR4.SA": {
+    "sobre": [
+      "A Petrobras é a maior empresa de energia do Brasil, com atuação em exploração e produção de petróleo e gás, refino, logística e comercialização de combustíveis. É uma sociedade de economia mista controlada pela União.",
+      "Grande parte da produção vem dos campos do pré-sal, em águas ultraprofundas. O PETR4 é a ação preferencial, que tem prioridade no recebimento de dividendos e não dá direito a voto."
+    ],
+    "historia": [
+      "Foi criada em 3 de outubro de 1953, pela Lei 2.004, no governo de Getúlio Vargas, depois da campanha O petróleo é nosso. Por décadas teve o monopólio da exploração de petróleo no país, encerrado em 1997.",
+      "Em 2006 e 2007, anunciou as descobertas do pré-sal. A partir de 2014, foi o centro das investigações da Operação Lava Jato, e trocas no comando e mudanças na política de preços dos combustíveis marcaram o histórico das ações."
+    ],
+    "observar": "Além do preço do petróleo e do câmbio, decisões do governo controlador costumam mover a ação. O histórico do Argos não inclui os dividendos, que na Petrobras têm peso relevante no retorno total.",
+    "fontes": [["Petrobras, Relações com Investidores", "https://www.investidorpetrobras.com.br/"]]
+  },
+  "VALE3.SA": {
+    "sobre": [
+      "A Vale é uma das maiores mineradoras do mundo, com destaque na produção de minério de ferro e pelotas e atuação em níquel e cobre. Opera minas, ferrovias e portos no Brasil e tem operações em outros países.",
+      "A China é a principal compradora do minério de ferro da empresa, o que liga os resultados ao ritmo da economia chinesa."
+    ],
+    "historia": [
+      "Foi fundada em 1942 pelo governo federal como Companhia Vale do Rio Doce e privatizada em 1997. Em 2007, passou a usar a marca Vale.",
+      "O histórico é marcado por dois rompimentos de barragens: em Mariana (MG), em 2015, na Samarco, empresa da Vale com a BHP, e em Brumadinho (MG), em janeiro de 2019, com 270 mortes."
+    ],
+    "observar": "O preço do minério de ferro, a demanda chinesa e o câmbio pesam muito. Os dividendos não entram no histórico do Argos.",
+    "fontes": [["Vale", "https://vale.com/pt/"]]
+  },
+  "ITUB4.SA": {
+    "sobre": [
+      "O Itaú Unibanco é o maior banco privado do Brasil e um dos maiores da América Latina, com atuação em varejo, atacado (Itaú BBA), cartões, seguros e gestão de recursos.",
+      "Tem operações em vários países da América Latina e ações negociadas na B3 e na bolsa de Nova York. O controle é exercido pela Itaúsa e pela família Moreira Salles."
+    ],
+    "historia": [
+      "A origem combina duas histórias: a Casa Moreira Salles, fundada em 1924 em Poços de Caldas (MG), que daria origem ao Unibanco, e o Banco Central de Crédito, de 1943, que daria origem ao Itaú.",
+      "A fusão entre Itaú e Unibanco foi anunciada em novembro de 2008, em meio à crise financeira global, e criou o maior banco privado do país. Em 2016, o banco incorporou o chileno CorpBanca."
+    ],
+    "observar": "Bancos costumam reagir a mudanças na taxa básica de juros e na inadimplência. Os dividendos, que têm parte relevante no retorno do ITUB4, não entram no histórico do Argos.",
+    "fontes": [["Itaú Unibanco, Relações com Investidores", "https://www.itau.com.br/relacoes-com-investidores/"]]
+  },
+  "BBAS3.SA": {
+    "sobre": [
+      "O Banco do Brasil é um banco de economia mista controlado pela União, com atuação em varejo, atacado, crédito rural, cartões, seguros e gestão de recursos.",
+      "É o principal financiador do agronegócio brasileiro e também o agente financeiro de diversos programas do governo federal."
+    ],
+    "historia": [
+      "Foi criado em 1808 por D. João VI, logo após a chegada da família real portuguesa ao Brasil, e é o banco mais antigo do país.",
+      "Em mais de dois séculos, foi liquidado e refundado no século XIX, exerceu funções de banco central até a criação do Banco Central do Brasil, em 1964, e abriu o capital na bolsa."
+    ],
+    "observar": "Por ser controlado pelo governo, notícias políticas e decisões sobre crédito e dividendos costumam mexer com a ação. O histórico do Argos não inclui os dividendos.",
+    "fontes": [["Banco do Brasil, Relações com Investidores", "https://ri.bb.com.br/"]]
+  },
+  "BBDC4.SA": {
+    "sobre": [
+      "O Bradesco é um dos maiores bancos privados do Brasil, com atuação em varejo, empresas, cartões e, com destaque, seguros, por meio do grupo Bradesco Seguros.",
+      "A sede fica na Cidade de Deus, em Osasco (SP). O BBDC4 é a ação preferencial."
+    ],
+    "historia": [
+      "Foi fundado em 1943, em Marília (SP), por Amador Aguiar, com o nome de Banco Brasileiro de Descontos. Cresceu levando agências ao interior e foi pioneiro na automação bancária no país.",
+      "Em 2016, comprou as operações do HSBC no Brasil. Nos anos seguintes, enfrentou um aumento da inadimplência e passou por mudanças no comando e na estratégia."
+    ],
+    "observar": "Juros, inadimplência e o resultado da área de seguros influenciam o histórico. Os dividendos não entram no cálculo do Argos.",
+    "fontes": [["Bradesco, Relações com Investidores", "https://www.bradescori.com.br/"]]
+  },
+  "ITSA4.SA": {
+    "sobre": [
+      "A Itaúsa é uma holding, ou seja, uma empresa que investe em outras. Seu principal ativo é a participação no controle do Itaú Unibanco.",
+      "Também tem participações em empresas de outros setores, como Alpargatas (calçados), Dexco (materiais de construção), Copa Energia (gás), Aegea (saneamento), Motiva (concessões de infraestrutura) e NTS (gasodutos)."
+    ],
+    "historia": [
+      "Foi criada em 1966 para reunir os investimentos do grupo Itaú. Ao longo do tempo, passou a diversificar a carteira com empresas fora do setor financeiro.",
+      "A holding é controlada pela família Egydio de Souza Aranha e, no Itaú Unibanco, compartilha o controle com a família Moreira Salles."
+    ],
+    "observar": "Como boa parte do valor vem do Itaú, o histórico da ITSA4 tende a acompanhar o do ITUB4. Ações de holdings costumam ser negociadas abaixo da soma das partes, o chamado desconto de holding.",
+    "fontes": [["Itaúsa", "https://www.itausa.com.br/"]]
+  },
+  "WEGE3.SA": {
+    "sobre": [
+      "A WEG é uma fabricante brasileira de equipamentos elétricos, como motores, transformadores, geradores, sistemas de automação e soluções para geração de energia, inclusive renovável.",
+      "Tem fábricas em vários países e vende para mais de uma centena deles, com grande parte da receita vinda do exterior."
+    ],
+    "historia": [
+      "Foi fundada em 1961, em Jaraguá do Sul (SC), por Werner Ricardo Voigt, Eggon João da Silva e Geraldo Werninghaus. O nome vem das iniciais dos três.",
+      "Começou fabricando motores elétricos e, a partir dos anos 1980, ampliou a linha de produtos e iniciou a expansão internacional com aquisições e fábricas próprias."
+    ],
+    "observar": "Exportadora, a WEG tem parte dos resultados ligada ao câmbio e ao investimento industrial no mundo. Historicamente, a ação foi negociada com múltiplos altos em relação ao lucro.",
+    "fontes": [["WEG, Relações com Investidores", "https://ri.weg.net/"]]
+  },
+  "ABEV3.SA": {
+    "sobre": [
+      "A Ambev é a maior cervejaria do Brasil, dona de marcas como Skol, Brahma e Antarctica, além de refrigerantes, como o Guaraná Antarctica. Atua também em outros países da América Latina e no Canadá.",
+      "É controlada pela AB InBev, a maior cervejaria do mundo."
+    ],
+    "historia": [
+      "Nasceu em 1999 da união da Brahma, fundada em 1888, com a Antarctica, de 1885. Em 2004, a combinação com a belga Interbrew deu origem à InBev, que depois comprou a Anheuser-Busch e formou a AB InBev.",
+      "Nos anos recentes, a empresa enfrentou mais concorrência no mercado de cervejas e variações fortes no custo de matérias-primas."
+    ],
+    "observar": "Consumo das famílias, preço de matérias-primas (cevada, alumínio) e câmbio influenciam os resultados. Os dividendos não entram no histórico do Argos.",
+    "fontes": [["Ambev, Relações com Investidores", "https://ri.ambev.com.br/"]]
+  },
+  "B3SA3.SA": {
+    "sobre": [
+      "A B3 é a bolsa de valores do Brasil. Opera a negociação de ações, derivativos, títulos e fundos, e também os serviços de registro, compensação e liquidação dessas operações.",
+      "A receita depende muito do volume negociado e do número de investidores, o que liga o desempenho da empresa ao humor do próprio mercado."
+    ],
+    "historia": [
+      "A história da bolsa paulista começa em 1890. A BM&FBovespa surgiu em 2008, da união da Bovespa com a Bolsa de Mercadorias & Futuros, e a B3 foi formada em 2017, com a incorporação da Cetip.",
+      "O nome B3 vem de Brasil, Bolsa, Balcão. Entre 2019 e 2021, o número de pessoas físicas investindo na bolsa cresceu fortemente."
+    ],
+    "observar": "Juros altos costumam reduzir o volume negociado e o interesse pela bolsa, o que aparece no histórico da ação.",
+    "fontes": [["B3, Relações com Investidores", "https://ri.b3.com.br/"]]
+  },
+  "RENT3.SA": {
+    "sobre": [
+      "A Localiza é a maior empresa de aluguel de carros e gestão de frotas do Brasil, com atuação também na venda de seminovos e em outros países da América do Sul.",
+      "O modelo combina o aluguel com a renovação da frota: os carros são vendidos depois de algum tempo de uso e substituídos por novos."
+    ],
+    "historia": [
+      "Foi fundada em 1973, em Belo Horizonte, com seis Fuscas. Abriu o capital em 2005.",
+      "Em 2022, concluiu a combinação de negócios com a Unidas, uma das principais concorrentes, aprovada pelo Cade com a venda de parte dos ativos."
+    ],
+    "observar": "Juros (que encarecem a compra da frota) e o preço dos carros usados influenciam os resultados e aparecem no histórico.",
+    "fontes": [["Localiza, Relações com Investidores", "https://ri.localiza.com/"]]
+  },
+  "AXIA3.SA": {
+    "sobre": [
+      "A Axia Energia, antiga Eletrobras, é a maior empresa de energia elétrica da América Latina, com grande capacidade de geração, principalmente hidrelétrica, e uma das maiores redes de transmissão do país.",
+      "A maior parte da energia que produz vem de fontes renováveis."
+    ],
+    "historia": [
+      "A Eletrobras foi criada em 1962 pelo governo federal para coordenar o setor elétrico e construiu boa parte das grandes usinas e linhas de transmissão do Brasil.",
+      "Foi privatizada em junho de 2022, por meio de uma oferta de ações que reduziu a participação da União. Em 2025, passou a se chamar Axia Energia, e o ticker mudou de ELET3 para AXIA3."
+    ],
+    "observar": "Mudanças de nome e de ticker exigem cuidado ao comparar o histórico com fontes antigas, que usam ELET3. A regulação do setor elétrico e o regime de chuvas influenciam os resultados.",
+    "fontes": [["Eletrobras (Axia Energia), Relações com Investidores", "https://ri.eletrobras.com/"]]
+  },
+  "SUZB3.SA": {
+    "sobre": [
+      "A Suzano é a maior produtora de celulose de eucalipto do mundo e também fabrica papéis e produtos de higiene, como papel higiênico.",
+      "A maior parte da celulose é exportada, o que liga os resultados ao preço internacional da celulose e ao dólar."
+    ],
+    "historia": [
+      "A empresa tem origem em 1924, quando Leon Feffer começou a revender papel em São Paulo. Nos anos 1950 e 1960, foi pioneira na produção de celulose a partir do eucalipto.",
+      "Em 2019, incorporou a Fibria, então líder mundial em celulose de eucalipto, e passou a ocupar essa posição."
+    ],
+    "observar": "Por ser exportadora, a ação costuma subir quando o real se desvaloriza. O preço da celulose tem ciclos de alta e baixa bem marcados.",
+    "fontes": [["Suzano, Relações com Investidores", "https://ri.suzano.com.br/"]]
+  },
+  "PRIO3.SA": {
+    "sobre": [
+      "A PRIO é a maior empresa independente (não estatal) de petróleo e gás do Brasil. A estratégia é comprar campos que já estão produzindo, muitas vezes maduros, e reduzir os custos de operação.",
+      "A produção vem de campos na Bacia de Campos, no litoral do Rio de Janeiro."
+    ],
+    "historia": [
+      "A empresa surgiu como HRT Participações, fundada em 2009. Depois de uma reestruturação, passou a se chamar PetroRio em 2015 e PRIO em 2021.",
+      "Cresceu com a compra de participações em campos como Frade, Albacora Leste e Peregrino."
+    ],
+    "observar": "O preço do petróleo e o câmbio pesam muito. As aquisições de campos costumam provocar movimentos fortes na ação.",
+    "fontes": [["PRIO, Relações com Investidores", "https://ri.prio3.com.br/"]]
+  },
+  "SBSP3.SA": {
+    "sobre": [
+      "A Sabesp é a empresa de saneamento básico (água e esgoto) do estado de São Paulo e uma das maiores do setor no mundo em número de clientes atendidos.",
+      "Atende a capital paulista e centenas de municípios do estado, com contratos de concessão de longo prazo."
+    ],
+    "historia": [
+      "Foi criada em 1973, a partir da união de várias empresas de água e esgoto do estado. Abriu o capital nos anos 1990 e passou a negociar ações também em Nova York.",
+      "Em julho de 2024, foi privatizada: o governo paulista vendeu parte das ações, e a Equatorial se tornou a acionista de referência."
+    ],
+    "observar": "A regulação das tarifas e o andamento das metas de universalização do saneamento influenciam o histórico. A privatização em 2024 mudou o perfil da empresa.",
+    "fontes": [["Sabesp, Relações com Investidores", "https://ri.sabesp.com.br/"]]
+  },
+  "EMBJ3.SA": {
+    "sobre": [
+      "A Embraer é uma fabricante brasileira de aviões, entre as maiores do mundo em jatos comerciais regionais. Atua também em aviação executiva, defesa e serviços.",
+      "A Eve, empresa controlada pela Embraer, desenvolve um veículo elétrico de decolagem vertical para transporte urbano."
+    ],
+    "historia": [
+      "Foi criada pelo governo federal em 1969, em São José dos Campos (SP), e privatizada em 1994. A família de jatos E-Jets, lançada nos anos 2000, consolidou a empresa na aviação comercial.",
+      "Em 2020, a Boeing desistiu da compra da divisão de aviação comercial. Em 2025, o ticker mudou de EMBR3 para EMBJ3."
+    ],
+    "observar": "Exportadora, com receitas em dólar. A pandemia de 2020 afetou fortemente o setor aéreo. Fontes antigas usam o ticker EMBR3.",
+    "fontes": [["Embraer, Relações com Investidores", "https://ri.embraer.com.br/"]]
+  },
+  "BPAC11.SA": {
+    "sobre": [
+      "O BTG Pactual é o maior banco de investimento da América Latina, com atuação em assessoria financeira, gestão de recursos e de patrimônio, crédito a empresas e, mais recentemente, banco digital para pessoas físicas.",
+      "O BPAC11 é uma unit, um certificado que reúne uma ação ordinária e duas preferenciais."
+    ],
+    "historia": [
+      "O Pactual foi fundado em 1983, no Rio de Janeiro. Em 2006, foi comprado pelo banco suíço UBS e, em 2009, recomprado por um grupo de sócios liderado por André Esteves, formando o BTG Pactual. Abriu o capital em 2012.",
+      "Em novembro de 2015, a prisão de André Esteves no âmbito da Lava Jato provocou uma forte queda das units. Ele foi depois absolvido e voltou ao banco."
+    ],
+    "observar": "O desempenho acompanha o volume de negócios no mercado de capitais. O episódio de 2015 é um exemplo de queda brusca ligada a evento específico da empresa.",
+    "fontes": [["BTG Pactual, Relações com Investidores", "https://ri.btgpactual.com/"]]
+  },
+  "RDOR3.SA": {
+    "sobre": [
+      "A Rede D'Or é a maior rede de hospitais privados do Brasil, com hospitais, centros de oncologia e de diagnóstico em vários estados.",
+      "Desde 2022, também atua em planos de saúde, com a incorporação da SulAmérica."
+    ],
+    "historia": [
+      "A empresa tem origem em 1977, quando o médico Jorge Moll Filho fundou no Rio de Janeiro uma clínica de exames cardiológicos. O primeiro hospital foi inaugurado nos anos 1990.",
+      "Abriu o capital na B3 em dezembro de 2020 e, em 2022, concluiu a combinação com a SulAmérica."
+    ],
+    "observar": "Histórico na bolsa a partir de dezembro de 2020. Custos médicos e o resultado dos planos de saúde influenciam a ação.",
+    "fontes": [["Rede D'Or, Relações com Investidores", "https://ri.rededor.com.br/"]]
+  },
+  "EQTL3.SA": {
+    "sobre": [
+      "A Equatorial é um grupo do setor elétrico que atua principalmente em distribuição de energia, em vários estados do Norte, Nordeste, Centro-Oeste e Sul. Atua também em transmissão, geração renovável e saneamento.",
+      "Desde 2024, é a acionista de referência da Sabesp."
+    ],
+    "historia": [
+      "O grupo cresceu comprando distribuidoras com problemas financeiros e melhorando a operação, a começar pela Cemar, no Maranhão, em 2004.",
+      "Depois vieram, entre outras, distribuidoras no Pará, Piauí, Alagoas, Rio Grande do Sul (CEEE) e Goiás (Celg)."
+    ],
+    "observar": "Distribuição de energia é um negócio regulado, com reajustes de tarifa definidos pela Aneel. Aquisições grandes costumam mexer com a ação.",
+    "fontes": [["Equatorial, Relações com Investidores", "https://ri.equatorialenergia.com.br/"]]
+  },
+  "GGBR4.SA": {
+    "sobre": [
+      "A Gerdau é a maior produtora de aço do Brasil, com foco em aços longos, usados em construção civil e indústria, e operações na América do Norte e do Sul.",
+      "É uma das maiores recicladoras da América Latina: a sucata de aço é a principal matéria-prima de boa parte das suas usinas."
+    ],
+    "historia": [
+      "A origem é de 1901, quando o imigrante João Gerdau comprou uma fábrica de pregos em Porto Alegre. A produção de aço começou em 1948.",
+      "A partir dos anos 1980, a empresa fez muitas aquisições no exterior, principalmente nos Estados Unidos e no Canadá."
+    ],
+    "observar": "O setor de aço é cíclico e depende da construção civil, da atividade industrial e da concorrência do aço importado.",
+    "fontes": [["Gerdau, Relações com Investidores", "https://ri.gerdau.com/"]]
+  },
+  "VIVT3.SA": {
+    "sobre": [
+      "A Telefônica Brasil, dona da marca Vivo, é uma das maiores empresas de telecomunicações do país, com telefonia móvel e fixa, internet de fibra óptica e TV por assinatura.",
+      "É controlada pelo grupo espanhol Telefónica."
+    ],
+    "historia": [
+      "A empresa vem da Telesp, a antiga estatal de telefonia de São Paulo, comprada pela Telefónica na privatização do sistema Telebrás, em 1998. A marca Vivo surgiu em 2003, numa parceria com a Portugal Telecom.",
+      "Em 2010, a Telefónica assumiu todo o controle da Vivo, e as operações foram unificadas sob a marca Vivo."
+    ],
+    "observar": "Empresa madura, com receitas estáveis e investimentos altos em rede. Os dividendos e a recompra de ações, relevantes no caso dela, não aparecem no histórico de preços.",
+    "fontes": [["Telefônica Brasil, Relações com Investidores", "https://ri.telefonica.com.br/"]]
+  },
+  "RADL3.SA": {
+    "sobre": [
+      "A Raia Drogasil (RD Saúde) é a maior rede de farmácias do Brasil, com milhares de lojas das marcas Droga Raia e Drogasil, além de canais digitais.",
+      "Vende medicamentos, produtos de higiene e beleza, e tem atuado também em serviços de saúde."
+    ],
+    "historia": [
+      "Nasceu em 2011, da fusão entre a Droga Raia, fundada em 1905 em Araraquara (SP), e a Drogasil, fundada em 1935 em São Paulo.",
+      "Desde a fusão, a empresa abre centenas de lojas por ano."
+    ],
+    "observar": "Varejo farmacêutico tende a ser menos sensível aos ciclos econômicos, mas o reajuste anual dos remédios e a expansão das lojas influenciam os resultados.",
+    "fontes": [["RD Saúde, Relações com Investidores", "https://ri.rdsaude.com.br/"]]
+  },
+  "TOTS3.SA": {
+    "sobre": [
+      "A TOTVS é a maior empresa brasileira de software. Desenvolve sistemas de gestão empresarial (ERP) para vários setores e atua também em serviços financeiros para empresas e em marketing digital.",
+      "A maior parte da receita é recorrente, vinda de assinaturas e manutenção."
+    ],
+    "historia": [
+      "Foi fundada em 1983, em São Paulo, por Laércio Cosentino e Ernesto Haberkorn, com o nome de Microsiga. Passou a se chamar TOTVS em 2005 e abriu o capital em 2006.",
+      "Cresceu com aquisições, como a da Datasul, em 2008, e a da RM Sistemas, em 2006."
+    ],
+    "observar": "Empresas de software costumam reagir mais aos juros, que pesam no valor dos lucros esperados no futuro.",
+    "fontes": [["TOTVS, Relações com Investidores", "https://ri.totvs.com/"]]
+  }
+}

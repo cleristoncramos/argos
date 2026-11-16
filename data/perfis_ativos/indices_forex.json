@@ -1,0 +1,229 @@
+{
+  "^BVSP": {
+    "sobre": [
+      "O Ibovespa é o principal índice da bolsa brasileira. Mede o desempenho médio das ações mais negociadas da B3, como se fossem uma carteira teórica.",
+      "A carteira é revista a cada quatro meses, e o peso de cada empresa depende do valor de mercado das ações em circulação. Petrobras, Vale e os grandes bancos estão entre as maiores participações."
+    ],
+    "historia": [
+      "O índice foi criado em 2 de janeiro de 1968, com base 100. Com as trocas de moeda e a inflação alta das décadas seguintes, a pontuação foi ajustada várias vezes.",
+      "Entre as maiores quedas estão as da crise de 2008 e a de março de 2020, quando a bolsa acionou o circuit breaker seis vezes em oito pregões."
+    ],
+    "observar": "O valor é dado em pontos, e não em reais. Não é possível investir diretamente no índice; ETFs como o BOVA11 o replicam.",
+    "fontes": [["B3, Ibovespa", "https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-amplos/ibovespa.htm"]]
+  },
+  "^GSPC": {
+    "sobre": [
+      "O S&P 500 é o principal índice do mercado de ações dos Estados Unidos, com cerca de 500 grandes empresas, que representam a maior parte do valor de mercado das ações americanas.",
+      "O peso de cada empresa depende do valor de mercado, e o índice é calculado pela S&P Dow Jones Indices."
+    ],
+    "historia": [
+      "Na forma atual, com 500 empresas, foi lançado em 1957. Atravessou crises como a de 1987, a da bolha da internet em 2000, a de 2008 e a da pandemia, em 2020.",
+      "Nos anos recentes, as grandes empresas de tecnologia passaram a ter peso cada vez maior."
+    ],
+    "observar": "Valor em pontos, sem os dividendos. É a referência mais usada para o mercado americano e pode ser acompanhado por ETFs como SPY e VOO.",
+    "fontes": [["S&P Dow Jones Indices", "https://www.spglobal.com/spdji/en/indices/equity/sp-500/"]]
+  },
+  "^IXIC": {
+    "sobre": [
+      "O Nasdaq Composite reúne praticamente todas as ações negociadas na bolsa Nasdaq, que são milhares, com forte peso de empresas de tecnologia.",
+      "É diferente do Nasdaq-100, que tem só as 100 maiores empresas não financeiras da bolsa."
+    ],
+    "historia": [
+      "O índice começou em fevereiro de 1971, com base 100, mesmo ano em que a Nasdaq começou a funcionar como a primeira bolsa eletrônica.",
+      "No auge da bolha da internet, em março de 2000, passou de 5.000 pontos e depois caiu cerca de 78% até 2002. Só voltou a esse nível em 2015."
+    ],
+    "observar": "Valor em pontos. Tende a oscilar mais que o S&P 500, por concentrar tecnologia.",
+    "fontes": [["Nasdaq", "https://www.nasdaq.com/market-activity/index/comp"]]
+  },
+  "^DJI": {
+    "sobre": [
+      "O Dow Jones Industrial Average acompanha 30 grandes empresas americanas de vários setores.",
+      "Diferentemente da maioria dos índices, o peso de cada empresa depende do preço da ação, e não do tamanho da empresa."
+    ],
+    "historia": [
+      "Foi criado em 26 de maio de 1896 por Charles Dow e é um dos índices de ações mais antigos do mundo. No início, tinha 12 empresas, quase todas industriais.",
+      "A composição muda de tempos em tempos, e nenhuma das empresas originais continua no índice."
+    ],
+    "observar": "Valor em pontos. Com poucas empresas e peso pelo preço, o resultado pode se afastar do S&P 500 em alguns períodos.",
+    "fontes": [["S&P Dow Jones Indices", "https://www.spglobal.com/spdji/en/indices/equity/dow-jones-industrial-average/"]]
+  },
+  "^RUT": {
+    "sobre": [
+      "O Russell 2000 acompanha cerca de 2.000 empresas de pequeno porte (small caps) dos Estados Unidos.",
+      "É calculado pela FTSE Russell e serve de termômetro para empresas mais ligadas à economia interna americana."
+    ],
+    "historia": [
+      "Foi lançado em 1984 pela Frank Russell Company. A composição é revista periodicamente, com base no tamanho das empresas."
+    ],
+    "observar": "Valor em pontos. Small caps costumam sofrer mais com juros altos e crédito caro e oscilam mais que as grandes empresas.",
+    "fontes": [["FTSE Russell", "https://www.lseg.com/en/ftse-russell/indices/russell-us"]]
+  },
+  "^VIX": {
+    "sobre": [
+      "O VIX mede a volatilidade que o mercado espera para o S&P 500 nos 30 dias seguintes, calculada a partir dos preços das opções sobre o índice.",
+      "É chamado de índice do medo: costuma subir quando as ações caem e o mercado busca proteção."
+    ],
+    "historia": [
+      "Foi criado pela Cboe em 1993 e reformulado em 2003. Os maiores picos ocorreram na crise de 2008 e em março de 2020, no começo da pandemia, quando passou de 80 pontos."
+    ],
+    "observar": "O VIX não é um preço nem um investimento: é um indicador, que tende a voltar para a média depois dos picos. Variações percentuais dele têm leitura diferente das de uma ação.",
+    "fontes": [["Cboe, VIX", "https://www.cboe.com/tradable_products/vix/"]]
+  },
+  "^FTSE": {
+    "sobre": [
+      "O FTSE 100 acompanha as 100 maiores empresas da Bolsa de Londres, como Shell, AstraZeneca, HSBC e Unilever.",
+      "Boa parte da receita dessas empresas vem de fora do Reino Unido."
+    ],
+    "historia": [
+      "Foi lançado em 3 de janeiro de 1984, com base 1.000. O plebiscito do Brexit, em 2016, e a crise do mercado de títulos britânico, em 2022, estão entre os eventos marcantes do período recente."
+    ],
+    "observar": "Valor em pontos, sem os dividendos. Como as empresas faturam em dólar, a libra mais fraca costuma ajudar o índice.",
+    "fontes": [["FTSE Russell", "https://www.lseg.com/en/ftse-russell/indices/uk"]]
+  },
+  "^GDAXI": {
+    "sobre": [
+      "O DAX acompanha as 40 maiores empresas da Bolsa de Frankfurt, como SAP, Siemens, Allianz e Mercedes-Benz.",
+      "Diferentemente da maioria dos índices, o DAX é um índice de retorno total: considera os dividendos como se fossem reinvestidos."
+    ],
+    "historia": [
+      "Foi lançado em 1988, com base 1.000. Até setembro de 2021, tinha 30 empresas e passou então a ter 40."
+    ],
+    "observar": "Valor em pontos. Por incluir os dividendos, o DAX tende a subir mais ao longo do tempo que índices de preço como o FTSE 100 e o CAC 40, e as comparações precisam levar isso em conta.",
+    "fontes": [["STOXX, DAX", "https://www.stoxx.com/index/dax/"]]
+  },
+  "^FCHI": {
+    "sobre": [
+      "O CAC 40 acompanha 40 das maiores empresas da Bolsa de Paris (Euronext Paris), como LVMH, TotalEnergies, Airbus e L'Oréal.",
+      "As empresas de luxo têm grande peso no índice."
+    ],
+    "historia": [
+      "O índice tem base 1.000 em 31 de dezembro de 1987. Ficou mais de duas décadas abaixo do pico do ano 2000, só superado em 2021."
+    ],
+    "observar": "Valor em pontos, sem os dividendos. A demanda chinesa por artigos de luxo pesa no histórico recente.",
+    "fontes": [["Euronext, CAC 40", "https://live.euronext.com/en/product/indices/FR0003500008-XPAR"]]
+  },
+  "^N225": {
+    "sobre": [
+      "O Nikkei 225 é o principal índice da bolsa de Tóquio, com 225 grandes empresas japonesas, como Toyota, Sony e Fast Retailing.",
+      "Assim como o Dow Jones, o peso de cada empresa depende do preço da ação."
+    ],
+    "historia": [
+      "É calculado desde 1950 pelo jornal Nikkei. Em dezembro de 1989, no auge da bolha japonesa, chegou a quase 39 mil pontos, nível que só foi superado em fevereiro de 2024, mais de 34 anos depois.",
+      "Em 5 de agosto de 2024, teve a maior queda em pontos da sua história, com a desmontagem de operações financiadas em ienes."
+    ],
+    "observar": "Valor em pontos. O índice é um exemplo de que recuperar um pico pode levar décadas. O iene fraco costuma favorecer as exportadoras.",
+    "fontes": [["Nikkei Indexes", "https://indexes.nikkei.co.jp/en/nkave"]]
+  },
+  "^HSI": {
+    "sobre": [
+      "O Hang Seng é o principal índice da bolsa de Hong Kong, com grandes empresas locais e chinesas, como Tencent, Alibaba, HSBC e AIA.",
+      "É um termômetro do humor dos investidores internacionais com a China."
+    ],
+    "historia": [
+      "Foi lançado em 24 de novembro de 1969 pelo banco Hang Seng. Teve picos em 2007 e em 2018 e quedas longas a partir de 2021, com a regulação chinesa e a crise do setor imobiliário."
+    ],
+    "observar": "Valor em pontos. A política econômica da China e as tensões com os Estados Unidos pesam no histórico.",
+    "fontes": [["Hang Seng Indexes", "https://www.hsi.com.hk/eng"]]
+  },
+  "000001.SS": {
+    "sobre": [
+      "O Shanghai Composite (SSE Composite) acompanha todas as ações negociadas na Bolsa de Xangai, a maior da China continental.",
+      "O mercado é dominado por investidores locais e tem muitas empresas estatais."
+    ],
+    "historia": [
+      "O índice tem base 100 em dezembro de 1990, quando a bolsa reabriu. Teve uma alta muito forte até 2007, perto de 6.000 pontos, e uma bolha em 2015, seguida de queda rápida.",
+      "Desde então, oscila bem abaixo do pico de 2007."
+    ],
+    "observar": "Valor em pontos. Medidas do governo chinês, como estímulos e restrições à negociação, causam movimentos bruscos.",
+    "fontes": [["Shanghai Stock Exchange", "https://english.sse.com.cn/"]]
+  },
+  "USDBRL=X": {
+    "sobre": [
+      "Mostra quantos reais são necessários para comprar um dólar americano. Quando a taxa sobe, o real se desvaloriza.",
+      "Juros, inflação, contas públicas, preços de commodities e o humor global com países emergentes influenciam a cotação."
+    ],
+    "historia": [
+      "O real foi criado em julho de 1994, no Plano Real. Em janeiro de 1999, o Brasil passou ao câmbio flutuante, com a cotação definida pelo mercado.",
+      "O dólar teve picos em 2002, na crise de confiança da eleição presidencial, em 2015, em 2020, na pandemia, e no fim de 2024, quando passou de R$ 6."
+    ],
+    "observar": "É uma taxa de câmbio, e não o preço de uma ação. A cotação do Yahoo Finance pode diferir da PTAX, taxa oficial calculada pelo Banco Central.",
+    "fontes": [["Banco Central do Brasil, câmbio", "https://www.bcb.gov.br/estabilidadefinanceira/historicocotacoes"]]
+  },
+  "EURUSD=X": {
+    "sobre": [
+      "Mostra quantos dólares americanos valem um euro. É o par de moedas mais negociado do mundo.",
+      "As diferenças entre as políticas de juros do Banco Central Europeu e do Federal Reserve são um dos principais fatores."
+    ],
+    "historia": [
+      "O euro foi criado em 1999, e as cédulas e moedas começaram a circular em 2002. O euro chegou a valer cerca de US$ 1,60 em 2008 e ficou abaixo de US$ 1 em 2022, com a crise de energia na Europa."
+    ],
+    "observar": "É uma taxa de câmbio: quando sobe, o euro está se valorizando em relação ao dólar.",
+    "fontes": [["Banco Central Europeu", "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html"]]
+  },
+  "GBPUSD=X": {
+    "sobre": [
+      "Mostra quantos dólares americanos vale uma libra esterlina, a moeda do Reino Unido. No mercado, o par é apelidado de cable, por causa do cabo submarino de telégrafo que ligava Londres e Nova York.",
+      "Reage às decisões do Banco da Inglaterra e à situação política e fiscal britânica."
+    ],
+    "historia": [
+      "A libra caiu forte depois do plebiscito do Brexit, em junho de 2016, e chegou à mínima histórica em setembro de 2022, depois do anúncio de um pacote fiscal que abalou o mercado de títulos britânico."
+    ],
+    "observar": "É uma taxa de câmbio: quando sobe, a libra está se valorizando em relação ao dólar.",
+    "fontes": [["Bank of England", "https://www.bankofengland.co.uk/"]]
+  },
+  "USDJPY=X": {
+    "sobre": [
+      "Mostra quantos ienes japoneses valem um dólar americano. Quando a taxa sobe, o iene se desvaloriza.",
+      "O iene é tradicionalmente visto como moeda de proteção em momentos de crise, e os juros muito baixos do Japão fazem dele uma moeda usada para financiar operações em outros países."
+    ],
+    "historia": [
+      "O Banco do Japão manteve juros negativos de 2016 a março de 2024. Com a diferença de juros em relação aos Estados Unidos, o iene se desvalorizou fortemente entre 2022 e 2024."
+    ],
+    "observar": "É uma taxa de câmbio. Intervenções do governo japonês no mercado de câmbio aparecem como movimentos bruscos no histórico.",
+    "fontes": [["Banco do Japão", "https://www.boj.or.jp/en/"]]
+  },
+  "USDCHF=X": {
+    "sobre": [
+      "Mostra quantos francos suíços valem um dólar americano. Quando a taxa cai, o franco está se valorizando.",
+      "O franco suíço é considerado uma moeda de proteção, procurada em momentos de crise."
+    ],
+    "historia": [
+      "Entre 2011 e 2015, o Banco Nacional Suíço manteve um limite para a valorização do franco em relação ao euro. A retirada desse limite, em 15 de janeiro de 2015, provocou uma das maiores variações de um dia da história do mercado de câmbio."
+    ],
+    "observar": "É uma taxa de câmbio. Decisões do Banco Nacional Suíço podem causar saltos bruscos.",
+    "fontes": [["Banco Nacional Suíço", "https://www.snb.ch/en/"]]
+  },
+  "AUDUSD=X": {
+    "sobre": [
+      "Mostra quantos dólares americanos vale um dólar australiano.",
+      "A Austrália é grande exportadora de minério de ferro, carvão e gás, por isso o dólar australiano é chamado de moeda de commodities e é sensível à economia chinesa."
+    ],
+    "historia": [
+      "O dólar australiano passou a flutuar livremente em 1983. Teve picos no ciclo de alta das commodities, por volta de 2011, quando valeu mais que o dólar americano."
+    ],
+    "observar": "É uma taxa de câmbio: quando sobe, o dólar australiano está se valorizando. Tende a acompanhar o apetite global por risco.",
+    "fontes": [["Reserve Bank of Australia", "https://www.rba.gov.au/"]]
+  },
+  "USDCAD=X": {
+    "sobre": [
+      "Mostra quantos dólares canadenses valem um dólar americano. Quando a taxa sobe, o dólar canadense se desvaloriza.",
+      "O Canadá é grande exportador de petróleo, e a moeda tende a se fortalecer quando o petróleo sobe."
+    ],
+    "historia": [
+      "O dólar canadense chegou a valer mais que o americano em 2007 e em 2011, no auge dos preços das commodities, e se enfraqueceu depois da queda do petróleo em 2014 e 2015."
+    ],
+    "observar": "É uma taxa de câmbio. A relação comercial com os Estados Unidos, principal parceiro do Canadá, pesa muito.",
+    "fontes": [["Bank of Canada", "https://www.bankofcanada.ca/"]]
+  },
+  "USDCNY=X": {
+    "sobre": [
+      "Mostra quantos yuans (renminbi) chineses valem um dólar americano, no mercado da China continental.",
+      "A cotação não é totalmente livre: o banco central chinês define todos os dias uma taxa de referência e um intervalo de variação permitido."
+    ],
+    "historia": [
+      "Até 2005, o yuan ficava atrelado ao dólar. Em agosto de 2015, uma desvalorização inesperada abalou os mercados no mundo todo."
+    ],
+    "observar": "É uma taxa de câmbio administrada, por isso costuma oscilar menos que outras moedas. Saltos costumam refletir mudanças de política do governo chinês.",
+    "fontes": [["CFETS, mercado de câmbio da China", "https://www.chinamoney.com.cn/english/"]]
+  }
+}

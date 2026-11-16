@@ -1,0 +1,244 @@
+{
+  "GC=F": {
+    "sobre": [
+      "Contrato futuro de ouro negociado na bolsa Comex, em Nova York, cotado em dólares por onça-troy (cerca de 31,1 gramas).",
+      "O ouro é procurado como reserva de valor em momentos de crise, inflação alta ou incerteza, e os bancos centrais estão entre os grandes compradores."
+    ],
+    "historia": [
+      "Em 1971, os Estados Unidos encerraram a conversibilidade do dólar em ouro, e o preço passou a ser definido pelo mercado. Desde então, teve picos em 1980, 2011 e uma sequência de recordes a partir de 2024."
+    ],
+    "observar": "A série é a do contrato futuro mais próximo do vencimento, e a troca de contrato pode criar pequenos saltos. Juros reais altos nos Estados Unidos costumam pesar sobre o ouro, que não rende juros.",
+    "fontes": [["CME Group, ouro", "https://www.cmegroup.com/markets/metals/precious/gold.html"]]
+  },
+  "SI=F": {
+    "sobre": [
+      "Contrato futuro de prata negociado na Comex, cotado em dólares por onça-troy.",
+      "A prata tem uso duplo: é reserva de valor, como o ouro, e matéria-prima industrial, em eletrônicos e painéis solares."
+    ],
+    "historia": [
+      "Em 1980, uma tentativa dos irmãos Hunt de dominar o mercado levou a prata a um pico histórico, seguido de um colapso. Outro pico ocorreu em 2011."
+    ],
+    "observar": "Costuma acompanhar o ouro, mas com oscilações maiores, por causa da parte industrial da demanda.",
+    "fontes": [["CME Group, prata", "https://www.cmegroup.com/markets/metals/precious/silver.html"]]
+  },
+  "HG=F": {
+    "sobre": [
+      "Contrato futuro de cobre negociado na Comex, cotado em dólares por libra-peso (cerca de 454 gramas).",
+      "O cobre é usado em construção, fios elétricos, motores e veículos elétricos, por isso é chamado de termômetro da atividade industrial no mundo."
+    ],
+    "historia": [
+      "Chile e Peru estão entre os maiores produtores, e a China é a maior consumidora. A transição energética aumentou a expectativa de demanda nos anos recentes."
+    ],
+    "observar": "Reage à economia chinesa e a interrupções na produção das grandes minas.",
+    "fontes": [["CME Group, cobre", "https://www.cmegroup.com/markets/metals/base/copper.html"]]
+  },
+  "PL=F": {
+    "sobre": [
+      "Contrato futuro de platina negociado na Nymex, cotado em dólares por onça-troy.",
+      "A platina é usada em catalisadores de automóveis, joias e na indústria. A África do Sul concentra a maior parte da produção."
+    ],
+    "historia": [
+      "Até 2008, a platina valia bem mais que o ouro. Desde 2015, passou a valer menos, com a perda de espaço dos carros a diesel, que usam mais platina nos catalisadores."
+    ],
+    "observar": "Mercado pequeno e concentrado em poucos países produtores, o que gera oscilações fortes.",
+    "fontes": [["CME Group, platina", "https://www.cmegroup.com/markets/metals/precious/platinum.html"]]
+  },
+  "CL=F": {
+    "sobre": [
+      "Contrato futuro do petróleo WTI (West Texas Intermediate), referência para o petróleo produzido nos Estados Unidos, negociado na Nymex e cotado em dólares por barril.",
+      "A entrega física ocorre em Cushing, no estado de Oklahoma."
+    ],
+    "historia": [
+      "Os preços passaram de US$ 140 em 2008. Em 20 de abril de 2020, com a pandemia e a falta de lugar para armazenar o óleo, o contrato fechou com preço negativo pela primeira vez na história."
+    ],
+    "observar": "A série do contrato mais próximo pode ter distorções perto dos vencimentos, como em abril de 2020. Decisões da Opep+ e conflitos em regiões produtoras movem os preços.",
+    "fontes": [["CME Group, WTI", "https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.html"]]
+  },
+  "BZ=F": {
+    "sobre": [
+      "Contrato futuro do petróleo Brent, extraído no Mar do Norte e principal referência de preço do petróleo no mundo, inclusive para a Petrobras.",
+      "É negociado na bolsa ICE e cotado em dólares por barril."
+    ],
+    "historia": [
+      "Teve picos em 2008 e em 2022, depois da invasão da Ucrânia pela Rússia, e quedas fortes em 2008, 2014 e 2020."
+    ],
+    "observar": "Costuma ser cotado um pouco acima do WTI. Decisões da Opep+ e conflitos geopolíticos aparecem com força no histórico.",
+    "fontes": [["ICE, Brent", "https://www.ice.com/products/219/Brent-Crude-Futures"]]
+  },
+  "NG=F": {
+    "sobre": [
+      "Contrato futuro de gás natural com entrega no ponto Henry Hub, na Louisiana, referência de preço nos Estados Unidos, negociado na Nymex.",
+      "O gás é usado para gerar energia elétrica, para aquecimento e na indústria."
+    ],
+    "historia": [
+      "A produção de gás de xisto, a partir dos anos 2000, aumentou muito a oferta americana. Em 2022, o preço disparou com a crise de energia ligada à guerra na Ucrânia."
+    ],
+    "observar": "Um dos contratos mais voláteis: o clima (invernos frios, verões quentes) e o nível dos estoques movem o preço com força.",
+    "fontes": [["CME Group, gás natural", "https://www.cmegroup.com/markets/energy/natural-gas/natural-gas.html"]]
+  },
+  "ZS=F": {
+    "sobre": [
+      "Contrato futuro de soja negociado na bolsa de Chicago (CBOT), cotado em centavos de dólar por bushel (cerca de 27 kg).",
+      "Brasil e Estados Unidos são os maiores produtores e exportadores, e a China é a maior compradora."
+    ],
+    "historia": [
+      "A guerra comercial entre Estados Unidos e China, a partir de 2018, mexeu com os preços, e a alta de 2021 e 2022 levou a soja perto das máximas históricas."
+    ],
+    "observar": "Clima nas regiões produtoras, safras do Brasil e dos Estados Unidos e a demanda chinesa explicam a maior parte das oscilações.",
+    "fontes": [["CME Group, soja", "https://www.cmegroup.com/markets/agriculture/oilseeds/soybean.html"]]
+  },
+  "ZC=F": {
+    "sobre": [
+      "Contrato futuro de milho negociado na bolsa de Chicago (CBOT), cotado em centavos de dólar por bushel.",
+      "O milho é usado em ração animal, alimentos e na produção de etanol, principalmente nos Estados Unidos."
+    ],
+    "historia": [
+      "Teve picos em 2012, com uma seca forte nos Estados Unidos, e em 2022, no começo da guerra na Ucrânia, que também é grande exportadora."
+    ],
+    "observar": "O clima nas regiões produtoras e os relatórios de safra do governo americano costumam provocar saltos de um dia.",
+    "fontes": [["CME Group, milho", "https://www.cmegroup.com/markets/agriculture/grains/corn.html"]]
+  },
+  "ZW=F": {
+    "sobre": [
+      "Contrato futuro de trigo negociado na bolsa de Chicago (CBOT), cotado em centavos de dólar por bushel.",
+      "Rússia, União Europeia, Canadá, Estados Unidos e Ucrânia estão entre os maiores exportadores."
+    ],
+    "historia": [
+      "Em 2022, a invasão da Ucrânia pela Rússia levou o preço a níveis recordes, porque os dois países respondiam por uma parte grande das exportações mundiais."
+    ],
+    "observar": "Eventos geopolíticos e clima em grandes regiões produtoras aparecem como picos fortes e curtos no histórico.",
+    "fontes": [["CME Group, trigo", "https://www.cmegroup.com/markets/agriculture/grains/wheat.html"]]
+  },
+  "KC=F": {
+    "sobre": [
+      "Contrato futuro de café arábica (contrato C) negociado na bolsa ICE, em Nova York, cotado em centavos de dólar por libra-peso.",
+      "O Brasil é o maior produtor e exportador de café do mundo, por isso o clima nas regiões produtoras brasileiras pesa muito no preço."
+    ],
+    "historia": [
+      "Geadas no Brasil, como a de 2021, provocaram altas fortes. Em 2024 e 2025, o café chegou a recordes históricos, com safras menores no Brasil e no Vietnã."
+    ],
+    "observar": "O preço do café na bolsa é o do grão verde (cru) e não acompanha diretamente o preço do café no supermercado.",
+    "fontes": [["ICE, café C", "https://www.ice.com/products/15/Coffee-C-Futures"]]
+  },
+  "CC=F": {
+    "sobre": [
+      "Contrato futuro de cacau negociado na bolsa ICE, em Nova York, cotado em dólares por tonelada.",
+      "Costa do Marfim e Gana produzem mais da metade do cacau do mundo."
+    ],
+    "historia": [
+      "Em 2024, o preço passou de US$ 10 mil por tonelada, várias vezes acima da média histórica, depois de safras fracas na África Ocidental por clima e doenças nas plantações."
+    ],
+    "observar": "Oferta concentrada em poucos países: problemas de safra causam saltos muito grandes, como o de 2024.",
+    "fontes": [["ICE, cacau", "https://www.ice.com/products/7/Cocoa-Futures"]]
+  },
+  "SB=F": {
+    "sobre": [
+      "Contrato futuro de açúcar bruto (contrato nº 11) negociado na bolsa ICE, referência mundial de preço do açúcar, cotado em centavos de dólar por libra-peso.",
+      "O Brasil é o maior produtor e exportador de açúcar do mundo."
+    ],
+    "historia": [
+      "No Brasil, a cana pode virar açúcar ou etanol, e as usinas escolhem conforme o preço de cada um. Por isso, o preço do petróleo e a política de combustíveis brasileira também influenciam o açúcar."
+    ],
+    "observar": "O clima nas regiões de cana do Brasil e da Índia e o câmbio do real explicam boa parte das oscilações.",
+    "fontes": [["ICE, açúcar nº 11", "https://www.ice.com/products/23/Sugar-No-11-Futures"]]
+  },
+  "CT=F": {
+    "sobre": [
+      "Contrato futuro de algodão (contrato nº 2) negociado na bolsa ICE, cotado em centavos de dólar por libra-peso.",
+      "Estados Unidos, Brasil, Índia e China estão entre os maiores produtores; o Brasil é um dos maiores exportadores."
+    ],
+    "historia": [
+      "Em 2011, o algodão atingiu o maior preço desde o fim da Guerra Civil americana, depois de quebras de safra em vários países."
+    ],
+    "observar": "A demanda da indústria têxtil, sobretudo na Ásia, e o clima nas regiões produtoras movem o preço.",
+    "fontes": [["ICE, algodão nº 2", "https://www.ice.com/products/254/Cotton-No-2-Futures"]]
+  },
+  "GOLD11.SA": {
+    "sobre": [
+      "O Trend ETF LBMA Ouro (GOLD11) é um fundo de índice negociado na B3 que acompanha o LBMA Gold Price, a referência internacional do preço do ouro, convertido para reais.",
+      "É da família de ETFs Trend, da XP Asset, e permite acompanhar o ouro pela bolsa brasileira."
+    ],
+    "historia": [
+      "Foi lançado em dezembro de 2020, quando a oferta de ETFs de ativos internacionais e de commodities na B3 começou a crescer."
+    ],
+    "observar": "Cotado em reais: o histórico combina o preço do ouro em dólar com a variação do dólar em relação ao real. A logomarca exibida no mosaico é a do grupo da gestora.",
+    "fontes": [["B3, GOLD11", "https://borainvestir.b3.com.br/cotacoes/etfs/GOLD11/"], ["XP Asset, ETFs", "https://www.xpasset.com.br/fundos-abertos/etfs/"]]
+  },
+  "^IRX": {
+    "sobre": [
+      "Taxa de juros dos títulos do Tesouro americano de 13 semanas (T-bills), uma das referências de juros de curtíssimo prazo nos Estados Unidos.",
+      "Acompanha de perto a taxa básica definida pelo Federal Reserve."
+    ],
+    "historia": [
+      "Ficou perto de zero depois da crise de 2008 e novamente em 2020. Subiu rapidamente em 2022 e 2023, quando o Federal Reserve elevou os juros para combater a inflação."
+    ],
+    "observar": "O gráfico mostra uma taxa, em % ao ano, e não um preço. Variações percentuais de uma taxa (por exemplo, de 1% para 2% é +100%) devem ser lidas com cuidado.",
+    "fontes": [["Departamento do Tesouro dos EUA", "https://home.treasury.gov/policy-issues/financing-the-government/interest-rate-statistics"]]
+  },
+  "^FVX": {
+    "sobre": [
+      "Rendimento dos títulos do Tesouro americano com vencimento em 5 anos.",
+      "Reflete o que o mercado espera para os juros e a inflação nos anos seguintes."
+    ],
+    "historia": [
+      "Ficou em níveis historicamente baixos depois de 2008 e na pandemia e subiu fortemente a partir de 2022, com a alta dos juros nos Estados Unidos."
+    ],
+    "observar": "O gráfico mostra uma taxa, em % ao ano, e não um preço. Quando a taxa sobe, o preço dos títulos já emitidos cai.",
+    "fontes": [["Departamento do Tesouro dos EUA", "https://home.treasury.gov/policy-issues/financing-the-government/interest-rate-statistics"]]
+  },
+  "^TNX": {
+    "sobre": [
+      "Rendimento dos títulos do Tesouro americano com vencimento em 10 anos, considerado a principal taxa de juros de longo prazo do mundo.",
+      "Serve de referência para financiamentos imobiliários nos Estados Unidos e para o valor de ações e outros ativos no mundo todo."
+    ],
+    "historia": [
+      "Depois de décadas de queda desde o pico do início dos anos 1980, chegou à mínima histórica em 2020, abaixo de 1% ao ano, e voltou a passar de 4% em 2023."
+    ],
+    "observar": "O gráfico mostra uma taxa, em % ao ano, e não um preço. Quando a taxa sobe, o preço dos títulos cai, como mostra o ETF IEF.",
+    "fontes": [["Departamento do Tesouro dos EUA", "https://home.treasury.gov/policy-issues/financing-the-government/interest-rate-statistics"]]
+  },
+  "^TYX": {
+    "sobre": [
+      "Rendimento dos títulos do Tesouro americano com vencimento em 30 anos, o prazo mais longo emitido regularmente.",
+      "É sensível às expectativas de inflação e à situação fiscal dos Estados Unidos no longo prazo."
+    ],
+    "historia": [
+      "O título de 30 anos deixou de ser emitido entre 2002 e 2006. A taxa chegou à mínima histórica em 2020 e subiu fortemente a partir de 2022."
+    ],
+    "observar": "O gráfico mostra uma taxa, em % ao ano, e não um preço. O ETF TLT, de títulos longos, costuma se mover no sentido contrário.",
+    "fontes": [["Departamento do Tesouro dos EUA", "https://home.treasury.gov/policy-issues/financing-the-government/interest-rate-statistics"]]
+  },
+  "BIL": {
+    "sobre": [
+      "O SPDR Bloomberg 1-3 Month T-Bill ETF investe em títulos do Tesouro americano que vencem em 1 a 3 meses (T-bills).",
+      "Funciona de forma parecida com uma aplicação de curtíssimo prazo em dólar."
+    ],
+    "historia": [
+      "Foi lançado em 2007 pela State Street."
+    ],
+    "observar": "O preço da cota quase não varia, e os juros recebidos são distribuídos aos cotistas. Por isso, o histórico de preços do Argos mostra quase nada do retorno real do fundo.",
+    "fontes": [["State Street (SPDR)", "https://www.ssga.com/us/en/intermediary/etfs/spdr-bloomberg-1-3-month-t-bill-etf-bil"]]
+  },
+  "SHV": {
+    "sobre": [
+      "O iShares 0-1 Year Treasury Bond ETF investe em títulos do Tesouro americano com vencimento de até um ano.",
+      "É gerido pela BlackRock."
+    ],
+    "historia": [
+      "Foi lançado em 2007, com o nome de iShares Short Treasury Bond ETF."
+    ],
+    "observar": "Como no BIL, a cota oscila pouco e quase todo o retorno vem dos juros distribuídos, que não entram no histórico de preços.",
+    "fontes": [["iShares (BlackRock)", "https://www.ishares.com/us/products/239466/ishares-short-treasury-bond-etf"]]
+  },
+  "VGSH": {
+    "sobre": [
+      "O Vanguard Short-Term Treasury ETF investe em títulos do Tesouro americano com vencimento entre 1 e 3 anos.",
+      "Tem taxa de administração muito baixa."
+    ],
+    "historia": [
+      "Foi lançado em 2009 pela Vanguard."
+    ],
+    "observar": "Oscila pouco, mas um pouco mais que o BIL e o SHV, por ter prazos maiores. Em 2022, a alta dos juros provocou uma queda pequena na cota.",
+    "fontes": [["Vanguard", "https://investor.vanguard.com/investment-products/etfs/profile/vgsh"]]
+  }
+}

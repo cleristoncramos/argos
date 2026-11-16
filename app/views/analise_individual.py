@@ -27,6 +27,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from app.ui.asset_profile import render_asset_profile
 from app.ui.page_header import render_page_header
 from app.ui.charts import apply_custom_layout
 from app.ui.chart_guide import render_chart_guide, render_chart_tip
@@ -375,6 +376,9 @@ render_analysis_summary(
     details_label="Detalhes do processamento e qualidade dos dados",
     quality_alerts=st.session_state.get("asset_quality"),
 )
+
+# "Sobre o ativo" (16/11/2026): texto descritivo e números do período, recolhido.
+render_asset_profile(logo_asset, symbol, st.session_state.get("asset_daily"))
 
 st.markdown("<div style='margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
 

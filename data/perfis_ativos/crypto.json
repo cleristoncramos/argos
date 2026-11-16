@@ -1,0 +1,230 @@
+{
+  "BTC-USD": {
+    "sobre": [
+      "O Bitcoin (BTC) é a primeira criptomoeda descentralizada. Ele funciona como um registro público de transações (a blockchain), mantido por uma rede de computadores sem um emissor central, como um banco ou um governo.",
+      "A rede usa o mecanismo de prova de trabalho (proof of work): os mineradores gastam poder de processamento para validar os blocos e recebem novos bitcoins como recompensa. A quantidade máxima que pode existir é de 21 milhões de unidades."
+    ],
+    "historia": [
+      "O documento que descreve o Bitcoin foi publicado em outubro de 2008 por Satoshi Nakamoto, pseudônimo de autoria até hoje desconhecida. O primeiro bloco da rede foi minerado em 3 de janeiro de 2009.",
+      "Aproximadamente a cada quatro anos, a recompensa por bloco cai pela metade (o halving), o que já ocorreu em 2012, 2016, 2020 e 2024. Em janeiro de 2024, a SEC aprovou nos Estados Unidos os primeiros fundos de bitcoin à vista negociados em bolsa."
+    ],
+    "observar": "Negocia 24 horas por dia, todos os dias, com cotação em dólar. O histórico tem fases longas de alta e quedas profundas, e a volatilidade costuma ser bem maior que a de ações e índices.",
+    "fontes": [["Bitcoin.org", "https://bitcoin.org/pt_BR/"]]
+  },
+  "ETH-USD": {
+    "sobre": [
+      "O Ether (ETH) é o token nativo da rede Ethereum, uma blockchain programável. Nela rodam contratos inteligentes (smart contracts): programas que executam regras automaticamente, base de aplicações de finanças descentralizadas, tokens e coleções digitais.",
+      "O ETH é usado para pagar as taxas das transações (o gas) e, desde 2022, para participar da validação da rede por prova de participação (proof of stake)."
+    ],
+    "historia": [
+      "O Ethereum foi proposto em 2013 por Vitalik Buterin e lançado em 30 de julho de 2015, desenvolvido por um grupo de cofundadores e apoiado pela Ethereum Foundation.",
+      "Em setembro de 2022, a atualização conhecida como The Merge trocou a mineração por prova de trabalho pela prova de participação, o que reduziu muito o consumo de energia da rede."
+    ],
+    "observar": "Cotado em dólar, com negociação contínua. Costuma acompanhar o ciclo do Bitcoin, mas reage também a atualizações da própria rede e à atividade das aplicações que rodam nela.",
+    "fontes": [["Ethereum.org", "https://ethereum.org/pt-br/"]]
+  },
+  "BNB-USD": {
+    "sobre": [
+      "O BNB é o token da BNB Chain, rede de blockchains criada a partir do ecossistema da Binance, uma das maiores corretoras de criptoativos do mundo.",
+      "Ele é usado para pagar taxas de transação na BNB Smart Chain e para descontos e serviços dentro da Binance. Parte dos tokens é retirada de circulação periodicamente (queima), o que reduz a oferta total ao longo do tempo."
+    ],
+    "historia": [
+      "O BNB foi lançado em 2017, numa oferta inicial de moedas da Binance, inicialmente como um token na rede Ethereum. Em 2019 passou para a rede própria da Binance (Binance Chain) e, em 2020, ganhou a BNB Smart Chain, compatível com contratos inteligentes.",
+      "A trajetória do token está ligada à da Binance, que em 2023 fez um acordo com autoridades dos Estados Unidos sobre violações de regras de prevenção à lavagem de dinheiro."
+    ],
+    "observar": "Além do ciclo geral das criptomoedas, notícias regulatórias e operacionais sobre a Binance costumam aparecer no histórico do BNB.",
+    "fontes": [["BNB Chain", "https://www.bnbchain.org/en"]]
+  },
+  "SOL-USD": {
+    "sobre": [
+      "Solana (SOL) é o token nativo de uma blockchain projetada para alta velocidade e custo baixo por transação, usada por aplicações descentralizadas, finanças digitais e mercados de tokens.",
+      "A rede combina a prova de participação (proof of stake) com um mecanismo próprio de ordenação dos eventos no tempo, chamado proof of history, e processa transações em paralelo. O SOL paga as taxas e é usado na validação da rede."
+    ],
+    "historia": [
+      "O projeto foi idealizado pelo engenheiro Anatoly Yakovenko, que publicou em 2017 o documento técnico da proposta. A rede principal foi lançada em 2020, com o apoio da Solana Labs e da Solana Foundation.",
+      "Entre 2021 e 2022, a rede teve interrupções que pararam a produção de blocos por horas. No fim de 2022, a falência da corretora FTX, que tinha grande exposição ao ecossistema Solana, derrubou o preço do token."
+    ],
+    "observar": "Cotado em dólar e muito volátil. Episódios de instabilidade da rede e de empresas ligadas ao ecossistema deixaram marcas fortes no histórico.",
+    "fontes": [["Solana", "https://solana.com/pt"]]
+  },
+  "XRP-USD": {
+    "sobre": [
+      "O XRP é o ativo nativo do XRP Ledger, uma blockchain voltada a pagamentos rápidos e de baixo custo, inclusive entre moedas diferentes.",
+      "A rede não usa mineração: os validadores chegam a um consenso sobre a ordem das transações. A empresa Ripple usa o XRP em parte das suas soluções para transferências internacionais entre instituições financeiras."
+    ],
+    "historia": [
+      "O XRP Ledger foi lançado em 2012 por David Schwartz, Jed McCaleb e Arthur Britto, que depois fundaram a empresa hoje chamada Ripple. Todos os 100 bilhões de XRP foram criados no lançamento.",
+      "Em dezembro de 2020, a SEC processou a Ripple por vender XRP como valor mobiliário não registrado. Em 2023, uma decisão judicial considerou que as vendas em bolsas a investidores em geral não eram ofertas de valores mobiliários, e o caso foi encerrado em 2025."
+    ],
+    "observar": "Cotado em dólar. O processo judicial nos Estados Unidos marcou fortemente o histórico, com quedas no anúncio e altas nas decisões favoráveis.",
+    "fontes": [["XRP Ledger", "https://xrpl.org/"]]
+  },
+  "ADA-USD": {
+    "sobre": [
+      "Cardano (ADA) é uma blockchain de prova de participação desenvolvida a partir de pesquisa acadêmica revisada por pares. O protocolo de consenso, chamado Ouroboros, foi publicado em artigos científicos.",
+      "O ADA é usado para pagar taxas, para delegar participação na validação da rede e na governança do projeto."
+    ],
+    "historia": [
+      "O projeto foi fundado por Charles Hoskinson, um dos cofundadores do Ethereum, e lançado em setembro de 2017. O desenvolvimento envolve três organizações: a Input Output (IOHK), a Cardano Foundation e a Emurgo.",
+      "Os contratos inteligentes chegaram à rede em setembro de 2021, com a atualização Alonzo, que ampliou as aplicações possíveis."
+    ],
+    "observar": "Cotado em dólar. As grandes atualizações da rede costumam ser antecipadas com meses de expectativa, e o preço oscila em torno dessas datas.",
+    "fontes": [["Cardano", "https://cardano.org/"]]
+  },
+  "DOGE-USD": {
+    "sobre": [
+      "Dogecoin (DOGE) é uma criptomoeda criada como brincadeira, com a imagem do cachorro da raça shiba inu de um meme conhecido da internet. Com o tempo, ganhou uma comunidade grande e passou a ser usada em gorjetas e pagamentos.",
+      "Diferentemente do Bitcoin, não tem limite máximo de unidades: novas moedas são emitidas continuamente. A rede usa prova de trabalho, com mineração compartilhada com a do Litecoin."
+    ],
+    "historia": [
+      "Foi criada em dezembro de 2013 pelos engenheiros de software Billy Markus e Jackson Palmer, a partir de código derivado do Litecoin.",
+      "Em 2021, a moeda teve altas muito fortes impulsionadas por redes sociais e por publicações de personalidades, como Elon Musk, e se tornou o exemplo mais conhecido das chamadas meme coins."
+    ],
+    "observar": "Cotada em dólar. O preço reage muito a redes sociais e à atenção do público, com picos curtos e quedas rápidas, o que torna o padrão histórico ainda menos previsível.",
+    "fontes": [["Dogecoin", "https://dogecoin.com/"]]
+  },
+  "AVAX-USD": {
+    "sobre": [
+      "Avalanche (AVAX) é uma plataforma de blockchain para aplicações descentralizadas e redes personalizadas, com confirmação de transações em poucos segundos.",
+      "A rede principal é formada por três cadeias com funções diferentes (troca de ativos, coordenação dos validadores e contratos inteligentes compatíveis com o Ethereum). O AVAX paga taxas e é usado na validação por prova de participação."
+    ],
+    "historia": [
+      "O protocolo de consenso foi descrito em 2018 por pesquisadores ligados à Universidade Cornell. A empresa Ava Labs, cofundada pelo professor Emin Gün Sirer, lançou a rede principal em setembro de 2020.",
+      "Desde então, a plataforma passou a permitir que empresas e projetos criem redes próprias conectadas ao ecossistema Avalanche."
+    ],
+    "observar": "Cotado em dólar e com histórico curto em relação ao do Bitcoin. Tende a oscilar mais que as criptomoedas maiores.",
+    "fontes": [["Avalanche", "https://www.avax.network/"]]
+  },
+  "TRX-USD": {
+    "sobre": [
+      "TRON (TRX) é o token de uma blockchain voltada a aplicações descentralizadas e transferências de baixo custo.",
+      "A rede se tornou uma das principais vias de circulação da stablecoin USDT (Tether), muito usada para transferências em dólar digital. O TRX paga os recursos de processamento da rede e participa da escolha dos validadores."
+    ],
+    "historia": [
+      "O projeto foi fundado em 2017 por Justin Sun, com uma oferta inicial de moedas no mesmo ano. A rede principal própria foi lançada em 2018, quando o token deixou de ser um token na rede Ethereum.",
+      "Em 2018, a TRON Foundation comprou a BitTorrent, empresa do conhecido protocolo de compartilhamento de arquivos."
+    ],
+    "observar": "Cotado em dólar. Movimentos ligados ao uso de stablecoins e a eventos regionais já provocaram altas e quedas muito concentradas em poucos dias, como em dezembro de 2024.",
+    "fontes": [["TRON", "https://tron.network/"]]
+  },
+  "LINK-USD": {
+    "sobre": [
+      "Chainlink (LINK) é uma rede de oráculos: serviços que levam dados do mundo externo, como preços de ativos, para dentro das blockchains, onde os contratos inteligentes não conseguem buscá-los sozinhos.",
+      "O token LINK é usado para pagar os operadores dos nós que fornecem esses dados e como garantia de que eles cumprirão o serviço."
+    ],
+    "historia": [
+      "O projeto foi fundado por Sergey Nazarov e Steve Ellis. O documento técnico foi publicado em 2017, com a participação do pesquisador Ari Juels, e a rede principal entrou em funcionamento em 2019, na rede Ethereum.",
+      "Com o crescimento das finanças descentralizadas, os dados de preço da Chainlink passaram a ser usados por muitas aplicações em várias blockchains."
+    ],
+    "observar": "Cotado em dólar. O preço depende do uso dos serviços da rede nas finanças descentralizadas e do ciclo geral das criptomoedas.",
+    "fontes": [["Chainlink", "https://chain.link/"]]
+  },
+  "LTC-USD": {
+    "sobre": [
+      "Litecoin (LTC) é uma criptomoeda voltada a pagamentos, criada a partir do código do Bitcoin com algumas mudanças: blocos a cada 2,5 minutos, em média, e um algoritmo de mineração diferente (Scrypt).",
+      "O limite máximo é de 84 milhões de unidades, quatro vezes o do Bitcoin, e a emissão também cai pela metade periodicamente."
+    ],
+    "historia": [
+      "Foi lançado em outubro de 2011 por Charlie Lee, então engenheiro do Google, e por muito tempo foi descrito como a prata digital, em comparação ao ouro digital do Bitcoin.",
+      "Em 2022, a rede ganhou o recurso MWEB, que permite transações com mais privacidade."
+    ],
+    "observar": "Cotado em dólar. Por ser uma das criptomoedas mais antigas, tem histórico longo, mas perdeu participação de mercado para projetos mais novos.",
+    "fontes": [["Litecoin", "https://litecoin.org/"]]
+  },
+  "BCH-USD": {
+    "sobre": [
+      "Bitcoin Cash (BCH) é uma criptomoeda que surgiu de uma divisão da rede Bitcoin. Ela aceita blocos maiores, o que permite mais transações por bloco e taxas mais baixas, com foco no uso como dinheiro eletrônico.",
+      "Usa prova de trabalho, como o Bitcoin, e o mesmo limite de 21 milhões de unidades."
+    ],
+    "historia": [
+      "Nasceu em 1º de agosto de 2017, numa divisão da rede (hard fork) motivada pelo debate sobre o tamanho dos blocos do Bitcoin. Quem tinha bitcoins naquela data passou a ter a mesma quantidade de Bitcoin Cash.",
+      "Em 2018, uma nova disputa dentro da comunidade gerou outra divisão, que deu origem ao Bitcoin SV."
+    ],
+    "observar": "Cotado em dólar. O histórico começa em 2017 e costuma acompanhar o Bitcoin, com oscilações maiores.",
+    "fontes": [["Bitcoin Cash", "https://bitcoincash.org/"]]
+  },
+  "XLM-USD": {
+    "sobre": [
+      "Stellar (XLM) é uma rede de pagamentos aberta que permite transferir e converter valores entre moedas diferentes em poucos segundos e com custo muito baixo.",
+      "O lumen (XLM) é o ativo nativo da rede, usado para pagar taxas e como ponte em conversões. A rede é mantida pela Stellar Development Foundation, uma organização sem fins lucrativos."
+    ],
+    "historia": [
+      "A Stellar foi criada em 2014 por Jed McCaleb, também cofundador do projeto que deu origem ao XRP, e pela advogada Joyce Kim.",
+      "Em 2015, a rede passou a usar um protocolo de consenso próprio, o Stellar Consensus Protocol."
+    ],
+    "observar": "Cotado em dólar. O histórico tem semelhanças com o do XRP, já que os dois projetos disputam o mesmo segmento de pagamentos.",
+    "fontes": [["Stellar", "https://stellar.org/"]]
+  },
+  "DOT-USD": {
+    "sobre": [
+      "Polkadot (DOT) é uma rede que conecta várias blockchains especializadas, permitindo que troquem dados e ativos entre si, com segurança compartilhada.",
+      "O DOT é usado na validação por prova de participação, na governança da rede e para reservar espaço para as blockchains conectadas."
+    ],
+    "historia": [
+      "O projeto foi criado por Gavin Wood, um dos cofundadores do Ethereum, com documento técnico publicado em 2016. A Web3 Foundation apoia o desenvolvimento.",
+      "A rede foi lançada em 2020, e as primeiras blockchains conectadas (as parachains) entraram em funcionamento no fim de 2021."
+    ],
+    "observar": "Cotado em dólar. Em 2020, a unidade do DOT foi redenominada (cada DOT antigo passou a valer 100 novos), o que precisa ser lembrado ao comparar preços muito antigos.",
+    "fontes": [["Polkadot", "https://polkadot.com/"]]
+  },
+  "NEAR-USD": {
+    "sobre": [
+      "NEAR Protocol é uma blockchain de prova de participação para aplicações descentralizadas, que divide o processamento em partes paralelas (sharding) para ganhar capacidade.",
+      "O token NEAR paga taxas, armazenamento de dados e é usado na validação e na governança da rede."
+    ],
+    "historia": [
+      "Foi fundado em 2018 por Illia Polosukhin e Alexander Skidanov. Polosukhin é um dos autores do artigo de 2017 que apresentou a arquitetura Transformer, base de muitos modelos de inteligência artificial.",
+      "A rede principal foi lançada em 2020 e, desde então, o projeto tem associado sua proposta a aplicações que combinam blockchain e inteligência artificial."
+    ],
+    "observar": "Cotado em dólar, com histórico curto e oscilações amplas.",
+    "fontes": [["NEAR", "https://near.org/"]]
+  },
+  "AAVE-USD": {
+    "sobre": [
+      "Aave é um protocolo de finanças descentralizadas para empréstimos: os usuários depositam criptoativos em fundos comuns e outros tomam emprestado oferecendo garantias, com juros definidos pela oferta e pela demanda.",
+      "O token AAVE é usado na governança do protocolo e como reserva de segurança em caso de perdas."
+    ],
+    "historia": [
+      "O projeto começou em 2017 com o nome ETHLend, criado por Stani Kulechov, e passou a se chamar Aave em 2018. O protocolo atual foi lançado em janeiro de 2020.",
+      "Em 2020, o token antigo (LEND) foi trocado pelo AAVE na proporção de 100 para 1."
+    ],
+    "observar": "Cotado em dólar. Reage à atividade das finanças descentralizadas e a episódios de falhas ou ataques a protocolos do setor.",
+    "fontes": [["Aave", "https://aave.com/"]]
+  },
+  "UNI7083-USD": {
+    "sobre": [
+      "Uniswap é um protocolo de troca descentralizada de tokens na rede Ethereum e em outras redes. Em vez de um livro de ofertas, usa fundos de liquidez depositados pelos próprios usuários e uma fórmula que define os preços automaticamente.",
+      "O UNI é o token de governança do protocolo: quem o possui vota em mudanças e no uso dos recursos da comunidade."
+    ],
+    "historia": [
+      "O protocolo foi lançado em novembro de 2018 por Hayden Adams. O token UNI foi criado em setembro de 2020 e distribuído gratuitamente a quem já havia usado a plataforma.",
+      "No Yahoo Finance, o ticker tem o número 7083 para diferenciá-lo de outros ativos com a sigla UNI."
+    ],
+    "observar": "Cotado em dólar. O histórico começa em 2020 e acompanha o volume de negociação nas trocas descentralizadas.",
+    "fontes": [["Uniswap", "https://uniswap.org/"]]
+  },
+  "HBAR-USD": {
+    "sobre": [
+      "Hedera (HBAR) é uma rede pública que usa um algoritmo de consenso chamado hashgraph, diferente das blockchains tradicionais, com confirmações rápidas e taxas baixas e previsíveis.",
+      "A rede é governada por um conselho formado por grandes empresas e universidades de vários países. O HBAR paga as taxas e é usado para proteger a rede."
+    ],
+    "historia": [
+      "O algoritmo hashgraph foi criado por Leemon Baird, que fundou o projeto com Mance Harmon. A rede principal foi aberta ao público em 2019.",
+      "Em 2022, o código do hashgraph passou a ser aberto."
+    ],
+    "observar": "Cotado em dólar. Parcerias anunciadas com empresas do conselho costumam aparecer como saltos de curto prazo no histórico.",
+    "fontes": [["Hedera", "https://hedera.com/"]]
+  },
+  "HASH11.SA": {
+    "sobre": [
+      "O HASH11 é um fundo de índice (ETF) negociado na B3 que replica o Nasdaq Crypto Index, uma cesta de criptoativos de grande porte, com predominância de Bitcoin e Ethereum.",
+      "Permite acompanhar um conjunto de criptomoedas pela bolsa brasileira, com cotação em reais e sem precisar de uma corretora de criptoativos. É gerido pela Hashdex."
+    ],
+    "historia": [
+      "Foi um dos primeiros ETFs de criptoativos negociados no Brasil, listado na B3 em abril de 2021. O índice de referência foi desenvolvido pela Hashdex em parceria com a Nasdaq.",
+      "A composição do índice é revista periodicamente, conforme critérios de tamanho e de negociação dos ativos."
+    ],
+    "observar": "Cotado em reais e negociado só nos dias de pregão da B3. Como os criptoativos são cotados em dólar, a variação do câmbio também aparece no histórico. O fundo cobra taxa de administração.",
+    "fontes": [["Hashdex", "https://www.hashdex.com/pt-BR"]]
+  }
+}

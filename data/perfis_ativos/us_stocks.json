@@ -1,0 +1,206 @@
+{
+  "AAPL": {
+    "sobre": [
+      "A Apple fabrica eletrônicos de consumo, como iPhone, Mac, iPad, Apple Watch e fones AirPods, e oferece serviços digitais, como App Store, iCloud, Apple Music e Apple Pay.",
+      "O iPhone responde pela maior parte da receita, e a área de serviços ganhou peso crescente nos últimos anos."
+    ],
+    "historia": [
+      "Foi fundada em 1º de abril de 1976 por Steve Jobs, Steve Wozniak e Ronald Wayne, na Califórnia, e abriu o capital em 1980. Depois de anos de dificuldade, Jobs voltou à empresa em 1997.",
+      "O lançamento do iPhone, em 2007, transformou a empresa. Em 2018, a Apple foi a primeira companhia americana a valer mais de US$ 1 trilhão em bolsa."
+    ],
+    "observar": "Os desdobramentos de ações (o mais recente em 2020, de 4 para 1) já vêm ajustados na série do Yahoo Finance. Lançamentos de produtos e a relação comercial entre Estados Unidos e China costumam aparecer no histórico.",
+    "fontes": [["Apple, Investor Relations", "https://investor.apple.com/"]]
+  },
+  "MSFT": {
+    "sobre": [
+      "A Microsoft desenvolve software, como o sistema Windows e o pacote Office (hoje Microsoft 365), e é uma das maiores empresas de computação em nuvem do mundo, com o Azure.",
+      "Atua também em videogames (Xbox e Activision Blizzard), na rede profissional LinkedIn e em inteligência artificial."
+    ],
+    "historia": [
+      "Foi fundada em 1975 por Bill Gates e Paul Allen. O sistema MS-DOS e, depois, o Windows, lançado em 1985, tornaram a empresa dominante nos computadores pessoais. Abriu o capital em 1986.",
+      "A partir de 2014, sob o comando de Satya Nadella, a empresa reorientou o negócio para a nuvem. Desde 2019, é a principal investidora da OpenAI."
+    ],
+    "observar": "O crescimento da nuvem e os investimentos em inteligência artificial são os principais fatores observados no histórico recente.",
+    "fontes": [["Microsoft, Investor Relations", "https://www.microsoft.com/en-us/investor"]]
+  },
+  "NVDA": {
+    "sobre": [
+      "A Nvidia projeta processadores gráficos (GPUs), usados inicialmente em jogos e hoje também em centros de dados para treinar e executar modelos de inteligência artificial.",
+      "A empresa não fabrica os chips: o projeto é dela, e a produção fica a cargo de fabricantes como a TSMC. A plataforma de software CUDA é parte importante do negócio."
+    ],
+    "historia": [
+      "Foi fundada em 1993 por Jensen Huang, Chris Malachowsky e Curtis Priem. Em 1999, lançou a GeForce 256, apresentada como a primeira GPU, e abriu o capital no mesmo ano.",
+      "A partir de 2023, a demanda por chips para inteligência artificial fez a empresa se tornar uma das mais valiosas do mundo. Em novembro de 2026, Jensen Huang deixou o comando da empresa, que dirigia desde a fundação."
+    ],
+    "observar": "A série já vem ajustada pelos desdobramentos de ações (como o de 10 para 1 em 2024). Restrições de exportação de chips e o ritmo dos investimentos em inteligência artificial aparecem com força no histórico.",
+    "fontes": [["Nvidia, Investor Relations", "https://investor.nvidia.com/"]]
+  },
+  "AMZN": {
+    "sobre": [
+      "A Amazon é uma das maiores empresas de comércio eletrônico do mundo e líder em computação em nuvem, com a Amazon Web Services (AWS), sua divisão mais lucrativa.",
+      "Atua também em publicidade, streaming de vídeo e música (Prime Video), dispositivos (Kindle, Echo) e supermercados (Whole Foods)."
+    ],
+    "historia": [
+      "Foi fundada por Jeff Bezos em 1994, em Seattle, como uma livraria on-line, e abriu o capital em 1997.",
+      "A AWS foi lançada em 2006 e o programa Prime, em 2005. Em 2017, comprou a rede de supermercados Whole Foods. Bezos deixou o cargo de presidente-executivo em 2021."
+    ],
+    "observar": "Em 2022, as ações foram desdobradas na proporção de 20 para 1, ajuste que já vem na série. O desempenho da AWS costuma mover a ação nos resultados trimestrais.",
+    "fontes": [["Amazon, Investor Relations", "https://ir.aboutamazon.com/"]]
+  },
+  "GOOGL": {
+    "sobre": [
+      "A Alphabet é a empresa controladora do Google, dono do maior buscador da internet, do YouTube, do sistema Android e do Google Cloud.",
+      "A maior parte da receita vem de publicidade. O GOOGL é a ação de classe A, com direito a voto."
+    ],
+    "historia": [
+      "O Google foi fundado em 1998 por Larry Page e Sergey Brin, estudantes da Universidade Stanford, e abriu o capital em 2004. Em 2006, comprou o YouTube.",
+      "Em 2015, a empresa foi reorganizada sob a Alphabet, que separa o Google de outros negócios, como a Waymo (carros autônomos)."
+    ],
+    "observar": "Em 2022, as ações foram desdobradas na proporção de 20 para 1, ajuste que já vem na série. Processos antitruste e a concorrência em inteligência artificial aparecem no histórico recente.",
+    "fontes": [["Alphabet, Investor Relations", "https://abc.xyz/investor/"]]
+  },
+  "META": {
+    "sobre": [
+      "A Meta Platforms é dona do Facebook, do Instagram, do WhatsApp e do Messenger, usados por bilhões de pessoas. Quase toda a receita vem de publicidade.",
+      "A empresa investe também em realidade virtual e aumentada (Reality Labs) e em inteligência artificial."
+    ],
+    "historia": [
+      "O Facebook foi criado em 2004 por Mark Zuckerberg e colegas na Universidade Harvard e abriu o capital em 2012. Comprou o Instagram em 2012 e o WhatsApp em 2014.",
+      "Em 2021, a empresa passou a se chamar Meta, para marcar a aposta no metaverso. Em 2022, as ações caíram mais de 60%, com gastos altos e queda na publicidade, e se recuperaram nos anos seguintes."
+    ],
+    "observar": "Até 2021, o ticker era FB. Regulação de privacidade e mudanças em plataformas de terceiros, como o iOS, já afetaram fortemente a ação.",
+    "fontes": [["Meta, Investor Relations", "https://investor.atmeta.com/"]]
+  },
+  "TSLA": {
+    "sobre": [
+      "A Tesla fabrica carros elétricos, como os modelos 3, Y, S e X, e atua também em baterias para armazenamento de energia e em painéis solares.",
+      "Desenvolve ainda sistemas de direção autônoma e robôs humanoides."
+    ],
+    "historia": [
+      "Foi fundada em 2003 por Martin Eberhard e Marc Tarpenning. Elon Musk entrou como investidor em 2004 e se tornou presidente-executivo em 2008. A empresa abriu o capital em 2010.",
+      "O Model 3, lançado em 2017, levou a Tesla à produção em grande escala. Em dezembro de 2020, a ação entrou no índice S&P 500."
+    ],
+    "observar": "Uma das ações mais voláteis entre as grandes empresas americanas. Os desdobramentos de 2020 (5 para 1) e 2022 (3 para 1) já vêm ajustados na série.",
+    "fontes": [["Tesla, Investor Relations", "https://ir.tesla.com/"]]
+  },
+  "AVGO": {
+    "sobre": [
+      "A Broadcom projeta semicondutores para redes, comunicações, armazenamento de dados e chips personalizados para inteligência artificial, e vende software de infraestrutura para empresas.",
+      "Grandes empresas de tecnologia usam chips da Broadcom em seus centros de dados."
+    ],
+    "historia": [
+      "A empresa tem origem na divisão de semicondutores da HP, que passou à Agilent e, em 2005, virou a Avago Technologies. Em 2016, a Avago comprou a Broadcom Corporation e adotou o nome dela.",
+      "Depois, fez grandes aquisições na área de software, como a CA Technologies (2018) e a VMware (2023)."
+    ],
+    "observar": "Em julho de 2024, as ações foram desdobradas na proporção de 10 para 1, ajuste que já vem na série.",
+    "fontes": [["Broadcom, Investors", "https://investors.broadcom.com/"]]
+  },
+  "BRK-B": {
+    "sobre": [
+      "A Berkshire Hathaway é uma holding com negócios em seguros (como a GEICO), ferrovias (BNSF), energia, indústria e varejo, além de participações em empresas abertas, como Apple e Coca-Cola.",
+      "A empresa não costuma pagar dividendos: os lucros são reinvestidos. O BRK-B é a ação de classe B, de valor unitário menor que o da classe A."
+    ],
+    "historia": [
+      "A Berkshire Hathaway era uma fabricante de tecidos quando Warren Buffett assumiu o controle, em 1965. Sob Buffett, virou uma das maiores empresas do mundo.",
+      "As ações de classe B foram criadas em 1996. Em 2025, Buffett anunciou que deixaria o cargo de presidente-executivo no fim daquele ano, com Greg Abel como sucessor."
+    ],
+    "observar": "Como não paga dividendos, o histórico de preços do Argos representa bem o retorno da ação. Em 2010, a classe B foi desdobrada na proporção de 50 para 1.",
+    "fontes": [["Berkshire Hathaway", "https://www.berkshirehathaway.com/"]]
+  },
+  "JPM": {
+    "sobre": [
+      "O JPMorgan Chase é o maior banco dos Estados Unidos, com atuação em banco de varejo (Chase), banco de investimento, gestão de recursos e serviços a grandes empresas.",
+      "É considerado um banco sistemicamente importante, sujeito a exigências de capital mais rígidas."
+    ],
+    "historia": [
+      "As origens remontam a 1799. O banco atual é resultado de várias fusões, como a do Chase Manhattan com o J.P. Morgan & Co., em 2000.",
+      "Na crise financeira de 2008, comprou o Bear Stearns e o Washington Mutual. Em 2023, assumiu o First Republic Bank. Jamie Dimon comanda o banco desde 2005."
+    ],
+    "observar": "Bancos reagem a juros, ao ciclo de crédito e a crises financeiras, como a de 2008, que aparece com força no histórico longo.",
+    "fontes": [["JPMorgan Chase, Investor Relations", "https://www.jpmorganchase.com/ir"]]
+  },
+  "V": {
+    "sobre": [
+      "A Visa opera uma das maiores redes de pagamentos eletrônicos do mundo, que conecta consumidores, lojistas, bancos emissores de cartões e credenciadores.",
+      "A empresa não emite cartões nem concede crédito: ganha com taxas sobre o volume e o número de transações que passam pela rede."
+    ],
+    "historia": [
+      "A origem é o BankAmericard, lançado em 1958 pelo Bank of America. Em 1976, o programa passou a se chamar Visa.",
+      "A Visa abriu o capital em março de 2008, numa das maiores ofertas iniciais de ações da história dos Estados Unidos."
+    ],
+    "observar": "O desempenho acompanha o volume de consumo com cartões no mundo. A série já vem ajustada pelo desdobramento de 4 para 1 de 2015.",
+    "fontes": [["Visa, Investor Relations", "https://investor.visa.com/"]]
+  },
+  "MA": {
+    "sobre": [
+      "A Mastercard opera uma rede global de pagamentos eletrônicos, concorrente direta da Visa, que liga consumidores, lojistas e instituições financeiras.",
+      "Assim como a Visa, não concede crédito: a receita vem de taxas sobre as transações e de serviços de dados e segurança."
+    ],
+    "historia": [
+      "Nasceu em 1966 como Interbank Card Association, uma associação de bancos americanos. Em 1979, adotou o nome MasterCard.",
+      "Abriu o capital em 2006, deixando de ser uma associação controlada pelos bancos."
+    ],
+    "observar": "O histórico tende a se parecer com o da Visa, já que as duas dependem do mesmo motor: o consumo com cartões.",
+    "fontes": [["Mastercard, Investor Relations", "https://investor.mastercard.com/"]]
+  },
+  "LLY": {
+    "sobre": [
+      "A Eli Lilly é uma farmacêutica americana com medicamentos para diabetes, obesidade, câncer, imunologia e neurociência.",
+      "Os remédios da classe dos agonistas de GLP-1, como Mounjaro e Zepbound, usados contra diabetes e obesidade, fizeram da empresa a farmacêutica mais valiosa do mundo."
+    ],
+    "historia": [
+      "Foi fundada em 1876, em Indianápolis, pelo coronel Eli Lilly, um farmacêutico. Em 1923, foi a primeira empresa a produzir insulina em larga escala.",
+      "Lançou o antidepressivo Prozac em 1987. O Mounjaro foi aprovado nos Estados Unidos em 2022 e o Zepbound, em 2023."
+    ],
+    "observar": "Aprovações de medicamentos, resultados de estudos clínicos e discussões sobre preços de remédios nos Estados Unidos movem a ação.",
+    "fontes": [["Eli Lilly, Investors", "https://investor.lilly.com/"]]
+  },
+  "WMT": {
+    "sobre": [
+      "O Walmart é a maior varejista do mundo em receita, com hipermercados, supermercados e clubes de compras (Sam's Club) nos Estados Unidos e em outros países, além de comércio eletrônico.",
+      "Atua com preços baixos e grande escala de compras."
+    ],
+    "historia": [
+      "Foi fundado em 1962 por Sam Walton, em Rogers, no Arkansas, e abriu o capital em 1970.",
+      "Nos anos recentes, investiu em comércio eletrônico, entregas e publicidade. Em 2024, as ações foram desdobradas na proporção de 3 para 1."
+    ],
+    "observar": "Varejo de itens essenciais tende a ser menos sensível às recessões. O desdobramento de 2024 já vem ajustado na série.",
+    "fontes": [["Walmart, Investors", "https://stock.walmart.com/"]]
+  },
+  "XOM": {
+    "sobre": [
+      "A Exxon Mobil é uma das maiores empresas de petróleo e gás do mundo, com atuação em exploração e produção, refino e produtos químicos.",
+      "Tem operações em vários países, inclusive em grandes descobertas recentes, como na Guiana."
+    ],
+    "historia": [
+      "A empresa descende da Standard Oil, de John D. Rockefeller. Em 1911, a Justiça americana dividiu a Standard Oil; a Exxon e a Mobil vieram de duas dessas partes e se uniram em 1999.",
+      "Em 2024, comprou a Pioneer Natural Resources, ampliando a produção no oeste do Texas."
+    ],
+    "observar": "O preço do petróleo é o principal fator. A queda de 2020, na pandemia, e a alta de 2022 aparecem claramente no histórico.",
+    "fontes": [["ExxonMobil, Investors", "https://investor.exxonmobil.com/"]]
+  },
+  "JNJ": {
+    "sobre": [
+      "A Johnson & Johnson é uma empresa de saúde com duas áreas: medicamentos (Innovative Medicine) e equipamentos médicos (MedTech).",
+      "Desde 2023, os produtos de consumo, como Band-Aid e Tylenol, fazem parte de outra empresa, a Kenvue."
+    ],
+    "historia": [
+      "Foi fundada em 1886, em New Brunswick, Nova Jersey, pelos irmãos Robert, James e Edward Johnson.",
+      "Em 2023, separou a divisão de consumo na Kenvue. A empresa enfrentou processos bilionários sobre talco infantil."
+    ],
+    "observar": "Ação de perfil defensivo, com oscilações menores que a média, e longo histórico de aumento de dividendos (que não entram no histórico do Argos).",
+    "fontes": [["Johnson & Johnson, Investors", "https://www.investor.jnj.com/"]]
+  },
+  "KO": {
+    "sobre": [
+      "A Coca-Cola é a maior empresa de bebidas não alcoólicas do mundo, com marcas de refrigerantes, sucos, águas, chás e isotônicos vendidas em mais de 200 países.",
+      "Grande parte do engarrafamento e da distribuição é feita por empresas parceiras, os engarrafadores."
+    ],
+    "historia": [
+      "A bebida foi criada em 1886 pelo farmacêutico John Pemberton, em Atlanta. A empresa foi organizada por Asa Candler em 1892 e abriu o capital em 1919.",
+      "Desde 1988, a Berkshire Hathaway, de Warren Buffett, é uma das maiores acionistas."
+    ],
+    "observar": "Ação defensiva, com crescimento lento e estável. Os dividendos, que aumentam há décadas, não entram no histórico do Argos.",
+    "fontes": [["Coca-Cola, Investors", "https://investors.coca-colacompany.com/"]]
+  }
+}
