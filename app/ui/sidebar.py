@@ -16,6 +16,7 @@ from core.periods import (
 )
 from core.ticker_input import validate_ticker
 from app.ui.catalog_state import active_catalog, find_asset, group_label
+from app.ui.state import AUTOLOAD_KEY
 
 
 GROUP_MAPPING = {
@@ -480,6 +481,10 @@ def render_asset_controls(
             width="stretch",
             disabled=is_disabled,
         )
+
+        # Vindo do mosaico da página inicial, a análise carrega sem precisar do clique.
+        if st.session_state.pop(AUTOLOAD_KEY, False) and not is_disabled:
+            submitted = True
 
         if submitted:
             st.session_state["asset_symbol"] = symbol

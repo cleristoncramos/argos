@@ -90,6 +90,30 @@ def initialize_comparison_state() -> None:
     )
 
 
+# Análise Individual aberta a partir do mosaico da página inicial: a barra lateral
+# consome esta marca e carrega a análise como se o botão tivesse sido clicado.
+AUTOLOAD_KEY = "asset_autoload"
+INDIVIDUAL_BUTTON_KEY = "asset_load_button"
+_SIDEBAR_WIDGETS = ("_input_mode", "_group_select", "_asset_select", "_period_select", "_frequency_select")
+
+
+def queue_individual_analysis(asset: dict, period: str, frequency: str) -> None:
+    """Prepara a Análise Individual de um ativo do catálogo com período e frequência dados."""
+    today = today_brasilia()
+    st.session_state["asset_group"] = asset["group"]
+    st.session_state["asset_symbol"] = asset["ticker"]
+    st.session_state["asset_period"] = period
+    st.session_state["asset_start_date"] = period_start_date(period, today)
+    st.session_state["asset_end_date"] = today
+    st.session_state["asset_frequency"] = frequency
+    st.session_state["asset_loaded"] = False
+    st.session_state["asset_query"] = None
+    # Seletores de uma visita anterior não podem sobrepor a escolha feita no mosaico.
+    for suffix in _SIDEBAR_WIDGETS:
+        st.session_state.pop(INDIVIDUAL_BUTTON_KEY + suffix, None)
+    st.session_state[AUTOLOAD_KEY] = True
+
+
 def apply_defaults_to_unloaded(defaults) -> None:
     """
     Leva novos padrões de Configurações às análises ainda não consultadas nesta

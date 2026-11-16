@@ -107,7 +107,8 @@ O menu principal tem oito páginas: seis módulos de análise, a página Configu
 
 - Nome, subtítulo e o botão **Get Started**, que abre a Análise Individual.
 - Texto de apresentação, quadro com os números do catálogo e cartões de "Primeiros passos" para os seis módulos de análise.
-- Vídeo com um tour pelos recursos e mosaico animado com os logotipos dos ativos do catálogo.
+- Vídeo com um tour pelos recursos.
+- **Mosaico do catálogo:** as logomarcas dos 148 ativos em faixas animadas, com filtro por categoria (ações, cripto, ETFs, imobiliário, índices, câmbio, commodities e juros) e busca por nome ou ticker. Fundos e ETFs sem logo próprio mostram a logomarca da gestora, índices, câmbio e juros mostram a bandeira do país, e as commodities mostram um emblema (por exemplo, Au para o ouro). **Clicar numa logomarca abre a Análise Individual do ativo, já carregada com 5 anos e frequência mensal.**
 - Botão **Informações acadêmicas**, que abre um quadro com a identificação do trabalho, as instituições, as tecnologias e as bases de dados.
 
 ### Análise Individual
@@ -290,7 +291,7 @@ Resumo das principais convenções. A descrição completa, com fórmulas, unida
 | **Catálogo interno** | Ticker, nome, classe, mercado e descrição dos ativos | Seleção guiada e organização da interface |
 | **Base de eventos históricos** | Data, categoria, título, descrição, fonte, endereço e ativos de cada evento | Contexto nos gráficos de preço e de volatilidade |
 | **Pacote de demonstração** | CSVs congelados dos 148 ativos, com manifesto e hash SHA-256 | Apresentações e avaliação sem depender da internet |
-| **CoinCap** e **Financial Modeling Prep** | Logotipos públicos de criptomoedas, ações, ETFs, REITs e FIIs | Identificação visual dos ativos |
+| **CoinCap**, **Financial Modeling Prep** e **Flagpedia (flagcdn)** | Logotipos públicos de criptomoedas, ações, ETFs, REITs, FIIs e gestoras, e bandeiras de países | Identificação visual dos ativos |
 
 **Tratamento:** os dados diários são baixados uma única vez; as frequências semanal, mensal, semestral e anual são derivadas localmente por agregação (abertura, máxima, mínima, fechamento e volume somado). Datas inválidas são descartadas, e falhas temporárias da fonte não ficam guardadas em cache. A série diária passa por verificações automáticas de qualidade, que geram alertas na tela sem alterar nem remover dados. O período disponível de cada ativo é consultado com buscas pequenas (uma mensal e duas diárias) e guardado em cache por 1 hora.
 

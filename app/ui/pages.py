@@ -48,3 +48,6 @@ MENU_PAGES = (*ANALYSIS_PAGES, SETTINGS_PAGE, ABOUT_PAGE)
 
 # Destino do botão "Get Started": a primeira página do menu.
 START_PAGE = MENU_PAGES[0]
+
+# Destino do clique numa logomarca do mosaico da página inicial.
+INDIVIDUAL_PAGE = ANALYSIS_PAGES[0]

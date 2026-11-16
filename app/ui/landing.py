@@ -12,7 +12,7 @@ from __future__ import annotations
 import base64
 from html import escape
 from pathlib import Path
-from typing import Callable, Iterable, Mapping, Optional
+from typing import Iterable, Mapping, Optional
 
 ASSETS_DIR = Path(__file__).resolve().parents[1] / "assets"
 INSTITUTIONAL_DIR = ASSETS_DIR / "institucional"
@@ -93,98 +93,7 @@ def catalog_stats(assets: Iterable[Mapping[str, str]]) -> dict:
     }
 
 
-# ==========================================================
-# Mosaico de ativos
-# ==========================================================
-def _interleave_by_class(assets: list[Mapping[str, str]]) -> list[Mapping[str, str]]:
-    """Alterna as classes para que cada faixa do mosaico misture tipos de ativo."""
-    buckets: dict[str, list] = {}
-    for asset in assets:
-        buckets.setdefault(asset["class"], []).append(asset)
-    queues = list(buckets.values())
-    mixed = []
-    while any(queues):
-        for queue in queues:
-            if queue:
-                mixed.append(queue.pop(0))
-    return mixed
-
-
-def _monogram(ticker: str) -> str:
-    core = ticker.lstrip("^").split(".")[0].split("-")[0].split("=")[0]
-    return (core or ticker)[:4]
-
-
-def _mosaic_tile(asset: Mapping[str, str], logo_url: Optional[str]) -> str:
-    ticker = escape(asset["ticker"])
-    name = escape(asset["name"])
-    color = escape(asset.get("category_color", "#5f5f5f"))
-    fallback = escape(asset.get("icon") or _monogram(asset["ticker"]))
-    monogram = escape(_monogram(asset["ticker"]))
-    if logo_url:
-        # Se o logo remoto falhar, o monograma assume o lugar.
-        badge = (
-            f'<span class="logo"><img src="{escape(logo_url)}" alt="" loading="lazy" '
-            f"onerror=\"this.parentNode.classList.add('fallback');this.remove()\">"
-            f'<b>{monogram}</b></span>'
-        )
-    else:
-        badge = f'<span class="logo emoji">{fallback}</span>'
-    return (
-        f'<div class="tile" style="--c:{color}">{badge}'
-        f'<span class="txt"><span class="tk">{ticker}</span>'
-        f'<span class="nm">{name}</span></span></div>'
-    )
-
-
-def build_mosaic_html(
-    assets: Iterable[Mapping[str, str]],
-    logo_for: Callable[[str, str], Optional[str]],
-    rows: int = 3,
-) -> str:
-    """Documento HTML do mosaico animado (faixas que deslizam em sentidos alternados)."""
-    mixed = _interleave_by_class(list(assets))
-    lanes = [mixed[i::rows] for i in range(rows)]
-    # Cerca de 30 px/s: devagar o bastante para ler ticker e nome.
-    durations = (280, 320, 300, 340)
-    lanes_html = []
-    for index, lane in enumerate(lanes):
-        tiles = "".join(_mosaic_tile(a, logo_for(a["ticker"], a["group"])) for a in lane)
-        direction = "reverse" if index % 2 else "normal"
-        duration = durations[index % len(durations)]
-        # O conteúdo é duplicado para o deslocamento de -50% fechar o ciclo sem salto.
-        lanes_html.append(
-            f'<div class="lane" style="--d:{duration}s;--dir:{direction}">'
-            f'<div class="track">{tiles}{tiles}</div></div>'
-        )
-    return MOSAIC_TEMPLATE.replace("{{LANES}}", "".join(lanes_html))
-
-
-MOSAIC_TEMPLATE = """<!DOCTYPE html><html><head><meta charset="utf-8"><style>
-*{box-sizing:border-box;border-radius:0}
-html,body{margin:0;background:transparent;font-family:"Source Sans 3","Source Sans Pro",-apple-system,"Segoe UI",sans-serif;overflow:hidden}
-.mosaic{display:flex;flex-direction:column;gap:12px;padding:4px 0 12px;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
-          mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
-.lane{overflow:hidden;padding:2px 0 6px}
-.track{display:flex;gap:12px;width:max-content;animation:slide var(--d) linear infinite;animation-direction:var(--dir)}
-.mosaic:hover .track{animation-play-state:paused}
-@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.tile{position:relative;display:flex;align-items:center;gap:12px;min-width:196px;padding:8px 14px 8px 10px;
-  background:linear-gradient(180deg,#fff 0%,#faf9f6 100%);border:1px solid #e4e1da;
-  box-shadow:0 4px 12px rgba(17,17,17,.05);transition:transform .2s ease,box-shadow .2s ease}
-.tile::before{content:"";position:absolute;left:-1px;top:-1px;bottom:-1px;width:4px;background:var(--c)}
-.tile:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(17,17,17,.14)}
-.logo{position:relative;flex:none;width:54px;height:54px;background:#fff;border:1px solid #d6d3cc;display:grid;place-items:center;overflow:hidden}
-.logo img{width:80%;height:80%;object-fit:contain;position:relative;z-index:1}
-.logo b{position:absolute;inset:0;display:none;place-items:center;font-size:.7rem;color:#fff;background:var(--c)}
-.logo.fallback b{display:grid}
-.logo.emoji{font-size:1.35rem;background:#f3f1ec}
-.txt{display:flex;flex-direction:column;min-width:0}
-.tk{color:#111;font-weight:700;font-size:.88rem;letter-spacing:.02em;font-family:"JetBrains Mono",ui-monospace,Consolas,monospace}
-.nm{color:#5f5f5f;font-size:.76rem;white-space:nowrap;max-width:118px;overflow:hidden;text-overflow:ellipsis}
-@media (prefers-reduced-motion:reduce){.track{animation:none}}
-</style></head><body><div class="mosaic">{{LANES}}</div></body></html>"""
+# O mosaico de ativos fica em app/ui/mosaic.py (componente com clique) e core/mosaic.py.
 
 
 # ==========================================================

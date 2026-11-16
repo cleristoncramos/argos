@@ -2,17 +2,18 @@ import os
 import sys
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from app.ui.academic_dialog import show_academic_dialog  # noqa: E402
-from app.ui.landing import FEATURES_VIDEO, build_mosaic_html, catalog_stats  # noqa: E402
-from app.ui.pages import ANALYSIS_PAGES, START_PAGE  # noqa: E402
-from core.asset_logos import get_asset_logo_url  # noqa: E402
+from app.ui.landing import FEATURES_VIDEO, catalog_stats  # noqa: E402
+from app.ui.mosaic import render_asset_mosaic  # noqa: E402
+from app.ui.pages import ANALYSIS_PAGES, INDIVIDUAL_PAGE, START_PAGE  # noqa: E402
+from app.ui.state import queue_individual_analysis  # noqa: E402
 from core.assets import ASSETS  # noqa: E402
+from core.mosaic import TARGET_FREQUENCY, TARGET_PERIOD  # noqa: E402
 
 
 # ==========================================================
@@ -277,12 +278,18 @@ st.markdown(
   <div class="section-kicker">01 · Catálogo</div>
   <div class="section-title">Um mosaico do mercado, em um só lugar</div>
   <div class="section-sub">{stats["assets"]} ativos organizados em {stats["groups"]} grupos: do Bitcoin à
-  Petrobras, do ouro ao S&amp;P 500. Passe o mouse para pausar.</div>
+  Petrobras, do ouro ao S&amp;P 500. Filtre por categoria, busque pelo nome e clique em um ativo
+  para abrir a análise dele.</div>
 </div>
 """,
     unsafe_allow_html=True,
 )
-components.html(build_mosaic_html(ASSETS, get_asset_logo_url), height=284, scrolling=False)
+selected = render_asset_mosaic(ASSETS)
+if selected:
+    asset = next((a for a in ASSETS if a["ticker"] == selected), None)
+    if asset:
+        queue_individual_analysis(asset, TARGET_PERIOD, TARGET_FREQUENCY)
+        st.switch_page(INDIVIDUAL_PAGE.path)
 
 # ==========================================================
 # TUTORIAL BREVE

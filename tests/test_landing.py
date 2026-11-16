@@ -6,43 +6,16 @@ from app.ui.landing import (
     ACADEMIC_MODAL_CSS,
     DATA_SOURCES,
     FEATURES_VIDEO,
-    MOSAIC_TEMPLATE,
     TECHNOLOGIES,
     build_academic_header_html,
     build_data_sources_html,
     build_identification_html,
-    build_mosaic_html,
     build_technologies_html,
     catalog_stats,
     institutional_logo_uri,
 )
+from app.ui.mosaic import CSS as MOSAIC_CSS
 from core.assets import ASSETS
-
-
-def _logo(ticker, group):
-    return f"https://logos.example/{ticker}.png" if group == "crypto" else None
-
-
-def test_mosaic_has_every_asset_twice_and_escapes_text():
-    assets = [
-        {"ticker": "BTC-USD", "name": "Bitcoin", "class": "Criptomoeda", "group": "crypto",
-         "icon": "₿", "category_color": "#F59E0B"},
-        {"ticker": "X<1>", "name": "<script>alert(1)</script>", "class": "Ação", "group": "us_stocks",
-         "icon": "📈", "category_color": "#2563EB"},
-    ]
-    html = build_mosaic_html(assets, _logo, rows=1)
-    # Cada faixa é duplicada para o laço contínuo da animação.
-    assert html.count(">BTC-USD<") == 2
-    assert "<script>alert(1)</script>" not in html
-    assert "&lt;script&gt;" in html
-    assert "https://logos.example/BTC-USD.png" in html
-    assert "onerror=" in html  # monograma assume se o logo remoto falhar
-
-
-def test_mosaic_spreads_the_full_catalog_across_lanes():
-    html = build_mosaic_html(ASSETS, lambda t, g: None, rows=3)
-    assert html.count('class="lane"') == 3
-    assert html.count('class="tile"') == 2 * len(ASSETS)
 
 
 def test_catalog_stats():
@@ -94,18 +67,10 @@ def test_technologies_and_data_sources_tables():
 
 
 def test_no_rounded_corners_in_own_styles():
-    for css in (GLOBAL_CSS, ACADEMIC_MODAL_CSS, MOSAIC_TEMPLATE):
+    for css in (GLOBAL_CSS, ACADEMIC_MODAL_CSS, MOSAIC_CSS):
         radii = re.findall(r"border-radius\s*:\s*([^;}\s]+)", css)
         assert all(value in ("0", "0!important") for value in radii), radii
 
 
 def test_features_video_is_packaged():
     assert FEATURES_VIDEO.exists() and FEATURES_VIDEO.stat().st_size < 15 * 1_048_576
-
-
-def test_mosaic_shows_logo_ticker_and_name_without_group_badge():
-    asset = {"ticker": "PETR4.SA", "name": "Petrobras PN", "class": "Ação", "group": "br_stocks",
-             "icon": "📈", "category_color": "#2563EB"}
-    html = build_mosaic_html([asset], lambda t, g: "https://logos.example/p.png", rows=1)
-    assert ">PETR4.SA<" in html and ">Petrobras PN<" in html
-    assert 'class="cls"' not in html and ">Ação<" not in html

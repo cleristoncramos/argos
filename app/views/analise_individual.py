@@ -63,7 +63,7 @@ from app.ui.season_explorer import (
     years_label,
 )
 from app.ui.sidebar import render_asset_controls
-from app.ui.state import initialize_asset_state
+from app.ui.state import INDIVIDUAL_BUTTON_KEY, initialize_asset_state
 from app.ui.extremes_table import (
     EXTREMES_NOTES,
     FORMATTERS as EXTREMES_FORMATTERS,
@@ -194,7 +194,7 @@ def render_custom_metric_card(title: str, value: str) -> None:
 asset_params = render_asset_controls(
     title="Parâmetros",
     button_label="🔄 Carregar Dados",
-    button_key="asset_load_button",
+    button_key=INDIVIDUAL_BUTTON_KEY,
 )
 
 symbol = asset_params["symbol"]
