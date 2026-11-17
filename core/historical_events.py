@@ -21,6 +21,7 @@ Funções puras, sem Streamlit.
 from __future__ import annotations
 
 import io
+import textwrap
 from datetime import date
 from pathlib import Path
 from typing import Iterable
@@ -143,6 +144,27 @@ def event_traces(events: pd.DataFrame, y_min: float, y_max: float) -> list[dict]
             showlegend=True,
         ))
     return traces
+
+
+def monthly_event_notes(events: pd.DataFrame, months: Iterable, width: int = 70) -> list[str]:
+    """
+    Texto dos eventos de cada mês, para o tooltip das barras mensais (um item por mês,
+    na ordem de `months`; vazio quando o mês não tem evento). Nas barras, o mouse não
+    alcança a linha pontilhada do evento, então o evento vai no tooltip da própria barra.
+    """
+    if events.empty:
+        return ["" for _ in months]
+    by_month: dict[pd.Period, list[str]] = {}
+    for _, event in events.sort_values("data").iterrows():
+        line = f"• <b>{event['titulo']}</b> ({event['data']:%d/%m/%Y}) · {event['categoria']}"
+        if isinstance(event["descricao"], str) and event["descricao"].strip():
+            line += "<br>" + "<br>".join(textwrap.wrap(event["descricao"].strip(), width))
+        by_month.setdefault(pd.Timestamp(event["data"]).to_period("M"), []).append(line)
+    notes = []
+    for month in months:
+        lines = by_month.get(pd.Timestamp(month).to_period("M"))
+        notes.append("<br><br><b>Eventos no mês:</b><br>" + "<br>".join(lines) if lines else "")
+    return notes
 
 
 def new_user_event(day: date, title: str, description: str = "") -> dict:

@@ -40,6 +40,7 @@ from app.ui.disclaimers import render_footer_disclaimer
 from app.ui.education import render_glossary, render_what_it_means
 from app.ui.catalog_state import active_catalog, find_asset, preferred_reference
 from app.ui.events_panel import add_events, render_events_panel
+from core.historical_events import monthly_event_notes
 from app.ui.llm_explain import asset_name, render_explain_section
 from app.ui.metric_card import render_metric_card
 from app.ui.season_explorer import (
@@ -652,14 +653,19 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
     colors = ["#F59E0B" if val >= threshold else "#10B981" for val in df_monthly_vol['Volatility']]
 
     formatted_vol = df_monthly_vol['Volatility'].apply(lambda x: f"{x:,.2f}%".replace(",", "X").replace(".", ",").replace("X", "."))
+    # As barras cobrem a linha pontilhada dos eventos; os eventos do mês vão no tooltip da barra.
+    event_notes = monthly_event_notes(period_events, df_monthly_vol['Date'])
 
     fig_vol = go.Figure(
         data=go.Bar(
             x=df_monthly_vol['Date'],
             y=df_monthly_vol['Volatility'],
             marker_color=colors,
-            customdata=formatted_vol,
-            hovertemplate="<b>Mês:</b> %{x|%m/%Y}<br><b>Volatilidade anualizada:</b> %{customdata}<extra></extra>"
+            customdata=list(zip(formatted_vol, event_notes)),
+            hovertemplate=(
+                "<b>Mês:</b> %{x|%m/%Y}<br><b>Volatilidade anualizada:</b> %{customdata[0]}"
+                "%{customdata[1]}<extra></extra>"
+            ),
         )
     )
 
@@ -668,7 +674,8 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
         margin=dict(l=10, r=20, t=20, b=20),
         xaxis_title=None,
         yaxis_title=None,
-        yaxis_ticksuffix="%"
+        yaxis_ticksuffix="%",
+        hoverlabel=dict(align="left"),
     )
     add_events(fig_vol, period_events, 0.0, float(df_monthly_vol['Volatility'].max()))
 

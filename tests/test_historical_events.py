@@ -19,6 +19,7 @@ from core.historical_events import (
     event_traces,
     filter_events,
     load_events,
+    monthly_event_notes,
     new_user_event,
     parse_user_csv,
     sources_table,
@@ -112,6 +113,22 @@ def test_linhas_pontilhadas_por_categoria():
     assert mundo["customdata"][3].endswith("<br><i>Fonte: Nações Unidas</i>")
     assert traces[3]["line"]["color"] == "#111827" and traces[3]["customdata"][0] == "<b>Sem cor</b> (01/06/2021)"
     assert event_traces(empty_events(), 0, 1) == []
+
+
+def test_eventos_no_tooltip_das_barras_mensais():
+    events = user_events_frame([
+        new_user_event(date(2024, 12, 20), "Segundo", ""),
+        new_user_event(date(2024, 12, 3), "Primeiro", "palavra " * 20),
+        new_user_event(date(2025, 2, 10), "Outro mês"),
+    ])
+    months = pd.to_datetime(["2024-11-01", "2024-12-01", "2025-02-01"])
+    notes = monthly_event_notes(events, months, width=30)
+    assert notes[0] == ""
+    assert notes[1].startswith("<br><br><b>Eventos no mês:</b><br>• <b>Primeiro</b> (03/12/2024) · " + USER_CATEGORY)
+    assert notes[1].index("Primeiro") < notes[1].index("Segundo")          # em ordem de data
+    assert all(len(part) <= 30 for part in notes[1].split("<br>") if part.startswith("palavra"))
+    assert "<b>Outro mês</b> (10/02/2025)" in notes[2]
+    assert monthly_event_notes(empty_events(), months) == ["", "", ""]
 
 
 def test_csv_do_usuario_ida_e_volta():
