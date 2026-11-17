@@ -36,7 +36,7 @@ ACADEMIC_INFO = {
     "year": "2026–2027",
     "nature": "Pesquisa, ensino e desenvolvimento tecnológico; sem recomendação de investimento",
     "repository": "github.com/cleristoncramos/argos",
-    "address": "argos-datalab.streamlit.app",
+    "address": "https://argos-datalab.streamlit.app",
 }
 
 # (camada, tecnologia, papel no projeto)
@@ -140,7 +140,6 @@ def build_identification_html() -> str:
     """Ficha de identificação do trabalho."""
     info = ACADEMIC_INFO
     rows = (
-        ("Sistema", info["system"]),
         ("Plano de trabalho", info["work_plan"]),
         ("Programa", info["program"]),
         ("Instituição", info["institution"]),
@@ -148,7 +147,6 @@ def build_identification_html() -> str:
         ("Curso", info["course"]),
         ("Autor", f'{info["author"]} ({info["author_role"]})'),
         ("Orientador", f'{info["advisor"]} ({info["advisor_role"]})'),
-        ("Vigência", info["year"]),
         ("Natureza", info["nature"]),
         ("Endereço", info["address"]),
         ("Repositório", info["repository"]),

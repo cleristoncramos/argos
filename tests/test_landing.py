@@ -43,6 +43,9 @@ def test_identification_has_author_advisor_and_program():
     html = build_identification_html()
     for key in ("author", "advisor", "work_plan", "program", "course", "center"):
         assert ACADEMIC_INFO[key] in html
+    # Ajuste de 16/11/2026: sem as linhas Sistema e Vigência; endereço completo, com https://.
+    assert "<th>Sistema</th>" not in html and "<th>Vigência</th>" not in html
+    assert "https://argos-datalab.streamlit.app" in html
 
 
 def test_modal_is_sober_without_mythology():
