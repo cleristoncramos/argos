@@ -661,6 +661,9 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
             x=df_monthly_vol['Date'],
             y=df_monthly_vol['Volatility'],
             marker_color=colors,
+            # Cada barra ocupa o mês inteiro: a linha de um evento cai sempre na barra do seu mês.
+            xperiod="M1",
+            xperiodalignment="middle",
             customdata=list(zip(formatted_vol, event_notes)),
             hovertemplate=(
                 "<b>Mês:</b> %{x|%m/%Y}<br><b>Volatilidade anualizada:</b> %{customdata[0]}"
@@ -678,6 +681,11 @@ if df_monthly_vol is not None and not df_monthly_vol.empty:
         hoverlabel=dict(align="left"),
     )
     add_events(fig_vol, period_events, 0.0, float(df_monthly_vol['Volatility'].max()))
+    # O tooltip vale para a coluna inteira do mês, em qualquer altura (também acima da
+    # barra, ao longo da linha pontilhada). Os eventos já estão no tooltip da barra, então
+    # as linhas não abrem um tooltip próprio.
+    fig_vol.update_layout(hovermode="x", xaxis_hoverformat="%m/%Y")
+    fig_vol.update_traces(hoverinfo="skip", hovertemplate=None, selector=lambda trace: trace.type == "scatter")
 
     with st.container(border=True):
         st.plotly_chart(fig_vol, use_container_width=True, config=PLOTLY_CONFIG)
