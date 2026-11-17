@@ -37,7 +37,8 @@ from app.ui.sidebar import (
     inject_compact_dropdown_script,
     inject_compact_sidebar_css,
 )
-from app.ui.state import initialize_asset_state
+from app.ui.catalog_state import analysis_defaults
+from app.ui.state import COMPARISON_AUTOLOAD_KEY, initialize_asset_state
 from app.ui.tables import (
     date_cell,
     number_cell,
@@ -84,7 +85,6 @@ from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.llm_builders import comparison_context
 from core.formatters import format_number_br
 from core.periods import (
-    DEFAULT_PERIOD,
     PERIOD_OPTIONS,
     period_start_date,
 )
@@ -269,14 +269,17 @@ def add_custom_ticker() -> None:
 # ==========================================================
 def initialize_comparison_state() -> None:
     today = today_brasilia()
-    asset_period = st.session_state.get("comparison_period", DEFAULT_PERIOD)
+    # Valores iniciais: os padrões escolhidos em Configurações (os do Argos, se nenhum).
+    chosen = analysis_defaults()
+    asset_period = st.session_state.get("comparison_period", chosen.period)
 
     asset_start_date = st.session_state.get(
         "comparison_start_date",
-        period_start_date(DEFAULT_PERIOD, today),
+        period_start_date(chosen.period, today),
     )
     asset_end_date = st.session_state.get("comparison_end_date", today)
-    asset_frequency = st.session_state.get("comparison_frequency", "Mensal")
+    asset_frequency = st.session_state.get("comparison_frequency", chosen.frequency)
+    risk_free_pct = float(st.session_state.get("comparison_risk_free_rate_pct", chosen.risk_free_pct))
     asset_group = st.session_state.get(COMPARISON_GROUP_STATE_KEY, None)
 
     symbols_str = st.session_state.get(COMPARISON_SYMBOLS_STATE_KEY, "")
@@ -287,7 +290,7 @@ def initialize_comparison_state() -> None:
         COMPARISON_START_DATE_STATE_KEY: asset_start_date,
         COMPARISON_END_DATE_STATE_KEY: asset_end_date,
         COMPARISON_FREQUENCY_STATE_KEY: asset_frequency,
-        COMPARISON_RISK_FREE_RATE_STATE_KEY: 0.0,
+        COMPARISON_RISK_FREE_RATE_STATE_KEY: risk_free_pct,
         COMPARISON_SYMBOLS_STATE_KEY: symbols_str,
         COMPARISON_GROUP_STATE_KEY: asset_group,
         COMPARISON_CUSTOM_MSG_KEY: None,
@@ -295,7 +298,7 @@ def initialize_comparison_state() -> None:
         COMPARISON_START_DATE_WIDGET_KEY: asset_start_date,
         COMPARISON_END_DATE_WIDGET_KEY: asset_end_date,
         COMPARISON_FREQUENCY_WIDGET_KEY: asset_frequency,
-        COMPARISON_RISK_FREE_RATE_WIDGET_KEY: 0.0,
+        COMPARISON_RISK_FREE_RATE_WIDGET_KEY: risk_free_pct,
         COMPARISON_GROUP_WIDGET_KEY: asset_group,
         COMPARISON_SYMBOLS_WIDGET_KEY: symbols_list,
         COMPARISON_CUSTOM_INPUT_KEY: "",
@@ -869,6 +872,9 @@ with st.sidebar:
         key="comparison_load_button",
         use_container_width=True
     )
+    # Depois de salvar novos padrões em Configurações, a comparação já feita é refeita.
+    if st.session_state.pop(COMPARISON_AUTOLOAD_KEY, False):
+        load_comparison = True
 
 start_date = st.session_state[COMPARISON_START_DATE_STATE_KEY]
 end_date = st.session_state[COMPARISON_END_DATE_STATE_KEY]

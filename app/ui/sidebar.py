@@ -16,7 +16,7 @@ from core.periods import (
 )
 from core.ticker_input import validate_ticker
 from app.ui.catalog_state import active_catalog, find_asset, group_label
-from app.ui.state import AUTOLOAD_KEY
+from app.ui.state import AUTOLOAD_KEY, consume_reload
 
 
 GROUP_MAPPING = {
@@ -483,7 +483,9 @@ def render_asset_controls(
         )
 
         # Vindo do mosaico da página inicial, a análise carrega sem precisar do clique.
-        if st.session_state.pop(AUTOLOAD_KEY, False) and not is_disabled:
+        # Depois de salvar novos padrões em Configurações, a análise já carregada é refeita.
+        autoload = st.session_state.pop(AUTOLOAD_KEY, False) | consume_reload(button_key)
+        if autoload and not is_disabled:
             submitted = True
 
         if submitted:

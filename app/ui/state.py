@@ -114,19 +114,59 @@ def queue_individual_analysis(asset: dict, period: str, frequency: str) -> None:
     st.session_state[AUTOLOAD_KEY] = True
 
 
-def apply_defaults_to_unloaded(defaults) -> None:
+COMPARISON_AUTOLOAD_KEY = "comparison_autoload"
+# Páginas com análise carregada a refazer com os novos padrões (botões da barra lateral).
+RELOAD_KEY = "asset_reload_buttons"
+# Botão de cada página com a barra lateral de um ativo e a marca de análise carregada.
+ASSET_PAGES_LOADED = {
+    INDIVIDUAL_BUTTON_KEY: "asset_loaded",
+    "indicators_load_button": "indicators_loaded",
+    "risk_return_load_button": "risk_return_loaded",
+    "simulation_load_button": "simulation_loaded",
+}
+ASSET_BUTTON_KEYS = tuple(ASSET_PAGES_LOADED)
+_PERIOD_WIDGETS = ("_period_select", "_frequency_select", "_start_date", "_end_date")
+# Seletores da Comparação e campos de taxa que guardam o último valor digitado.
+_RATE_AND_COMPARISON_WIDGETS = (
+    "comparison_period_widget",
+    "comparison_start_date_widget",
+    "comparison_end_date_widget",
+    "comparison_frequency_widget",
+    "comparison_risk_free_rate_pct_widget",
+    "risk_return_risk_free_rate_pct_widget",
+)
+
+
+def apply_defaults(defaults) -> None:
     """
-    Leva novos padrões de Configurações às análises ainda não consultadas nesta
-    sessão. Análises já carregadas mantêm a escolha feita na barra lateral.
+    Aplica os padrões salvos em Configurações em todas as análises da sessão: a
+    barra lateral passa a mostrar o novo período, a nova frequência e a nova taxa.
+    Uma análise já carregada é refeita com os novos padrões ao voltar à página,
+    sem precisar clicar no botão de novo.
     """
+    state = st.session_state
     today = today_brasilia()
-    if not st.session_state.get("asset_loaded"):
-        st.session_state["asset_period"] = defaults.period
-        st.session_state["asset_start_date"] = period_start_date(defaults.period, today)
-        st.session_state["asset_frequency"] = defaults.frequency
-    if not st.session_state.get("comparison_loaded"):
-        st.session_state["comparison_period"] = defaults.period
-        st.session_state["comparison_start_date"] = period_start_date(defaults.period, today)
-        st.session_state["comparison_frequency"] = defaults.frequency
-        st.session_state["comparison_risk_free_rate_pct"] = defaults.risk_free_pct
-    st.session_state["risk_return_risk_free_rate_pct"] = defaults.risk_free_pct
+    start = period_start_date(defaults.period, today)
+    for prefix in ("asset", "comparison"):
+        state[f"{prefix}_period"] = defaults.period
+        state[f"{prefix}_start_date"] = start
+        state[f"{prefix}_end_date"] = today
+        state[f"{prefix}_frequency"] = defaults.frequency
+    state["comparison_risk_free_rate_pct"] = defaults.risk_free_pct
+    state["risk_return_risk_free_rate_pct"] = defaults.risk_free_pct
+
+    # Seletores de uma visita anterior não podem sobrepor os novos padrões.
+    for key in (*(b + s for b in ASSET_BUTTON_KEYS for s in _PERIOD_WIDGETS), *_RATE_AND_COMPARISON_WIDGETS):
+        state.pop(key, None)
+
+    state[RELOAD_KEY] = {button for button, loaded in ASSET_PAGES_LOADED.items() if state.get(loaded)}
+    state[COMPARISON_AUTOLOAD_KEY] = bool(state.get("comparison_loaded"))
+
+
+def consume_reload(button_key: str) -> bool:
+    """True uma vez para a página que deve refazer a análise com os novos padrões."""
+    pending = st.session_state.get(RELOAD_KEY) or set()
+    if button_key not in pending:
+        return False
+    st.session_state[RELOAD_KEY] = pending - {button_key}
+    return True

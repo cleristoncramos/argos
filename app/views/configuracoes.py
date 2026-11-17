@@ -32,7 +32,7 @@ from app.ui.catalog_state import (
     set_preferred_reference,
 )
 from app.ui.sidebar import fetch_recent
-from app.ui.state import apply_defaults_to_unloaded
+from app.ui.state import apply_defaults
 from core.assets import ASSET_GROUPS, CATALOG_SIZE, CATEGORY_METADATA
 from core.benchmark import BENCHMARKS, reference_name
 from core.demo_mode import is_demo_mode
@@ -147,10 +147,12 @@ with tab_defaults:
     st.divider()
     st.markdown("### Período, frequência e taxa livre de risco")
     st.markdown(
-        "Valores que a barra lateral **Parâmetros** mostra ao abrir as análises, e a taxa livre "
-        "de risco inicial do Risco e Retorno e da Comparação de Ativos. Uma análise já carregada "
-        "nesta sessão mantém a escolha feita na barra lateral: mudar estes padrões não refaz "
-        "nenhuma análise."
+        "Valores que a barra lateral **Parâmetros** mostra nas análises, e a taxa livre de risco "
+        "do Risco e Retorno e da Comparação de Ativos. Ao salvar, os novos padrões valem para "
+        "todas as páginas: uma análise que já estava carregada é refeita com eles quando você "
+        "volta à página. Depois, você ainda pode mudar o período e a frequência na barra lateral "
+        "de cada análise. A logomarca clicada na página inicial abre sempre com 5 anos e "
+        "frequência mensal."
     )
     defaults = analysis_defaults()
     with st.form("form_padroes_analise"):
@@ -174,12 +176,12 @@ with tab_defaults:
         reset_defaults = col_reset.form_submit_button("Voltar aos padrões do Argos", use_container_width=True)
     if save_defaults:
         set_analysis_defaults(AnalysisDefaults(period, frequency, clean_risk_free(rate)))
-        apply_defaults_to_unloaded(analysis_defaults())
+        apply_defaults(analysis_defaults())
         st.session_state[FLASH_KEY] = "Padrões da análise salvos."
         st.rerun()
     if reset_defaults:
         set_analysis_defaults(ARGOS_DEFAULTS)
-        apply_defaults_to_unloaded(ARGOS_DEFAULTS)
+        apply_defaults(ARGOS_DEFAULTS)
         st.session_state[FLASH_KEY] = "Padrões do Argos restaurados."
         st.rerun()
     defaults = analysis_defaults()
