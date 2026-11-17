@@ -87,15 +87,26 @@ def test_origem_do_nome_argos():
 
 
 def test_aba_por_que_argos_no_modal_academico():
-    from app.ui.about import NAME_ANALOGIES, NAME_LEAD, NAME_ORIGIN, build_name_modal_html
+    from app.ui.about import (
+        NAME_ANALOGIES,
+        NAME_ANALOGIES_SHORT,
+        NAME_ORIGIN,
+        NAME_ORIGIN_SHORT,
+        build_name_modal_html,
+    )
     from app.ui.landing import ACADEMIC_MODAL_CSS
     from core.disclaimers import contains_forbidden_phrase
 
     html = build_name_modal_html()
-    # O mesmo texto da página Sobre o Projeto, nas classes de estilo do modal.
     assert "A viagem do Argo" in html and "Jasão" in html and "O que o mito tem a ver com o sistema" in html
-    assert html.count('class="ac-nm-card"') == len(NAME_ANALOGIES) and "04</span>" in html
-    assert all(title in html for title, _ in NAME_ANALOGIES) and "ab-" not in html
+    assert html.count('class="ac-nm-card"') == 4 and "04</span>" in html and "ab-" not in html
     assert ".ac-nm-grid" in ACADEMIC_MODAL_CSS and ".ac-nm-story" in ACADEMIC_MODAL_CSS
-    assert "sem prometer o destino" in NAME_LEAD and contains_forbidden_phrase(NAME_LEAD) is None
-    assert NAME_ORIGIN.split(",")[0] in html
+    # Versão curta: os mesmos quatro itens da página Sobre o Projeto, uma frase cada.
+    assert [t for t, _ in NAME_ANALOGIES_SHORT] == [t for t, _ in NAME_ANALOGIES]
+    assert len(NAME_ORIGIN_SHORT) < len(NAME_ORIGIN) / 2
+    for title, text in NAME_ANALOGIES_SHORT:
+        assert len(text.split()) <= 20 and text.count(".") == 1, title
+    assert "não é o lucro" in dict(NAME_ANALOGIES_SHORT)["O velocino"]
+    assert "sem prever" in dict(NAME_ANALOGIES_SHORT)["O navio"]
+    for text in (NAME_ORIGIN_SHORT, *dict(NAME_ANALOGIES_SHORT).values()):
+        assert contains_forbidden_phrase(text) is None

@@ -212,8 +212,7 @@ div[role="dialog"] { background: #F7F6F2 !important; border: 1px solid #2a2a2a !
 .ac-stats b { display: block; font-size: 1.35rem; color: #111; }
 .ac-stats span { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: #5f5f5f; font-weight: 700; }
 .ac-note { font-size: .8rem; color: #5f5f5f; margin: 4px 0 0; }
-.ac-nm-lead { color: #111; font-size: 1rem; line-height: 1.55; margin: 6px 0 12px; }
-.ac-nm-story { border: 1px solid #2a2a2a; border-left: 4px solid #c8102e; background: #fff; padding: 14px 18px; margin-bottom: 14px; }
+.ac-nm-story { border: 1px solid #2a2a2a; border-left: 4px solid #c8102e; background: #fff; padding: 14px 18px; margin: 6px 0 14px; }
 .ac-nm-story p { color: #333; font-size: .9rem; line-height: 1.6; margin: 6px 0 0; }
 .ac-nm-kicker { margin-bottom: 6px; }
 .ac-nm-grid { display: grid; grid-template-columns: repeat(2, 1fr); border: 1px solid #2a2a2a; background: #fff; margin-bottom: 10px; }

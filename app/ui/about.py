@@ -194,22 +194,30 @@ def build_name_html() -> str:
     return _section("Sobre o nome", "Por que Argos", story + f'<div class="ab-cards ab-cards-2">{cards}</div>')
 
 
-NAME_LEAD = (
-    "O nome vem do mito dos argonautas e resume o que a plataforma faz: reunir dados de vários "
-    "mercados e ajudar a percorrer o histórico de cada ativo com atenção, sem prometer o destino."
+# Versão curta para o modal Informações acadêmicas (16/11/2026): o espaço é menor, então cada
+# item vira uma frase. O texto completo continua na página Sobre o Projeto.
+NAME_ORIGIN_SHORT = (
+    "No mito grego, Jasão parte em busca do velocino de ouro a bordo do Argo, o navio construído "
+    "por Argos com a ajuda de Atena, ao lado dos argonautas, heróis de talentos diferentes."
+)
+
+NAME_ANALOGIES_SHORT = (
+    ("O navio", "A plataforma reúne os dados e conduz a leitura do caminho já percorrido, sem prever o próximo trecho."),
+    ("A tripulação", "Cada classe de ativo tem um comportamento próprio, como cada argonauta tinha um talento."),
+    ("O mar", "As tempestades são as crises e quedas que o histórico registra, para serem estudadas."),
+    ("O velocino", "O tesouro não é o lucro: é o entendimento do que os números mostram e do que não permitem concluir."),
 )
 
 
 def build_name_modal_html() -> str:
-    """Aba "Por que Argos" do modal Informações acadêmicas: mesmo texto da página Sobre o Projeto."""
+    """Aba "Por que Argos" do modal Informações acadêmicas, em versão curta."""
     cards = "".join(
         f'<div class="ac-nm-card"><span class="ac-nm-num">{i:02d}</span><h4>{escape(title)}</h4>'
         f"<p>{escape(text)}</p></div>"
-        for i, (title, text) in enumerate(NAME_ANALOGIES, start=1)
+        for i, (title, text) in enumerate(NAME_ANALOGIES_SHORT, start=1)
     )
     return (
-        f'<p class="ac-nm-lead">{escape(NAME_LEAD)}</p>'
-        f'<div class="ac-nm-story"><div class="ac-kicker">A viagem do Argo</div><p>{escape(NAME_ORIGIN)}</p></div>'
+        f'<div class="ac-nm-story"><div class="ac-kicker">A viagem do Argo</div><p>{escape(NAME_ORIGIN_SHORT)}</p></div>'
         f'<div class="ac-kicker ac-nm-kicker">O que o mito tem a ver com o sistema</div>'
         f'<div class="ac-nm-grid">{cards}</div>'
     )
