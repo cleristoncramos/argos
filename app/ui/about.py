@@ -194,6 +194,27 @@ def build_name_html() -> str:
     return _section("Sobre o nome", "Por que Argos", story + f'<div class="ab-cards ab-cards-2">{cards}</div>')
 
 
+NAME_LEAD = (
+    "O nome vem do mito dos argonautas e resume o que a plataforma faz: reunir dados de vários "
+    "mercados e ajudar a percorrer o histórico de cada ativo com atenção, sem prometer o destino."
+)
+
+
+def build_name_modal_html() -> str:
+    """Aba "Por que Argos" do modal Informações acadêmicas: mesmo texto da página Sobre o Projeto."""
+    cards = "".join(
+        f'<div class="ac-nm-card"><span class="ac-nm-num">{i:02d}</span><h4>{escape(title)}</h4>'
+        f"<p>{escape(text)}</p></div>"
+        for i, (title, text) in enumerate(NAME_ANALOGIES, start=1)
+    )
+    return (
+        f'<p class="ac-nm-lead">{escape(NAME_LEAD)}</p>'
+        f'<div class="ac-nm-story"><div class="ac-kicker">A viagem do Argo</div><p>{escape(NAME_ORIGIN)}</p></div>'
+        f'<div class="ac-kicker ac-nm-kicker">O que o mito tem a ver com o sistema</div>'
+        f'<div class="ac-nm-grid">{cards}</div>'
+    )
+
+
 def build_context_html() -> str:
     cards = (
         ("O problema",

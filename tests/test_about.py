@@ -84,3 +84,18 @@ def test_origem_do_nome_argos():
     assert "não prevê" in dict(NAME_ANALOGIES)["O navio"]
     for texto in (NAME_ORIGIN, *dict(NAME_ANALOGIES).values()):
         assert contains_forbidden_phrase(texto) is None
+
+
+def test_aba_por_que_argos_no_modal_academico():
+    from app.ui.about import NAME_ANALOGIES, NAME_LEAD, NAME_ORIGIN, build_name_modal_html
+    from app.ui.landing import ACADEMIC_MODAL_CSS
+    from core.disclaimers import contains_forbidden_phrase
+
+    html = build_name_modal_html()
+    # O mesmo texto da página Sobre o Projeto, nas classes de estilo do modal.
+    assert "A viagem do Argo" in html and "Jasão" in html and "O que o mito tem a ver com o sistema" in html
+    assert html.count('class="ac-nm-card"') == len(NAME_ANALOGIES) and "04</span>" in html
+    assert all(title in html for title, _ in NAME_ANALOGIES) and "ab-" not in html
+    assert ".ac-nm-grid" in ACADEMIC_MODAL_CSS and ".ac-nm-story" in ACADEMIC_MODAL_CSS
+    assert "sem prometer o destino" in NAME_LEAD and contains_forbidden_phrase(NAME_LEAD) is None
+    assert NAME_ORIGIN.split(",")[0] in html

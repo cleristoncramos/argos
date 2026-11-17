@@ -212,7 +212,21 @@ div[role="dialog"] { background: #F7F6F2 !important; border: 1px solid #2a2a2a !
 .ac-stats b { display: block; font-size: 1.35rem; color: #111; }
 .ac-stats span { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: #5f5f5f; font-weight: 700; }
 .ac-note { font-size: .8rem; color: #5f5f5f; margin: 4px 0 0; }
+.ac-nm-lead { color: #111; font-size: 1rem; line-height: 1.55; margin: 6px 0 12px; }
+.ac-nm-story { border: 1px solid #2a2a2a; border-left: 4px solid #c8102e; background: #fff; padding: 14px 18px; margin-bottom: 14px; }
+.ac-nm-story p { color: #333; font-size: .9rem; line-height: 1.6; margin: 6px 0 0; }
+.ac-nm-kicker { margin-bottom: 6px; }
+.ac-nm-grid { display: grid; grid-template-columns: repeat(2, 1fr); border: 1px solid #2a2a2a; background: #fff; margin-bottom: 10px; }
+.ac-nm-card { padding: 14px 16px; border-bottom: 1px solid #e4e1da; }
+.ac-nm-card:nth-child(odd) { border-right: 1px solid #e4e1da; }
+.ac-nm-card:nth-last-child(-n+2) { border-bottom: 0; }
+.ac-nm-num { color: #c8102e; font-size: .72rem; font-weight: 800; letter-spacing: .12em; }
+.ac-nm-card h4 { margin: 2px 0 6px; padding: 0; font-size: 1rem; font-weight: 800; color: #111; }
+.ac-nm-card p { margin: 0; color: #444; font-size: .86rem; line-height: 1.55; }
 @media (max-width: 760px) {
+  .ac-nm-grid { grid-template-columns: 1fr; }
+  .ac-nm-card:nth-child(odd) { border-right: 0; }
+  .ac-nm-card:nth-last-child(2) { border-bottom: 1px solid #e4e1da; }
   .ac-head { flex-direction: column; }
   .ac-logos { border-right: 0; border-bottom: 1px solid #2a2a2a; }
   .ac-logos img { height: 44px; }

@@ -2,6 +2,7 @@
 
 import streamlit as st
 
+from app.ui.about import build_name_modal_html
 from app.ui.landing import (
     ACADEMIC_MODAL_CSS,
     build_academic_header_html,
@@ -20,9 +21,11 @@ def show_academic_dialog() -> None:
     logos = {"UFPI": institutional_logo_uri("UFPI"), "CEAD": institutional_logo_uri("CEAD")}
     st.markdown(build_academic_header_html(logos), unsafe_allow_html=True)
 
-    identification, technologies, data = st.tabs(
-        ["Identificação", "Tecnologias", "Bases de dados"]
+    identification, name, technologies, data = st.tabs(
+        ["Identificação", "Por que Argos", "Tecnologias", "Bases de dados"]
     )
+    with name:
+        st.markdown(build_name_modal_html(), unsafe_allow_html=True)
     with identification:
         st.markdown(build_identification_html(), unsafe_allow_html=True)
     with technologies:
