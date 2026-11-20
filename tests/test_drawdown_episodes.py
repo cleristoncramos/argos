@@ -58,3 +58,20 @@ def test_rising_series_and_invalid_inputs():
         "Value": [100, -5, 50, 80, 120],
     }))
     assert len(cleaned) == 1 and cleaned.loc[0, "Valor no fundo"] == 80
+
+
+def test_intervalos_para_destacar_no_grafico():
+    from core.drawdown_episodes import episode_spans
+
+    #        0    1    2   3    4    5    6    7   8
+    values = [100, 120, 90, 60, 110, 125, 130, 80, 100]
+    spans = episode_spans(largest_drawdowns(series(values)))
+    assert [s["position"] for s in spans] == [1, 2]
+    first, second = spans
+    # Recuperada: do pico (29/02) à recuperação (30/06).
+    assert first["start"] == pd.Timestamp("2020-02-29") and first["end"] == pd.Timestamp("2020-06-30")
+    assert first["trough"] == pd.Timestamp("2020-04-30") and first["recovered"] and first["days"] == 122
+    assert first["drop"] == pytest.approx(-0.5)
+    # Sem recuperação: até a última observação (30/09), sem estimar mais nada.
+    assert not second["recovered"] and second["end"] == pd.Timestamp("2020-09-30")
+    assert episode_spans(largest_drawdowns(series([1, 2, 3]))) == []

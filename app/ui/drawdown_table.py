@@ -15,6 +15,7 @@ NOT_RECOVERED = "não recuperado até a última observação disponível"
 NBSP = "\u00a0"
 
 HEADER_LABELS = {
+    "Nº": "Nº",
     "Queda": "Queda (pico ao fundo)",
     "Pico": "Início da queda (pico)",
     "Fundo": "Fundo",
@@ -83,6 +84,7 @@ def build_drawdown_display(episodes: pd.DataFrame) -> pd.DataFrame:
         return text if row["Recuperada"] else f"{text}, até a última observação"
 
     return pd.DataFrame({
+        "Nº": [f"{i}ª" for i in range(1, len(episodes) + 1)],
         "Queda": episodes["Queda"],
         "Pico": episodes["Pico"].dt.strftime("%d/%m/%Y"),
         "Fundo": episodes["Fundo"].dt.strftime("%d/%m/%Y"),
@@ -105,7 +107,12 @@ def text_cell(value) -> tuple[str, str]:
     return str(value), _WRAP
 
 
+def number_cell(value) -> tuple[str, str]:
+    return str(value), _CENTER + "font-weight:700;color:#475569;"
+
+
 FORMATTERS = {
+    "Nº": number_cell,
     "Queda": drop_cell,
     "Pico": text_cell,
     "Fundo": text_cell,
@@ -114,3 +121,46 @@ FORMATTERS = {
     "Fundo à recuperação": text_cell,
     "Total": text_cell,
 }
+
+
+# -------------------------------------------------------
+# Destaque de uma queda no gráfico de drawdown (pedido do orientador)
+# -------------------------------------------------------
+HIGHLIGHT_COLOR = "#991b1b"
+HIGHLIGHT_PROMPT = "Ver no gráfico uma das maiores quedas"
+HIGHLIGHT_HELP = (
+    "Clique em uma queda para sombrear no gráfico o período do pico à recuperação. "
+    "Clique de novo para ocultar."
+)
+
+
+def span_label(span: dict) -> str:
+    """Rótulo curto do botão: "1ª · −76,63% · 08/11/2021 → 04/03/2024"."""
+    end = span["end"].strftime("%d/%m/%Y") if span["recovered"] else "sem recuperação"
+    return f"{span['position']}ª · {format_return_pct(span['drop'])} · {span['start']:%d/%m/%Y} → {end}"
+
+
+def span_caption(span: dict) -> str:
+    """Frase sob o gráfico que descreve o período destacado."""
+    text = (
+        f"Em destaque, a {span['position']}ª maior queda: do pico em {span['start']:%d/%m/%Y} "
+        f"ao fundo em {span['trough']:%d/%m/%Y} ({format_return_pct(span['drop'])})"
+    )
+    if span["recovered"]:
+        return text + f", com recuperação em {span['end']:%d/%m/%Y}; {format_duration(span['days'])} no total."
+    return text + f"; sem recuperação até a última observação, {span['end']:%d/%m/%Y}."
+
+
+def add_episode_highlight(fig, span: dict) -> None:
+    """Fundo discreto do pico à recuperação (ou à última observação) no gráfico."""
+    fig.add_vrect(
+        x0=span["start"],
+        x1=span["end"],
+        fillcolor=HIGHLIGHT_COLOR,
+        opacity=0.08,
+        line_width=0,
+        layer="below",
+        annotation_text=f"{span['position']}ª queda · {format_return_pct(span['drop'])}",
+        annotation_position="top left",
+        annotation_font=dict(size=11, color=HIGHLIGHT_COLOR),
+    )

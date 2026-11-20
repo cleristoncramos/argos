@@ -109,3 +109,30 @@ def largest_drawdowns(
     if episodes.empty:
         return episodes
     return episodes.sort_values("Queda", kind="stable").head(top).reset_index(drop=True)
+
+
+def episode_spans(episodes: pd.DataFrame) -> list[dict]:
+    """
+    Intervalo de cada episódio para destacá-lo no gráfico de drawdown, na ordem
+    da tabela (1ª, 2ª e 3ª maiores quedas). Vai do pico à recuperação; sem
+    recuperação, até a última observação (pico + dias em queda), sem estimar
+    nada além dos dados.
+    """
+    spans = []
+    for position, (_, record) in enumerate(episodes.iterrows(), start=1):
+        start = pd.Timestamp(record["Pico"])
+        recovered = bool(record["Recuperada"])
+        if recovered:
+            end = pd.Timestamp(record["Recuperação"])
+        else:
+            end = start + pd.Timedelta(days=int(record["Dias em queda"]))
+        spans.append({
+            "position": position,
+            "start": start,
+            "trough": pd.Timestamp(record["Fundo"]),
+            "end": end,
+            "drop": float(record["Queda"]),
+            "recovered": recovered,
+            "days": int(record["Dias em queda"]),
+        })
+    return spans

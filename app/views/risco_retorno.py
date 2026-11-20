@@ -44,8 +44,13 @@ from app.ui.drawdown_table import (
     DRAWDOWN_TABLE_NOTES,
     FORMATTERS as DRAWDOWN_FORMATTERS,
     HEADER_LABELS as DRAWDOWN_HEADER_LABELS,
+    HIGHLIGHT_HELP,
+    HIGHLIGHT_PROMPT,
+    add_episode_highlight,
     build_drawdown_display,
     drawdown_intro,
+    span_caption,
+    span_label,
 )
 from app.ui.tables import (
     date_cell,
@@ -68,7 +73,7 @@ from core.data_processor import (
 )
 from core.exports import csv_filename, dataframe_to_csv_bytes
 from core.llm_builders import risk_context
-from core.drawdown_episodes import DEFAULT_TOP, largest_drawdowns
+from core.drawdown_episodes import DEFAULT_TOP, episode_spans, largest_drawdowns
 from core.risk_metrics import (
     build_risk_summary,
     calculate_drawdown,
@@ -572,20 +577,38 @@ if worst_drawdown_date is not None and drawdown_values.size and not np.isnan(dra
         hoverinfo="skip"
     ))
 
+# Maiores quedas (A7), calculadas antes do gráfico: uma delas pode ser destacada nele.
+top_drawdowns = largest_drawdowns(df_risk, top=DEFAULT_TOP, value_col="Value")
+spans = {span["position"]: span for span in episode_spans(top_drawdowns)}
+# A chave muda com a consulta: uma nova análise começa sem destaque.
+highlight_key = f"risk_return_dd_highlight_{symbol}_{start_date}_{end_date}_{frequency}"
+highlighted = spans.get(st.session_state.get(highlight_key))
+if highlighted:
+    add_episode_highlight(drawdown_figure, highlighted)
+
 with st.container(border=True):
     st.plotly_chart(
         drawdown_figure,
         use_container_width=True,
         config=PLOTLY_CONFIG,
     )
+    if spans:
+        st.pills(
+            HIGHLIGHT_PROMPT,
+            options=list(spans),
+            format_func=lambda position: span_label(spans[position]),
+            selection_mode="single",
+            key=highlight_key,
+            help=HIGHLIGHT_HELP,
+        )
+        if highlighted:
+            st.caption(span_caption(highlighted))
     render_chart_guide("drawdown")
 
 # -------------------------------------------------------
 # Maiores quedas e tempo de recuperação (A7)
 # -------------------------------------------------------
 st.markdown("### Maiores quedas e recuperação")
-
-top_drawdowns = largest_drawdowns(df_risk, top=DEFAULT_TOP, value_col="Value")
 
 if top_drawdowns.empty:
     st.info("Não houve queda em relação a um pico anterior no período analisado.")
