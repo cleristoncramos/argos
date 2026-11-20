@@ -71,7 +71,9 @@ def test_intervalos_para_destacar_no_grafico():
     # Recuperada: do pico (29/02) à recuperação (30/06).
     assert first["start"] == pd.Timestamp("2020-02-29") and first["end"] == pd.Timestamp("2020-06-30")
     assert first["trough"] == pd.Timestamp("2020-04-30") and first["recovered"] and first["days"] == 122
+    assert first["days_to_trough"] == 61 and first["days_to_recovery"] == 61
     assert first["drop"] == pytest.approx(-0.5)
     # Sem recuperação: até a última observação (30/09), sem estimar mais nada.
     assert not second["recovered"] and second["end"] == pd.Timestamp("2020-09-30")
+    assert second["days_to_trough"] == 31 and second["days_to_recovery"] is None
     assert episode_spans(largest_drawdowns(series([1, 2, 3]))) == []

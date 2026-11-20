@@ -150,7 +150,7 @@ O menu principal tem oito páginas: seis módulos de análise, a página Configu
 - Retorno acumulado, retorno médio, **volatilidade anualizada**, **Índice de Sharpe** (com taxa livre de risco configurável), **drawdown máximo** e a data do fundo da maior queda.
 - Percentual de períodos positivos, melhor e pior período.
 - Curva de drawdown e distribuição dos retornos por faixas.
-- **Maiores quedas e tempo de recuperação:** pico, fundo, data em que o preço voltou ao pico e duração de cada etapa. Quedas ainda não recuperadas aparecem como tal, sem estimativa.
+- **Maiores quedas e tempo de recuperação:** botões abaixo do gráfico de drawdown com as três maiores quedas; ao escolher uma, o período do pico à recuperação ganha destaque no gráfico, com tooltips e uma ficha com pico, fundo, recuperação e a duração de cada etapa. Quedas ainda não recuperadas aparecem como tal, sem estimativa.
 
 ### Simulação de Aportes
 

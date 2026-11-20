@@ -61,7 +61,7 @@ argos/
 │   │   ├── demo_banner.py           # Aviso de versão congelada (modo de demonstração)
 │   │   ├── design.py                # CSS comum a todas as páginas (identidade visual)
 │   │   ├── disclaimers.py           # Avisos legais e metodológicos
-│   │   ├── drawdown_table.py        # Tabela "Maiores quedas e recuperação" (Risco e Retorno)
+│   │   ├── drawdown_highlight.py    # Maiores quedas destacadas no gráfico de drawdown (Risco e Retorno)
 │   │   ├── education.py             # Caixas "O que significa?" e glossário
 │   │   ├── extremes_table.py        # Bloco "Maiores altas e quedas" da Análise Individual
 │   │   ├── indicator_docs.py        # Notas e glossário dos indicadores técnicos

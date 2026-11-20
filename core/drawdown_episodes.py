@@ -113,8 +113,8 @@ def largest_drawdowns(
 
 def episode_spans(episodes: pd.DataFrame) -> list[dict]:
     """
-    Intervalo de cada episódio para destacá-lo no gráfico de drawdown, na ordem
-    da tabela (1ª, 2ª e 3ª maiores quedas). Vai do pico à recuperação; sem
+    Intervalo de cada episódio para destacá-lo no gráfico de drawdown, da maior
+    para a menor queda (1ª, 2ª e 3ª). Vai do pico à recuperação; sem
     recuperação, até a última observação (pico + dias em queda), sem estimar
     nada além dos dados.
     """
@@ -134,5 +134,9 @@ def episode_spans(episodes: pd.DataFrame) -> list[dict]:
             "drop": float(record["Queda"]),
             "recovered": recovered,
             "days": int(record["Dias em queda"]),
+            "days_to_trough": int(record["Dias até o fundo"]),
+            "days_to_recovery": (
+                int(record["Dias do fundo à recuperação"]) if recovered else None
+            ),
         })
     return spans

@@ -280,7 +280,7 @@ Sharpe         = média(excesso) / desvio-padrão(excesso, ddof=1) × √k
 
 ### 4.1 Maiores quedas e tempo de recuperação (`drawdown_episodes.py`)
 
-Item A7 do plano de ampliação, aprovado em 24/10/2026. A tabela fica na página Risco e Retorno, logo abaixo do gráfico de drawdown, e mostra os **3 episódios mais profundos** do período.
+Item A7 do plano de ampliação, aprovado em 24/10/2026. Os **3 episódios mais profundos** do período aparecem na página Risco e Retorno como botões logo abaixo do gráfico de drawdown (até 19/11/2026, numa tabela): ao escolher um, o período do pico à recuperação é destacado no gráfico e as datas e durações aparecem numa ficha e nos tooltips.
 
 - **Série usada.** A mesma do gráfico de drawdown: fechamentos na **frequência escolhida** na barra lateral. Com frequência mensal, as datas são fechamentos mensais e as durações ficam com a resolução de um mês.
 - **Episódio.**

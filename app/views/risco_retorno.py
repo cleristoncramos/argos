@@ -40,16 +40,15 @@ from app.ui.llm_explain import asset_name, render_explain_section
 from app.ui.metric_card import render_metric_card
 from app.ui.sidebar import render_asset_controls
 from app.ui.state import initialize_asset_state
-from app.ui.drawdown_table import (
-    DRAWDOWN_TABLE_NOTES,
-    FORMATTERS as DRAWDOWN_FORMATTERS,
-    HEADER_LABELS as DRAWDOWN_HEADER_LABELS,
+from app.ui.drawdown_highlight import (
+    DRAWDOWN_CSS,
+    DRAWDOWN_NOTES,
     HIGHLIGHT_HELP,
-    HIGHLIGHT_PROMPT,
+    NO_DRAWDOWN,
+    PILLS_KEY,
     add_episode_highlight,
-    build_drawdown_display,
-    drawdown_intro,
-    span_caption,
+    build_facts_html,
+    drawdown_prompt,
     span_label,
 )
 from app.ui.tables import (
@@ -577,7 +576,8 @@ if worst_drawdown_date is not None and drawdown_values.size and not np.isnan(dra
         hoverinfo="skip"
     ))
 
-# Maiores quedas (A7), calculadas antes do gráfico: uma delas pode ser destacada nele.
+# Maiores quedas e recuperação (A7): calculadas antes do gráfico, porque a escolhida
+# nos botões abaixo dele é destacada no próprio gráfico (a tabela saiu em 19/11/2026).
 top_drawdowns = largest_drawdowns(df_risk, top=DEFAULT_TOP, value_col="Value")
 spans = {span["position"]: span for span in episode_spans(top_drawdowns)}
 # A chave muda com a consulta: uma nova análise começa sem destaque.
@@ -593,37 +593,22 @@ with st.container(border=True):
         config=PLOTLY_CONFIG,
     )
     if spans:
-        st.pills(
-            HIGHLIGHT_PROMPT,
-            options=list(spans),
-            format_func=lambda position: span_label(spans[position]),
-            selection_mode="single",
-            key=highlight_key,
-            help=HIGHLIGHT_HELP,
-        )
+        st.markdown(DRAWDOWN_CSS, unsafe_allow_html=True)
+        with st.container(key=PILLS_KEY):
+            st.pills(
+                drawdown_prompt(frequency, len(spans)),
+                options=list(spans),
+                format_func=lambda position: span_label(spans[position]),
+                selection_mode="single",
+                key=highlight_key,
+                help=HIGHLIGHT_HELP,
+            )
         if highlighted:
-            st.caption(span_caption(highlighted))
+            st.markdown(build_facts_html(highlighted), unsafe_allow_html=True)
+            st.caption(DRAWDOWN_NOTES)
+    else:
+        st.caption(NO_DRAWDOWN)
     render_chart_guide("drawdown")
-
-# -------------------------------------------------------
-# Maiores quedas e tempo de recuperação (A7)
-# -------------------------------------------------------
-st.markdown("### Maiores quedas e recuperação")
-
-if top_drawdowns.empty:
-    st.info("Não houve queda em relação a um pico anterior no período analisado.")
-else:
-    st.markdown(drawdown_intro(frequency, len(top_drawdowns)))
-    render_table(
-        build_drawdown_display(top_drawdowns),
-        list(DRAWDOWN_HEADER_LABELS),
-        DRAWDOWN_FORMATTERS,
-        header_labels=DRAWDOWN_HEADER_LABELS,
-        max_height=None,
-        min_width=760,
-        wrap_header=True,
-    )
-    st.caption(DRAWDOWN_TABLE_NOTES)
 
 
 # =====================
